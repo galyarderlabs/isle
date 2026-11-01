@@ -306,9 +306,9 @@ export const CompactView = GObject.registerClass({
                 .map(item => [item, widths[statuses.indexOf(item)]])
                 .sort((a, b) => b[1] - a[1])
                 .forEach(([item, own]) => {
-                    // The bell prefers the clock's side, but never past level: with it there the
-                    // left may not end heavier than the right (the date's own side).
-                    const lighter = item === this._notificationStatus && leftWidth + own <= rightWidth
+                    // The bell always takes the clock's side: predictable beside the clock it
+                    // belongs to (the level rule balances the other statuses around that).
+                    const lighter = item === this._notificationStatus
                         ? left
                         : leftWidth <= rightWidth ? left : right;
                     lighter.push(item);
