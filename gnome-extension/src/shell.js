@@ -9,14 +9,13 @@ import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Signals from 'resource:///org/gnome/shell/misc/signals.js';
 
-import {clutterBackend} from './compat.js';
+import {clutterBackend, uiScale} from './compat.js';
+import {normalized, restyle} from './panelStyle.js';
 
-// The bar's colour (glass 0% to black 100%) joins its inline style, re-added if another extension replaces it.
+// The bar's colour (glass 0% to black 100%) is a declaration in its inline style, which other extensions write
+// too: Isle edits only its own (panelStyle.js) and puts it back if another extension takes it out.
 /** More changes of the bar's style than this in a second are a fight with another extension. */
 const MAX_RESTYLES_PER_SECOND = 5;
-
-/** Isle's own colour rules for the bar, as `_barRule` writes them, to take out again. */
-const BAR_RULE = /background-color: (?:transparent|#000000|rgba\(0, 0, 0, [\d.]+\));/g;
 /** Below this opacity (%) the bar's text needs its shadow to read on the wallpaper. */
 const SHADOW_BELOW = 50;
 /** Style class keeping the bar's text white in GNOME's light style too. */
@@ -27,6 +26,11 @@ const GLASS_BAR_CLASS = 'isle-glass-bar';
 const COMPACT_BAR_CLASS = 'isle-compact-bar';
 /** Style class making the top bar as tall as the closed island. */
 const NOTCH_BAR_CLASS = 'isle-notch-bar';
+/** The space left below the island inside the bar (Settings): the island is this much shorter, the bar
+ * keeps its height, so its other buttons stay centred (#14). */
+const GAP_PX = 4;
+/** The primary (usually left) mouse button, as Clutter numbers it. */
+const PRIMARY_BUTTON = 1;
 
 // Restyles the top bar around the island (black or glass) and hides the clock and its calendar menu.
 // Signals: `height-changed`, `style-changed` (`blendsIn` may have changed), `calendar-requested` (Super+V).
@@ -35,6 +39,8 @@ export class TopBar extends Signals.EventEmitter {
     constructor(settings) {
         super();
         this._settings = settings;
+        /** Every declaration Isle has put in the bar's style, normalized: to tell them from another's. */
+        this._own = new Set();
         this._toggle = () => this.emit('calendar-requested');
         this._dateMenu = Main.panel.statusArea.dateMenu;
         this._dateMenu.opacity = 0;
@@ -51,9 +57,22 @@ export class TopBar extends Signals.EventEmitter {
             })),
             settings.connect('changed::compact-top-bar', () => this._applyStyle()),
             settings.connect('changed::island-in-top-bar', () => this._applyStyle()),
+            // The bar keeps its height: the island is laid out again for its own.
+            settings.connect('changed::notch-gap', () => {
+                const gap = this._gap;
+                this._applyStyle();
+                if (this._gap !== gap)
+                    this.emit('height-changed');
+            }),
         ];
         this._applyStyle();
         this._styleChanged = Main.panel.connect('notify::style', () => this._onPanelStyle());
+        // GNOME 50 and later drag a maximized window from the bar with any button: after a right click on the bar
+        // the window followed the pointer (#27). Only the primary button, as up to GNOME 49; given back on disable.
+        this._dragGesture = Main.panel._clickGesture ?? null;
+        this._dragButtonWas = this._dragGesture?.required_button ?? null;
+        if (this._dragButtonWas === 0)
+            this._dragGesture.required_button = PRIMARY_BUTTON;
 
         this._heightChanged = Main.panel.connect('notify::height', () => this.emit('height-changed'));
 
@@ -71,6 +90,11 @@ export class TopBar extends Signals.EventEmitter {
     /** In stage pixels; it changes with the compact and notch styles. */
     get height() {
         return Main.panel.height;
+    }
+
+    /** The space below the closed island inside the bar, in stage pixels: part of `height`. */
+    get gap() {
+        return this._gap * uiScale();
     }
 
     /** Super+V opens Isle's clipboard, unless left to GNOME or the Shelf page is left out. */
@@ -107,7 +131,7 @@ export class TopBar extends Signals.EventEmitter {
     }
 
     /** Whether the bar is as black as the island; otherwise the island hangs from the screen's top edge.
-     * GNOME's grey island never is. */
+     * A glass island never is. */
     get blendsIn() {
         return this.opacity >= 100 && this._settings.get_string('island-theme') === 'black';
     }
@@ -132,11 +156,13 @@ export class TopBar extends Signals.EventEmitter {
     _applyStyle() {
         this._blended = this.blendsIn;
         this._syncColor();
+        const inBar = this._settings.get_boolean('island-in-top-bar');
+        this._gap = inBar && this._settings.get_boolean('notch-gap') ? GAP_PX : 0;
         // The bar's height changes with these; `height-changed` re-lays out the island.
         setStyleClasses(Main.panel, {
             [BAR_CLASS]: true,
             [COMPACT_BAR_CLASS]: this._settings.get_boolean('compact-top-bar'),
-            [NOTCH_BAR_CLASS]: this._settings.get_boolean('island-in-top-bar'),
+            [NOTCH_BAR_CLASS]: inBar,
             [GLASS_BAR_CLASS]: this.opacity < SHADOW_BELOW,
         });
     }
@@ -144,8 +170,8 @@ export class TopBar extends Signals.EventEmitter {
     // Another extension that sets the bar's style too would undo Isle's rule each time Isle set it, in a
     // loop that keeps the shell busy: past a few times a second, Isle gives way until the setting changes.
     _onPanelStyle() {
-        // Isle's own write, or one that kept Isle's colour: no fight.
-        if (this._yielded || this._writing || this._wantedStyle() === (Main.panel.get_style() ?? ''))
+        // Isle's own write, or one that kept Isle's colour (however spelt or ordered): no fight.
+        if (this._yielded || this._writing || this._wantedStyle() === Main.panel.get_style())
             return;
         const now = GLib.get_monotonic_time();
         this._restyles = (this._restyles ?? []).filter(at => now - at < 1e6);
@@ -158,31 +184,33 @@ export class TopBar extends Signals.EventEmitter {
         this._syncColor();
     }
 
-    /** Black at `opacity` %, as an inline rule; null for none (the theme's colour). */
+    /** Black at `opacity` %, as a declaration; null for none (the theme's colour). */
     _barRule(opacity) {
         if (opacity === null)
             return null;
         if (opacity <= 0)
-            return 'background-color: transparent;';
-        return opacity >= 100 ? 'background-color: #000000;' : `background-color: rgba(0, 0, 0, ${opacity / 100});`;
+            return 'background-color: transparent';
+        return opacity >= 100 ? 'background-color: #000000' : `background-color: rgba(0, 0, 0, ${opacity / 100})`;
     }
 
-    /** The bar's style with Isle's colour rule at `opacity`, the rest of it left alone. */
+    /** The bar's style with Isle's colour at `opacity`, the rest of it left alone: the current one itself when
+     * Isle's colour is already in effect there. */
     _wantedStyle(opacity = this.opacity) {
-        const others = (Main.panel.get_style() ?? '').replace(BAR_RULE, '').trim();
         const rule = this._barRule(opacity);
-        return rule ? `${others} ${rule}`.trim() : others;
+        if (rule)
+            this._own.add(normalized(rule));
+        return restyle(Main.panel.get_style(), rule ? [rule] : [], text => this._own.has(text));
     }
 
-    /** Sets Isle's colour rule, leaving the rest of the style alone. */
+    /** Sets Isle's colour, leaving the rest of the style alone; writes nothing when it is in effect already. */
     _syncColor(opacity = this.opacity) {
         const wanted = this._wantedStyle(opacity);
-        if (wanted === (Main.panel.get_style() ?? ''))
+        if (wanted === Main.panel.get_style())
             return;
         // It notifies at once: not counted as another extension's change (see `_onPanelStyle`).
         this._writing = true;
         try {
-            Main.panel.set_style(wanted || null);
+            Main.panel.set_style(wanted);
         } finally {
             this._writing = false;
         }
@@ -195,6 +223,8 @@ export class TopBar extends Signals.EventEmitter {
         this._settingsChanged.forEach(id => this._settings.disconnect(id));
         Main.panel.disconnect(this._heightChanged);
         Main.panel.disconnect(this._styleChanged);
+        if (this._dragButtonWas === 0 && this._dragGesture.required_button === PRIMARY_BUTTON)
+            this._dragGesture.required_button = 0;
         this._dateMenu.menu.disconnect(this._menuChanged);
         this._settings.disconnect(this._superVChanged);
         this._settings.disconnect(this._pagesChanged);

@@ -40,6 +40,7 @@ export function timerColor(phase) {
     return phase === 'focus' || phase === 'idle' ? Palette.WHITE : Palette.GREEN;
 }
 
+
 /** The closed island's contents; emits `width-changed` when it needs another width. */
 export const CompactView = GObject.registerClass({
     Signals: {'width-changed': {}, 'assistant-requested': {}, 'assistant-hovered': {}},
@@ -204,7 +205,6 @@ export const CompactView = GObject.registerClass({
             else
                 this._stopAssistantPointerTracking();
             this._syncBars();
-            this._tickCall();
             this._tickRecording();
             this._tickTimer();
             this._refreshRing();
@@ -215,8 +215,11 @@ export const CompactView = GObject.registerClass({
         this._stopClock = watchClock(() => this._tickClock());
         this._weather.active = this.mapped;
         this._refresh();
-        // Another scale: the sides are measured again.
-        onUiScale(this, () => this._refresh(), {now: false});
+        // Another scale: the signs sized for it first (their own updates may come after this one), then measured.
+        onUiScale(this, () => {
+            this._sizeSigns();
+            this._refresh();
+        }, {now: false});
         this.connect('destroy', () => this._onDestroy());
     }
 
@@ -437,6 +440,8 @@ export const CompactView = GObject.registerClass({
         if (inBar === this._inBar)
             return;
         this._inBar = inBar;
+        // Its height there is known once laid out; till then, the usual one.
+        this._pillHeight = 0;
         const size = SIZES[inBar ? 'inBar' : 'hanging'];
         this._ring.resize(size.ring);
         this._musicArt.resize(size.music, 4);
@@ -451,6 +456,16 @@ export const CompactView = GObject.registerClass({
         else
             this.remove_style_class_name('isle-compact-in-bar');
         this._refresh();
+    }
+
+    /** Sizes the signs set in stage pixels (cover, assistant, ring) for the place and the scale. */
+    _sizeSigns() {
+        const size = SIZES[this._inBar ? 'inBar' : 'hanging'];
+        this._art.resize(size.art, size.artRadius);
+        this._secondArt.resize(size.art, size.artRadius);
+        this._assistant.resize(size.art, size.bot);
+        this._ring.resize(size.ring);
+        this._secondRing.resize(size.ring);
     }
 
     /** Whether the user is away (no input for a while); the bars rest meanwhile, nobody is watching. */
@@ -524,7 +539,12 @@ export const CompactView = GObject.registerClass({
             this._bars.ease({opacity, duration: 200});
         this._syncBars();
         if (timerActive) {
-            this._ring.color = timerColor(pomodoro.phase);
+            const [r, g, b] = timerColor(pomodoro.phase);
+            this._ring.color = [r, g, b];
+            // Restyled only when the phase changes.
+            const style = `color: rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)});`;
+            if (this._timerIcon.style !== style)
+                this._timerIcon.style = style;
             this._refreshRing();
         } else {
             this._cancel('ring');
@@ -604,17 +624,6 @@ export const CompactView = GObject.registerClass({
         const elapsedMs = (GLib.get_monotonic_time() - this._privacy.recordingSince) / 1000;
         this._recordingTime.text = Format.duration(elapsedMs);
         this._later('recording', 1000 - (elapsedMs % 1000) + 10, () => this._tickRecording());
-    }
-
-    /** Shows how long the call has lasted, once a second while on screen. */
-    _tickCall() {
-        if (!this._call.active || !this.mapped) {
-            this._cancel('call');
-            return;
-        }
-        const elapsedMs = (GLib.get_monotonic_time() - this._call.since) / 1000;
-        this._callTime.text = Format.duration(elapsedMs);
-        this._later('call', 1000 - (elapsedMs % 1000) + 10, () => this._tickCall());
     }
 
     /** Sets the clock's text; `watchClock` calls it again as the minute changes. */
