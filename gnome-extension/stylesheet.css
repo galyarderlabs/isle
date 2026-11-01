@@ -444,6 +444,7 @@
 .isle-header-time { font-size: 13px; font-weight: 600; }
 .isle-header-time-box { spacing: 3px; }
 .isle-header-meridiem { font-size: 10.4px; font-weight: 600; color: rgba(255, 255, 255, 0.72); }
+.isle-compact-meridiem { font-size: 11px; font-weight: 600; color: rgba(255, 255, 255, 0.72); }
 .isle-header-settings { padding: 4px; color: rgba(255, 255, 255, 0.6); }
 .isle-header-settings:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.1); }
 .isle-header-status { spacing: 10px; }

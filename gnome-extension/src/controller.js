@@ -42,8 +42,6 @@ import {TextWriter} from './writer.js';
 
 /** While the pointer rests before the island opens (Settings: hover-delay), it moves at most this far (CSS px). */
 const REST_DISTANCE_PX = 10;
-/** A warm-up waiting for the island to close retries after this long (see `_warmUp`). */
-const WARM_START_MS = 3000;
 const WARM_STEP_MS = 60;
 // A ring alert's parts, the alert views' warm-up (see `_warmUp`). Its words are blank, figure spaces as wide
 // as real ones, so nothing readable could ever show even if a frame caught it.
