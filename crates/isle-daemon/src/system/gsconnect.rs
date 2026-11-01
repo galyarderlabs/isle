@@ -40,7 +40,7 @@ pub async fn watch(session: Connection, iface: InterfaceRef<SystemService>) -> a
         .sender(SERVICE)?
         .interface("org.freedesktop.DBus.Properties")?
         .member("PropertiesChanged")?
-        .arg(1, DEVICE)?
+        .arg(0, DEVICE)?
         .build();
     let mut properties = MessageStream::for_match_rule(properties, &session, None).await?;
 
@@ -153,7 +153,14 @@ async fn read_devices(session: &Connection) -> Vec<Device> {
     for (path, interfaces) in objects {
         // One device that cannot be read must not cost us the others.
         if let Some(device) = read_device(session, &path, interfaces.get(DEVICE)).await {
+            log::debug!(
+                "GSConnect device on show: {} ({})",
+                device.name,
+                device.kind
+            );
             devices.push(device);
+        } else if interfaces.get(DEVICE).is_some() {
+            log::debug!("GSConnect device not read: {path}");
         }
     }
     devices.sort_by(|a, b| a.id.cmp(&b.id));

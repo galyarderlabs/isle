@@ -472,9 +472,11 @@ export const VoiceView = GObject.registerClass({
         this._setUp.visible = state.phase === 'error' && Boolean(state.set_up);
         // Stop while it works; else typing instead (to follow up, too).
         // While it works, Stop; once it answers or errs, the keyboard for a follow-up; the
-        // pill's own close (back to the resting island) shows in the phases that had none.
-        const end = ['reply', 'error'].includes(state.phase) ? this._typeButton : this._closeButton;
-        this._showAction(working ? this._stop : end);
+        // pill's own close (back to the resting island) shows in the phases that had none —
+        // except while the conversation is open, whose header × is the one close there.
+        const open = this.chatOpen;
+        const end = open ? null : ['reply', 'error'].includes(state.phase) ? this._typeButton : this._closeButton;
+        this._showAction(working && !open ? this._stop : end);
         const searching = (state.phase === 'thinking' && Boolean(state.activity)) || state.phase === 'acting';
         const notHeard = state.phase === 'error' && NOT_HEARD.test(state.error ?? '');
         const form = searching ? 'searching' : notHeard ? 'confused' : {transcribing: 'thinking'}[state.phase] ?? state.phase;
