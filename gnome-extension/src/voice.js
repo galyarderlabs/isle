@@ -15,7 +15,7 @@ import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import {TILES, describeActions, failed, namesProject, outcomeOf, runnable, slotsFor, stoppable, terminalLine} from './actionRules.js';
+import {TILES, agentAskCard, describeActions, failed, isAgentAskCard, namesProject, outcomeOf, runnable, slotsFor, stoppable, terminalLine} from './actionRules.js';
 import {Bot} from './bot.js';
 import {ChatView, CommandCard, answerMarkup, elapsed} from './chat.js';
 import {isTerminal} from './clipboard.js';
@@ -283,7 +283,7 @@ export const VoiceView = GObject.registerClass({
             // The edge flares as it starts, and dims a moment on a no.
             this._boost = run ? 1 : -1;
             // An agent's ask card answering through the same buttons: it decides the ask.
-            if (this._askDecide && this._cardData?.id?.startsWith('ask:')) {
+            if (this._askDecide && isAgentAskCard(this._cardData)) {
                 const decide = this._askDecide;
                 this._askDecide = null;
                 decide(run ? 'allow' : 'deny');
@@ -557,21 +557,12 @@ export const VoiceView = GObject.registerClass({
     /** A tool inside the AI asks permission while the pill is open: the card shows it, its
      *  buttons answering; the pill keeps working, the ask never waits off-screen. */
     showAgentAsk(request, answer) {
-        const card = {
-            id: `ask:${request.id}`,
-            why: request.tool,
-            detail: request.input?.split('\n')[0] ?? '',
-            command: request.input || request.tool,
-            status: 'waiting',
-            risks: null,
-        };
         // Answered once: the ask card hands its buttons back to whatever it interrupted.
-        const decide = choice => {
+        this.showCard(agentAskCard(request));
+        this._askDecide = choice => {
             this.showCard(null);
             answer(choice);
         };
-        this.showCard(card);
-        this._askDecide = decide;
     }
 
     /** The card on show: its id, or null when none (an agent ask's is "ask:<its id>"). */
