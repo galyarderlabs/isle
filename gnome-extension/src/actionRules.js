@@ -184,3 +184,22 @@ export function outcomeOf(outcome) {
         return {ok: true, detail: outcome};
     return {ok: outcome === undefined || outcome === true || Array.isArray(outcome), detail: ''};
 }
+
+/** The card an agent's tool ask shows as in the pill: its tool as the title, the first line of
+ *  its input as the detail, waiting for Run or Deny. Pure: the widget wraps it (see voice.js). */
+export function agentAskCard(request) {
+    const input = typeof request.input === 'string' ? request.input : '';
+    return {
+        id: `ask:${request.id}`,
+        why: request.tool,
+        detail: input.split('\n')[0] ?? '',
+        command: input || request.tool,
+        status: 'waiting',
+        risks: null,
+    };
+}
+
+/** Whether the card on show is an agent's ask, by the id agentAskCard gives one. */
+export function isAgentAskCard(card) {
+    return Boolean(card?.id?.startsWith('ask:'));
+}

@@ -652,7 +652,13 @@ export class Controller {
         });
         daemon.connect('agent-event', (_daemon, event) => this._onAgentEvent(event));
         daemon.connect('agent-asking', (_daemon, request) => this._onAgentAsking(request));
-        daemon.connect('agent-withdrawn', (_daemon, id) => this._withdrawAlert(`agent-ask:${id}`));
+        daemon.connect('agent-withdrawn', (_daemon, id) => {
+            this._withdrawAlert(`agent-ask:${id}`);
+            if (this._voice.cardWaiting && this._voice.cardId === `ask:${id}`) {
+                this._voice.showCard(null);
+                this._render();
+            }
+        });
         // A command that ended while nobody watched (isled restarted, or the user was logged out).
         daemon.connect('model-switched', (_daemon, provider, plan, picked, used) =>
             this._post(Alerts.modelSwitched(provider, plan, picked, used)));
@@ -2412,8 +2418,14 @@ export class Controller {
         const window = inside ? null : this._agentWindow(request);
         if (!inside && window && window === global.display.focus_window)
             return pass();
-        const alert = Alerts.agentAsks(request, this._botLook,
-            answer => this._daemon.call('agents', 'Resolve', request.id, answer));
+        const answer = choice => this._daemon.call('agents', 'Resolve', request.id, choice);
+        // An ask from inside the assistant (OMP, Hermes) shows as a card in the pill while it
+        // is open — a queued alert behind the pill is a screen the ask never reaches.
+        if (inside && this._voiceOpen) {
+            this._voice.showAgentAsk(request, answer);
+            return;
+        }
+        const alert = Alerts.agentAsks(request, this._botLook, answer);
         // Put away unanswered: the terminal asks instead.
         alert.onDismissed = pass;
         alert.agentWindow = window;
