@@ -21,15 +21,15 @@ const EXPANDED_WIDTH = 600;
 /** The least room between the centred tabs and either side of the header. */
 const HEADER_GAP = 16;
 export const PAGE_HEIGHT = 150;
-/** Room below the page, so its content clears the rounded corners. */
-export const BOTTOM_PADDING = 14;
+/** Room below the page, as at its sides (.isle-page): 20 px all round, cards' 12 px corners concentric with the 32. */
+export const BOTTOM_PADDING = 20;
 
 /** Each page's tab: its icon, and the label shown while it is open. */
 const TABS = {
     call: {icon: 'isle-phone', label: 'Call'},
     music: {icon: 'isle-music', label: 'Music'},
     notifications: {icon: 'isle-bell', label: 'Notifications'},
-    focus: {icon: 'isle-timer', label: 'Focus'},
+    focus: {icon: 'isle-timer', label: 'Timer'},
     reminders: {icon: 'isle-tasks', label: 'Reminders'},
     shelf: {icon: 'isle-shelf', label: 'Shelf'},
     calendar: {icon: 'isle-calendar', label: 'Calendar'},
@@ -49,6 +49,19 @@ const SETTINGS_OPACITY = 153;
 const PAUSED_BARS_OPACITY = 110;
 const SLIDE_DISTANCE = 48;
 const SLIDE_DURATION = 260;
+/** While open, a page that changed out of sight is built and laid out ahead this long after, at most this
+ * often (a download's notification updates every second), each shown out of sight for this long. */
+const OPEN_WARM_MS = 600;
+const OPEN_WARM_GAP_MS = 10000;
+const OPEN_WARM_STEP_MS = 60;
+/** Touchpad travel (in wheel clicks) over the header that turns a page; one page a swipe. */
+const SWIPE_STEP = 1.5;
+/** Wheel travel over the header that turns a page; a long spin turns several. */
+const WHEEL_STEP = 1;
+/** Minimum time between pages turned by a spinning wheel. */
+const WHEEL_REPEAT_MS = 200;
+/** A pause this long between scroll events starts a new gesture. */
+const GESTURE_GAP_MS = 180;
 
 // Header and pager of the open island; the island itself sizes and tints around it.
 export const ExpandedView = GObject.registerClass({
@@ -82,6 +95,9 @@ export const ExpandedView = GObject.registerClass({
         this._width = px(EXPANDED_WIDTH);
         /** Set once smooth scrolling is seen; its click-style copies are then dropped. */
         this._smoothScrolling = false;
+        this._lastFlip = 0;
+        /** The scroll gesture over the header in progress: travel so far, and whether it turned a page. */
+        this._gesture = {dx: 0, dy: 0, flipped: false, at: 0};
         // Before any page sees them (Usage steps through its providers by scrolls).
         this.connect('captured-event', (_actor, event) => this._dropScrollCopies(event));
 
@@ -120,6 +136,7 @@ export const ExpandedView = GObject.registerClass({
             });
             page.connect('news-changed', () => this._syncTabs());
             page.connect('availability-changed', () => this._onAvailabilityChanged(page));
+            page.connect('cold', () => this._scheduleOpenWarm());
         }
 
         this._daemonChanged = daemon.connect('changed', (_daemon, key) => {
@@ -141,7 +158,9 @@ export const ExpandedView = GObject.registerClass({
 
 /** The clock and status flank the centred tabs. */
     _buildHeader() {
-        const header = new St.BoxLayout({style_class: 'isle-header', x_expand: true});
+        // Reactive from the start (never toggled, no hover tracked): scrolls over it turn pages.
+        const header = new St.Widget({layout_manager: new Clutter.BinLayout(), style_class: 'isle-header', reactive: true});
+        header.connect('scroll-event', (_actor, event) => this._flipFromScroll(event));
 
         // Keep the left and right zones the same width. The tab strip then stays centred
         // in the island, with the clock and utility buttons outside its hit area.
@@ -155,9 +174,12 @@ export const ExpandedView = GObject.registerClass({
         this._headerRing = new Ring({size: 15, lineWidth: 2.5});
         this._date = label('', 'isle-header-date');
         this._time = label('', 'isle-header-time');
+        // With a 12-hour clock, AM or PM after it, smaller (a label of its own, as in the closed island).
+        this._meridiem = label('', 'isle-header-meridiem', {visible: false});
         clock.add_child(this._headerRing);
         clock.add_child(this._date);
         clock.add_child(this._time);
+        clock.add_child(this._meridiem);
         this._clockSlot.add_child(clock);
         header.add_child(this._clockSlot);
 
@@ -289,8 +311,11 @@ export const ExpandedView = GObject.registerClass({
             // style and lay the name out in this frame. Until then the open name keeps its width.
             let width = 0;
             if (open) {
-                if (!this._nameWidths.has(index) && this.get_stage())
+                if (!this._nameWidths.has(index) && this.get_stage()) {
+                    // In the current style: just after a scale change its text would still be the old size.
+                    name.ensure_style();
                     this._nameWidths.set(index, name.get_preferred_width(-1)[1]);
+                }
                 width = this._nameWidths.get(index) ?? nameClip.width;
             }
             // Only a tab that opened, closed or got its name's width changes: touching the others would restyle
@@ -463,6 +488,7 @@ export const ExpandedView = GObject.registerClass({
         const direction = index > this._index ? 1 : -1;
         this._index = index;
         const next = this.page;
+        this._endOpenWarm();
 
         previous.setActive(false);
         previous.remove_all_transitions();
@@ -515,7 +541,10 @@ export const ExpandedView = GObject.registerClass({
         if (active) {
             this._updateHeader();
             this._tickClock();
+            // Pages that changed since the warm-up closed, once the island has opened.
+            this._scheduleOpenWarm(OPEN_WARM_MS * 2);
         } else {
+            this._endOpenWarm();
             // Closing: only what moves stops. The header is laid out again as it next opens.
             this._headerBars.playing = false;
             this._stopClock();
@@ -568,6 +597,33 @@ export const ExpandedView = GObject.registerClass({
         this._width = width;
         this.width = width;
         this.emit('width-changed');
+        this._followRoom();
+    }
+
+    /** As the island widens around the view (laid out at its new width at once), keeps the header's right
+     * side at the island's edge and tells the page how much of it is still past that edge, until all fits. */
+    _followRoom() {
+        const stage = this.get_parent();
+        if (this._room || !stage || !this.mapped || this.opacity === 0)
+            return;
+        const sync = () => this._syncRoom();
+        this._room = {stage, page: this.page, stageId: stage.connect('notify::width', sync),
+            ids: ['notify::x', 'notify::translation-x', 'notify::mapped'].map(signal => this.connect(signal, sync))};
+        sync();
+    }
+
+    /** Moves the header's right side in by what is past the island's edge; done once nothing is. */
+    _syncRoom() {
+        const room = this._room;
+        const shown = this.mapped && room.page === this.page;
+        const past = shown ? Math.max(0, Math.round(this._width - (room.stage.width - this.x - this.translation_x))) : 0;
+        this._status.translation_x = -past;
+        room.page.uncover(past);
+        if (past || (shown && Math.abs(this.translation_x) >= 0.5))
+            return;
+        room.stage.disconnect(room.stageId);
+        room.ids.forEach(id => this.disconnect(id));
+        this._room = null;
     }
 
     /** Focus ring, music bars, privacy dots and the recording pill. */
@@ -623,7 +679,10 @@ export const ExpandedView = GObject.registerClass({
     _tickClock() {
         const now = GLib.DateTime.new_now_local();
         this._date.text = Format.longDate(now);
-        this._time.text = Format.clockTime(now);
+        const {time, meridiem} = Format.clockParts(now);
+        this._time.text = time;
+        this._meridiem.text = meridiem;
+        this._meridiem.visible = Boolean(meridiem);
         this._updateHeader();
         this._unwatchClock ??= watchClock(() => this._tickClock());
     }
@@ -634,21 +693,75 @@ export const ExpandedView = GObject.registerClass({
         this._unwatchClock = null;
     }
 
-    /** Pages change by their tabs alone, or by a scroll over the island's own chrome: a scroll a
-     * list or lyrics took goes no further. */
-    vfunc_scroll_event(event) {
-        if (this._overList(event))
-            return Clutter.EVENT_PROPAGATE;
-        const direction = event.get_scroll_direction();
-        const delta = direction === Clutter.ScrollDirection.SMOOTH
-            ? event.get_scroll_delta()[1]
-            : direction === Clutter.ScrollDirection.DOWN ? 1 : direction === Clutter.ScrollDirection.UP ? -1 : 0;
-        if (delta === 0)
+    /** Pages change by the header alone (see `_flipFromScroll`): a scroll no list or lyrics took goes no further. */
+    vfunc_scroll_event() {
+        return Clutter.EVENT_STOP;
+    }
+
+    /** A scroll over the tabs or the status beside them: down or right is the next page, up or left the one before. */
+    _flipFromScroll(event) {
+        // Click-style copies of smooth scrolls were dropped already (`_dropScrollCopies`).
+        this._trackGesture(event);
+        const gesture = this._gesture;
+        const now = GLib.get_monotonic_time() / 1000;
+        let step = 0;
+        switch (event.get_scroll_direction()) {
+        case Clutter.ScrollDirection.DOWN:
+        case Clutter.ScrollDirection.RIGHT:
+            step = 1;
+            break;
+        case Clutter.ScrollDirection.UP:
+        case Clutter.ScrollDirection.LEFT:
+            step = -1;
+            break;
+        case Clutter.ScrollDirection.SMOOTH: {
+            // The whole gesture picks the axis, so a wobble does not switch it.
+            const travel = Math.abs(gesture.dx) > Math.abs(gesture.dy) ? gesture.dx : gesture.dy;
+            const wheel = event.get_scroll_source() === Clutter.ScrollSource.WHEEL;
+            if (gesture.flipped || Math.abs(travel) < (wheel ? WHEEL_STEP : SWIPE_STEP))
+                return Clutter.EVENT_STOP;
+            step = Math.sign(travel);
+            if (wheel) {
+                // Count afresh, so a long spin turns again.
+                gesture.dx = gesture.dy = 0;
+            } else {
+                // One page a swipe, however far it goes.
+                gesture.flipped = true;
+            }
+            break;
+        }
+        }
+        if (!step)
             return Clutter.EVENT_STOP;
-        const index = this._nearestAvailable(this._index, delta > 0 ? 1 : -1);
-        if (index !== null && index !== this._index)
+        // Clicks and spins are spaced out; a swipe turns once anyway.
+        if (!gesture.flipped && now - this._lastFlip < WHEEL_REPEAT_MS)
+            return Clutter.EVENT_STOP;
+        this._lastFlip = now;
+        // Pages without a tab are skipped; the first and last pages stop it.
+        const index = this._nearestAvailable(this._index, step);
+        if (index !== null)
             this.showPage(index);
         return Clutter.EVENT_STOP;
+    }
+
+    /** Adds `event` to the header's gesture in progress, or starts a new one. */
+    _trackGesture(event) {
+        const now = GLib.get_monotonic_time() / 1000;
+        const gesture = this._gesture;
+        if (now - gesture.at > GESTURE_GAP_MS)
+            Object.assign(gesture, {dx: 0, dy: 0, flipped: false});
+        gesture.at = now;
+        let stopped = event.get_scroll_finish_flags() !== Clutter.ScrollFinishFlags.NONE;
+        if (event.get_scroll_direction() === Clutter.ScrollDirection.SMOOTH) {
+            const [dx, dy] = event.get_scroll_delta();
+            gesture.dx += dx;
+            gesture.dy += dy;
+            // A touchpad ends each swipe with an event that does not move.
+            stopped ||= dx === 0 && dy === 0;
+        }
+        // Fingers lifted: the next touch is a new swipe however soon it comes.
+        if (stopped)
+            gesture.at = 0;
     }
 
     /** Smooth scrolls also come as click-style copies (UP, DOWN...), not always marked as emulated: a page
@@ -684,8 +797,88 @@ export const ExpandedView = GObject.registerClass({
         return false;
     }
 
+    /** While open, a page changed out of sight: built and laid out ahead in a quiet moment, so its first
+     * showing doesn't (see `Page.markCold`; closed, the controller's warm-up does it). */
+    _scheduleOpenWarm(ms = OPEN_WARM_MS) {
+        const pages = this._openCold();
+        if (!this._active || this._openWarmId || !pages.length)
+            return;
+        // Each page at most once a gap: one changing all the time costs little.
+        const now = GLib.get_monotonic_time() / 1000;
+        const wait = Math.min(...pages.map(page => OPEN_WARM_GAP_MS - (now - (page._openWarmedAt ?? -Infinity))));
+        this._openWarmId = GLib.timeout_add(GLib.PRIORITY_LOW, Math.max(ms, wait), () => {
+            this._openWarmId = 0;
+            this._openWarmStep();
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    /** The pages built ahead while open that changed out of sight. */
+    _openCold() {
+        return this._pages.filter(page => page.cold && page.warmsOpen && !page.hidden && page !== this.page);
+    }
+
+    /** Builds one cold page while hidden; `_openWarmShow` then lays it out unseen (see `Island.warmView`). */
+    _openWarmStep() {
+        const now = GLib.get_monotonic_time() / 1000;
+        const page = this._openCold().find(each => now - (each._openWarmedAt ?? -Infinity) >= OPEN_WARM_GAP_MS);
+        if (!this._active || !this.mapped)
+            return;
+        // Not while a page slides in.
+        if (!page || this.page.get_transition('opacity')) {
+            this._scheduleOpenWarm();
+            return;
+        }
+        page._openWarmedAt = now;
+        // Built while hidden, then styled and laid out a step later: two shorter waits, not one.
+        page.warmUp();
+        page.cold = false;
+        this._openWarm = page;
+        this._openWarmId = GLib.timeout_add(GLib.PRIORITY_LOW, OPEN_WARM_STEP_MS, () => {
+            this._openWarmId = 0;
+            this._openWarmShow(page);
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    /** Shows it for a frame below the pager's clip, unseen and out of reach, then puts it away. */
+    _openWarmShow(page) {
+        if (this._openWarm !== page || !this._active || !this.mapped)
+            return;
+        const below = Math.ceil(this._pager.height) + 1;
+        page.remove_all_transitions();
+        page.opacity = 0;
+        slideBy(page, 'y', below, below);
+        page.show();
+        this._openWarmId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, OPEN_WARM_STEP_MS, () => {
+            this._openWarmId = 0;
+            this._endOpenWarm();
+            // The next cold page, if any, right after.
+            this._scheduleOpenWarm(OPEN_WARM_STEP_MS);
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    /** Puts away the page `_openWarmStep` shows, or leaves it in place if it is now the open one. */
+    _endOpenWarm() {
+        if (this._openWarmId)
+            GLib.source_remove(this._openWarmId);
+        this._openWarmId = 0;
+        const page = this._openWarm;
+        if (!page)
+            return;
+        this._openWarm = null;
+        page.coolDown();
+        slideBy(page, 'y', 0, 0);
+        if (page !== this.page) {
+            page.hide();
+            page.opacity = 255;
+        }
+    }
+
     /** Lets go of the timers and the signals of objects that outlive the view. */
     _onDestroy() {
+        this._endOpenWarm();
         St.ThemeContext.get_for_stage(global.stage).disconnect(this._themeChanged);
         this._stopClock();
         this._stopRecordingTick();

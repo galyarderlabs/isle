@@ -32,18 +32,29 @@ that played last. Another player starting to play ends the pick.
 | `Raise()` | | Bring the player's window to the front. |
 | `Choose(s name)` | | Show and control the player `name` (from `Players`). |
 | `SetLyrics(b enabled)` | | Look lyrics up online (LRCLIB), or not; off, `Lyrics` says `off`. The extension sends its setting whenever isled appears. |
+| `SetWatching(b watching)` | | While on, read the active player at once and then every second it plays (every 0.35 s to confirm a read that fell behind or while it buffers, every 0.5 s after a read that was off or while a new speed is measured, every 10 s after a read failed). The extension turns it on only while the open island shows the position (the player or lyrics), and sends it again whenever isled appears; off, isled sets no timer at all. |
 | `NowPlaying` | `s` | `{available, identity, desktop_entry, status, title, artist, album, art_path, length_us, position_us, sampled_at_ms, rate, can_go_next, can_go_previous, can_play_pause, can_seek}` |
 | `Lyrics` | `s` | `{track, status, lines: [{time_ms, text}]}`; `status` is `none`, `loading`, `synced`, `plain` (lines have `time_ms` -1), `instrumental`, `not_found`, `error` (LRCLIB could not be reached), `unavailable` (LRCLIB answered but is busy or failing) or `off` (turned off with `SetLyrics`); isled retries `error` and `unavailable` on its own. |
 | `Players` | `s` | `[{name, identity, desktop_entry, playing, active}]`, sorted by name; empty unless two or more players run. |
 
-The position is only sampled when something changes. While playing, the
+The position is sampled when something changes, and while watched (see
+`SetWatching`) every second as well: MPRIS signals no progress, and players
+signal stalls, ads and seeks made inside them unreliably. While playing, the
 current position is `position_us + (now - sampled_at_ms) * 1000 * rate`.
 A player that reports position 0 while it is still playing (Firefox and Zen do)
 does not move that sample; a `Seeked` signal does, and its position is the one
-kept. A length that disappears for the same track is kept. While playing with
-no length yet, isled reads the player again after 1s and after 3s. A relative
-seek, used when the player gives no track id, is measured from this position
-when the player's own `Position` read is 0.
+kept. A browser's read more than 1.5 s behind the sample is kept only once the
+next read moved on from it at a speed a player plays at (a stall, not a stale
+read); so is a 0 from any player's poll. Firefox reads whole seconds, cut
+down: once three reads in a row are whole seconds, a read moves the sample
+only when the sample falls outside the second after it. `rate` is the player's `Rate`, unless
+two agreeing steps between reads show another speed (0.25–4, a player that keeps
+`Rate` at 1 while it plays faster); that measure ends with a seek, a pause, the
+song or a new `Rate`. While two reads in a row stand at the same place though
+the player says it plays (buffering), `rate` is 0 until a read moves on. A length that disappears for the same track is kept.
+While playing with no length yet, isled reads the player again after 1s and
+after 3s. A relative seek, used when the player gives no track id, is measured
+from this position when the player's own `Position` read is 0.
 
 The control methods only fail when no player is running. They return
 without waiting for the player, so a slow player cannot hold the daemon up;
@@ -158,8 +169,11 @@ Indonesia method 20.
 Clipboard history. The extension watches the clipboard and reports each
 copy; isled keeps the list in `~/.local/share/isle/clipboard.json` and
 images in `~/.local/share/isle/clips` (`<hash>.png` as copied, plus a
-`<hash>.thumb.png` that fits in 320×200). `app_id` is the desktop app id
-of the app copied from, or `""`.
+`<hash>.card.png` thumbnail: the middle of the image cut to the card's shape
+at 272×216, or at its own pixels when too small or thin to fill that).
+Thumbnails older versions made (`<hash>.thumb.png`) are made again shortly
+after isled starts. `app_id` is the desktop app id of the app copied from,
+or `""`.
 
 | Member | Signature | |
 |---|---|---|
@@ -172,7 +186,7 @@ of the app copied from, or `""`.
 | `SetPinned(t id, b pinned)` | | At most 10 items are pinned; pinning an eleventh fails with `LimitsExceeded`. |
 | `Remove(t id)` | | |
 | `Clear()` | | Remove every item that is not pinned. |
-| `Items` | `s` | `[{id, kind, preview, uris, image, thumb, width, height, app_id, at_ms, pinned}]`, newest first. `kind` is `text`, `link`, `image` or `files`; `preview` is the first 160 characters of a text, or the file names one per line; `uris` is empty except for files; `image` and `thumb` (paths), `width` and `height` are null except for images; `at_ms` is when it was last copied. |
+| `Items` | `s` | `[{id, kind, preview, uris, image, thumb, thumb_width, thumb_height, width, height, app_id, at_ms, pinned}]`, newest first. `kind` is `text`, `link`, `image` or `files`; `preview` is the first 160 characters of a text, or the file names one per line; `uris` is empty except for files; `image` and `thumb` (paths), `width` and `height` are null except for images; `thumb` is null, and `thumb_width` and `thumb_height` too, while the thumbnail is being made again, and the two sizes are null while an older one stands in; `at_ms` is when it was last copied. |
 
 Adding something already in the history (the same text, image or list of
 files) moves that item to the top and returns its id; it stays pinned if
