@@ -214,6 +214,8 @@ export const VoiceView = GObject.registerClass({
         'size-changed': {},
         // The × on the face, over an answer: put it away.
         'close-requested': {},
+        // A tool inside the AI asks permission; the ask card's answer (allow | deny | always).
+        'ask-decided': {param_types: [GObject.TYPE_STRING]},
     },
 }, class VoiceView extends St.Widget {
     /** Builds the row (face, texts, action button) and the conversation that opens above it. */
@@ -280,6 +282,13 @@ export const VoiceView = GObject.registerClass({
             this._face.bot.gesture(run ? 'nod' : 'shake');
             // The edge flares as it starts, and dims a moment on a no.
             this._boost = run ? 1 : -1;
+            // An agent's ask card answering through the same buttons: it decides the ask.
+            if (this._askDecide && this._cardData?.id?.startsWith('ask:')) {
+                const decide = this._askDecide;
+                this._askDecide = null;
+                decide(run ? 'allow' : 'deny');
+                return;
+            }
             this.emit('card-decided', run);
         });
         this._card.connect('stop', () => this.emit('card-stop'));
@@ -545,8 +554,35 @@ export const VoiceView = GObject.registerClass({
         this._card.decide(run);
     }
 
+    /** A tool inside the AI asks permission while the pill is open: the card shows it, its
+     *  buttons answering; the pill keeps working, the ask never waits off-screen. */
+    showAgentAsk(request, answer) {
+        const card = {
+            id: `ask:${request.id}`,
+            why: request.tool,
+            detail: request.input?.split('\n')[0] ?? '',
+            command: request.input || request.tool,
+            status: 'waiting',
+            risks: null,
+        };
+        // Answered once: the ask card hands its buttons back to whatever it interrupted.
+        const decide = choice => {
+            this.showCard(null);
+            answer(choice);
+        };
+        this.showCard(card);
+        this._askDecide = decide;
+    }
+
+    /** The card on show: its id, or null when none (an agent ask's is "ask:<its id>"). */
+    get cardId() {
+        return this._cardData?.id ?? null;
+    }
+
     /** The command card: {command, why, detail, risks, status, output, seconds, exit}, or null for none. */
     showCard(card) {
+        if (card?.id !== this._cardData?.id)
+            this._askDecide = null;
         this._cardData = card;
         this._card.visible = Boolean(card);
         if (card) {
