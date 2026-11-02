@@ -409,6 +409,7 @@ export class Controller {
             milestone => this._post(Alerts.wellbeingMilestone(milestone)));
         this._syncVoiceEnabled();
         this._syncUsage();
+        this._syncRouter();
         this._syncPrayer();
         this._syncEventAlerts();
         this._syncPages();
@@ -440,6 +441,7 @@ export class Controller {
             () => page('./pages/water.js', 'WaterPage', [this._daemon, this._settings, size]),
             () => page('./pages/prayer.js', 'PrayerPage', [this._daemon, size]),
             () => page('./pages/usage.js', 'UsagePage', [this._daemon, size]),
+            () => page('./pages/router.js', 'RouterPage', [this._daemon, this._settings, size]),
             () => page('./pages/apps.js', 'AppsPage', [this._daemon, this._appUsage, size]),
             () => page('./pages/devices.js', 'DevicesPage', [this._daemon, size]),
         ];
@@ -562,6 +564,8 @@ export class Controller {
             this._settingsChanged.push(this._settings.connect(`changed::${key}`, () => this._syncBotLook()));
         for (const key of ['usage-enabled', 'usage-claude', 'usage-codex', 'usage-grok', 'usage-warn', 'usage-critical'])
             this._settingsChanged.push(this._settings.connect(`changed::${key}`, () => this._syncUsage()));
+        for (const key of ['router-enabled', 'router-connection', 'router-base-url', 'router-period', 'router-notch'])
+            this._settingsChanged.push(this._settings.connect(`changed::${key}`, () => this._syncRouter()));
         for (const key of ['event-alerts', 'event-alert-minutes'])
             this._settingsChanged.push(this._settings.connect(`changed::${key}`, () => this._syncEventAlerts()));
         for (const key of ['hidden-pages', 'world-clocks', 'app-usage'])
@@ -652,6 +656,8 @@ export class Controller {
                 this._syncUsage();
             else if (name === 'updates')
                 this._syncUpdates();
+            else if (name === 'router')
+                this._syncRouter();
             else if (name === 'media')
                 this._syncLyrics();
             else if (name === 'appUsage')
@@ -895,7 +901,7 @@ export class Controller {
             // Devices has its tab only while a device is connected (its own `available`).
             else if (page.name === 'devices')
                 page.hidden = hidden.includes(page.name);
-            else if (page.name !== 'call' && page.name !== 'usage')
+            else if (page.name !== 'call' && page.name !== 'usage' && page.name !== 'router')
                 page.hidden = hidden.includes(page.name);
         }
         this._syncUnseen();
@@ -1974,6 +1980,25 @@ export class Controller {
         };
         this._expanded.pageNamed('usage')?.setMarks(config.warn, config.critical);
         this._daemon.call('usage', 'SetConfig', JSON.stringify(config));
+    }
+
+    // Router
+
+    /** Sends the LLM Router settings to isled, and keeps its poll to what is being watched. */
+    _syncRouter() {
+        const config = {
+            enabled: this._settings.get_boolean('router-enabled'),
+            connection: this._settings.get_string('router-connection'),
+            base_url: this._settings.get_string('router-base-url'),
+            period: this._settings.get_string('router-period'),
+        };
+        this._daemon.call('router', 'SetConfig', JSON.stringify(config));
+        // The chip shows while the notch does; the page asks for its own watch as it comes on
+        // screen (see RouterPage.onActivate).
+        const watching = this._settings.get_boolean('router-enabled') &&
+            (this._settings.get_boolean('router-notch') ||
+             this._expanded.pageNamed('router')?.active);
+        this._daemon.attemptQuietly('router', 'SetWatching', watching);
     }
 
     // Voice

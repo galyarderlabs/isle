@@ -150,6 +150,14 @@ const INTERFACES = {
             <property name="Latest" type="s" access="read"/>`),
         properties: {Latest: 'updates'},
     },
+    router: {
+        xml: node('Router1', `
+            <method name="SetConfig"><arg name="config" type="s" direction="in"/></method>
+            <method name="SetWatching"><arg name="watching" type="b" direction="in"/></method>
+            <method name="Refresh"/>
+            <property name="State" type="s" access="read"/>`),
+        properties: {State: 'router'},
+    },
     agents: {
         xml: node('Agents1', `
             <method name="SetHooked"><arg name="provider" type="s" direction="in"/><arg name="on" type="b" direction="in"/></method>

@@ -39,6 +39,7 @@ export default class IslePreferences extends ExtensionPreferences {
         window.add(this._timerPage(settings, window));
         window.add(this._voicePage(settings, window));
         window.add(this._usagePage(settings));
+        window.add(this._routerPage(settings));
         window.add(this._aboutPage(settings, window));
         // A page asked for by the island (its Update button: About), once, also while open.
         const showAsked = () => {
@@ -144,6 +145,83 @@ export default class IslePreferences extends ExtensionPreferences {
             }
             page.add(agentGroup);
         }
+        return page;
+    }
+
+    // The LLM Router: the gateway's own usage, on this machine or over the network.
+    _routerPage(settings) {
+        const page = new Adw.PreferencesPage({title: 'LLM Router', icon_name: 'network-transmit-receive-symbolic'});
+        const group = new Adw.PreferencesGroup({
+            title: 'LLM Router',
+            description: 'What the AI gateway your tools route through reports: requests, tokens and its own ' +
+                'cost estimate, on a Router page and a chip in the closed island. Nothing shows while the ' +
+                'gateway is missing, unreachable or unauthorized.',
+        });
+        group.add(switchRow(settings, 'router-enabled', 'Show LLM Router',
+            'The Router page and its chip; off, Isle never talks to the gateway'));
+        group.add(choiceRow(settings, 'router-connection', 'Connection',
+            'Local looks for the gateway on this machine where its install serves it', [
+            ['local', 'Local — Same Machine'],
+            ['remote', 'Remote — VPS / Server'],
+        ]));
+        const base = new Adw.EntryRow({title: 'Base URL', text: settings.get_string('router-base-url')});
+        base.connect('changed', () => {
+            if (base.text !== settings.get_string('router-base-url'))
+                settings.set_string('router-base-url', base.text);
+        });
+        const urlChanged = settings.connect('changed::router-base-url', () => {
+            if (base.text !== settings.get_string('router-base-url'))
+                base.text = settings.get_string('router-base-url');
+        });
+        base.connect('destroy', () => settings.disconnect(urlChanged));
+        group.add(base);
+        group.add(choiceRow(settings, 'router-period', 'Period', 'What the chip and the page count', [
+            ['today', 'Today'],
+            ['24h', 'Last 24 hours'],
+            ['7d', 'Last 7 days'],
+        ]));
+        group.add(switchRow(settings, 'router-notch', 'Show on the notch',
+            'The compact chip beside the clock'));
+        // The status line follows the gateway: connected with its version, or what is wrong.
+        const status = new Adw.ActionRow({title: 'Status', subtitle: 'Not checked yet'});
+        group.add(status);
+        const describe = state => {
+            if (!state || !state.status)
+                return settings.get_boolean('router-enabled') ? 'Not checked yet' : 'Off';
+            if (state.status === 'connected')
+                return `Connected · ${state.version}`;
+            if (state.status === 'unauthorized')
+                return "Unauthorized: the gateway refused Isle\u2019s request";
+            if (state.status === 'outdated')
+                return `Update your gateway first (found ${state.version})`;
+            if (state.status === 'unreachable')
+                return 'Unreachable: the gateway is not answering';
+            return 'Off';
+        };
+        // isled's Router1 State property, read now and again as the settings that drive it change;
+        // isled itself polls only while the island shows the chip or the page.
+        const read = () => {
+            try {
+                const [raw] = Gio.DBus.session.call_sync(DAEMON, DAEMON_PATH,
+                    'org.freedesktop.DBus.Properties', 'Get',
+                    new GLib.Variant('(ss)', ['io.github.zickrian.isle.Router1', 'State']),
+                    new GLib.VariantType('(v)'), Gio.DBusCallFlags.NONE, -1, null).deepUnpack();
+                status.subtitle = describe(JSON.parse(raw));
+            } catch (e) {
+                status.subtitle = settings.get_boolean('router-enabled')
+                    ? 'Unreachable: the daemon is not answering' : 'Off';
+            }
+        };
+        const watched = ['router-enabled', 'router-connection', 'router-base-url', 'router-period']
+            .map(key => settings.connect(`changed::${key}`, read));
+        page.connect('destroy', () => watched.forEach(id => settings.disconnect(id)));
+        read();
+        // The Base URL is only asked for while Remote is picked.
+        const syncBase = () => (base.visible = settings.get_string('router-connection') === 'remote');
+        const connectionChanged = settings.connect('changed::router-connection', syncBase);
+        page.connect('destroy', () => settings.disconnect(connectionChanged));
+        syncBase();
+        page.add(group);
         return page;
     }
 

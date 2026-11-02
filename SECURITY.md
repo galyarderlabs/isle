@@ -56,6 +56,7 @@ connects to the network only for these:
 | New versions | `api.github.com` (Isle's latest release) | A plain request, at most once a day; off when New versions is turned off in Settings |
 | Speech model | `huggingface.co` (the official whisper.cpp and Silero files) | A plain download, only when you run `isle-setup-voice` (or press Set up); each file's SHA-256 is checked |
 | Events you add to an account's calendar | That account's server (Google, or another in Online Accounts), through Evolution Data Server, as any calendar app sends it | The event's title, day and time, once, when you add it to that calendar (picked with the chip in the add field). Just before, isled opens a connection to that server and closes it, sending nothing, to see it is in reach; behind a proxy it skips that |
+| LLM Router usage | The gateway's own address (Settings → LLM Router: the local default, or the base URL you set) | Read-only requests for the usage numbers, with the token the gateway's own CLI uses on this machine (never a password); the numbers never go anywhere else. Off when LLM Router is turned off; while its chip and page are not shown, nothing is asked at all |
 
 When ChatGPT can't be asked (offline, signed out), its limits are read from
 Codex's own logs on this computer, with no network at all.
@@ -170,6 +171,8 @@ Areas where a report is especially welcome:
   permission, or to read what the agents ask.
 - The AI usage page: a sign-in token (Claude Code's, Codex's or Grok's) sent
   anywhere but its own service, or written anywhere.
+- The LLM Router: usage data sent anywhere but the user's own gateway, or a
+  secret (a gateway password or key) written anywhere but the keyring.
 - The calendar: an event sent to a calendar you didn't pick, or one you
   deleted in Isle left in your account's calendar.
 - The clipboard history in `~/.local/share/isle`: copies kept from apps on
