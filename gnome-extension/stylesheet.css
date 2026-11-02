@@ -17,7 +17,7 @@
  * ones ("11:10" and "isle-0.9.1" would space out). */
 .isle-compact-clock, .isle-header-time, .isle-recording-time,
 .isle-timer-time, .isle-stepper-value, .isle-time, .isle-volume-text, .isle-peek-value,
-.isle-call-duration, .isle-reminders-count, .isle-cal-event-time, .isle-cal-day, .isle-usage-percent,
+.isle-call-duration, .isle-cal-event-time, .isle-cal-day, .isle-usage-percent,
 .isle-calorie-total, .isle-calorie-kcal, .isle-prayer-card-time,
 .isle-calorie-ring-val, .isle-prayer-card-countdown {
   font-feature-settings: "tnum";
@@ -690,8 +690,7 @@
 
 /* ── Reminders ────────────────────────────────────────── */
 
-/* Reminders: an orange title and count (as large as the timer's caption beside it), rows of a ring and a title
- * over a hairline. A 24 px header and 24 px rows fit five whole rows in the 144 px page. */
+/* Reminders: a clear white title, progress summary and compact rows. */
 .isle-reminders-layout { spacing: 16px; }
 .isle-reminders-summary { width: 188px; spacing: 3px; padding-right: 8px; }
 .isle-reminders-title { font-size: 16px; font-weight: 700; color: #ffffff; letter-spacing: -0.3px; }
@@ -1586,8 +1585,6 @@
 #isleIsland.isle-translucent .isle-card-done,
 #isleIsland.isle-translucent .isle-chat-copied,
 #isleIsland.isle-translucent .isle-card-copied { color: #64dc82; }
-#isleIsland.isle-translucent .isle-reminders-title,
-#isleIsland.isle-translucent .isle-reminders-count { color: #ffb340; }
 #isleIsland.isle-translucent .isle-cal-accounts { color: #8cc4ff; }
 /* The closed island's dots, lifted a quarter towards white as the alerts' signs (Theme.semantic). */
 #isleIsland.isle-translucent .isle-recording-dot { background-color: #ff7369; }
