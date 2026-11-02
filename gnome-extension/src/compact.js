@@ -389,6 +389,7 @@ export const CompactView = GObject.registerClass({
             const cost = `$${(stats?.cost ?? 0).toFixed(2)}`;
             const text = connected ? cost : ({
                 unauthorized: 'Auth',
+                'invalid-response': 'Data',
                 'needs-local-setup': 'Setup',
                 'needs-credentials': 'Setup',
                 'needs-configuration': 'Setup',

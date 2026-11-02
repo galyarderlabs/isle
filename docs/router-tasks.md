@@ -108,7 +108,7 @@ when they are not.
 
 - [x] Base URL + Bearer key in Settings under Remote;
   `GET {PROXY}/notch?period=…` with `Authorization: Bearer <key>`,
-  the same Stats shape; the key in the keyring.
+  camelCase usage fields adapted to Router state; the key in the keyring.
 - [ ] The README lists the proxy as the option for users who will not
   put a dashboard password in Isle.
 - [ ] Verify: the proxy serves numbers identical to the other modes.

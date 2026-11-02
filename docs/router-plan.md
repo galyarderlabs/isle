@@ -104,9 +104,9 @@ Some users will not put a dashboard password in Isle at all. A tiny
 open-source proxy (single Node file, linked from the README) holds the
 password and serves `GET {PROXY}/notch?period=…` with
 `Authorization: Bearer <key>`. Isle knows nothing about the proxy's
-implementation; the data it returns is the same shape as the other
-modes. (For 9Router, the proxy relays the same usage endpoints with the
-session it maintains.)
+implementation; its camelCase response fields are adapted to the same
+usage data as the other modes. (For 9Router, the proxy relays the usage
+endpoints with the session it maintains.)
 
 ## 6. Endpoints (9Router's API)
 

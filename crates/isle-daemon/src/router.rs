@@ -245,6 +245,7 @@ fn session_key(base_url: &str) -> String {
 enum Failure {
     Unauthorized,
     Unreachable,
+    InvalidResponse,
     NeedsLocalSetup,
     NeedsCredentials,
     NeedsConfiguration,
@@ -491,6 +492,11 @@ pub async fn run(iface: InterfaceRef<RouterService>, refresh: Arc<Notify>) {
                 period: config.period.clone(),
                 ..Router::default()
             },
+            Err(Failure::InvalidResponse) => Router {
+                status: "invalid-response".into(),
+                period: config.period.clone(),
+                ..Router::default()
+            },
             Err(Failure::Unreachable) => {
                 failures += 1;
                 Router {
@@ -716,11 +722,11 @@ fn read_proxy_state(base_url: &str, period: &str) -> Result<Router, Failure> {
             ureq::Error::StatusCode(401 | 403) => Failure::Unauthorized,
             _ => Failure::Unreachable,
         })?;
-    let stats: Stats = reply
+    let stats: ProxyStats = reply
         .body_mut()
         .read_json()
-        .map_err(|_| Failure::Unreachable)?;
-    Ok(connected("Compatible proxy".into(), period, stats))
+        .map_err(|_| Failure::InvalidResponse)?;
+    Ok(connected("Compatible proxy".into(), period, stats.into()))
 }
 
 /// The gateway's own version report, without auth.
@@ -751,8 +757,96 @@ fn read_stats(gateway: &NineRouter, period: &str) -> Result<Stats, Failure> {
     let raw: RawStats = reply
         .body_mut()
         .read_json()
-        .map_err(|_| Failure::Unreachable)?;
+        .map_err(|_| Failure::InvalidResponse)?;
     Ok(raw.into())
+}
+
+/// The compatible proxy's public `/notch` response shape, mapped to the Router page's names.
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct ProxyStats {
+    requests: u64,
+    tokens_in: u64,
+    tokens_out: u64,
+    tokens_cached: u64,
+    estimated_cost: f64,
+    models: Vec<ProxyModel>,
+    recent: Vec<ProxyRequest>,
+    active_requests: u64,
+}
+
+#[derive(Debug, Deserialize)]
+struct ProxyModel {
+    #[serde(rename = "name")]
+    model: String,
+    tokens: u64,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct ProxyRequest {
+    model: String,
+    status: String,
+    timestamp: serde_json::Value,
+    tokens_in: u64,
+    tokens_out: u64,
+}
+
+impl From<ProxyStats> for Stats {
+    fn from(proxy: ProxyStats) -> Self {
+        Self {
+            requests: proxy.requests,
+            prompt_tokens: proxy.tokens_in,
+            completion_tokens: proxy.tokens_out,
+            cached_tokens: proxy.tokens_cached,
+            cost: proxy.estimated_cost,
+            by_model: proxy
+                .models
+                .into_iter()
+                .map(|model| ModelUsage {
+                    model: model.model,
+                    tokens: model.tokens,
+                })
+                .collect(),
+            recent: proxy
+                .recent
+                .into_iter()
+                .map(|request| Request {
+                    model: request.model,
+                    prompt_tokens: request.tokens_in,
+                    completion_tokens: request.tokens_out,
+                    ok: matches!(request.status.as_str(), "ok" | "success"),
+                    at_ms: proxy_timestamp_ms(&request.timestamp),
+                })
+                .collect(),
+            active: proxy.active_requests,
+        }
+    }
+}
+
+fn proxy_timestamp_ms(timestamp: &serde_json::Value) -> i64 {
+    match timestamp {
+        serde_json::Value::Number(number) => number.as_i64().map_or(0, |value| {
+            if value.unsigned_abs() < 100_000_000_000 {
+                value.saturating_mul(1000)
+            } else {
+                value
+            }
+        }),
+        serde_json::Value::String(value) => chrono::DateTime::parse_from_rfc3339(value)
+            .map(|timestamp| timestamp.timestamp_millis())
+            .or_else(|_| {
+                value.parse::<i64>().map(|timestamp| {
+                    if timestamp.unsigned_abs() < 100_000_000_000 {
+                        timestamp.saturating_mul(1000)
+                    } else {
+                        timestamp
+                    }
+                })
+            })
+            .unwrap_or(0),
+        _ => 0,
+    }
 }
 
 /// The gateway's version, as it reports it.

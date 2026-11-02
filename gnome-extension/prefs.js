@@ -266,6 +266,8 @@ export default class IslePreferences extends ExtensionPreferences {
                 return `Update your gateway first (found ${state.version})`;
             if (state.status === 'unreachable')
                 return 'Unreachable: the gateway is not answering';
+            if (state.status === 'invalid-response')
+                return 'Connected, but the proxy returned unsupported usage data';
             return 'Off';
         };
         // isled's Router1 State property, read now and again as the settings that drive it change;

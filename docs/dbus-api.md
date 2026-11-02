@@ -293,7 +293,8 @@ What the LLM gateway reports: requests, tokens and its own cost estimate
 is 9Router: Local uses the CLI token it derives from its data directory;
 Remote can use a dashboard password and persisted session cookie from GNOME
 Keyring. A compatible usage proxy can instead receive a bearer key at
-`/notch?period=…`. Remote passwords and keys use HTTPS except on loopback.
+`/notch?period=…`; its camelCase response is mapped into Router state.
+Remote passwords and keys use HTTPS except on loopback.
 Below 9Router version 0.4.42 the usage endpoint once leaked API keys: isled
 fetches no usage. Polled only while the chip or page is shown (10–15 s,
 10 s timeout, one request in flight), backing off 2 s → 5 s → 15 s → 60 s
@@ -307,7 +308,7 @@ on failure and recovering by itself. Turned off or unwatched, nothing runs.
 | `HasCredential(s kind) → b` | `b` | Whether that Remote secret is saved; never returns the secret itself. |
 | `SetWatching(b watching)` | | The chip or the page is shown: poll while `true`, stop while `false`. |
 | `Refresh()` | | Reads again now. |
-| `State` | `s` | `{status, version, period, stats}` — `status` `connected`, `unauthorized`, `unreachable`, `outdated`, `needs-local-setup`, `needs-credentials`, `needs-configuration`, `keyring-unavailable`, `https-required` or empty; `stats`: `{requests, prompt_tokens, completion_tokens, cached_tokens, cost, by_model: [{model, tokens}], recent: [{model, prompt_tokens, completion_tokens, ok, at_ms}], active}`. |
+| `State` | `s` | `{status, version, period, stats}` — `status` `connected`, `unauthorized`, `unreachable`, `invalid-response`, `outdated`, `needs-local-setup`, `needs-credentials`, `needs-configuration`, `keyring-unavailable`, `https-required` or empty; `stats`: `{requests, prompt_tokens, completion_tokens, cached_tokens, cost, by_model: [{model, tokens}], recent: [{model, prompt_tokens, completion_tokens, ok, at_ms}], active}`. |
 
 ## io.github.zickrian.isle.Agents1
 

@@ -152,6 +152,7 @@ class RouterPage extends Page {
             outdated: 'Update your gateway first',
             unauthorized: 'Authentication failed · check LLM Router settings',
             unreachable: 'Gateway offline · check its URL and make sure it is running',
+            'invalid-response': 'Proxy connected, but its usage response is unsupported',
             'needs-local-setup': 'Local 9Router token not found · install and run 9Router on this computer',
             'needs-credentials': 'Add the password or proxy API key in LLM Router settings',
             'needs-configuration': 'Add the Remote base URL in LLM Router settings',
