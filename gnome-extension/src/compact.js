@@ -81,8 +81,8 @@ export const CompactView = GObject.registerClass({
 
         this._restDate = label('', 'isle-compact-rest-date', {y_align: Clutter.ActorAlign.CENTER});
 
-        this._ring = new Ring({size: 20, lineWidth: 3, child: new St.Icon({gicon: icon('isle-timer'),
-            icon_size: 10, y_align: Clutter.ActorAlign.CENTER})});
+        this._timerIcon = new St.Icon({gicon: icon('isle-timer'), icon_size: 10, y_align: Clutter.ActorAlign.CENTER});
+        this._ring = new Ring({size: 20, lineWidth: 3, child: this._timerIcon});
         this._recordingDot = new RecordingDot();
         this._recordingTime = label('', 'isle-compact-status-time isle-compact-recording-time');
         this._callIcon = new St.Icon({gicon: icon('isle-phone-symbolic'), icon_size: 15, style_class: 'isle-call-icon', y_align: Clutter.ActorAlign.CENTER});
@@ -442,7 +442,17 @@ export const CompactView = GObject.registerClass({
         this._inBar = inBar;
         // Its height there is known once laid out; till then, the usual one.
         this._pillHeight = 0;
-        const size = SIZES[inBar ? 'inBar' : 'hanging'];
+        this._sizeSigns();
+        if (inBar)
+            this.add_style_class_name('isle-compact-in-bar');
+        else
+            this.remove_style_class_name('isle-compact-in-bar');
+        this._refresh();
+    }
+
+    /** Sizes the signs in stage pixels for the place and the scale. */
+    _sizeSigns() {
+        const size = SIZES[this._inBar ? 'inBar' : 'hanging'];
         this._ring.resize(size.ring);
         this._musicArt.resize(size.music, 4);
         this._bars.maxHeight = size.bars;
@@ -451,21 +461,6 @@ export const CompactView = GObject.registerClass({
         this._weatherIcon.icon_size = size.weather;
         this._phoneIcon.icon_size = size.weather;
         this._assistantButton.set_size(px(size.center), px(size.center));
-        if (inBar)
-            this.add_style_class_name('isle-compact-in-bar');
-        else
-            this.remove_style_class_name('isle-compact-in-bar');
-        this._refresh();
-    }
-
-    /** Sizes the signs set in stage pixels (cover, assistant, ring) for the place and the scale. */
-    _sizeSigns() {
-        const size = SIZES[this._inBar ? 'inBar' : 'hanging'];
-        this._art.resize(size.art, size.artRadius);
-        this._secondArt.resize(size.art, size.artRadius);
-        this._assistant.resize(size.art, size.bot);
-        this._ring.resize(size.ring);
-        this._secondRing.resize(size.ring);
     }
 
     /** Whether the user is away (no input for a while); the bars rest meanwhile, nobody is watching. */
@@ -594,6 +589,17 @@ export const CompactView = GObject.registerClass({
             this._cancel('timer');
     }
 
+    /** Shows how long the call has lasted, once a second while on screen. */
+    _tickCall() {
+        if (!this._call.active || !this.mapped) {
+            this._cancel('call');
+            return;
+        }
+        const elapsedMs = (GLib.get_monotonic_time() - this._call.since) / 1000;
+        this._callTime.text = Format.duration(elapsedMs);
+        this._later('call', 1000 - (elapsedMs % 1000) + 10, () => this._tickCall());
+    }
+
     /** The timer ring's progress, redrawn every few seconds while it shows. */
     _refreshRing() {
         const {pomodoro} = this._daemon.state;
@@ -628,7 +634,7 @@ export const CompactView = GObject.registerClass({
 
     /** Sets the clock's text; `watchClock` calls it again as the minute changes. */
     _tickClock() {
-        this._clock.text = Format.clockTime();
+        this._clock.text = Format.timeOfDay(GLib.DateTime.new_now_local());
         const date = Format.longDate();
         if (date !== this._restDate.text) {
             this._restDate.text = date;
