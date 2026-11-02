@@ -71,6 +71,21 @@ access on a trusted network or put the service behind a TLS reverse proxy; do
 not expose it directly to an untrusted network. Configure each MCP client with
 the bearer token when the service is bound beyond loopback.
 
+For access from another machine over the internet, keep the server on loopback
+and run a Cloudflare tunnel: `isle-mcp-tunnel` starts a temporary quick tunnel
+(install `cloudflared` first), refuses to start without at least one token
+configured, and prints the public URL; the agent connects to that URL's `/mcp`
+path with its bearer token, and TLS is terminated by Cloudflare:
+
+```sh
+isle-mcp-tunnel
+```
+
+For a stable URL on your own domain, create a named tunnel instead:
+`cloudflared tunnel create isle-mcp`, route your domain to
+`http://localhost:8765`, and run `cloudflared tunnel run isle-mcp`. The
+per-client tokens still apply in both cases.
+
 For separate permissions per client, create `~/.config/isle/mcp-clients.json`
 with mode `0600` and remove `ISLE_MCP_TOKEN` from `mcp.env`:
 
@@ -80,6 +95,19 @@ with mode `0600` and remove `ISLE_MCP_TOKEN` from `mcp.env`:
   "life-helper": {"token": "a-different-long-random-token", "scopes": ["*:read", "tasks:write", "reminders:write"]}
 }
 ```
+
+Instead of writing that file by hand, manage keys from Isle Settings → MCP
+(generate a key with its scopes, list clients, revoke one; the file is kept at
+mode `0600`), or with the command-line helper:
+
+```sh
+isle-mcp-keygen add calendar-reader calendar:read prayer:read
+isle-mcp-keygen list
+isle-mcp-keygen revoke calendar-reader
+```
+
+`isle-mcp-keygen add` prints the token once; restart `isle-mcp.service` after
+adding or revoking a client.
 
 Read scopes are `tasks:read`, `calendar:read`, `reminders:read`,
 `calories:read`, `water:read`, `prayer:read`, `media:read`, `focus:read`,

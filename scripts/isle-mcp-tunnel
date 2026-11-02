@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Runs a Cloudflare quick tunnel to Isle's MCP server, printing the public URL.
+set -euo pipefail
+
+HOST="${ISLE_MCP_HOST:-127.0.0.1}"
+PORT="${ISLE_MCP_PORT:-8765}"
+
+command -v cloudflared >/dev/null || {
+    echo "cloudflared is not installed. Install it first:" >&2
+    echo "  https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/" >&2
+    exit 1
+}
+
+TOKEN_COUNT=$(python3 - <<'PY'
+import json, os, sys
+config = os.path.expanduser("~/.config/isle/mcp-clients.json")
+env_path = os.path.expanduser("~/.config/isle/mcp.env")
+count = 0
+try:
+    with open(config, encoding="utf-8") as config_file:
+        count += sum(1 for entry in json.load(config_file).values() if entry.get("token"))
+except FileNotFoundError:
+    pass
+try:
+    with open(env_path, encoding="utf-8") as env_file:
+        count += sum(1 for line in env_file if line.startswith("ISLE_MCP_TOKEN="))
+except FileNotFoundError:
+    pass
+print(count)
+PY
+)
+
+[ "$TOKEN_COUNT" -gt 0 ] || {
+    echo "The tunnel is public: configure a token first." >&2
+    echo "Run: isle-mcp-keygen add <client-name> [scope ...]" >&2
+    exit 1
+}
+
+echo "Starting a Cloudflare quick tunnel to http://$HOST:$PORT (temporary URL, Ctrl+C to stop)."
+echo "Connect an agent to https://<printed-url>/mcp with its bearer token."
+exec cloudflared tunnel --url "http://$HOST:$PORT"
