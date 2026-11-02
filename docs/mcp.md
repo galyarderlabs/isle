@@ -156,16 +156,21 @@ for a `date`. Clipboard reads are search-first (`search_clipboard` returns
 ids, `get_clipboard_text` reads one item), so full history is never returned in
 one call. Write tools are disabled
 unless named in `ISLE_MCP_WRITE_TOOLS`. Available write names are `add_task`,
-`set_task_done`,
-`add_calendar_event`, `remove_calendar_event`, `add_reminder`, `add_food_entry`,
+`set_task_done`, `rename_task`, `remove_task`, `clear_done_tasks`,
+`add_calendar_event`, `add_calendar_event_to`, `remove_calendar_event`,
+`add_reminder`, `dismiss_reminder`, `add_food_entry`,
 `update_food_entry`, `remove_food_entry`, `log_water`, `remove_water_entry`,
 `set_prayer_location`, `start_focus`,
-`pause_focus`, `stop_focus`, `control_media`, `add_shelf_files`,
-`remove_shelf_item`, `clear_shelf`, `pin_clipboard`, `remove_clipboard_item`,
+`pause_focus`, `stop_focus`, `skip_focus`, `start_focus_phase`, `control_media`,
+`media_seek`, `raise_media`, `choose_media_player`, `add_shelf_files`,
+`remove_shelf_item`, `clear_shelf`, `refresh_shelf`, `pin_clipboard`,
+`remove_clipboard_item`,
 and `open_url`. `control_media`
 permits play/pause, next, and previous. `open_url` opens an HTTP(S) URL through
 the desktop portal and needs the `desktop:write` scope and the matching write
-allowlist entry.
+allowlist entry. Read tools also cover the desktop calendars a new event can
+go to and their meeting links, the running media players and lyrics, the
+focus configuration, and the newer Isle version when one is out.
 
 Prayer city and country are set in Isle Settings → Island → Daily Life; the local
 calorie log is stored at `~/.local/share/isle/calories.json`. Food logging is

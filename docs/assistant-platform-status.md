@@ -82,14 +82,17 @@ its user-facing flow is complete.
   outside Isle; the external agent is configured in its own MCP settings.
 - The current service has loopback defaults, per-client scopes, and write
   allowlists.
-- Current MCP tools cover tasks, Isle calendar events, reminders, calorie
-  entries, prayer schedule/location, current media controls, focus state and
-  controls, and opening HTTP(S) URLs through the desktop portal.
-- This selected set does not cover all Isle data and actions. For example,
-  the Water D-Bus service has no MCP tools; clipboard/shelf contents,
-  notifications, calls, and other Isle capabilities are also outside the
-  current tool list. Date-filtered calorie reads are not yet accepted as a
-  complete end-to-end external-agent flow.
+- The MCP tool surface now covers tasks, Isle calendar events and desktop
+  calendars with meeting links, reminders, calorie entries, water, prayer
+  schedule/location, media (players, lyrics, seek, controls), focus state and
+  controls, app usage, system state, AI router stats, AI plan usage, the file
+  shelf, clipboard history by search, and opening HTTP(S) URLs through the
+  desktop portal. Date-filtered calendar, calorie and water reads, per-client
+  key generation (Settings → MCP and `isle-mcp-keygen`), and a Cloudflare
+  tunnel (`isle-mcp-tunnel`, with automatic DNS setup) are implemented.
+- None of this expanded surface is live-verified yet against a real session
+  bus or an external MCP client; that acceptance run remains open, as do
+  notifications, calls, and other desktop actions outside the tool list.
 
 ## Remaining gaps against the target
 
