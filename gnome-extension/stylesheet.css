@@ -1833,44 +1833,60 @@
 .isle-chat-archive-when { font-size: 13px; font-weight: 600; }
 .isle-chat-archive-count { font-size: 11px; color: rgba(255, 255, 255, 0.55); }
 
-/* Router page and chip: compact metrics, readable model names and recent activity. */
-.isle-router-layout { spacing: 9px; }
-.isle-router-scroll { -st-vfade-offset: 12px; }
-.isle-router-content { spacing: 22px; }
-.isle-router-heading { spacing: 9px; min-height: 24px; }
-.isle-router-title { font-size: 15px; font-weight: 700; }
-.isle-router-status { padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: 600;
-  color: rgba(255, 255, 255, 0.58); background-color: rgba(255, 255, 255, 0.07); }
-.isle-router-status.connected { color: #79e6a0; background-color: rgba(48, 209, 88, 0.12); }
-.isle-router-status.offline { color: rgba(255, 255, 255, 0.58); }
-.isle-router-periods { spacing: 4px; }
-.isle-router-period { padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 600;
-  color: rgba(255, 255, 255, 0.55); }
-.isle-router-period:hover { color: #ffffff; }
-.isle-router-period.picked { color: #ffffff; background-color: rgba(255, 255, 255, 0.14); }
-.isle-router-metrics { spacing: 8px; }
-.isle-router-metric { padding: 5px 10px; spacing: 1px; border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.055); border: 1px solid rgba(255, 255, 255, 0.07); }
-.isle-router-metric-label { font-size: 9px; color: rgba(255, 255, 255, 0.52); }
+/* Router: a small live analytics surface sized for the island, not a page-sized dashboard. */
+.isle-router-layout { spacing: 6px; }
+.isle-router-heading { spacing: 8px; min-height: 22px; }
+.isle-router-title { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; }
+.isle-router-status-pill { spacing: 5px; padding: 3px 8px; border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.06); }
+.isle-router-status-dot { width: 6px; height: 6px; border-radius: 3px; background-color: rgba(255, 255, 255, 0.34); }
+.isle-router-status-dot.connected { background-color: #30d158; }
+.isle-router-status-dot.error { background-color: #ff6961; }
+.isle-router-status-dot.setup { background-color: #ffb340; }
+.isle-router-status-dot.busy { animation: isle-router-status-pulse 1.3s ease-in-out infinite; }
+.isle-router-status { font-size: 9px; font-weight: 650; color: rgba(255, 255, 255, 0.62); }
+.isle-router-status.connected { color: #8aefae; }
+.isle-router-status.error { color: #ff938d; }
+.isle-router-status.setup { color: #ffd17a; }
+.isle-router-periods { spacing: 2px; padding: 2px; border-radius: 9px;
+  background-color: rgba(255, 255, 255, 0.055); }
+.isle-router-period { padding: 2px 7px; border-radius: 7px; font-size: 10px; font-weight: 600;
+  color: rgba(255, 255, 255, 0.52); }
+.isle-router-period:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.08); }
+.isle-router-period.picked { color: #ffffff; background-color: rgba(48, 209, 88, 0.22); }
+.isle-router-metrics { spacing: 6px; }
+.isle-router-metric { padding: 3px 9px; spacing: 1px; border-radius: 9px;
+  background-color: rgba(255, 255, 255, 0.045); border: 1px solid rgba(255, 255, 255, 0.065); }
+.isle-router-metric-label { font-size: 9px; font-weight: 500; color: rgba(255, 255, 255, 0.48); }
 .isle-router-metric-value { font-size: 14px; font-weight: 700; font-feature-settings: "tnum"; }
-.isle-router-section { spacing: 5px; }
-.isle-router-section-title { padding-bottom: 2px; font-size: 10px; font-weight: 700;
-  color: rgba(255, 255, 255, 0.55); }
-.isle-router-model { spacing: 8px; min-height: 15px; }
-.isle-router-model-name { font-size: 11px; color: rgba(255, 255, 255, 0.78); }
-.isle-router-model-track { height: 5px; border-radius: 3px; background-color: rgba(255, 255, 255, 0.1); }
-.isle-router-model-fill { height: 5px; border-radius: 3px; background-color: #4ba3ff; }
-.isle-router-model-tokens { font-size: 11px; font-weight: 700; font-feature-settings: "tnum";
-  color: rgba(255, 255, 255, 0.8); min-width: 40px; text-align: right; }
-.isle-router-request { spacing: 7px; min-height: 16px; }
-.isle-router-request-model { font-size: 11px; color: rgba(255, 255, 255, 0.78); }
-.isle-router-request-tokens { font-size: 11px; font-feature-settings: "tnum";
-  color: rgba(255, 255, 255, 0.62); min-width: 65px; }
-.isle-router-request-state { min-width: 27px; padding: 1px 4px; border-radius: 6px; text-align: center;
-  font-size: 9px; font-weight: 700; color: #79e6a0; background-color: rgba(48, 209, 88, 0.12); }
-.isle-router-request-state.error { color: #ff8880; background-color: rgba(255, 69, 58, 0.13); }
-.isle-router-request-time { min-width: 43px; font-size: 10px; color: rgba(255, 255, 255, 0.48); text-align: right; }
-.isle-router-empty { font-size: 11px; color: rgba(255, 255, 255, 0.46); padding-top: 3px; }
+.isle-router-content { spacing: 12px; min-height: 0; }
+.isle-router-activity { width: 190px; spacing: 4px; }
+.isle-router-section { spacing: 4px; min-width: 0; }
+.isle-router-section-heading { spacing: 6px; min-height: 13px; }
+.isle-router-section-title { font-size: 10px; font-weight: 700; color: rgba(255, 255, 255, 0.66); }
+.isle-router-activity-meta { font-size: 9px; font-weight: 500; color: rgba(255, 255, 255, 0.43); }
+.isle-router-chart { min-height: 40px; border-radius: 8px; background-color: rgba(255, 255, 255, 0.035); }
+.isle-router-top-model { spacing: 5px; min-height: 11px; }
+.isle-router-top-tag { font-size: 8px; font-weight: 700; color: #79e6a0; letter-spacing: 0.4px; }
+.isle-router-top-name { font-size: 9px; color: rgba(255, 255, 255, 0.54); }
+.isle-router-recent-scroll { -st-vfade-offset: 8px; }
+.isle-router-request-list { spacing: 1px; }
+.isle-router-request { spacing: 6px; padding: 1px 4px; border-radius: 5px; min-height: 16px; }
+.isle-router-request:hover { background-color: rgba(255, 255, 255, 0.045); }
+.isle-router-request-model { font-size: 10px; color: rgba(255, 255, 255, 0.82); }
+.isle-router-request-tokens { font-size: 9px; font-feature-settings: "tnum"; color: rgba(255, 255, 255, 0.55);
+  min-width: 54px; text-align: right; }
+.isle-router-request-result { spacing: 4px; min-width: 30px; }
+.isle-router-result-dot { width: 5px; height: 5px; border-radius: 3px; background-color: #30d158; }
+.isle-router-result-dot.error { background-color: #ff6961; }
+.isle-router-request-state { font-size: 9px; font-weight: 700; color: #8aefae; }
+.isle-router-request.error .isle-router-request-state { color: #ff938d; }
+.isle-router-request-time { min-width: 34px; font-size: 9px; color: rgba(255, 255, 255, 0.43); text-align: right; }
+.isle-router-empty { font-size: 10px; color: rgba(255, 255, 255, 0.42); padding-top: 3px; }
+@keyframes isle-router-status-pulse {
+  0%, 100% { opacity: 1.0; }
+  50% { opacity: 0.42; }
+}
 
 /* The chip's health dot in the closed island: green connected, grey offline, red unauthorized;
    a slow pulse while the gateway reports requests running. */

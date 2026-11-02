@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// Router: the LLM gateway's own usage — requests, tokens and the cost it estimates — for the
-// period Settings picked: a summary card, the busiest models as bars, and the last requests.
+// Router: compact usage totals, a live token-flow sparkline, and the latest requests.
 
+import Cairo from 'cairo';
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 import Pango from 'gi://Pango';
@@ -17,8 +17,10 @@ import {Page} from './page.js';
 const PERIODS = ['today', '24h', '7d'];
 /** How each period reads on the header's toggle. */
 const PERIOD_LABELS = {today: 'Today', '24h': '24h', '7d': '7d'};
-/** The most models the bars list. */
-const TOP_MODELS = 5;
+/** The gateway keeps at most ten recent requests; the compact list scrolls through them. */
+const RECENT_REQUESTS = 10;
+/** A small graph repaint only while this page is visible. */
+const ACTIVITY_TICK_MS = 40;
 
 /** Compact token counts: 1.2M, 845K, 900. */
 function tokens(count) {
@@ -62,7 +64,8 @@ class RouterPage extends Page {
         });
         this.name = 'router';
         this._settings = settings;
-        this._state = null;
+        this._activityPhase = 0;
+        this._activitySamples = [];
 
         const layout = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-layout',
             x_expand: true, y_expand: true});
@@ -70,9 +73,12 @@ class RouterPage extends Page {
         const heading = new St.BoxLayout({style_class: 'isle-router-heading'});
         heading.add_child(new St.Icon({gicon: icon('isle-router'), icon_size: 16}));
         heading.add_child(label('Router', 'isle-router-title'));
-        this._statusLine = label('Waiting for gateway', 'isle-router-status', {width: px(190)});
-        this._statusLine.clutter_text.ellipsize = Pango.EllipsizeMode.END;
-        heading.add_child(this._statusLine);
+        const status = new St.BoxLayout({style_class: 'isle-router-status-pill'});
+        this._statusDot = new St.Widget({style_class: 'isle-router-status-dot waiting'});
+        this._statusLine = label('Connecting', 'isle-router-status');
+        status.add_child(this._statusDot);
+        status.add_child(this._statusLine);
+        heading.add_child(status);
         // The period toggle in the header, kept in step with Settings.
         this._periodToggle = new St.BoxLayout({style_class: 'isle-router-periods'});
         this._periodToggle.x_expand = true;
@@ -88,13 +94,12 @@ class RouterPage extends Page {
         heading.add_child(this._periodToggle);
         layout.add_child(heading);
 
-        // Four compact metric cards give the totals a clear order without another run-on line.
+        // Three clear totals stay legible in the notch: requests, token flow, and estimated cost.
         const metrics = new St.BoxLayout({style_class: 'isle-router-metrics', x_expand: true});
         this._metricValues = {};
         for (const [key, title] of Object.entries({
             requests: 'Requests',
-            input: 'Tokens in',
-            output: 'Tokens out',
+            tokens: 'Tokens in / out',
             cost: 'Est. cost',
         })) {
             const card = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-metric', x_expand: true});
@@ -106,26 +111,48 @@ class RouterPage extends Page {
         }
         layout.add_child(metrics);
 
-        // Models and recent requests sit side by side; scroll stays inside the data area.
+        // A live sparkline and the latest requests use the same short row instead of competing for height.
         const content = new St.BoxLayout({style_class: 'isle-router-content', x_expand: true, y_expand: true});
-        this._models = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-section isle-router-models',
-            x_expand: true, y_expand: true});
-        this._models.add_child(label('Top models', 'isle-router-section-title'));
-        content.add_child(this._models);
+        const activity = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-activity', y_expand: true});
+        const activityHeading = new St.BoxLayout({style_class: 'isle-router-section-heading'});
+        activityHeading.add_child(label('Activity', 'isle-router-section-title'));
+        this._activityMeta = label('Waiting', 'isle-router-activity-meta', {x_expand: true,
+            x_align: Clutter.ActorAlign.END});
+        activityHeading.add_child(this._activityMeta);
+        activity.add_child(activityHeading);
+        this._activityGraph = new St.DrawingArea({style_class: 'isle-router-chart', x_expand: true, y_expand: true,
+            accessible_name: 'Token activity for recent requests'});
+        this._activityGraph.connect('repaint', area => this._paintActivity(area));
+        activity.add_child(this._activityGraph);
+        const topModel = new St.BoxLayout({style_class: 'isle-router-top-model'});
+        topModel.add_child(label('TOP', 'isle-router-top-tag'));
+        this._topModel = label('No model activity', 'isle-router-top-name', {x_expand: true});
+        this._topModel.clutter_text.ellipsize = Pango.EllipsizeMode.END;
+        topModel.add_child(this._topModel);
+        activity.add_child(topModel);
+        content.add_child(activity);
+
         this._recent = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-section isle-router-recent',
             x_expand: true, y_expand: true});
-        this._recent.add_child(label('Recent requests', 'isle-router-section-title'));
-        content.add_child(this._recent);
-        this._scroll = new St.ScrollView({
-            style_class: 'isle-router-scroll',
+        const recentHeading = new St.BoxLayout({style_class: 'isle-router-section-heading'});
+        recentHeading.add_child(label('Recent requests', 'isle-router-section-title'));
+        this._recentMeta = label('', 'isle-router-activity-meta', {x_expand: true,
+            x_align: Clutter.ActorAlign.END});
+        recentHeading.add_child(this._recentMeta);
+        this._recent.add_child(recentHeading);
+        this._recentScroll = new St.ScrollView({
+            style_class: 'isle-router-recent-scroll',
+            accessible_name: 'Recent Router requests',
             hscrollbar_policy: St.PolicyType.NEVER,
-            // Scrolls with the wheel or touchpad; no scrollbar over the list.
-            vscrollbar_policy: St.PolicyType.EXTERNAL,
+            vscrollbar_policy: St.PolicyType.NEVER,
             x_expand: true,
             y_expand: true,
         });
-        this._scroll.set_child(content);
-        layout.add_child(this._scroll);
+        this._recentList = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-request-list', x_expand: true});
+        this._recentScroll.set_child(this._recentList);
+        this._recent.add_child(this._recentScroll);
+        content.add_child(this._recent);
+        layout.add_child(content);
 
         this.add_child(layout);
         this._syncPeriodButtons();
@@ -152,10 +179,12 @@ class RouterPage extends Page {
     onActivate() {
         this.daemon.attemptQuietly('router', 'SetWatching', true);
         this.daemon.attemptQuietly('router', 'Refresh');
+        this._animateActivity();
     }
 
     onDeactivate() {
         // The chip keeps its own watch; the page's ends with it.
+        this.cancel('router-activity');
         this.daemon.attemptQuietly('router', 'SetWatching', this._settings.get_boolean('router-notch'));
     }
 
@@ -170,11 +199,11 @@ class RouterPage extends Page {
         const stats = router?.stats ?? {};
         const connected = router?.status === 'connected';
         this._metricValues.requests.text = connected ? Number(stats.requests ?? 0).toLocaleString() : '—';
-        this._metricValues.input.text = connected ? tokens(stats.prompt_tokens) : '—';
-        this._metricValues.output.text = connected ? tokens(stats.completion_tokens) : '—';
-        this._metricValues.cost.text = connected ? `$${(stats.cost ?? 0).toFixed(2)}` : '—';
+        this._metricValues.tokens.text = connected
+            ? `${tokens(stats.prompt_tokens)} / ${tokens(stats.completion_tokens)}` : '—';
+        this._metricValues.cost.text = connected ? `$${Number(stats.cost ?? 0).toFixed(2)}` : '—';
         const statusText = {
-            connected: `Connected · ${router.version}`,
+            connected: router.version ? `Connected · ${router.version}` : 'Connected',
             outdated: 'Update your gateway first',
             unauthorized: 'Authentication failed · check Router settings',
             unreachable: 'Gateway offline · check its URL and make sure it is running',
@@ -185,11 +214,36 @@ class RouterPage extends Page {
             'keyring-unavailable': 'GNOME Keyring is locked or unavailable',
             'https-required': 'Remote credentials require HTTPS (HTTP works on this computer only)',
         }[router?.status] ?? 'Waiting for the gateway · configure it in Router settings';
-        this._statusLine.text = statusText;
+        const shortStatus = {
+            connected: 'Connected',
+            outdated: 'Update needed',
+            unauthorized: 'Auth failed',
+            unreachable: 'Offline',
+            'invalid-response': 'Unsupported',
+            'needs-local-setup': 'Setup needed',
+            'needs-credentials': 'Credentials needed',
+            'needs-configuration': 'URL needed',
+            'keyring-unavailable': 'Keyring locked',
+            'https-required': 'HTTPS required',
+        }[router?.status] ?? 'Waiting';
+        this._statusLine.text = shortStatus;
         this._statusLine.accessible_name = statusText;
-        this._statusLine.set_style_class_name(`isle-router-status ${connected ? 'connected' : 'offline'}`);
-        this._buildModels(stats.by_model ?? []);
+        this._statusLine.tooltip_text = statusText;
+        const statusClass = connected ? 'connected' : ['unauthorized', 'outdated'].includes(router?.status)
+            ? 'error' : ['needs-local-setup', 'needs-credentials', 'needs-configuration', 'keyring-unavailable', 'https-required']
+                .includes(router?.status) ? 'setup' : 'offline';
+        this._statusLine.set_style_class_name(`isle-router-status ${statusClass}`);
+        this._statusDot.set_style_class_name(`isle-router-status-dot ${statusClass}${stats.active ? ' busy' : ''}`);
+        this._activitySamples = connected ? (stats.recent ?? []).slice(0, 10).reverse()
+            .map(request => Math.max(0, Number(request.prompt_tokens ?? 0) + Number(request.completion_tokens ?? 0))) : [];
+        this._activityMeta.text = stats.active ? `${stats.active} live` : this._activitySamples.length
+            ? `${this._activitySamples.length} recent` : 'Waiting';
+        this._recentMeta.text = connected ? `${Number(stats.requests ?? 0).toLocaleString()} total` : '';
+        const leader = (stats.by_model ?? [])[0];
+        this._topModel.text = connected && leader ? `${displayModel(leader.model)} · ${tokens(leader.tokens)}`
+            : 'No model activity';
         this._buildRecent(stats.recent ?? []);
+        this._activityGraph.queue_repaint();
     }
 
     _syncAvailability() {
@@ -218,56 +272,128 @@ class RouterPage extends Page {
         this.daemon.attemptQuietly('router', 'Refresh');
     }
 
-    /** Rebuilds the top models' bars with compact numbers. */
-    _buildModels(byModel) {
-        for (const child of this._models.get_children().slice(1))
-            child.destroy();
-        const top = byModel.slice(0, TOP_MODELS);
-        if (!top.length) {
-            this._models.add_child(label('No model activity yet', 'isle-router-empty'));
+    /** The glow cursor moves over real request samples; an idle wave says the chart is waiting for data. */
+    _animateActivity() {
+        if (!this.active || !St.Settings.get().enable_animations)
+            return;
+        this._activityPhase = (this._activityPhase + 0.012) % 1;
+        this._activityGraph.queue_repaint();
+        this.later('router-activity', ACTIVITY_TICK_MS, () => this._animateActivity());
+    }
+
+    _paintActivity(area) {
+        const cr = area.get_context();
+        const [width, height] = area.get_surface_size();
+        if (width <= 0 || height <= 0) {
+            cr.$dispose();
             return;
         }
-        const widest = Math.max(1, ...top.map(usage => usage.tokens));
-        for (const usage of top) {
-            const row = new St.BoxLayout({style_class: 'isle-router-model', x_expand: true});
-            const name = label(displayModel(usage.model), 'isle-router-model-name', {
-                width: px(176),
-                accessible_name: usage.model,
-            });
-            name.clutter_text.ellipsize = Pango.EllipsizeMode.END;
-            row.add_child(name);
-            const track = new St.Widget({style_class: 'isle-router-model-track', x_expand: true});
-            const fill = new St.Widget({style_class: 'isle-router-model-fill'});
-            fill.width = Math.max(px(2), Math.round(px(100) * usage.tokens / widest));
-            track.add_child(fill);
-            row.add_child(track);
-            row.add_child(label(tokens(usage.tokens), 'isle-router-model-tokens'));
-            this._models.add_child(row);
+
+        const left = px(4);
+        const right = Math.max(left + 1, width - px(4));
+        const top = px(5);
+        const bottom = Math.max(top + 1, height - px(5));
+        const span = right - left;
+        const rise = bottom - top;
+
+        cr.setLineWidth(px(1));
+        cr.setSourceRGBA(1, 1, 1, 0.055);
+        for (const fraction of [0.35, 0.72]) {
+            const y = top + rise * fraction;
+            cr.moveTo(left, y);
+            cr.lineTo(right, y);
+            cr.stroke();
         }
+
+        let values = this._activitySamples;
+        let points;
+        if (values.length) {
+            if (values.length === 1)
+                values = [values[0], values[0]];
+            const peak = Math.max(1, ...values);
+            points = values.map((value, index) => ({
+                x: left + span * index / (values.length - 1),
+                y: bottom - Math.max(0.08, Math.log1p(value) / Math.log1p(peak)) * rise,
+            }));
+        } else {
+            points = Array.from({length: 20}, (_, index) => {
+                const t = index / 19;
+                const pulse = Math.sin(t * Math.PI * 4 + this._activityPhase * Math.PI * 2);
+                return {x: left + span * t, y: bottom - px(4) - pulse * px(1.4)};
+            });
+        }
+
+        cr.moveTo(points[0].x, bottom);
+        cr.lineTo(points[0].x, points[0].y);
+        for (const point of points.slice(1))
+            cr.lineTo(point.x, point.y);
+        cr.lineTo(points[points.length - 1].x, bottom);
+        cr.closePath();
+        const areaFill = new Cairo.LinearGradient(0, top, 0, bottom);
+        areaFill.addColorStopRGBA(0, 0.18, 0.92, 0.6, this._activitySamples.length ? 0.2 : 0.08);
+        areaFill.addColorStopRGBA(1, 0.18, 0.92, 0.6, 0.005);
+        cr.setSource(areaFill);
+        cr.fill();
+
+        const line = () => {
+            cr.moveTo(points[0].x, points[0].y);
+            for (const point of points.slice(1))
+                cr.lineTo(point.x, point.y);
+        };
+        cr.setLineCap(Cairo.LineCap.ROUND);
+        cr.setLineJoin(Cairo.LineJoin.ROUND);
+        cr.setSourceRGBA(0.16, 0.94, 0.62, 0.15);
+        cr.setLineWidth(px(5));
+        line();
+        cr.stroke();
+        cr.setSourceRGBA(0.34, 0.98, 0.68, 0.96);
+        cr.setLineWidth(px(1.5));
+        line();
+        cr.stroke();
+
+        const progress = this._activityPhase * (points.length - 1);
+        const segment = Math.min(points.length - 2, Math.floor(progress));
+        const mix = progress - segment;
+        const cursor = {
+            x: points[segment].x + (points[segment + 1].x - points[segment].x) * mix,
+            y: points[segment].y + (points[segment + 1].y - points[segment].y) * mix,
+        };
+        const halo = new Cairo.RadialGradient(cursor.x, cursor.y, 0, cursor.x, cursor.y, px(8));
+        halo.addColorStopRGBA(0, 0.36, 1, 0.74, 0.55);
+        halo.addColorStopRGBA(1, 0.18, 0.92, 0.6, 0);
+        cr.setSource(halo);
+        cr.arc(cursor.x, cursor.y, px(8), 0, Math.PI * 2);
+        cr.fill();
+        cr.setSourceRGBA(0.78, 1, 0.88, 1);
+        cr.arc(cursor.x, cursor.y, px(1.8), 0, Math.PI * 2);
+        cr.fill();
+        cr.$dispose();
     }
 
     /** Rebuilds the last requests: model, in→out tokens, ok/error, relative time. */
     _buildRecent(recent) {
-        for (const child of this._recent.get_children().slice(1))
-            child.destroy();
+        this._recentList.destroy_all_children();
         if (!recent.length) {
-            this._recent.add_child(label('No recent requests', 'isle-router-empty'));
+            this._recentList.add_child(label('No requests in this period', 'isle-router-empty'));
             return;
         }
-        for (const request of recent.slice(0, 5)) {
-            const row = new St.BoxLayout({style_class: 'isle-router-request', x_expand: true});
-            const name = label(displayModel(request.model), 'isle-router-request-model', {
-                width: px(150),
-                accessible_name: request.model,
-            });
+        for (const request of recent.slice(0, RECENT_REQUESTS)) {
+            const row = new St.BoxLayout({style_class: `isle-router-request${request.ok ? '' : ' error'}`,
+                x_expand: true});
+            const name = label(displayModel(request.model), 'isle-router-request-model', {x_expand: true,
+                accessible_name: request.model});
             name.clutter_text.ellipsize = Pango.EllipsizeMode.END;
+            name.tooltip_text = request.model;
             row.add_child(name);
-            row.add_child(label(`${tokens(request.prompt_tokens)} → ${tokens(request.completion_tokens)}`,
-                'isle-router-request-tokens'));
-            row.add_child(label(request.ok ? 'OK' : 'ERR',
-                `isle-router-request-state${request.ok ? '' : ' error'}`));
-            row.add_child(label(request.at_ms ? ago(request.at_ms) : '', 'isle-router-request-time'));
-            this._recent.add_child(row);
+            const flow = label(`${tokens(request.prompt_tokens)} → ${tokens(request.completion_tokens)}`,
+                'isle-router-request-tokens', {accessible_name: `${tokens(request.prompt_tokens)} input tokens, ${tokens(request.completion_tokens)} output tokens`});
+            row.add_child(flow);
+            const result = new St.BoxLayout({style_class: 'isle-router-request-result'});
+            result.add_child(new St.Widget({style_class: `isle-router-result-dot${request.ok ? '' : ' error'}`}));
+            result.add_child(label(request.ok ? 'OK' : 'ERR', 'isle-router-request-state'));
+            row.add_child(result);
+            row.add_child(label(request.at_ms ? ago(request.at_ms) : '—', 'isle-router-request-time'));
+            this._recentList.add_child(row);
         }
     }
 });
