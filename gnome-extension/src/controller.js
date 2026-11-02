@@ -629,6 +629,8 @@ export class Controller {
                 this._onAssistant();
             else if (key === 'chat')
                 this._onHistory();
+            else if (key === 'archivedChats')
+                this._voice.setArchive(this._daemon.state.archivedChats ?? []);
         });
         daemon.connect('voice-level', (_daemon, level) => {
             // Sound coming in: it records.
@@ -696,6 +698,10 @@ export class Controller {
         this._voice.connect('orb-clicked', () => this._onVoiceKey());
         // The × on an answer or an alert puts it away, as a click on the answer or a right click on the alert does.
         this._voice.connect('close-requested', () => this.collapse());
+        // The conversation's history button shows the archived list (kept fresh by the
+        // ArchivedChats property); picking one brings it back.
+        this._voice.connect('resume-requested', (_view, timestamp) =>
+            this._daemon.call('assistant', 'ResumeChat', timestamp));
         for (const peek of this._peeks)
             peek.connect('close-requested', () => this._alert && !this._expandWanted && this._dismissAlert(true));
         this._voice.connect('type-requested', () => this._startTyping(''));

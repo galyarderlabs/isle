@@ -180,13 +180,15 @@ const INTERFACES = {
             <method name="Cancel"/>
             <method name="NewChat"/>
             <method name="UndoNewChat"/>
+            <method name="ResumeChat"><arg name="timestamp" type="x" direction="in"/></method>
             <method name="ClearChat"/>
             <signal name="Level"><arg name="level" type="d"/></signal>
             <signal name="Notice"><arg name="text" type="s"/><arg name="ok" type="b"/></signal>
             <signal name="ModelSwitched"><arg name="provider" type="s"/><arg name="plan" type="s"/><arg name="picked" type="s"/><arg name="used" type="s"/></signal>
             <property name="State" type="s" access="read"/>
-            <property name="History" type="s" access="read"/>`),
-        properties: {State: 'assistant', History: 'chat'},
+            <property name="History" type="s" access="read"/>
+            <property name="ArchivedChats" type="s" access="read"/>`),
+        properties: {State: 'assistant', History: 'chat', ArchivedChats: 'archivedChats'},
     },
 };
 /** State keys whose property is plain text rather than JSON. */

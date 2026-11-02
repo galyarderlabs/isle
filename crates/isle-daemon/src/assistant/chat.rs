@@ -228,6 +228,44 @@ fn mask_line(line: &str) -> String {
         .join(" ")
 }
 
+/// The archived conversations under `chats/`, newest first, as JSON. Unreadable files are
+/// skipped; the empty are not worth resuming.
+pub fn archived() -> String {
+    let dir = crate::store::data_dir().join("chats");
+    let Ok(entries) = std::fs::read_dir(&dir) else {
+        return "[]".into();
+    };
+    let mut chats: Vec<(i64, i64, usize)> = entries
+        .filter_map(Result::ok)
+        .map(|entry| entry.path())
+        .filter(|path| path.extension().is_some_and(|ext| ext == "json"))
+        .filter_map(|path| {
+            let timestamp = path.file_stem()?.to_string_lossy().parse::<i64>().ok()?;
+            let chat: Chat = serde_json::from_slice(&std::fs::read(&path).ok()?).ok()?;
+            if chat.is_empty() {
+                return None;
+            }
+            Some((timestamp, chat.last, chat.items.len()))
+        })
+        .collect();
+    chats.sort_by_key(|&(_, last, _)| std::cmp::Reverse(last));
+    let list = chats
+        .into_iter()
+        .map(|(timestamp, last, items)| serde_json::json!({ "timestamp": timestamp, "last": last, "items": items }))
+        .collect::<Vec<_>>();
+    serde_json::to_string(&list).unwrap_or_else(|_| "[]".into())
+}
+
+/// One archived conversation, read whole by its file's timestamp, to resume.
+pub fn archived_chat(timestamp: i64) -> Option<Chat> {
+    let path = crate::store::data_dir()
+        .join("chats")
+        .join(format!("{timestamp}.json"));
+    let bytes = std::fs::read(&path).ok()?;
+    let chat: Chat = serde_json::from_slice(&bytes).ok()?;
+    (!chat.is_empty()).then_some(chat)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

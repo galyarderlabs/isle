@@ -292,7 +292,7 @@ export const CompactView = GObject.registerClass({
             const right = [];
             let {left: leftWidth, right: rightWidth} = base;
             for (const [index, item] of statuses.entries()) {
-                // The bell always sits on the date's side, with its count or without one: no
+                // The bell always sits on the clock's side, with its count or without one: no
                 // wandering with the sides' arithmetic. It is placed outright, never kept.
                 const kept = keptSides && item !== this._notificationStatus &&
                     (this._leftStatuses.get_children().includes(item) ? left
@@ -309,10 +309,10 @@ export const CompactView = GObject.registerClass({
                 .map(item => [item, widths[statuses.indexOf(item)]])
                 .sort((a, b) => b[1] - a[1])
                 .forEach(([item, own]) => {
-                    // The bell takes the date's side, always; the level rule balances the
+                    // The bell takes the clock's side, always; the level rule balances the
                     // other statuses around that fixed point.
                     const lighter = item === this._notificationStatus
-                        ? right
+                        ? left
                         : leftWidth <= rightWidth ? left : right;
                     lighter.push(item);
                     if (lighter === left)

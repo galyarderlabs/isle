@@ -1770,3 +1770,11 @@
 #isleIsland.isle-glass-dark .isle-mode-toggle.on,
 #isleIsland.isle-glass-dark .isle-cal-world-toggle:checked,
 #isleIsland.isle-glass-dark .isle-dnd-toggle:checked { box-shadow: none; }
+
+/* The archived conversations, as the history button shows them. */
+.isle-chat-archive { spacing: 6px; padding: 8px 0; }
+.isle-chat-archive-row { padding: 10px 12px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.05); }
+.isle-chat-archive-row:hover { background-color: rgba(255, 255, 255, 0.1); }
+.isle-chat-archive-row:active { background-color: rgba(255, 255, 255, 0.16); }
+.isle-chat-archive-when { font-size: 13px; font-weight: 600; }
+.isle-chat-archive-count { font-size: 11px; color: rgba(255, 255, 255, 0.55); }

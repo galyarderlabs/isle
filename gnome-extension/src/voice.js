@@ -221,6 +221,10 @@ export const VoiceView = GObject.registerClass({
         'close-requested': {},
         // A tool inside the AI asks permission; the ask card's answer (allow | deny | always).
         'ask-decided': {param_types: [GObject.TYPE_STRING]},
+        // The conversation's history button: resume an archived conversation.
+        'history-requested': {},
+        // One of the archived conversations picked to come back.
+        'resume-requested': {param_types: [GObject.TYPE_INT64]},
     },
 }, class VoiceView extends St.Widget {
     /** Builds the row (face, texts, action button) and the conversation that opens above it. */
@@ -388,6 +392,8 @@ export const VoiceView = GObject.registerClass({
         this._chat = new ChatView();
         this._chat.visible = false;
         this._chat.connect('new-chat', () => this.emit('new-chat'));
+        this._chat.connect('history', () => this.emit('history-requested'));
+        this._chat.connect('resume', (_view, timestamp) => this.emit('resume-requested', timestamp));
         // The conversation's ×: put the conversation away first, then home — without the first,
         // the island closed but the conversation stayed open above the pill when it came back.
         this._chat.connect('close', () => {
@@ -589,6 +595,11 @@ export const VoiceView = GObject.registerClass({
             this._face.setForm(form);
         this._syncCardText();
         this.emit('size-changed');
+    }
+
+    /** The archived conversations (isled's ArchivedChats), for the history button's list. */
+    setArchive(chats) {
+        this._chat.setArchive(chats);
     }
 
     /** The conversation so far (see ChatView): shown when open, and behind the chevron by what was heard. */
