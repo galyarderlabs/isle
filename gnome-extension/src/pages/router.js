@@ -6,6 +6,7 @@
 
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
+import Pango from 'gi://Pango';
 import St from 'gi://St';
 
 import {VERTICAL, px} from '../compat.js';
@@ -42,6 +43,13 @@ function ago(atMs) {
     return `${Math.floor(hours / 24)}d ago`;
 }
 
+/** Hide provider routing IDs when they are appended to an otherwise useful model name. */
+function displayModel(model) {
+    return model
+        .replace(/\s*\(openai-compatible[^)]*\)$/i, '')
+        .replace(/-openai-compatible-chat-[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i, '');
+}
+
 export const RouterPage = GObject.registerClass(
 class RouterPage extends Page {
     /** `height` is the expanded island's page height. */
@@ -56,14 +64,19 @@ class RouterPage extends Page {
         this._settings = settings;
         this._state = null;
 
-        const layout = new St.BoxLayout({style_class: 'isle-router-layout', x_expand: true, y_expand: true});
-        const summary = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-summary'});
+        const layout = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-layout',
+            x_expand: true, y_expand: true});
 
         const heading = new St.BoxLayout({style_class: 'isle-router-heading'});
         heading.add_child(new St.Icon({gicon: icon('network-router-symbolic'), icon_size: 16}));
         heading.add_child(label('Router', 'isle-router-title'));
+        this._statusLine = label('Waiting for gateway', 'isle-router-status', {width: px(190)});
+        this._statusLine.clutter_text.ellipsize = Pango.EllipsizeMode.END;
+        heading.add_child(this._statusLine);
         // The period toggle in the header, kept in step with Settings.
         this._periodToggle = new St.BoxLayout({style_class: 'isle-router-periods'});
+        this._periodToggle.x_expand = true;
+        this._periodToggle.x_align = Clutter.ActorAlign.END;
         this._periodButtons = {};
         for (const period of PERIODS) {
             const button = new St.Button({style_class: 'isle-router-period', can_focus: true,
@@ -73,24 +86,36 @@ class RouterPage extends Page {
             this._periodButtons[period] = button;
         }
         heading.add_child(this._periodToggle);
-        summary.add_child(heading);
+        layout.add_child(heading);
 
-        // The summary card: the period's totals. The gateway's cost is its own estimate — the
-        // "est." never leaves it.
-        this._summaryLine = label('', 'isle-router-totals');
-        summary.add_child(this._summaryLine);
-        this._statusLine = label('', 'isle-router-status');
-        summary.add_child(this._statusLine);
-        layout.add_child(summary);
+        // Four compact metric cards give the totals a clear order without another run-on line.
+        const metrics = new St.BoxLayout({style_class: 'isle-router-metrics', x_expand: true});
+        this._metricValues = {};
+        for (const [key, title] of Object.entries({
+            requests: 'Requests',
+            input: 'Tokens in',
+            output: 'Tokens out',
+            cost: 'Est. cost',
+        })) {
+            const card = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-metric', x_expand: true});
+            card.add_child(label(title, 'isle-router-metric-label'));
+            const value = label('—', 'isle-router-metric-value');
+            card.add_child(value);
+            this._metricValues[key] = value;
+            metrics.add_child(card);
+        }
+        layout.add_child(metrics);
 
-        // Everything past the summary in one column the wheel scrolls when it outgrows the
-        // island, like the Tasks list (no scrollbar over the content; a fade at its edge).
-        const column = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-content', x_expand: true,
-            y_expand: true});
-        this._models = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-models', x_expand: true});
-        column.add_child(this._models);
-        this._recent = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-recent', x_expand: true});
-        column.add_child(this._recent);
+        // Models and recent requests sit side by side; scroll stays inside the data area.
+        const content = new St.BoxLayout({style_class: 'isle-router-content', x_expand: true, y_expand: true});
+        this._models = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-section isle-router-models',
+            x_expand: true, y_expand: true});
+        this._models.add_child(label('Top models', 'isle-router-section-title'));
+        content.add_child(this._models);
+        this._recent = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-section isle-router-recent',
+            x_expand: true, y_expand: true});
+        this._recent.add_child(label('Recent requests', 'isle-router-section-title'));
+        content.add_child(this._recent);
         this._scroll = new St.ScrollView({
             style_class: 'isle-router-scroll',
             hscrollbar_policy: St.PolicyType.NEVER,
@@ -99,7 +124,7 @@ class RouterPage extends Page {
             x_expand: true,
             y_expand: true,
         });
-        this._scroll.set_child(column);
+        this._scroll.set_child(content);
         layout.add_child(this._scroll);
 
         this.add_child(layout);
@@ -143,11 +168,12 @@ class RouterPage extends Page {
             return;
         this._key = key;
         const stats = router?.stats ?? {};
-        const cost = `$${(stats.cost ?? 0).toFixed(2)} est`;
-        this._summaryLine.text = router?.status === 'connected'
-            ? `${stats.requests ?? 0} requests · ${tokens(stats.prompt_tokens)} in · ${tokens(stats.completion_tokens)} out · ${cost}`
-            : '';
-        this._statusLine.text = {
+        const connected = router?.status === 'connected';
+        this._metricValues.requests.text = connected ? Number(stats.requests ?? 0).toLocaleString() : '—';
+        this._metricValues.input.text = connected ? tokens(stats.prompt_tokens) : '—';
+        this._metricValues.output.text = connected ? tokens(stats.completion_tokens) : '—';
+        this._metricValues.cost.text = connected ? `$${(stats.cost ?? 0).toFixed(2)}` : '—';
+        const statusText = {
             connected: `Connected · ${router.version}`,
             outdated: 'Update your gateway first',
             unauthorized: 'Authentication failed · check LLM Router settings',
@@ -159,6 +185,9 @@ class RouterPage extends Page {
             'keyring-unavailable': 'GNOME Keyring is locked or unavailable',
             'https-required': 'Remote credentials require HTTPS (HTTP works on this computer only)',
         }[router?.status] ?? 'Waiting for the gateway · configure it in LLM Router settings';
+        this._statusLine.text = statusText;
+        this._statusLine.accessible_name = statusText;
+        this._statusLine.set_style_class_name(`isle-router-status ${connected ? 'connected' : 'offline'}`);
         this._buildModels(stats.by_model ?? []);
         this._buildRecent(stats.recent ?? []);
     }
@@ -191,16 +220,25 @@ class RouterPage extends Page {
 
     /** Rebuilds the top models' bars with compact numbers. */
     _buildModels(byModel) {
-        this._models.destroy_all_children();
+        for (const child of this._models.get_children().slice(1))
+            child.destroy();
         const top = byModel.slice(0, TOP_MODELS);
+        if (!top.length) {
+            this._models.add_child(label('No model activity yet', 'isle-router-empty'));
+            return;
+        }
         const widest = Math.max(1, ...top.map(usage => usage.tokens));
         for (const usage of top) {
-            const row = new St.BoxLayout({style_class: 'isle-router-model'});
-            const name = label(usage.model, 'isle-router-model-name');
+            const row = new St.BoxLayout({style_class: 'isle-router-model', x_expand: true});
+            const name = label(displayModel(usage.model), 'isle-router-model-name', {
+                width: px(176),
+                accessible_name: usage.model,
+            });
+            name.clutter_text.ellipsize = Pango.EllipsizeMode.END;
             row.add_child(name);
             const track = new St.Widget({style_class: 'isle-router-model-track', x_expand: true});
             const fill = new St.Widget({style_class: 'isle-router-model-fill'});
-            fill.width = Math.max(px(2), Math.round(px(120) * usage.tokens / widest));
+            fill.width = Math.max(px(2), Math.round(px(100) * usage.tokens / widest));
             track.add_child(fill);
             row.add_child(track);
             row.add_child(label(tokens(usage.tokens), 'isle-router-model-tokens'));
@@ -210,14 +248,24 @@ class RouterPage extends Page {
 
     /** Rebuilds the last requests: model, in→out tokens, ok/error, relative time. */
     _buildRecent(recent) {
-        this._recent.destroy_all_children();
-        for (const request of recent) {
-            const row = new St.BoxLayout({style_class: 'isle-router-request'});
-            row.add_child(label(request.model, 'isle-router-request-model'));
+        for (const child of this._recent.get_children().slice(1))
+            child.destroy();
+        if (!recent.length) {
+            this._recent.add_child(label('No recent requests', 'isle-router-empty'));
+            return;
+        }
+        for (const request of recent.slice(0, 5)) {
+            const row = new St.BoxLayout({style_class: 'isle-router-request', x_expand: true});
+            const name = label(displayModel(request.model), 'isle-router-request-model', {
+                width: px(150),
+                accessible_name: request.model,
+            });
+            name.clutter_text.ellipsize = Pango.EllipsizeMode.END;
+            row.add_child(name);
             row.add_child(label(`${tokens(request.prompt_tokens)} → ${tokens(request.completion_tokens)}`,
                 'isle-router-request-tokens'));
-            row.add_child(label(request.ok ? 'ok' : 'error',
-                `isle-router-request-ok${request.ok ? '' : ' error'}`));
+            row.add_child(label(request.ok ? 'OK' : 'ERR',
+                `isle-router-request-state${request.ok ? '' : ' error'}`));
             row.add_child(label(request.at_ms ? ago(request.at_ms) : '', 'isle-router-request-time'));
             this._recent.add_child(row);
         }

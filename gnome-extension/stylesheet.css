@@ -1830,35 +1830,44 @@
 .isle-chat-archive-when { font-size: 13px; font-weight: 600; }
 .isle-chat-archive-count { font-size: 11px; color: rgba(255, 255, 255, 0.55); }
 
-/* Router page and chip: the LLM gateway's own numbers, in the period Settings picked. */
-.isle-router-layout { spacing: 18px; }
-.isle-router-scroll { -st-vfade-offset: 14px; }
-.isle-router-content { spacing: 14px; }
-.isle-router-summary { width: 238px; spacing: 5px; }
-.isle-router-heading { spacing: 8px; }
+/* Router page and chip: compact metrics, readable model names and recent activity. */
+.isle-router-layout { spacing: 9px; }
+.isle-router-scroll { -st-vfade-offset: 12px; }
+.isle-router-content { spacing: 22px; }
+.isle-router-heading { spacing: 9px; min-height: 24px; }
 .isle-router-title { font-size: 15px; font-weight: 700; }
+.isle-router-status { padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: 600;
+  color: rgba(255, 255, 255, 0.58); background-color: rgba(255, 255, 255, 0.07); }
+.isle-router-status.connected { color: #79e6a0; background-color: rgba(48, 209, 88, 0.12); }
+.isle-router-status.offline { color: rgba(255, 255, 255, 0.58); }
 .isle-router-periods { spacing: 4px; }
 .isle-router-period { padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 600;
   color: rgba(255, 255, 255, 0.55); }
 .isle-router-period:hover { color: #ffffff; }
 .isle-router-period.picked { color: #ffffff; background-color: rgba(255, 255, 255, 0.14); }
-.isle-router-totals { font-size: 13px; font-weight: 600; font-feature-settings: "tnum"; }
-.isle-router-status { font-size: 11px; color: rgba(255, 255, 255, 0.55); }
-.isle-router-models { spacing: 7px; }
-.isle-router-model { spacing: 8px; }
-.isle-router-model-name { font-size: 11px; color: rgba(255, 255, 255, 0.75); min-width: 90px; }
-.isle-router-model-track { height: 8px; border-radius: 4px; background-color: rgba(255, 255, 255, 0.1); }
-.isle-router-model-fill { height: 8px; border-radius: 4px; background-color: #0a84ff; }
+.isle-router-metrics { spacing: 8px; }
+.isle-router-metric { padding: 5px 10px; spacing: 1px; border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.055); border: 1px solid rgba(255, 255, 255, 0.07); }
+.isle-router-metric-label { font-size: 9px; color: rgba(255, 255, 255, 0.52); }
+.isle-router-metric-value { font-size: 14px; font-weight: 700; font-feature-settings: "tnum"; }
+.isle-router-section { spacing: 5px; }
+.isle-router-section-title { padding-bottom: 2px; font-size: 10px; font-weight: 700;
+  color: rgba(255, 255, 255, 0.55); }
+.isle-router-model { spacing: 8px; min-height: 15px; }
+.isle-router-model-name { font-size: 11px; color: rgba(255, 255, 255, 0.78); }
+.isle-router-model-track { height: 5px; border-radius: 3px; background-color: rgba(255, 255, 255, 0.1); }
+.isle-router-model-fill { height: 5px; border-radius: 3px; background-color: #4ba3ff; }
 .isle-router-model-tokens { font-size: 11px; font-weight: 700; font-feature-settings: "tnum";
-  color: rgba(255, 255, 255, 0.8); min-width: 42px; text-align: right; }
-.isle-router-recent { spacing: 4px; }
-.isle-router-request { spacing: 8px; }
-.isle-router-request-model { font-size: 11px; min-width: 90px; }
+  color: rgba(255, 255, 255, 0.8); min-width: 40px; text-align: right; }
+.isle-router-request { spacing: 7px; min-height: 16px; }
+.isle-router-request-model { font-size: 11px; color: rgba(255, 255, 255, 0.78); }
 .isle-router-request-tokens { font-size: 11px; font-feature-settings: "tnum";
-  color: rgba(255, 255, 255, 0.65); }
-.isle-router-request-ok { font-size: 11px; font-weight: 600; color: #30d158; }
-.isle-router-request-ok.error { color: #ff453a; }
-.isle-router-request-time { font-size: 11px; color: rgba(255, 255, 255, 0.5); }
+  color: rgba(255, 255, 255, 0.62); min-width: 65px; }
+.isle-router-request-state { min-width: 27px; padding: 1px 4px; border-radius: 6px; text-align: center;
+  font-size: 9px; font-weight: 700; color: #79e6a0; background-color: rgba(48, 209, 88, 0.12); }
+.isle-router-request-state.error { color: #ff8880; background-color: rgba(255, 69, 58, 0.13); }
+.isle-router-request-time { min-width: 43px; font-size: 10px; color: rgba(255, 255, 255, 0.48); text-align: right; }
+.isle-router-empty { font-size: 11px; color: rgba(255, 255, 255, 0.46); padding-top: 3px; }
 
 /* The chip's health dot in the closed island: green connected, grey offline, red unauthorized;
    a slow pulse while the gateway reports requests running. */
