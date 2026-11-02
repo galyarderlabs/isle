@@ -484,13 +484,8 @@ export const VoiceView = GObject.registerClass({
         this._syncCardText();
         this._signIn.visible = state.phase === 'error' && Boolean(state.sign_in);
         this._setUp.visible = state.phase === 'error' && Boolean(state.set_up);
-        // Stop while it works; else typing instead (to follow up, too).
-        // While it works, Stop; once it answers or errs, the keyboard for a follow-up; the
-        // pill's own close (back to the resting island) shows in the phases that had none —
-        // except while the conversation is open, whose header × is the one close there.
-        const open = this.chatOpen;
-        const end = open ? null : ['reply', 'error'].includes(state.phase) ? this._typeButton : this._closeButton;
-        this._showAction(working && !open ? this._stop : end);
+        // The row's end button, by the phase and the conversation (see `_refreshAction`).
+        this._refreshAction();
         const searching = (state.phase === 'thinking' && Boolean(state.activity)) || state.phase === 'acting';
         const notHeard = state.phase === 'error' && NOT_HEARD.test(state.error ?? '');
         const form = searching ? 'searching' : notHeard ? 'confused' : {transcribing: 'thinking'}[state.phase] ?? state.phase;
@@ -622,6 +617,14 @@ export const VoiceView = GObject.registerClass({
         this._heardButton.reactive = earlier;
     }
 
+    /** The row's end button for the phase now showing, or none while the conversation is open. */
+    _refreshAction() {
+        const working = WORKING.includes(this._phase);
+        const open = this.chatOpen;
+        const end = open ? null : ['reply', 'error'].includes(this._phase) ? this._typeButton : this._closeButton;
+        this._showAction(working && !open ? this._stop : end);
+    }
+
     /** Whether the conversation is open above the pill. */
     get chatOpen() {
         return this._chat.visible;
@@ -633,6 +636,9 @@ export const VoiceView = GObject.registerClass({
         if (this.chatOpen || !this._history.length)
             return;
         this._chat.visible = true;
+        // The row's end button follows the conversation: while it is open, the header's × is
+        // the one close, so whatever the phase last showed there goes away.
+        this._refreshAction();
         this._syncClose();
         this._heardButton.visible = false;
         this._syncEarlier();
@@ -652,6 +658,8 @@ export const VoiceView = GObject.registerClass({
         if (!this.chatOpen)
             return;
         this._chat.visible = false;
+        // Back in the pill, the phase's own end button returns.
+        this._refreshAction();
         this._syncClose();
         this._heardButton.visible = Boolean(this._heard.text);
         this._syncCardText();
