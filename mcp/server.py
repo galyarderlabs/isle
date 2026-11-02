@@ -5,6 +5,7 @@ import asyncio
 import json
 import logging
 import os
+from datetime import datetime, date as calendar_date
 
 from fastmcp import FastMCP
 from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
@@ -51,13 +52,14 @@ async def call(interface: str, member: str, signature: str = "", *args):
 
 READ_SCOPES = {
     "list_tasks": "tasks:read", "list_calendar_events": "calendar:read", "list_reminders": "reminders:read",
-    "list_food_entries": "calories:read", "prayer_schedule": "prayer:read", "now_playing": "media:read",
-    "focus_state": "focus:read",
+    "list_food_entries": "calories:read", "get_water_entries": "water:read", "prayer_schedule": "prayer:read",
+    "now_playing": "media:read", "focus_state": "focus:read",
 }
 WRITE_SCOPES = {
     "add_task": "tasks:write", "set_task_done": "tasks:write", "add_calendar_event": "calendar:write",
     "remove_calendar_event": "calendar:write", "add_reminder": "reminders:write", "add_food_entry": "calories:write",
-    "update_food_entry": "calories:write", "remove_food_entry": "calories:write", "set_prayer_location": "prayer:write",
+    "update_food_entry": "calories:write", "remove_food_entry": "calories:write", "log_water": "water:write",
+    "remove_water_entry": "water:write", "set_prayer_location": "prayer:write",
     "control_media": "media:write", "start_focus": "focus:write", "pause_focus": "focus:write", "stop_focus": "focus:write",
     "open_url": "desktop:write",
 }
@@ -75,6 +77,30 @@ async def authorize(tool: str, *, write_access: bool = False):
     if scope not in token.scopes and not (scope.endswith(":read") and "*:read" in token.scopes):
         LOG.warning("MCP permission denied: client=%s tool=%s required=%s", token.client_id, tool, scope)
         raise PermissionError(f"{tool} requires {scope} permission")
+
+
+def parse_date(value: str) -> calendar_date:
+    try:
+        return datetime.strptime(value, "%Y-%m-%d").date()
+    except ValueError:
+        raise ValueError(f"{value!r} must be a YYYY-MM-DD date")
+
+
+def filter_entries(entries: list, entry_date, day: str | None = None,
+                   start_date: str | None = None, end_date: str | None = None) -> list:
+    if day is None and start_date is None and end_date is None:
+        return entries
+    day = parse_date(day) if day else None
+    start = parse_date(start_date) if start_date else None
+    end = parse_date(end_date) if end_date else None
+    if callable(entry_date):
+        key = entry_date
+    else:
+        key = lambda entry: datetime.fromtimestamp(entry[entry_date] / 1000).date()
+    return [entry for entry in entries
+            if ((day is None or key(entry) == day)
+                and (start is None or key(entry) >= start)
+                and (end is None or key(entry) <= end))]
 
 
 async def read(tool: str, interface: str, prop: str):
@@ -117,9 +143,12 @@ async def set_task_done(task_id: int, done: bool = True) -> str:
 
 
 @mcp.tool
-async def list_calendar_events() -> list:
-    """List Isle's own calendar events."""
-    return await read("list_calendar_events", "io.github.zickrian.isle.Calendar1", "Events")
+async def list_calendar_events(date: str | None = None, start_date: str | None = None,
+                                end_date: str | None = None) -> list:
+    """List Isle's own calendar events, optionally filtered by date or date range (YYYY-MM-DD)."""
+    events = await read("list_calendar_events", "io.github.zickrian.isle.Calendar1", "Events")
+    return filter_entries(events, lambda entry: parse_date(entry["date"]),
+                          date, start_date, end_date)
 
 
 @mcp.tool
@@ -153,9 +182,36 @@ async def add_reminder(text: str, delay_minutes: int) -> int:
 
 
 @mcp.tool
-async def list_food_entries() -> list:
-    """List locally stored Isle calorie entries."""
-    return await read("list_food_entries", "io.github.zickrian.isle.Calories1", "Entries")
+async def list_food_entries(date: str | None = None, start_date: str | None = None,
+                             end_date: str | None = None) -> list:
+    """List calorie entries, optionally filtered by date or date range (YYYY-MM-DD)."""
+    entries = await read("list_food_entries", "io.github.zickrian.isle.Calories1", "Entries")
+    return filter_entries(entries, "at_ms", date, start_date, end_date)
+
+
+@mcp.tool
+async def get_water_entries(date: str | None = None, start_date: str | None = None,
+                             end_date: str | None = None) -> list:
+    """List water log entries, optionally filtered by date or date range (YYYY-MM-DD)."""
+    entries = await read("get_water_entries", "io.github.zickrian.isle.Water1", "Entries")
+    return filter_entries(entries, "at_ms", date, start_date, end_date)
+
+
+@mcp.tool
+async def log_water(amount_ml: int) -> int:
+    """Log a water drink of 50-3000 ml. Requires log_water permission."""
+    await write("log_water")
+    if not 50 <= amount_ml <= 3000:
+        raise ValueError("amount_ml must be between 50 and 3000")
+    return await call("io.github.zickrian.isle.Water1", "Drink", "u", amount_ml)
+
+
+@mcp.tool
+async def remove_water_entry(entry_id: int) -> str:
+    """Remove a water log entry. Requires remove_water_entry permission."""
+    await write("remove_water_entry")
+    await call("io.github.zickrian.isle.Water1", "Remove", "t", entry_id)
+    return "removed"
 
 
 @mcp.tool
