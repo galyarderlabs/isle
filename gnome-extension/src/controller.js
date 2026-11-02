@@ -564,7 +564,7 @@ export class Controller {
             this._settingsChanged.push(this._settings.connect(`changed::${key}`, () => this._syncBotLook()));
         for (const key of ['usage-enabled', 'usage-claude', 'usage-codex', 'usage-grok', 'usage-warn', 'usage-critical'])
             this._settingsChanged.push(this._settings.connect(`changed::${key}`, () => this._syncUsage()));
-        for (const key of ['router-enabled', 'router-connection', 'router-base-url', 'router-period', 'router-notch'])
+        for (const key of ['router-enabled', 'router-connection', 'router-auth', 'router-base-url', 'router-period', 'router-notch'])
             this._settingsChanged.push(this._settings.connect(`changed::${key}`, () => this._syncRouter()));
         for (const key of ['event-alerts', 'event-alert-minutes'])
             this._settingsChanged.push(this._settings.connect(`changed::${key}`, () => this._syncEventAlerts()));
@@ -1989,6 +1989,7 @@ export class Controller {
         const config = {
             enabled: this._settings.get_boolean('router-enabled'),
             connection: this._settings.get_string('router-connection'),
+            auth: this._settings.get_string('router-auth'),
             base_url: this._settings.get_string('router-base-url'),
             period: this._settings.get_string('router-period'),
         };

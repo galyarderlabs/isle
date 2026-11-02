@@ -234,10 +234,11 @@ with the wheel or touchpad and never show a scrollbar.
 - Privacy dots, in the same island after the right side's sign: green camera, orange microphone,
   blue screen sharing (7 px, 4 px apart). On a call the microphone's dot shows only while another app
   records too. Settings → Appearance → Privacy indicators.
-- The Router chip, spread with the live statuses like the weather's (Settings → LLM Router, off by
-  default): the gateway's requests in the period, its cost estimate (always "est."), the busiest
-  model, and a health dot — green connected, grey offline, red unauthorized, pulsing while the
-  gateway reports requests running. Missing, unreachable or unauthorized, no chip stays behind.
+- The Router chip, spread with the live statuses like the weather's (Island → Pages → LLM Router,
+  off by default): the gateway's cost estimate (always "est.") and a health dot — green connected,
+  grey offline, red unauthorized, pulsing while the gateway reports requests running. If the chip
+  is enabled but the gateway is unavailable, it says Offline, Setup, Auth or Update so the toggle
+  never appears to do nothing. The separate Show on the notch switch controls the chip.
 - Do Not Disturb: a small moon before the time (or the recording's length), the time still centred,
   whatever the sides hold.
 
@@ -493,17 +494,18 @@ only GNOME Shell may report, read or clear them. Settings → App Usage
 clears them.
 
 **Router** (title "Router"): what the AI gateway reports — the island's own
-word for an LLM router (Settings → LLM Router, off by default; the gateway's
+word for an LLM router (Island → Pages → LLM Router, off by default; the gateway's
 brand never shows). On the left the title and the period's **Today** / **24h**
 / **7d** toggle (kept in step with Settings); below, the summary card —
 requests, tokens in and out, and the gateway's cost estimate, always
 "est.", never billing; the top five models by tokens as horizontal bars with
 compact numbers (1.2M, 845K); the last ten requests, scrollable (model, in→out
 tokens, ok or error, "2m ago"). A health dot and its version once connected.
-Missing, unreachable or unauthorized, the page has no tab; the gateway too old
-(the version whose usage endpoint leaked API keys), a permanent "Update your
-gateway first" and no numbers. isled polls only while the chip or the page is
-shown, backs off while the gateway fails, and recovers without a restart.
+While enabled, the page stays available and explains missing credentials, an
+unreachable gateway, or an outdated version. The gateway too old (the version
+whose usage endpoint leaked API keys) shows a permanent "Update your gateway
+first" and no numbers. isled polls only while the chip or the page is shown,
+backs off while the gateway fails, and recovers without a restart.
 
 ## 6. Alerts
 

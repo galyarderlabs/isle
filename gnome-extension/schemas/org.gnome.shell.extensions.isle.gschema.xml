@@ -162,7 +162,7 @@
     <key name="hidden-pages" type="as">
       <default>[]</default>
       <summary>Pages left out of the island</summary>
-      <description>Names of the open island’s pages that have no tab: music, devices, notifications, focus, reminders, shelf, calendar, calories, water, prayer. The Apps and Usage pages have their own switches (app-usage, usage-enabled); the Router page appears only while its gateway is reached.</description>
+      <description>Names of the open island’s pages that have no tab: music, devices, notifications, focus, reminders, shelf, calendar, calories, water, prayer. Apps, Usage and Router have their own switches (app-usage, usage-enabled, router-enabled).</description>
     </key>
     <key name="app-usage" type="b">
       <default>false</default>
@@ -384,7 +384,7 @@
     <key name="router-enabled" type="b">
       <default>false</default>
       <summary>Show LLM Router usage</summary>
-      <description>Requests, tokens and the gateway's estimated cost, on a Router page and a chip in the closed island. Nothing shows while the gateway is missing.</description>
+      <description>Requests, tokens and the gateway's estimated cost. The Router page stays available to show connection status; the notch chip says Offline or Setup until the gateway connects.</description>
     </key>
     <key name="router-connection" type="s">
       <choices>
@@ -393,12 +393,21 @@
       </choices>
       <default>'local'</default>
       <summary>Where the gateway runs</summary>
-      <description>Local looks for it on this machine where its default install serves; Remote points at a base URL.</description>
+      <description>Local looks for 9Router on this computer. Remote connects to a 9Router server or a compatible Isle usage proxy.</description>
+    </key>
+    <key name="router-auth" type="s">
+      <choices>
+        <choice value="password"/>
+        <choice value="proxy"/>
+      </choices>
+      <default>'password'</default>
+      <summary>Remote authentication method</summary>
+      <description>Dashboard password for remote 9Router, or a bearer key for a compatible usage proxy.</description>
     </key>
     <key name="router-base-url" type="s">
       <default>''</default>
       <summary>The gateway's base URL (Remote)</summary>
-      <description>For example http://192.168.1.10:20128</description>
+      <description>For example https://router.example:20128. Remote passwords and keys require HTTPS except on this computer.</description>
     </key>
     <key name="router-period" type="s">
       <choices>
@@ -412,6 +421,7 @@
     <key name="router-notch" type="b">
       <default>true</default>
       <summary>Show the Router chip in the closed island</summary>
+      <description>Show the Router status or cost chip beside the clock in the closed island.</description>
     </key>
     <key name="chimes" type="b">
       <default>true</default>

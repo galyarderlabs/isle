@@ -25,8 +25,9 @@ gateway.
   island shows the chip or the page; 10 s timeout, one request in
   flight per endpoint, backoff 2 s → 5 s → 15 s → 60 s on failure,
   automatic recovery.
-- [x] Settings keys: `router-connection` (local | remote), base URL,
-  period, notch toggle — all in the daemon's schema and the extension's.
+- [x] Settings keys: `router-enabled`, `router-connection` (local | remote),
+  remote auth, base URL, period and notch toggle — all in the daemon's schema
+  and the extension's. The feature switch is in Island → Pages.
 - [ ] Verify on a live desktop: 9Router's npm default on the same
   machine, Local chosen, zero input — data appears without restarting
   Isle.
@@ -76,8 +77,8 @@ points at their base URL and is told what is wrong when it is.
   10 requests (model, in→out, ok/error, relative time), scrollable,
   the period toggle in its header in step with Settings.
 - [x] Registered in `controller.js` with a tab (name `router`), hidden
-  with `hidden-pages` like every page; no tab while the gateway is
-  unreachable or unauthorized.
+  with `hidden-pages` like every page; while enabled, it stays available
+  and explains when the gateway is unreachable, unauthorized or needs setup.
 - [x] Built a step at a time like the other pages (`_buildPages`),
   nothing synchronous on load; renders at most once a second.
 - [ ] Verify: the page opens cold and warm; the period toggle changes
@@ -89,12 +90,12 @@ matter ranked, without leaving the notch.
 
 ### 5. Mode 2: the dashboard password
 
-- [ ] The login call (`POST /api/auth/login`), the session cookie
+- [x] The login call (`POST /api/auth/login`), the session cookie
   persisted with the password in the keyring (isled holds both; the
   extension sees derived state only).
-- [ ] 401 / expired cookie: log in again, at most once per 60 s —
-  never a loop; unauthorized shows in Settings with a red dot, and
-  the poll stops.
+- [x] 401 / expired cookie: log in again, at most once per 60 s —
+  never a loop; unauthorized shows in Settings and auth requests pause
+  for 60 s or until credentials change.
 - [ ] A successful login with the default password ("123456") shows
   the Settings hint to change the gateway's default password.
 - [ ] Verify: a remote gateway through a tunnel, cookie persisting
@@ -105,7 +106,7 @@ when they are not.
 
 ### 6. Mode 3: the proxy key
 
-- [ ] Base URL + Bearer key in Settings under Remote → advanced;
+- [x] Base URL + Bearer key in Settings under Remote;
   `GET {PROXY}/notch?period=…` with `Authorization: Bearer <key>`,
   the same Stats shape; the key in the keyring.
 - [ ] The README lists the proxy as the option for users who will not

@@ -8,8 +8,10 @@
 
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
 
+use keyring::{Entry, Error as KeyringError};
 use log::warn;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -35,9 +37,13 @@ const BACKOFF: [Duration; 4] = [
 /// The gateway's version below which Isle fetches no usage at all: its old usage endpoint leaked
 /// API keys (see the plan, section 6).
 const SAFE_VERSION: (u64, u64, u64) = (0, 4, 42);
+const KEYRING_SERVICE: &str = "io.github.zickrian.isle";
+const REMOTE_PASSWORD: &str = "router-remote-password";
+const REMOTE_SESSION: &str = "router-remote-session";
+const PROXY_KEY: &str = "router-proxy-key";
 
 /// One period's numbers, as the chip and the page draw them.
-#[derive(Debug, Clone, Default, Serialize, PartialEq)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq)]
 pub struct Stats {
     pub requests: u64,
     pub prompt_tokens: u64,
@@ -54,14 +60,14 @@ pub struct Stats {
 }
 
 /// One model's tokens in the period.
-#[derive(Debug, Clone, Default, Serialize, PartialEq)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq)]
 pub struct ModelUsage {
     pub model: String,
     pub tokens: u64,
 }
 
 /// One request the gateway served.
-#[derive(Debug, Clone, Default, Serialize, PartialEq)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq)]
 pub struct Request {
     pub model: String,
     pub prompt_tokens: u64,
@@ -75,7 +81,7 @@ pub struct Request {
 /// What the extension reads: the connection's state and one period's numbers.
 #[derive(Debug, Clone, Default, Serialize, PartialEq)]
 pub struct Router {
-    /// "connected", "unauthorized", "unreachable", "outdated" or "" (nothing enabled or watched).
+    /// "connected", "unauthorized", "unreachable", "outdated", a setup error, or "" when idle.
     pub status: String,
     /// The gateway's own version string once known.
     pub version: String,
@@ -90,6 +96,8 @@ pub struct Router {
 struct Config {
     enabled: bool,
     connection: String,
+    #[serde(default = "default_auth")]
+    auth: String,
     base_url: String,
     period: String,
 }
@@ -100,10 +108,55 @@ impl Default for Config {
         Self {
             enabled: false,
             connection: "local".into(),
+            auth: "password".into(),
             base_url: String::new(),
             period: "today".into(),
         }
     }
+}
+
+fn default_auth() -> String {
+    "password".into()
+}
+
+/// A keyring entry, named so neither the secret nor its type enters GSettings or a plain file.
+fn credential_entry(kind: &str) -> Result<Entry, keyring::Error> {
+    let session_account = kind
+        .strip_prefix("remote-session:")
+        .map(|host| format!("{REMOTE_SESSION}-{host}"));
+    let account = match kind {
+        "remote-password" => REMOTE_PASSWORD.to_owned(),
+        "proxy-key" => PROXY_KEY.to_owned(),
+        _ => session_account.ok_or_else(|| {
+            KeyringError::Invalid("unknown router credential".into(), kind.into())
+        })?,
+    };
+    Entry::new(KEYRING_SERVICE, &account)
+}
+
+fn read_credential(kind: &str) -> Result<Option<String>, keyring::Error> {
+    match credential_entry(kind)?.get_password() {
+        Ok(secret) => Ok(Some(secret)),
+        Err(KeyringError::NoEntry) => Ok(None),
+        Err(error) => Err(error),
+    }
+}
+
+fn write_credential(kind: &str, secret: &str) -> Result<(), keyring::Error> {
+    credential_entry(kind)?.set_password(secret)?;
+    Ok(())
+}
+
+fn clear_one_credential(kind: &str) -> Result<(), keyring::Error> {
+    match credential_entry(kind)?.delete_credential() {
+        Ok(()) | Err(KeyringError::NoEntry) => Ok(()),
+        Err(error) => Err(error),
+    }
+}
+
+fn clear_credential(kind: &str) -> Result<(), keyring::Error> {
+    clear_one_credential(kind)?;
+    Ok(())
 }
 
 /// One gateway behind the trait; page, chip and poll never learn which one it is. `id` tells
@@ -125,6 +178,7 @@ trait RouterGateway {
 struct NineRouter {
     base_url: String,
     token: Option<String>,
+    cookie: Option<String>,
 }
 
 impl RouterGateway for NineRouter {
@@ -141,10 +195,13 @@ impl RouterGateway for NineRouter {
     }
 
     fn auth_headers(&self) -> Vec<(&'static str, String)> {
-        self.token
-            .as_ref()
-            .map(|token| vec![("x-9r-cli-token", token.clone())])
-            .unwrap_or_default()
+        if let Some(token) = &self.token {
+            vec![("x-9r-cli-token", token.clone())]
+        } else if let Some(cookie) = &self.cookie {
+            vec![("Cookie", cookie.clone())]
+        } else {
+            Vec::new()
+        }
     }
 }
 
@@ -165,7 +222,9 @@ fn read_token() -> Option<String> {
 
 /// A file read whole and trimmed, or `None` when it is not there.
 fn read_trimmed(path: PathBuf) -> Option<String> {
-    std::fs::read_to_string(path).ok().map(|text| text.trim().to_owned())
+    std::fs::read_to_string(path)
+        .ok()
+        .map(|text| text.trim().to_owned())
 }
 
 /// Lowercase hex of `bytes`.
@@ -173,11 +232,24 @@ fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|byte| format!("{byte:02x}")).collect()
 }
 
+/// A session is tied to its host, so changing the VPS never sends its cookie to another server.
+fn session_key(base_url: &str) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(base_url.trim_end_matches('/').as_bytes());
+    let digest = hasher.finalize();
+    format!("remote-session:{}", hex(&digest[..8]))
+}
+
 /// Why a read failed, in one word the status line shows.
 #[derive(Debug, PartialEq)]
 enum Failure {
     Unauthorized,
     Unreachable,
+    NeedsLocalSetup,
+    NeedsCredentials,
+    NeedsConfiguration,
+    KeyringUnavailable,
+    HttpsRequired,
 }
 
 /// The router's D-Bus side: its config and the last state.
@@ -186,6 +258,7 @@ pub struct RouterService {
     config: Config,
     watching: bool,
     refresh: Arc<Notify>,
+    credential_revision: AtomicU64,
 }
 
 impl RouterService {
@@ -198,6 +271,7 @@ impl RouterService {
                 config: Config::default(),
                 watching: false,
                 refresh: refresh.clone(),
+                credential_revision: AtomicU64::new(0),
             },
             refresh,
         )
@@ -206,12 +280,71 @@ impl RouterService {
 
 #[interface(name = "io.github.zickrian.isle.Router1")]
 impl RouterService {
-    /// JSON `{enabled, connection, base_url, period}`, from Settings.
+    /// JSON `{enabled, connection, auth, base_url, period}`, from Settings.
     fn set_config(&mut self, config: &str) -> fdo::Result<()> {
         self.config =
             serde_json::from_str(config).map_err(|err| fdo::Error::InvalidArgs(err.to_string()))?;
         self.refresh.notify_one();
         Ok(())
+    }
+
+    /// Saves a Remote password or proxy key in the desktop's secret store.
+    async fn set_credential(&self, kind: &str, secret: &str, base_url: &str) -> fdo::Result<()> {
+        if secret.is_empty() {
+            return Err(fdo::Error::InvalidArgs("credential cannot be empty".into()));
+        }
+        if !matches!(kind, "remote-password" | "proxy-key") {
+            return Err(fdo::Error::InvalidArgs("unknown router credential".into()));
+        }
+        let kind = kind.to_owned();
+        let secret = secret.to_owned();
+        let base_url = base_url.to_owned();
+        tokio::task::spawn_blocking(move || {
+            if kind == "remote-password" {
+                clear_one_credential(&session_key(&base_url))?;
+            }
+            write_credential(&kind, &secret)
+        })
+        .await
+        .map_err(|error| fdo::Error::Failed(error.to_string()))?
+        .map_err(|error| fdo::Error::Failed(format!("GNOME Keyring: {error}")))?;
+        self.refresh.notify_one();
+        self.credential_revision.fetch_add(1, Ordering::Relaxed);
+        Ok(())
+    }
+
+    /// Removes a Remote password or proxy key from the desktop's secret store.
+    async fn clear_credential(&self, kind: &str, base_url: &str) -> fdo::Result<()> {
+        if !matches!(kind, "remote-password" | "proxy-key") {
+            return Err(fdo::Error::InvalidArgs("unknown router credential".into()));
+        }
+        let kind = kind.to_owned();
+        let base_url = base_url.to_owned();
+        tokio::task::spawn_blocking(move || -> Result<(), keyring::Error> {
+            clear_credential(&kind)?;
+            if kind == "remote-password" {
+                clear_one_credential(&session_key(&base_url))?;
+            }
+            Ok(())
+        })
+        .await
+        .map_err(|error| fdo::Error::Failed(error.to_string()))?
+        .map_err(|error| fdo::Error::Failed(format!("GNOME Keyring: {error}")))?;
+        self.refresh.notify_one();
+        self.credential_revision.fetch_add(1, Ordering::Relaxed);
+        Ok(())
+    }
+
+    /// Whether a Remote secret is saved, without returning it to Settings.
+    async fn has_credential(&self, kind: &str) -> fdo::Result<bool> {
+        if !matches!(kind, "remote-password" | "proxy-key") {
+            return Err(fdo::Error::InvalidArgs("unknown router credential".into()));
+        }
+        let kind = kind.to_owned();
+        tokio::task::spawn_blocking(move || read_credential(&kind).map(|secret| secret.is_some()))
+            .await
+            .map_err(|error| fdo::Error::Failed(error.to_string()))?
+            .map_err(|error| fdo::Error::Failed(format!("GNOME Keyring: {error}")))
     }
 
     /// The island shows the chip or the page: poll while `true`, sleep while `false`.
@@ -238,11 +371,22 @@ impl RouterService {
 pub async fn run(iface: InterfaceRef<RouterService>, refresh: Arc<Notify>) {
     let mut failures = 0usize;
     let mut version = String::new();
+    let mut endpoint = String::new();
+    let mut last_password_login = None;
+    let mut credential_revision = 0;
     loop {
-        let (config, watching) = {
+        let (config, watching, current_credential_revision) = {
             let service = iface.get().await;
-            (service.config.clone(), service.watching)
+            (
+                service.config.clone(),
+                service.watching,
+                service.credential_revision.load(Ordering::Relaxed),
+            )
         };
+        if credential_revision != current_credential_revision {
+            credential_revision = current_credential_revision;
+            last_password_login = None;
+        }
         // Nothing enabled, or nobody watching: no timer at all, only the next config or watch.
         if !config.enabled || !watching {
             refresh.notified().await;
@@ -254,26 +398,66 @@ pub async fn run(iface: InterfaceRef<RouterService>, refresh: Arc<Notify>) {
             publish(&iface, state).await;
             continue;
         }
-        let gateway = NineRouter {
-            base_url: if config.connection == "remote" && !config.base_url.is_empty() {
-                config.base_url.trim_end_matches('/').to_owned()
-            } else {
-                LOCAL_URL.into()
-            },
-            token: read_token(),
+        let remote = config.connection == "remote";
+        let target = if remote {
+            config.base_url.trim_end_matches('/')
+        } else {
+            LOCAL_URL
         };
+        let next_endpoint = format!("{}:{}:{}", config.connection, config.auth, target);
+        if next_endpoint != endpoint {
+            endpoint = next_endpoint;
+            version.clear();
+            last_password_login = None;
+        }
+        let allow_login = last_password_login
+            .is_none_or(|last: tokio::time::Instant| last.elapsed() >= Duration::from_secs(60));
         let period = config.period.clone();
         let known = version.clone();
-        let read = tokio::task::spawn_blocking(move || read_state(&gateway, &period, known))
-            .await
-            .ok();
-        let state = match read {
-            Some(Ok(state)) => {
+        let read_config = config.clone();
+        let read = tokio::task::spawn_blocking(move || {
+            if !remote {
+                let Some(token) = read_token() else {
+                    return (Err(Failure::NeedsLocalSetup), None, false, false);
+                };
+                let gateway = NineRouter {
+                    base_url: LOCAL_URL.into(),
+                    token: Some(token),
+                    cookie: None,
+                };
+                return (read_state(&gateway, &period, known), None, false, false);
+            }
+            if read_config.base_url.trim().is_empty() {
+                return (Err(Failure::NeedsConfiguration), None, false, false);
+            }
+            if read_config.auth == "proxy" {
+                let result = read_proxy_state(&read_config.base_url, &period);
+                return (result, None, false, false);
+            }
+            let (state, cookie, login_attempted, store_session) =
+                read_password_state(&read_config.base_url, &period, known, allow_login);
+            (state, cookie, store_session, login_attempted)
+        })
+        .await
+        .ok();
+        let (result, session_cookie, store_session, login_attempted) =
+            read.unwrap_or((Err(Failure::Unreachable), None, false, false));
+        if login_attempted {
+            last_password_login = Some(tokio::time::Instant::now());
+        }
+        if store_session {
+            if let Some(cookie) = session_cookie {
+                let key = session_key(&config.base_url);
+                let _ = tokio::task::spawn_blocking(move || write_credential(&key, &cookie)).await;
+            }
+        }
+        let state = match result {
+            Ok(state) => {
                 failures = 0;
                 version = state.version.clone();
                 state
             }
-            Some(Err(Failure::Unauthorized)) => {
+            Err(Failure::Unauthorized) => {
                 failures += 1;
                 Router {
                     status: "unauthorized".into(),
@@ -282,7 +466,32 @@ pub async fn run(iface: InterfaceRef<RouterService>, refresh: Arc<Notify>) {
                     stats: iface.get().await.state.stats.clone(),
                 }
             }
-            Some(Err(Failure::Unreachable)) | None => {
+            Err(Failure::NeedsCredentials) => Router {
+                status: "needs-credentials".into(),
+                period: config.period.clone(),
+                ..Router::default()
+            },
+            Err(Failure::NeedsConfiguration) => Router {
+                status: "needs-configuration".into(),
+                period: config.period.clone(),
+                ..Router::default()
+            },
+            Err(Failure::NeedsLocalSetup) => Router {
+                status: "needs-local-setup".into(),
+                period: config.period.clone(),
+                ..Router::default()
+            },
+            Err(Failure::KeyringUnavailable) => Router {
+                status: "keyring-unavailable".into(),
+                period: config.period.clone(),
+                ..Router::default()
+            },
+            Err(Failure::HttpsRequired) => Router {
+                status: "https-required".into(),
+                period: config.period.clone(),
+                ..Router::default()
+            },
+            Err(Failure::Unreachable) => {
                 failures += 1;
                 Router {
                     status: "unreachable".into(),
@@ -292,8 +501,12 @@ pub async fn run(iface: InterfaceRef<RouterService>, refresh: Arc<Notify>) {
                 }
             }
         };
+        let authentication_failed = state.status == "unauthorized";
         publish(&iface, state).await;
-        let wait = if failures == 0 {
+        let wait = if authentication_failed {
+            // A bad password or key should not send repeated auth requests while the user fixes it.
+            Duration::from_secs(60)
+        } else if failures == 0 {
             POLL
         } else {
             BACKOFF[(failures - 1).min(BACKOFF.len() - 1)]
@@ -342,12 +555,183 @@ fn read_state(gateway: &NineRouter, period: &str, version: String) -> Result<Rou
     })
 }
 
+/// Remote 9Router dashboard login, with a keyring-backed session cookie refreshed at most once a minute.
+fn read_password_state(
+    base_url: &str,
+    period: &str,
+    version: String,
+    allow_login: bool,
+) -> (Result<Router, Failure>, Option<String>, bool, bool) {
+    let base_url = base_url.trim_end_matches('/');
+    if !secure_remote(base_url) {
+        return (Err(Failure::HttpsRequired), None, false, false);
+    }
+    let password = match read_credential("remote-password") {
+        Ok(Some(password)) => password,
+        Ok(None) => return (Err(Failure::NeedsCredentials), None, false, false),
+        Err(_) => return (Err(Failure::KeyringUnavailable), None, false, false),
+    };
+    let cached = match read_credential(&session_key(base_url)) {
+        Ok(cookie) => cookie,
+        Err(_) => return (Err(Failure::KeyringUnavailable), None, false, false),
+    };
+    let version = if version.is_empty() {
+        let gateway = NineRouter {
+            base_url: base_url.into(),
+            token: None,
+            cookie: None,
+        };
+        match read_version(&gateway) {
+            Ok(version) => version,
+            Err(error) => return (Err(error), cached, false, false),
+        }
+    } else {
+        version
+    };
+    if !version_safe(&version) {
+        return (
+            Ok(Router {
+                status: "outdated".into(),
+                version,
+                period: period.into(),
+                stats: Stats::default(),
+            }),
+            cached,
+            false,
+            false,
+        );
+    }
+    if let Some(cookie) = cached.as_deref() {
+        let gateway = NineRouter {
+            base_url: base_url.into(),
+            token: None,
+            cookie: Some(cookie.into()),
+        };
+        match read_stats(&gateway, period) {
+            Ok(stats) => return (Ok(connected(version, period, stats)), cached, false, false),
+            Err(Failure::Unreachable) => return (Err(Failure::Unreachable), cached, false, false),
+            Err(Failure::Unauthorized) if !allow_login => {
+                return (Err(Failure::Unauthorized), cached, false, false);
+            }
+            Err(Failure::Unauthorized) => {}
+            Err(error) => return (Err(error), cached, false, false),
+        }
+    } else if !allow_login {
+        return (Err(Failure::Unauthorized), None, false, false);
+    }
+
+    let cookie = match login(base_url, &password) {
+        Ok(cookie) => cookie,
+        Err(error) => return (Err(error), cached, true, false),
+    };
+    let gateway = NineRouter {
+        base_url: base_url.into(),
+        token: None,
+        cookie: Some(cookie.clone()),
+    };
+    match read_stats(&gateway, period) {
+        Ok(stats) => (
+            Ok(connected(version, period, stats)),
+            Some(cookie),
+            true,
+            true,
+        ),
+        Err(Failure::Unauthorized) => (Err(Failure::Unauthorized), None, true, false),
+        Err(error) => (Err(error), Some(cookie), true, true),
+    }
+}
+
+fn connected(version: String, period: &str, stats: Stats) -> Router {
+    Router {
+        status: "connected".into(),
+        version,
+        period: period.into(),
+        stats,
+    }
+}
+
+/// A remote password or API key must not cross an unencrypted network connection.
+fn secure_remote(base_url: &str) -> bool {
+    if base_url.starts_with("https://") {
+        return true;
+    }
+    let Some(authority) = base_url
+        .strip_prefix("http://")
+        .and_then(|url| url.split('/').next())
+    else {
+        return false;
+    };
+    let authority = authority.rsplit('@').next().unwrap_or(authority);
+    let host = if authority.starts_with('[') {
+        authority
+            .split(']')
+            .next()
+            .unwrap_or("")
+            .trim_start_matches('[')
+    } else {
+        authority
+            .rsplit_once(':')
+            .map_or(authority, |(host, _)| host)
+    };
+    matches!(host, "localhost" | "127.0.0.1" | "::1")
+}
+
+/// Dashboard login returns the httpOnly `auth_token` cookie; only its cookie pair is retained.
+fn login(base_url: &str, password: &str) -> Result<String, Failure> {
+    let mut response = ureq::post(&format!("{base_url}/api/auth/login"))
+        .config()
+        .timeout_global(Some(TIMEOUT))
+        .build()
+        .send_json(serde_json::json!({"password": password}))
+        .map_err(|error| match &error {
+            ureq::Error::StatusCode(401 | 403 | 429) => Failure::Unauthorized,
+            _ => Failure::Unreachable,
+        })?;
+    let cookie = response
+        .headers()
+        .get("set-cookie")
+        .and_then(|value| value.to_str().ok())
+        .and_then(|value| value.split(';').next())
+        .filter(|value| value.starts_with("auth_token=") && value.len() > "auth_token=".len())
+        .map(str::to_owned)
+        .ok_or(Failure::Unauthorized)?;
+    // Drain a small JSON body so the connection can be reused; never log it.
+    let _ = response.body_mut().read_to_string();
+    Ok(cookie)
+}
+
+/// Reads the normalized response from the optional remote Isle usage proxy.
+fn read_proxy_state(base_url: &str, period: &str) -> Result<Router, Failure> {
+    let base_url = base_url.trim_end_matches('/');
+    if !secure_remote(base_url) {
+        return Err(Failure::HttpsRequired);
+    }
+    let key = read_credential("proxy-key")
+        .map_err(|_| Failure::KeyringUnavailable)?
+        .ok_or(Failure::NeedsCredentials)?;
+    let mut reply = crate::http::get(&format!("{base_url}/notch?period={period}"), TIMEOUT)
+        .header("Authorization", &format!("Bearer {key}"))
+        .call()
+        .map_err(|error| match &error {
+            ureq::Error::StatusCode(401 | 403) => Failure::Unauthorized,
+            _ => Failure::Unreachable,
+        })?;
+    let stats: Stats = reply
+        .body_mut()
+        .read_json()
+        .map_err(|_| Failure::Unreachable)?;
+    Ok(connected("Compatible proxy".into(), period, stats))
+}
+
 /// The gateway's own version report, without auth.
 fn read_version(gateway: &NineRouter) -> Result<String, Failure> {
     let mut reply = crate::http::get(&format!("{}/api/version", gateway.base_url()), TIMEOUT)
         .call()
         .map_err(|_| Failure::Unreachable)?;
-    let version: Version = reply.body_mut().read_json().map_err(|_| Failure::Unreachable)?;
+    let version: Version = reply
+        .body_mut()
+        .read_json()
+        .map_err(|_| Failure::Unreachable)?;
     Ok(version.current)
 }
 
@@ -364,7 +748,10 @@ fn read_stats(gateway: &NineRouter, period: &str) -> Result<Stats, Failure> {
         ureq::Error::StatusCode(code) if gateway.unauthorized(*code) => Failure::Unauthorized,
         _ => Failure::Unreachable,
     })?;
-    let raw: RawStats = reply.body_mut().read_json().map_err(|_| Failure::Unreachable)?;
+    let raw: RawStats = reply
+        .body_mut()
+        .read_json()
+        .map_err(|_| Failure::Unreachable)?;
     Ok(raw.into())
 }
 
@@ -539,7 +926,10 @@ mod tests {
         let port = listener.local_addr().unwrap().port();
         std::thread::spawn(move || {
             use std::io::{Read, Write};
-            for (path, wants_token) in [("/api/version", false), ("/api/usage/stats?period=today", true)] {
+            for (path, wants_token) in [
+                ("/api/version", false),
+                ("/api/usage/stats?period=today", true),
+            ] {
                 let (mut stream, _) = listener.accept().unwrap();
                 let mut buffer = [0; 4096];
                 let read = stream.read(&mut buffer).unwrap();
@@ -550,7 +940,11 @@ mod tests {
                     stats_body.clone()
                 };
                 let refused = wants_token && !request.contains("x-9r-cli-token: abc");
-                let head = if refused { "401 Unauthorized" } else { "200 OK" };
+                let head = if refused {
+                    "401 Unauthorized"
+                } else {
+                    "200 OK"
+                };
                 let reply = format!(
                     "HTTP/1.1 {head}\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
                     body.len(),
@@ -562,6 +956,7 @@ mod tests {
         let gateway = NineRouter {
             base_url: format!("http://127.0.0.1:{port}"),
             token: Some("abc".into()),
+            cookie: None,
         };
         let state = read_state(&gateway, "today", String::new()).unwrap();
         assert_eq!(state.status, "connected");

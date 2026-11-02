@@ -107,6 +107,7 @@ class RouterPage extends Page {
         this.watch(['router'], () => this._update());
         this._settingsChanged = [
             settings.connect('changed::router-period', () => this._syncPeriodButtons()),
+            settings.connect('changed::router-enabled', () => this._syncAvailability()),
         ];
         this.connect('destroy', () => this._settingsChanged.forEach(id => settings.disconnect(id)));
         this._update();
@@ -117,11 +118,9 @@ class RouterPage extends Page {
         return this.daemon.state.router;
     }
 
-    /** Only while the gateway is reached; no tab while it is not. */
+    /** The page stays available while enabled, so it can explain an offline or unconfigured gateway. */
     get available() {
-        const status = this._router?.status;
-        return this._settings.get_boolean('router-enabled') &&
-            (status === 'connected' || status === 'outdated');
+        return this._settings.get_boolean('router-enabled');
     }
 
     /** Has isled poll while the page is on screen. */
@@ -139,24 +138,36 @@ class RouterPage extends Page {
     _update() {
         const router = this._router;
         const key = JSON.stringify(router);
+        this._syncAvailability();
         if (key === this._key)
             return;
         this._key = key;
-        const available = this.available;
-        if (available !== this._wasAvailable) {
-            this._wasAvailable = available;
-            this.emit('availability-changed');
-        }
         const stats = router?.stats ?? {};
         const cost = `$${(stats.cost ?? 0).toFixed(2)} est`;
         this._summaryLine.text = router?.status === 'connected'
             ? `${stats.requests ?? 0} requests · ${tokens(stats.prompt_tokens)} in · ${tokens(stats.completion_tokens)} out · ${cost}`
             : '';
-        this._statusLine.text = router?.status === 'outdated'
-            ? 'Update your gateway first'
-            : router?.version && router.status === 'connected' ? `Connected · ${router.version}` : '';
+        this._statusLine.text = {
+            connected: `Connected · ${router.version}`,
+            outdated: 'Update your gateway first',
+            unauthorized: 'Authentication failed · check LLM Router settings',
+            unreachable: 'Gateway offline · check its URL and make sure it is running',
+            'needs-local-setup': 'Local 9Router token not found · install and run 9Router on this computer',
+            'needs-credentials': 'Add the password or proxy API key in LLM Router settings',
+            'needs-configuration': 'Add the Remote base URL in LLM Router settings',
+            'keyring-unavailable': 'GNOME Keyring is locked or unavailable',
+            'https-required': 'Remote credentials require HTTPS (HTTP works on this computer only)',
+        }[router?.status] ?? 'Waiting for the gateway · configure it in LLM Router settings';
         this._buildModels(stats.by_model ?? []);
         this._buildRecent(stats.recent ?? []);
+    }
+
+    _syncAvailability() {
+        const available = this.available;
+        if (available === this._wasAvailable)
+            return;
+        this._wasAvailable = available;
+        this.emit('availability-changed');
     }
 
     /** The period Settings picked, on the header's toggle. */

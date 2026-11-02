@@ -153,6 +153,9 @@ const INTERFACES = {
     router: {
         xml: node('Router1', `
             <method name="SetConfig"><arg name="config" type="s" direction="in"/></method>
+            <method name="SetCredential"><arg name="kind" type="s" direction="in"/><arg name="secret" type="s" direction="in"/><arg name="base_url" type="s" direction="in"/></method>
+            <method name="ClearCredential"><arg name="kind" type="s" direction="in"/><arg name="base_url" type="s" direction="in"/></method>
+            <method name="HasCredential"><arg name="kind" type="s" direction="in"/><arg name="exists" type="b" direction="out"/></method>
             <method name="SetWatching"><arg name="watching" type="b" direction="in"/></method>
             <method name="Refresh"/>
             <property name="State" type="s" access="read"/>`),

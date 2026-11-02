@@ -25,6 +25,7 @@ const POMODORO_INTERFACE = 'io.github.zickrian.isle.Pomodoro1';
 const CLIPBOARD_INTERFACE = 'io.github.zickrian.isle.Clipboard1';
 const AGENTS_INTERFACE = 'io.github.zickrian.isle.Agents1';
 const ASSISTANT_INTERFACE = 'io.github.zickrian.isle.Assistant1';
+const ROUTER_INTERFACE = 'io.github.zickrian.isle.Router1';
 /** Edits to the timer are sent once typing pauses for this long. */
 const SAVE_DELAY_MS = 400;
 
@@ -153,16 +154,14 @@ export default class IslePreferences extends ExtensionPreferences {
         const page = new Adw.PreferencesPage({title: 'LLM Router', icon_name: 'network-transmit-receive-symbolic'});
         const group = new Adw.PreferencesGroup({
             title: 'LLM Router',
-            description: 'What the AI gateway your tools route through reports: requests, tokens and its own ' +
-                'cost estimate, on a Router page and a chip in the closed island. Nothing shows while the ' +
-                'gateway is missing, unreachable or unauthorized.',
+            description: 'Three modes: Local 9Router uses its CLI token; Remote 9Router uses a dashboard password; ' +
+                'a compatible proxy uses an API key at /notch?period=…. Turn the feature on under Island → Pages. ' +
+                'Remote secrets stay in GNOME Keyring and require HTTPS.',
         });
-        group.add(switchRow(settings, 'router-enabled', 'Show LLM Router',
-            'The Router page and its chip; off, Isle never talks to the gateway'));
         group.add(choiceRow(settings, 'router-connection', 'Connection',
-            'Local looks for the gateway on this machine where its install serves it', [
-            ['local', 'Local — Same Machine'],
-            ['remote', 'Remote — VPS / Server'],
+            'Local derives the same-machine CLI token automatically. Choose Remote for a server or proxy.', [
+            ['local', 'Local 9Router'],
+            ['remote', 'Remote'],
         ]));
         const base = new Adw.EntryRow({title: 'Base URL', text: settings.get_string('router-base-url')});
         base.connect('changed', () => {
@@ -175,13 +174,74 @@ export default class IslePreferences extends ExtensionPreferences {
         });
         base.connect('destroy', () => settings.disconnect(urlChanged));
         group.add(base);
+        const auth = choiceRow(settings, 'router-auth', 'Remote mode',
+            'Choose how Isle authenticates to the remote server.', [
+            ['password', '9Router · Dashboard password'],
+            ['proxy', 'Compatible proxy · API key'],
+        ]);
+        group.add(auth);
+
+        const secretRow = (kind, title, secretName) => {
+            const entry = new Adw.PasswordEntryRow({title});
+            const save = new Gtk.Button({label: 'Save', valign: Gtk.Align.CENTER});
+            entry.add_suffix(save);
+            const saved = new Adw.ActionRow({title, subtitle: 'Not saved'});
+            const remove = new Gtk.Button({label: 'Remove', valign: Gtk.Align.CENTER, visible: false});
+            saved.add_suffix(remove);
+            group.add(entry);
+            group.add(saved);
+
+            const status = () => Gio.DBus.session.call(DAEMON, DAEMON_PATH, ROUTER_INTERFACE, 'HasCredential',
+                new GLib.Variant('(s)', [kind]), new GLib.VariantType('(b)'), Gio.DBusCallFlags.NONE, -1, null,
+                (bus, result) => {
+                    try {
+                        const [exists] = bus.call_finish(result).deepUnpack();
+                        saved.subtitle = exists ? 'Saved in GNOME Keyring on this computer' : 'Not saved';
+                        remove.visible = exists;
+                    } catch {
+                        saved.subtitle = 'Isle’s background service is unavailable';
+                        remove.visible = false;
+                    }
+                });
+            const call = (method, value = null) => {
+                const params = method === 'SetCredential'
+                    ? new GLib.Variant('(sss)', [kind, value, settings.get_string('router-base-url')])
+                    : new GLib.Variant('(ss)', [kind, settings.get_string('router-base-url')]);
+                save.sensitive = remove.sensitive = false;
+                saved.subtitle = method === 'SetCredential' ? 'Saving to GNOME Keyring…' : 'Removing…';
+                Gio.DBus.session.call(DAEMON, DAEMON_PATH, ROUTER_INTERFACE, method, params, null,
+                    Gio.DBusCallFlags.NONE, -1, null, (bus, result) => {
+                        try {
+                            bus.call_finish(result);
+                            entry.text = '';
+                            status();
+                        } catch (e) {
+                            saved.subtitle = `Could not update ${secretName}: ${e.message}`;
+                        } finally {
+                            save.sensitive = remove.sensitive = true;
+                        }
+                    });
+            };
+            save.connect('clicked', () => {
+                const value = entry.text.trim();
+                if (!value) {
+                    saved.subtitle = `Enter the ${secretName} first`;
+                    return;
+                }
+                call('SetCredential', value);
+            });
+            remove.connect('clicked', () => call('ClearCredential'));
+            return {entry, row: saved, status};
+        };
+        const password = secretRow('remote-password', 'Dashboard password', 'password');
+        const proxyKey = secretRow('proxy-key', 'Proxy API key', 'API key');
         group.add(choiceRow(settings, 'router-period', 'Period', 'What the chip and the page count', [
             ['today', 'Today'],
             ['24h', 'Last 24 hours'],
             ['7d', 'Last 7 days'],
         ]));
         group.add(switchRow(settings, 'router-notch', 'Show on the notch',
-            'The compact chip beside the clock'));
+            'Show the usage chip beside the clock when the gateway is connected'));
         // The status line follows the gateway: connected with its version, or what is wrong.
         const status = new Adw.ActionRow({title: 'Status', subtitle: 'Not checked yet'});
         group.add(status);
@@ -191,7 +251,17 @@ export default class IslePreferences extends ExtensionPreferences {
             if (state.status === 'connected')
                 return `Connected · ${state.version}`;
             if (state.status === 'unauthorized')
-                return "Unauthorized: the gateway refused Isle\u2019s request";
+                return 'Unauthorized: check the selected authentication details';
+            if (state.status === 'needs-local-setup')
+                return 'Local token not found · install and run 9Router on this computer';
+            if (state.status === 'needs-credentials')
+                return 'Save the password or proxy key for the selected Remote mode';
+            if (state.status === 'needs-configuration')
+                return 'Enter the Remote base URL';
+            if (state.status === 'keyring-unavailable')
+                return 'GNOME Keyring is unavailable or locked';
+            if (state.status === 'https-required')
+                return 'Remote password login requires HTTPS (HTTP is allowed on this computer only)';
             if (state.status === 'outdated')
                 return `Update your gateway first (found ${state.version})`;
             if (state.status === 'unreachable')
@@ -212,15 +282,34 @@ export default class IslePreferences extends ExtensionPreferences {
                     ? 'Unreachable: the daemon is not answering' : 'Off';
             }
         };
-        const watched = ['router-enabled', 'router-connection', 'router-base-url', 'router-period']
+        const watched = ['router-enabled', 'router-connection', 'router-auth', 'router-base-url', 'router-period']
             .map(key => settings.connect(`changed::${key}`, read));
         page.connect('destroy', () => watched.forEach(id => settings.disconnect(id)));
+        const stateChanged = Gio.DBus.session.signal_subscribe(DAEMON, 'org.freedesktop.DBus.Properties',
+            'PropertiesChanged', DAEMON_PATH, null, Gio.DBusSignalFlags.NONE,
+            (_connection, _sender, _path, _interface, _signal, parameters) => {
+                const [name] = parameters.deepUnpack();
+                if (name === ROUTER_INTERFACE)
+                    read();
+            });
+        page.connect('destroy', () => Gio.DBus.session.signal_unsubscribe(stateChanged));
         read();
-        // The Base URL is only asked for while Remote is picked.
-        const syncBase = () => (base.visible = settings.get_string('router-connection') === 'remote');
-        const connectionChanged = settings.connect('changed::router-connection', syncBase);
-        page.connect('destroy', () => settings.disconnect(connectionChanged));
-        syncBase();
+        const syncMode = () => {
+            const remote = settings.get_string('router-connection') === 'remote';
+            const proxy = settings.get_string('router-auth') === 'proxy';
+            base.visible = auth.visible = remote;
+            // The authentication choice follows Remote; each secret is shown only for its own method.
+            password.entry.visible = password.row.visible = remote && !proxy;
+            proxyKey.entry.visible = proxyKey.row.visible = remote && proxy;
+            if (remote)
+                (proxy ? proxyKey : password).status();
+        };
+        const modeChanged = [
+            settings.connect('changed::router-connection', syncMode),
+            settings.connect('changed::router-auth', syncMode),
+        ];
+        page.connect('destroy', () => modeChanged.forEach(id => settings.disconnect(id)));
+        syncMode();
         page.add(group);
         return page;
     }
@@ -1038,6 +1127,10 @@ function pagesGroup(settings, window) {
         usage.subtitle = 'Sign in to Claude Code, Codex or Grok to see your plan';
     }
     group.add(usage);
+    const router = switchRow(settings, 'router-enabled', 'LLM Router',
+        'Usage from your gateway; configure the connection on the LLM Router settings page');
+    router.add_prefix(new Gtk.Image({icon_name: 'network-transmit-receive-symbolic'}));
+    group.add(router);
     // Not a page but the ✦ beside the tabs: turning it off is how to use Isle without any AI.
     const assistant = switchRow(settings, 'voice-assistant', 'AI Assistant', 'The ✦ in the open island and its shortcut');
     assistant.add_prefix(new Gtk.Image({icon_name: 'audio-input-microphone-symbolic'}));

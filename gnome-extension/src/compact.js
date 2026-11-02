@@ -376,30 +376,35 @@ export const CompactView = GObject.registerClass({
         this._weatherStatus.accessible_name = [locationName, summary, temperature].filter(Boolean).join(', ');
     }
 
-    /** Updates the Router chip from the daemon's last reading: requests · cost "est." · busiest
-     * model, its dot green connected, grey offline, red unauthorized, and breathing while the
-     * gateway reports requests running. Returns whether the chip is on. */
+    /** Updates the Router chip from the daemon's last reading. It remains visible while enabled,
+     * so an offline gateway has a clear status instead of making the notch toggle seem broken. */
     _syncRouter() {
         const router = this._daemon.state.router;
         const stats = router?.stats;
         const connected = router?.status === 'connected';
-        // Off in Settings, off the notch, or nothing published yet: no chip, no trace.
-        const on = !this._isServiceDown && connected &&
+        const on = !this._isServiceDown &&
             this._settings.get_boolean('router-notch') &&
             this._settings.get_boolean('router-enabled');
         if (on) {
-            // The cost estimate alone: the number worth a glance. Requests and models are the
-            // page's to show; the notch only says what the day has cost so far.
-            const cost = `$${(stats.cost ?? 0).toFixed(2)}`;
-            if (this._routerText.text !== cost) {
-                this._routerText.text = cost;
-                this._routerStatus.accessible_name =
-                    `Router: ${stats.requests} requests, ${cost} estimated`;
-            }
+            const cost = `$${(stats?.cost ?? 0).toFixed(2)}`;
+            const text = connected ? cost : ({
+                unauthorized: 'Auth',
+                'needs-local-setup': 'Setup',
+                'needs-credentials': 'Setup',
+                'needs-configuration': 'Setup',
+                'keyring-unavailable': 'Keyring',
+                'https-required': 'HTTPS',
+                outdated: 'Update',
+            }[router?.status] ?? 'Offline');
+            if (this._routerText.text !== text)
+                this._routerText.text = text;
+            this._routerStatus.accessible_name = connected
+                ? `Router: ${stats?.requests ?? 0} requests, ${cost} estimated`
+                : `Router: ${text === 'Auth' ? 'authentication failed' : text === 'Setup' ? 'needs setup' : text.toLowerCase()}`;
         }
-        const dot = router?.status === 'unauthorized' ? 'unauthorized'
+        const dot = ['unauthorized', 'needs-credentials'].includes(router?.status) ? 'unauthorized'
             : connected ? 'connected' : 'offline';
-        const style = `isle-router-dot ${dot}${(stats?.active ?? 0) > 0 ? ' busy' : ''}`;
+        const style = `isle-router-dot ${dot}${connected && (stats?.active ?? 0) > 0 ? ' busy' : ''}`;
         if (this._routerDot.style_class !== style)
             this._routerDot.set_style_class_name(style);
         return on;
