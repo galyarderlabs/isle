@@ -446,9 +446,47 @@ export default class IslePreferences extends ExtensionPreferences {
         page.add(shownGroup);
 
         const tunnel = new Adw.PreferencesGroup({title: 'Remote access',
-            description: 'To reach the server from another machine, run isle-mcp-tunnel ' +
-                '(a Cloudflare quick tunnel; install cloudflared first) and point the agent at ' +
-                'the printed URL\'s /mcp path. Keys still apply; the server stays bound to loopback.'});
+            description: 'Keep the server on loopback and reach it through a Cloudflare tunnel. ' +
+                'For a quick temporary URL, run \u201cisle-mcp-tunnel run\u201d in a terminal and point ' +
+                'the agent at the printed URL\'s /mcp path. Keys still apply.'});
+        const domain = new Adw.EntryRow({title: 'Your domain'});
+        domain.set_tooltip_text('A hostname on a Cloudflare zone, e.g. isle.example.com');
+        const setupStatus = new Adw.ActionRow({title: 'Domain setup',
+            subtitle: 'Not set up. \u201cSet up\u201d logs in to Cloudflare, creates the tunnel, points the ' +
+                'domain at it and starts a user service.'});
+        const setup = new Gtk.Button({label: 'Set up', valign: Gtk.Align.CENTER});
+        setup.connect('clicked', () => {
+            const hostname = domain.text.trim();
+            if (!hostname || !hostname.includes('.')) {
+                domain.add_css_class('error');
+                return;
+            }
+            domain.remove_css_class('error');
+            setup.sensitive = false;
+            setupStatus.subtitle = `Setting up ${hostname}… (the browser opens once for the Cloudflare login)`;
+            const subprocess = Gio.Subprocess.new(['isle-mcp-tunnel', 'setup', hostname],
+                Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
+            subprocess.communicate_utf8_async(null, null, (sub, result) => {
+                const [, out, err] = sub.communicate_utf8_finish(result);
+                setup.sensitive = true;
+                const text = `${out ?? ''}${err ?? ''}`.trim();
+                setupStatus.subtitle = sub.get_successful()
+                    ? `Running: the agent connects to https://${hostname}/mcp with its key.`
+                    : `Setup failed: ${text.split('\n').at(-1) ?? 'see journalctl --user -u isle-mcp-tunnel'}`;
+            });
+        });
+        domain.add_suffix(setup);
+        const stopTunnel = new Gtk.Button({label: 'Stop tunnel', valign: Gtk.Align.CENTER});
+        stopTunnel.connect('clicked', () => {
+            try {
+                Gio.Subprocess.new(['systemctl', '--user', 'disable', '--now', 'isle-mcp-tunnel.service'],
+                    Gio.SubprocessFlags.NONE);
+                setupStatus.subtitle = 'Tunnel stopped; the domain no longer reaches this machine.';
+            } catch { }
+        });
+        setupStatus.add_suffix(stopTunnel);
+        tunnel.add(domain);
+        tunnel.add(setupStatus);
         page.add(tunnel);
         return page;
     }

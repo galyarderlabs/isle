@@ -72,19 +72,47 @@ not expose it directly to an untrusted network. Configure each MCP client with
 the bearer token when the service is bound beyond loopback.
 
 For access from another machine over the internet, keep the server on loopback
-and run a Cloudflare tunnel: `isle-mcp-tunnel` starts a temporary quick tunnel
-(install `cloudflared` first), refuses to start without at least one token
-configured, and prints the public URL; the agent connects to that URL's `/mcp`
-path with its bearer token, and TLS is terminated by Cloudflare:
+and run a Cloudflare tunnel. `isle-mcp-tunnel` wraps `cloudflared`; TLS is
+terminated by Cloudflare and the per-client tokens still apply. Two ways:
+
+### Quick tunnel (temporary URL, no Cloudflare account)
+
+1. Install [`cloudflared`](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/).
+2. Generate at least one key (Settings → MCP → Generate key, or `isle-mcp-keygen add <name> [scopes]`);
+   the tunnel refuses to start without one.
+3. Run `isle-mcp-tunnel run` and copy the `https://<random>.trycloudflare.com` URL it prints.
+4. In the agent's MCP settings, point it at `https://<random>.trycloudflare.com/mcp` with the key as bearer token.
+
+The URL is temporary and changes on every run — use the named tunnel for
+anything lasting.
+
+### Named tunnel (your own domain, automatic DNS)
+
+Settings → MCP → Remote access does this from the UI: enter your hostname
+(e.g. `isle.example.com`, a zone in your Cloudflare account) and press
+**Set up**. The same steps on the command line, transparently:
+
+1. `isle-mcp-tunnel setup isle.example.com` — the script:
+   1. Logs in to Cloudflare (`cloudflared tunnel login`; the browser opens once,
+      the certificate lands in `~/.cloudflared/cert.pem`).
+   2. Creates a tunnel named `isle-mcp` (reusing it if it exists).
+   3. Points the hostname at the tunnel: `cloudflared tunnel route dns` — the
+      DNS CNAME record is created automatically, nothing to edit by hand.
+   4. Writes `~/.config/isle/cloudflared/config.yml` (hostname →
+      `http://127.0.0.1:8765`).
+   5. Installs and starts the `isle-mcp-tunnel.service` systemd user service.
+2. Point the agent at `https://isle.example.com/mcp` with a client key as
+   bearer token.
+
+Check and stop:
 
 ```sh
-isle-mcp-tunnel
+isle-mcp-tunnel status
+isle-mcp-tunnel stop
 ```
 
-For a stable URL on your own domain, create a named tunnel instead:
-`cloudflared tunnel create isle-mcp`, route your domain to
-`http://localhost:8765`, and run `cloudflared tunnel run isle-mcp`. The
-per-client tokens still apply in both cases.
+`stop` disables the service; delete the DNS record in Cloudflare's dashboard to
+remove the hostname for good.
 
 For separate permissions per client, create `~/.config/isle/mcp-clients.json`
 with mode `0600` and remove `ISLE_MCP_TOKEN` from `mcp.env`:
