@@ -441,7 +441,7 @@ export class Controller {
             () => page('./pages/prayer.js', 'PrayerPage', [this._daemon, size]),
             () => page('./pages/usage.js', 'UsagePage', [this._daemon, size]),
             () => page('./pages/apps.js', 'AppsPage', [this._daemon, this._appUsage, size]),
-            () => page('./pages/devices.js', 'DevicesPage', [this._daemon, size]),
+            () => page('./pages/devices.js', 'DevicesPage', [this._daemon, () => this._botLook.palette.glow, size]),
         ];
     }
 
