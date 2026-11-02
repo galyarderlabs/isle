@@ -22,7 +22,7 @@ import {isTerminal} from './clipboard.js';
 import {answerPlain} from './format.js';
 import {VERTICAL, eventActor, maximize, onUiScale, px, uiScale, unmaximize} from './compat.js';
 import {plainBody} from './notifications.js';
-import {cornerClose, icon, iconButton, pillButton, revealClose, wrapLines} from './widgets.js';
+import {cornerClose, icon, iconButton, label, pillButton, revealClose, wrapLines} from './widgets.js';
 
 
 /** Sizes in CSS pixels (see `px`). */
@@ -34,8 +34,9 @@ const LISTENING_WIDTH = 280;
 const ANSWER_WIDTH = 600;
 /** The round button at the row's end: type instead, stop or send (see stylesheet.css). */
 const ACTION_SIZE = 32;
-/** The icon-only history shortcut beside the row's close button. */
-const CHAT_BUTTON_WIDTH = 32;
+/** The labelled history pill beside Close in the row's toolbar. */
+const CHAT_BUTTON_WIDTH = 82;
+const CHAT_ACTION_GAP = 6;
 /** Row padding, the face, the action and the gaps between them (see stylesheet.css). */
 const TEXT_INSET = 16 + 16 + FACE_SIZE + 2 * 12 + ACTION_SIZE;
 /** The row's padding above and below the texts; below leaves room for the glow. */
@@ -275,10 +276,13 @@ export const VoiceView = GObject.registerClass({
         this._heardButton = new St.Button({child: heardRow, style_class: 'isle-voice-heard-button', reactive: false,
             x_align: Clutter.ActorAlign.START, accessible_name: 'Show the conversation'});
         this._heardButton.connect('clicked', () => this.openChat());
-        // History sits beside Close in the same top-aligned toolbar, with a tooltip for its icon.
-        const chatButtonIcon = new St.Icon({gicon: icon('document-open-recent-symbolic'), icon_size: 14});
+        // A labelled History pill is easier to recognize than an icon tucked beside Close.
+        const chatButtonContent = new St.BoxLayout({style_class: 'isle-voice-chat-content'});
+        chatButtonContent.add_child(new St.Icon({gicon: icon('isle-history'), icon_size: 13,
+            y_align: Clutter.ActorAlign.CENTER}));
+        chatButtonContent.add_child(label('History', 'isle-voice-chat-label', {y_align: Clutter.ActorAlign.CENTER}));
         this._chatButton = new St.Button({style_class: 'isle-button isle-voice-action isle-voice-chat-button',
-            child: chatButtonIcon, can_focus: true, accessible_name: 'Open chat history',
+            child: chatButtonContent, can_focus: true, accessible_name: 'Open chat history',
             y_align: Clutter.ActorAlign.CENTER});
         this._chatButton.tooltip_text = 'Open chat history';
         this._chatButton.connect('clicked', () => this.openHistory());
@@ -392,9 +396,12 @@ export const VoiceView = GObject.registerClass({
         }
         this._chatButton.set_pivot_point(0.5, 0.5);
         this._chatSlot.add_child(this._chatButton);
+        this._toolbar = new St.BoxLayout({style_class: 'isle-voice-toolbar', y_align: Clutter.ActorAlign.CENTER,
+            visible: false});
+        this._toolbar.add_child(this._chatSlot);
+        this._toolbar.add_child(this._action);
         this._shownAction = null;
-        row.add_child(this._chatSlot);
-        row.add_child(this._action);
+        row.add_child(this._toolbar);
         // The conversation above the pill's row, when open; the row stays as it is below it.
         this._chat = new ChatView();
         this._chat.visible = false;
@@ -649,6 +656,12 @@ export const VoiceView = GObject.registerClass({
         this._chatButton.tooltip_text = hasArchive ? 'Open chat history' : 'Open current conversation';
         this._chatSlot.visible = !this.chatOpen &&
             (Boolean(this._history.length) || hasArchive);
+        this._syncToolbar();
+    }
+
+    /** Keep the controls together so History and Close share one alignment and spacing. */
+    _syncToolbar() {
+        this._toolbar.visible = this._chatSlot.visible || this._action.visible;
     }
 
     /** The chevron by what was heard, when the conversation holds more than the pill shows. */
@@ -661,9 +674,8 @@ export const VoiceView = GObject.registerClass({
 
     /** The row's end button for the phase now showing, or none while the conversation is open. */
     _refreshAction() {
-        // The × is always at the row's end — closing to the resting island is one click in
-        // every phase, the conversation's own header holds its controls while it is open.
-        this._showAction(this._closeButton);
+        // Home has a one-click close. While the conversation is open, its header owns Close instead.
+        this._showAction(this.chatOpen ? null : this._closeButton);
     }
 
     /** Whether the conversation is open above the pill. */
@@ -875,6 +887,7 @@ export const VoiceView = GObject.registerClass({
     /** Shows `button` (or none) at the row's end; a new one comes in with a small pop. */
     _showAction(button) {
         this._action.visible = Boolean(button);
+        this._syncToolbar();
         if (button === this._shownAction)
             return;
         this._shownAction = button;
@@ -944,8 +957,9 @@ export const VoiceView = GObject.registerClass({
         const scale = uiScale();
         // The conversation button sits beside the end button, and takes that much of the row's
         // width too when it shows, so the texts give way by both, not just one.
+        const chatGap = this._action.visible ? CHAT_ACTION_GAP : 12;
         const ends = (this._action.visible || this._card.visible ? 0 : ACTION_SIZE + 12) -
-            (this._chatSlot.visible ? CHAT_BUTTON_WIDTH + 12 : 0);
+            (this._chatSlot.visible ? CHAT_BUTTON_WIDTH + chatGap : 0);
         const width = this.preferredWidth - (TEXT_INSET - ends) * scale;
         // Measured per label: the box's own answer is the size set below.
         const parts = [this._undo, this._heardButton, this._entry, this._ideas, this._text, this._card, this._stepsBox, this._still,

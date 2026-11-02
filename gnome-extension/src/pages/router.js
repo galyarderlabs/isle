@@ -68,7 +68,7 @@ class RouterPage extends Page {
             x_expand: true, y_expand: true});
 
         const heading = new St.BoxLayout({style_class: 'isle-router-heading'});
-        heading.add_child(new St.Icon({gicon: icon('network-router-symbolic'), icon_size: 16}));
+        heading.add_child(new St.Icon({gicon: icon('isle-router'), icon_size: 16}));
         heading.add_child(label('Router', 'isle-router-title'));
         this._statusLine = label('Waiting for gateway', 'isle-router-status', {width: px(190)});
         this._statusLine.clutter_text.ellipsize = Pango.EllipsizeMode.END;

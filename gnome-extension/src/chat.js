@@ -15,7 +15,7 @@ import St from 'gi://St';
 import {BotIcon} from './botIcon.js';
 import {VERTICAL, onUiScale, px} from './compat.js';
 import * as Format from './format.js';
-import {icon, iconButton, playMotion, slideBy, wrapLines} from './widgets.js';
+import {icon, playMotion, slideBy, wrapLines} from './widgets.js';
 
 /** The little face beside its answers, in CSS pixels (see `px`). */
 const FACE_SIZE = 18;
@@ -478,7 +478,7 @@ export const ChatView = GObject.registerClass({
     Signals: {'new-chat': {}, 'close': {}, 'history': {}, 'resume': {param_types: [GObject.TYPE_INT64]}, 'settled': {},
         'size-changed': {}},
 }, class ChatView extends St.BoxLayout {
-    /** Header with New chat and Hide, then the scrolling list that keeps to its end. */
+    /** Header with New chat, History and Close, then the scrolling list that keeps to its end. */
     _init() {
         super._init({...VERTICAL, style_class: 'isle-chat', x_expand: true});
         const header = new St.BoxLayout({style_class: 'isle-chat-header'});
@@ -493,7 +493,7 @@ export const ChatView = GObject.registerClass({
         this._newButton.connect('clicked', () => this.emit('new-chat'));
         header.add_child(this._newButton);
         const historyContent = new St.BoxLayout({style_class: 'isle-chat-control-content'});
-        historyContent.add_child(new St.Icon({gicon: icon('document-open-recent-symbolic'), icon_size: 12,
+        historyContent.add_child(new St.Icon({gicon: icon('isle-history'), icon_size: 12,
             y_align: Clutter.ActorAlign.CENTER}));
         this._historyButtonLabel = label('History', 'isle-chat-control-label');
         historyContent.add_child(this._historyButtonLabel);
@@ -502,6 +502,13 @@ export const ChatView = GObject.registerClass({
             accessible_name: 'Chat history'});
         this._historyButton.connect('clicked', () => this.showArchive(!this._showingArchive));
         header.add_child(this._historyButton);
+        this._closeButton = new St.Button({
+            child: new St.Icon({gicon: icon('isle-close-symbolic'), icon_size: 12}),
+            style_class: 'isle-button isle-chat-close', can_focus: true,
+            accessible_name: 'Close conversation',
+        });
+        this._closeButton.connect('clicked', () => this.emit('close'));
+        header.add_child(this._closeButton);
         this.add_child(header);
         this._archive = new St.BoxLayout({...VERTICAL, style_class: 'isle-chat-archive-view', x_expand: true});
         this._list = new St.BoxLayout({...VERTICAL, style_class: 'isle-chat-list', x_expand: true});

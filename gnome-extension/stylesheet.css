@@ -371,8 +371,8 @@
 .isle-chat-control-label { font-size: 11px; font-weight: 600; }
 .isle-chat-history-active { color: #ffffff; background-color: rgba(48, 209, 88, 0.18); border-color: rgba(48, 209, 88, 0.22); }
 .isle-chat-history-active:hover { background-color: rgba(48, 209, 88, 0.25); }
-.isle-chat-close { padding: 5px; color: rgba(255, 255, 255, 0.75); background-color: rgba(255, 255, 255, 0.08); }
-.isle-chat-close:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.16); }
+.isle-chat-close { padding: 6px; color: rgba(255, 255, 255, 0.68); background-color: rgba(255, 255, 255, 0.06); border-radius: 999px; }
+.isle-chat-close:hover { color: #ffffff; background-color: rgba(255, 69, 58, 0.2); }
 .isle-chat-list { spacing: 10px; padding-top: 6px; padding-bottom: 4px; }
 .isle-chat-scroll { -st-vfade-offset: 28px; }
 .isle-chat-user { padding: 6px 12px; spacing: 5px; border-radius: 15px; background-color: rgba(255, 255, 255, 0.12); }
@@ -1789,15 +1789,17 @@
 .isle-devices-action-content { spacing: 8px; }
 .isle-devices-action-label { font-size: 12px; font-weight: 600; }
 
-/* History and Close share the row's compact, aligned toolbar. */
+/* History and Close share one aligned toolbar beside the composer. */
+.isle-voice-toolbar { spacing: 6px; }
+.isle-voice-chat-content { spacing: 6px; }
+.isle-voice-chat-label { font-size: 11px; font-weight: 600; }
 .isle-voice-chat-button {
-  padding: 8px;
-  width: 32px;
+  padding: 0 10px;
   height: 32px;
   border-radius: 999px;
   color: rgba(255, 255, 255, 0.86);
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.09);
 }
 .isle-voice-chat-button:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.17); }
 .isle-voice-chat-button:active { color: #ffffff; background-color: rgba(255, 255, 255, 0.23); }

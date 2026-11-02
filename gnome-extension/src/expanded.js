@@ -34,7 +34,7 @@ const TABS = {
     shelf: {icon: 'isle-shelf', label: 'Shelf'},
     calendar: {icon: 'isle-calendar', label: 'Calendar'},
     calories: {icon: 'isle-flame', label: 'Calories'},
-    water: {icon: 'isle-water', label: 'Water'},
+    water: {icon: 'isle-water-tab', label: 'Water'},
     prayer: {icon: 'isle-prayer', label: 'Prayer'},
     apps: {icon: 'isle-apps', label: 'Apps'},
     usage: {icon: 'isle-gauge', label: 'Usage'},
