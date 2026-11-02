@@ -1781,6 +1781,8 @@
 
 /* Router page and chip: the LLM gateway's own numbers, in the period Settings picked. */
 .isle-router-layout { spacing: 18px; }
+.isle-router-scroll { -st-vfade-offset: 14px; }
+.isle-router-content { spacing: 14px; }
 .isle-router-summary { width: 238px; spacing: 5px; }
 .isle-router-heading { spacing: 8px; }
 .isle-router-title { font-size: 15px; font-weight: 700; }

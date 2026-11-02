@@ -83,13 +83,24 @@ class RouterPage extends Page {
         summary.add_child(this._statusLine);
         layout.add_child(summary);
 
-        // The top models by tokens, horizontal bars.
+        // Everything past the summary in one column the wheel scrolls when it outgrows the
+        // island, like the Tasks list (no scrollbar over the content; a fade at its edge).
+        const column = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-content', x_expand: true,
+            y_expand: true});
         this._models = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-models', x_expand: true});
-        layout.add_child(this._models);
-
-        // The last requests, scrollable.
+        column.add_child(this._models);
         this._recent = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-recent', x_expand: true});
-        layout.add_child(this._recent);
+        column.add_child(this._recent);
+        this._scroll = new St.ScrollView({
+            style_class: 'isle-router-scroll',
+            hscrollbar_policy: St.PolicyType.NEVER,
+            // Scrolls with the wheel or touchpad; no scrollbar over the list.
+            vscrollbar_policy: St.PolicyType.EXTERNAL,
+            x_expand: true,
+            y_expand: true,
+        });
+        this._scroll.set_child(column);
+        layout.add_child(this._scroll);
 
         this.add_child(layout);
         this._syncPeriodButtons();
