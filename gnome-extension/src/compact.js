@@ -388,13 +388,13 @@ export const CompactView = GObject.registerClass({
             this._settings.get_boolean('router-notch') &&
             this._settings.get_boolean('router-enabled');
         if (on) {
-            const cost = `$${(stats.cost ?? 0).toFixed(2)} est`;
-            const model = stats.by_model?.[0]?.model ?? '';
-            const text = [`${stats.requests}`, cost, model].filter(Boolean).join(' · ');
+            // Two numbers only: the requests and the cost estimate. The busiest model is the
+            // page's to show; a model name here is the chip's longest, least moving part.
+            const text = `${stats.requests} · $${(stats.cost ?? 0).toFixed(2)}`;
             if (this._routerText.text !== text) {
                 this._routerText.text = text;
                 this._routerStatus.accessible_name =
-                    `Router: ${stats.requests} requests, ${cost}${model ? `, ${model}` : ''}`;
+                    `Router: ${stats.requests} requests, $${(stats.cost ?? 0).toFixed(2)} estimated`;
             }
         }
         const dot = router?.status === 'unauthorized' ? 'unauthorized'
