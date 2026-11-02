@@ -223,23 +223,59 @@ async fn read_battery(session: &Connection, path: &str) -> (Option<u8>, bool) {
     let Some(state) = state else {
         return (None, false);
     };
-    let tuple = state
-        .get("battery")
-        .and_then(|value| value.as_array())
-        .and_then(|entry| entry.first())
-        .and_then(|value| value.as_array());
-    let Some(tuple) = tuple else {
+    // The battery action's state is a (bsii) tuple — charging, icon, level, time — however
+    // DescribeAll's reply nests it (its shape varies by GTK version): search the action's
+    // value for a 4-field array whose first field is the boolean.
+    let found = find_battery_state(state.get("battery"));
+    let Some((charging, level)) = found else {
+        log::debug!(
+            "GSConnect battery state unreadable: {}",
+            state.get("battery").cloned().unwrap_or_default()
+        );
         return (None, false);
     };
-    let mut fields = tuple.iter();
-    let charging = fields
-        .next()
-        .and_then(|value| value.as_bool())
-        .unwrap_or(false);
+    (level, charging)
+}
+
+/// The (bsii) battery state wherever the reply's shape nests it: the value itself, or the
+/// first field of the action's entry, or deeper. None when no shape matches.
+fn find_battery_state(value: Option<&serde_json::Value>) -> Option<(bool, Option<u8>)> {
+    let tuple = value?;
+    if let Some(found) = battery_tuple(tuple) {
+        return Some(found);
+    }
+    for nested in value?.as_array()?.iter() {
+        if let Some(found) = battery_tuple(nested) {
+            return Some(found);
+        }
+        if let Some(found) = find_battery_state_array(nested) {
+            return Some(found);
+        }
+    }
+    None
+}
+
+/// The same search one array deeper (the action's entry holding the state in a nested array).
+fn find_battery_state_array(value: &serde_json::Value) -> Option<(bool, Option<u8>)> {
+    for nested in value.as_array()?.iter() {
+        if let Some(found) = battery_tuple(nested) {
+            return Some(found);
+        }
+    }
+    None
+}
+
+/// A (bsii) state: a 4-field array whose first field is the boolean, its third the level.
+fn battery_tuple(value: &serde_json::Value) -> Option<(bool, Option<u8>)> {
+    let fields = value.as_array()?;
+    if fields.len() < 4 {
+        return None;
+    }
+    let charging = fields.first()?.as_bool()?;
     let level = fields
-        .nth(1)
+        .get(2)
         .and_then(|value| value.as_i64())
         .filter(|level| (0..=100).contains(level))
         .map(|level| level as u8);
-    (level, charging)
+    Some((charging, level))
 }

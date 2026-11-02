@@ -625,9 +625,12 @@
 
 /* "Work  25  −  +", as a pill. */
 .isle-steppers { spacing: 8px; }
-.isle-stepper { padding: 3px 4px 3px 12px; spacing: 4px; border-radius: 999px; background-color: #1c1c1e; }
-.isle-stepper-name { font-size: 12px; font-weight: 500; color: rgba(255, 255, 255, 0.55); width: 40px; }
-.isle-stepper-value { font-size: 15px; font-weight: 600; letter-spacing: -0.1px; width: 26px; text-align: right; padding-right: 6px; }
+.isle-stepper { padding: 3px 4px 3px 8px; spacing: 4px; border-radius: 999px; background-color: #1c1c1e; }
+.isle-stepper-name { font-size: 12px; font-weight: 500; color: rgba(255, 255, 255, 0.55); width: 34px; }
+.isle-stepper-value { font-size: 15px; font-weight: 600; letter-spacing: -0.1px; width: 22px; text-align: right; padding-right: 4px; }
+.isle-stepper-button { padding: 4px; border-radius: 999px; color: rgba(255, 255, 255, 0.8); }
+.isle-stepper-button:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.1); }
+
 /* The length is a field as well: quiet until the pointer is on it or it is being typed in. */
 #isleIsland .isle-stepper-entry,
 #isleIsland .isle-stepper-entry:hover,
@@ -677,9 +680,27 @@
 
 /* Reminders: an orange title and count (as large as the timer's caption beside it), rows of a ring and a title
  * over a hairline. A 24 px header and 24 px rows fit five whole rows in the 144 px page. */
-.isle-reminders-header { height: 25px; padding: 0; spacing: 8px; }
-.isle-reminders-title { font-size: 17px; font-weight: 600; color: #ff9f0a; letter-spacing: -0.2px; }
-.isle-reminders-count { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; color: #ff9f0a; padding-right: 2px; }
+.isle-reminders-layout { spacing: 16px; }
+.isle-reminders-summary { width: 188px; spacing: 3px; padding-right: 8px; }
+.isle-reminders-title { font-size: 16px; font-weight: 700; color: #ffffff; letter-spacing: -0.3px; }
+.isle-reminders-progress { font-size: 42px; font-weight: 700; letter-spacing: -1.4px; }
+.isle-reminders-progress-summary { font-size: 12px; color: rgba(255, 255, 255, 0.55); }
+.isle-reminders-actions { spacing: 6px; margin-top: 6px; }
+.isle-reminders-action {
+  padding: 6px 9px;
+  border-radius: 999px;
+  background-color: #2c2c2e;
+  transition-duration: 120ms;
+}
+.isle-reminders-action:hover { background-color: #3a3a3c; }
+.isle-reminders-action:focus { background-color: #48484a; }
+.isle-reminders-action-contents { spacing: 5px; }
+.isle-reminders-action-label { font-size: 11px; font-weight: 600; }
+.isle-reminders-add-action { background-color: #ff453a; }
+.isle-reminders-add-action:hover { background-color: #ff6259; }
+.isle-reminders-edit-action:checked { background-color: #48484a; }
+.isle-reminders-content { spacing: 4px; }
+.isle-reminder-list { spacing: 5px; padding: 4px 0; }
 
 /* Lists fade out at an edge that scrolls on, instead of being cut. */
 .isle-reminder-scroll { -st-vfade-offset: 14px; }
@@ -1749,3 +1770,11 @@
 #isleIsland.isle-glass-dark .isle-mode-toggle.on,
 #isleIsland.isle-glass-dark .isle-cal-world-toggle:checked,
 #isleIsland.isle-glass-dark .isle-dnd-toggle:checked { box-shadow: none; }
+
+/* The archived conversations, as the history button shows them. */
+.isle-chat-archive { spacing: 6px; padding: 8px 0; }
+.isle-chat-archive-row { padding: 10px 12px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.05); }
+.isle-chat-archive-row:hover { background-color: rgba(255, 255, 255, 0.1); }
+.isle-chat-archive-row:active { background-color: rgba(255, 255, 255, 0.16); }
+.isle-chat-archive-when { font-size: 13px; font-weight: 600; }
+.isle-chat-archive-count { font-size: 11px; color: rgba(255, 255, 255, 0.55); }

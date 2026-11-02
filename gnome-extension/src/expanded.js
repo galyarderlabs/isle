@@ -158,8 +158,9 @@ export const ExpandedView = GObject.registerClass({
 
 /** The clock and status flank the centred tabs. */
     _buildHeader() {
-        // Reactive from the start (never toggled, no hover tracked): scrolls over it turn pages.
-        const header = new St.Widget({layout_manager: new Clutter.BinLayout(), style_class: 'isle-header', reactive: true});
+        // A row of three zones — the clock, the centred tabs, the utility buttons — laid out by
+        // the box itself; scrolls over it turn pages.
+        const header = new St.BoxLayout({style_class: 'isle-header', x_expand: true, reactive: true});
         header.connect('scroll-event', (_actor, event) => this._flipFromScroll(event));
 
         // Keep the left and right zones the same width. The tab strip then stays centred

@@ -475,7 +475,7 @@ export const CommandCard = GObject.registerClass({
 // commands it ran as short lines; + starts a new one. It scrolls, newest at the bottom.
 export const ChatView = GObject.registerClass({
     // `settled`: a press on its text is over (a selection copied, or a plain click), so the keys go back.
-    Signals: {'new-chat': {}, 'close': {}, 'settled': {}},
+    Signals: {'new-chat': {}, 'close': {}, 'history': {}, 'resume': {param_types: [GObject.TYPE_INT64]}, 'settled': {}},
 }, class ChatView extends St.BoxLayout {
     /** Header with New chat and Hide, then the scrolling list that keeps to its end. */
     _init() {
@@ -485,9 +485,10 @@ export const ChatView = GObject.registerClass({
         header.add_child(this._title);
         header.add_child(iconButton('isle-plus-symbolic', 'isle-button-flat isle-chat-new', () => this.emit('new-chat'),
             {size: 13, accessibleName: 'New chat'}));
-        header.add_child(iconButton('isle-close-symbolic', 'isle-button-flat isle-chat-close', () => this.emit('close'),
-            {size: 13, accessibleName: 'Close assistant'}));
+        header.add_child(iconButton('isle-backward-symbolic', 'isle-button-flat isle-chat-history',
+            () => this.showArchive(!this._showingArchive), {size: 13, accessibleName: 'Chat history'}));
         this.add_child(header);
+        this._archive = new St.BoxLayout({...VERTICAL, style_class: 'isle-chat', x_expand: true});
         this._list = new St.BoxLayout({...VERTICAL, style_class: 'isle-chat-list', x_expand: true});
         this._scroll = new St.ScrollView({
             style_class: 'isle-chat-scroll',
@@ -497,6 +498,18 @@ export const ChatView = GObject.registerClass({
             y_expand: true,
         });
         this._scroll.set_child(this._list);
+        // The archived conversations, when the history button opens them: a row each, the
+        // newest first; a click resumes it (the pill asks isled, the conversation comes back).
+        this._archiveList = new St.BoxLayout({...VERTICAL, style_class: 'isle-chat-archive', x_expand: true});
+        this._archiveScroll = new St.ScrollView({
+            style_class: 'isle-chat-scroll',
+            hscrollbar_policy: St.PolicyType.NEVER,
+            vscrollbar_policy: St.PolicyType.EXTERNAL,
+            x_expand: true,
+            y_expand: true,
+        });
+        this._archiveScroll.set_child(this._archiveList);
+        this._showingArchive = false;
         // GNOME 49+ pans a scroll view by dragging, which would take every press from the text: dragging here
         // selects, to copy. The wheel and the touchpad still scroll it.
         for (const action of this._scroll.get_actions?.() ?? []) {
@@ -504,6 +517,9 @@ export const ChatView = GObject.registerClass({
                 this._scroll.remove_action(action);
         }
         this.add_child(this._scroll);
+        this._archive.add_child(this._archiveScroll);
+        this.add_child(this._archive);
+        this._archive.visible = false;
         this._items = [];
         this.connect('destroy', () => this._copiedTimer && GLib.source_remove(this._copiedTimer));
         // New messages come in at the bottom, and it keeps there. The panel also shrinks as the command
@@ -533,9 +549,37 @@ export const ChatView = GObject.registerClass({
         this.setItems(this._items);
     }
 
+    /** The archived conversations: [{timestamp, last, items}], newest first (isled's
+     *  ArchivedChats). Shown by the header's history button; a click resumes one. */
+    setArchive(chats) {
+        this._archiveList.destroy_all_children();
+        for (const chat of chats) {
+            const when = new Date(chat.last).toLocaleString(undefined, {weekday: 'short', hour: '2-digit', minute: '2-digit'});
+            const row = new St.Button({style_class: 'isle-chat-archive-row', can_focus: true, x_expand: true,
+                accessible_name: `Resume the conversation from ${when}`});
+            const column = new St.BoxLayout({...VERTICAL, x_expand: true});
+            column.add_child(label(when, 'isle-chat-archive-when'));
+            column.add_child(label(`${chat.items} messages`, 'isle-chat-archive-count'));
+            row.set_child(column);
+            row.connect('clicked', () => this.emit('resume', chat.timestamp));
+            this._archiveList.add_child(row);
+        }
+    }
+
+    /** Shows the archived conversations (true) or the messages (false); the title follows. */
+    showArchive(shown) {
+        if (shown === this._showingArchive)
+            return;
+        this._showingArchive = shown;
+        this._title.text = shown ? 'Chat history' : 'Chat';
+        this._scroll.visible = !shown;
+        this._archive.visible = shown;
+    }
+
     /** The messages: [{role: user | assistant | command, text, spoken, command, status, at (ms)}]. A gap of a
      * while gets the time above it; its answers after yours get its face. */
     setItems(items) {
+        this.showArchive(false);
         // Those after the ones shown before are new: they rise into place.
         const known = this._items.length && items.length >= this._items.length && items[0] === this._items[0]
             ? this._items.length : items.length;

@@ -221,6 +221,10 @@ export const VoiceView = GObject.registerClass({
         'close-requested': {},
         // A tool inside the AI asks permission; the ask card's answer (allow | deny | always).
         'ask-decided': {param_types: [GObject.TYPE_STRING]},
+        // The conversation's history button: resume an archived conversation.
+        'history-requested': {},
+        // One of the archived conversations picked to come back.
+        'resume-requested': {param_types: [GObject.TYPE_INT64]},
     },
 }, class VoiceView extends St.Widget {
     /** Builds the row (face, texts, action button) and the conversation that opens above it. */
@@ -388,6 +392,8 @@ export const VoiceView = GObject.registerClass({
         this._chat = new ChatView();
         this._chat.visible = false;
         this._chat.connect('new-chat', () => this.emit('new-chat'));
+        this._chat.connect('history', () => this.emit('history-requested'));
+        this._chat.connect('resume', (_view, timestamp) => this.emit('resume-requested', timestamp));
         // The conversation's ×: put the conversation away first, then home — without the first,
         // the island closed but the conversation stayed open above the pill when it came back.
         this._chat.connect('close', () => {
@@ -484,13 +490,8 @@ export const VoiceView = GObject.registerClass({
         this._syncCardText();
         this._signIn.visible = state.phase === 'error' && Boolean(state.sign_in);
         this._setUp.visible = state.phase === 'error' && Boolean(state.set_up);
-        // Stop while it works; else typing instead (to follow up, too).
-        // While it works, Stop; once it answers or errs, the keyboard for a follow-up; the
-        // pill's own close (back to the resting island) shows in the phases that had none —
-        // except while the conversation is open, whose header × is the one close there.
-        const open = this.chatOpen;
-        const end = open ? null : ['reply', 'error'].includes(state.phase) ? this._typeButton : this._closeButton;
-        this._showAction(working && !open ? this._stop : end);
+        // The row's end button, by the phase and the conversation (see `_refreshAction`).
+        this._refreshAction();
         const searching = (state.phase === 'thinking' && Boolean(state.activity)) || state.phase === 'acting';
         const notHeard = state.phase === 'error' && NOT_HEARD.test(state.error ?? '');
         const form = searching ? 'searching' : notHeard ? 'confused' : {transcribing: 'thinking'}[state.phase] ?? state.phase;
@@ -596,6 +597,11 @@ export const VoiceView = GObject.registerClass({
         this.emit('size-changed');
     }
 
+    /** The archived conversations (isled's ArchivedChats), for the history button's list. */
+    setArchive(chats) {
+        this._chat.setArchive(chats);
+    }
+
     /** The conversation so far (see ChatView): shown when open, and behind the chevron by what was heard. */
     setHistory(items) {
         this._history = items;
@@ -622,6 +628,14 @@ export const VoiceView = GObject.registerClass({
         this._heardButton.reactive = earlier;
     }
 
+    /** The row's end button for the phase now showing, or none while the conversation is open. */
+    _refreshAction() {
+        const working = WORKING.includes(this._phase);
+        const open = this.chatOpen;
+        const end = open ? null : ['reply', 'error'].includes(this._phase) ? this._typeButton : this._closeButton;
+        this._showAction(working && !open ? this._stop : end);
+    }
+
     /** Whether the conversation is open above the pill. */
     get chatOpen() {
         return this._chat.visible;
@@ -633,6 +647,9 @@ export const VoiceView = GObject.registerClass({
         if (this.chatOpen || !this._history.length)
             return;
         this._chat.visible = true;
+        // The row's end button follows the conversation: while it is open, the header's × is
+        // the one close, so whatever the phase last showed there goes away.
+        this._refreshAction();
         this._syncClose();
         this._heardButton.visible = false;
         this._syncEarlier();
@@ -652,6 +669,8 @@ export const VoiceView = GObject.registerClass({
         if (!this.chatOpen)
             return;
         this._chat.visible = false;
+        // Back in the pill, the phase's own end button returns.
+        this._refreshAction();
         this._syncClose();
         this._heardButton.visible = Boolean(this._heard.text);
         this._syncCardText();

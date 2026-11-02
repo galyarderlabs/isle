@@ -292,8 +292,8 @@ export const CompactView = GObject.registerClass({
             const right = [];
             let {left: leftWidth, right: rightWidth} = base;
             for (const [index, item] of statuses.entries()) {
-                // The bell never keeps a side: it landed beside the date before its preference
-                // existed, and keeping it there kept it there forever. It chooses every spread.
+                // The bell always sits on the clock's side, with its count or without one: no
+                // wandering with the sides' arithmetic. It is placed outright, never kept.
                 const kept = keptSides && item !== this._notificationStatus &&
                     (this._leftStatuses.get_children().includes(item) ? left
                         : this._rightStatuses.get_children().includes(item) ? right : null);
@@ -309,8 +309,8 @@ export const CompactView = GObject.registerClass({
                 .map(item => [item, widths[statuses.indexOf(item)]])
                 .sort((a, b) => b[1] - a[1])
                 .forEach(([item, own]) => {
-                    // The bell always takes the clock's side: predictable beside the clock it
-                    // belongs to (the level rule balances the other statuses around that).
+                    // The bell takes the clock's side, always; the level rule balances the
+                    // other statuses around that fixed point.
                     const lighter = item === this._notificationStatus
                         ? left
                         : leftWidth <= rightWidth ? left : right;

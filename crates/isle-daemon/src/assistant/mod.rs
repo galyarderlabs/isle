@@ -325,6 +325,8 @@ pub enum Command {
     UndoNewChat,
     /// Deletes the conversation now, here and the AI's copy (Settings).
     ClearChat,
+    /// Brings an archived conversation back: its file's timestamp under chats/.
+    ResumeChat(i64),
     /// A command started before isled restarted has ended: how, and its output.
     Settled(Box<tasks::Task>, tasks::Ended, String),
 }
@@ -489,6 +491,25 @@ impl AssistantService {
     /// Deletes the conversation now, here and in the AI's own history. Settings may ask too.
     async fn clear_chat(&self) -> fdo::Result<()> {
         self.send(Command::ClearChat)
+    }
+
+    /// Brings an archived conversation back as the one going on: `timestamp` names its file
+    /// under chats/ (as ArchivedChats lists). A current conversation is archived first.
+    async fn resume_chat(
+        &self,
+        timestamp: i64,
+        #[zbus(connection)] connection: &Connection,
+        #[zbus(header)] header: Header<'_>,
+    ) -> fdo::Result<()> {
+        crate::caller::shell_only(connection, &header).await?;
+        self.send(Command::ResumeChat(timestamp))
+    }
+
+    /// The archived conversations, newest first, as JSON `[{timestamp, last, items}]`: what the
+    /// island offers to resume. Only those still readable count; empty ones are left out.
+    #[zbus(property)]
+    fn archived_chats(&self) -> String {
+        crate::assistant::chat::archived()
     }
 
     /// Stops the request being answered; the AI quits.
@@ -1469,6 +1490,24 @@ pub async fn run(iface: InterfaceRef<AssistantService>, data: Sources, mut comma
                     talk.archive_replaced(old);
                 }
                 talk.archive(&mut session);
+                show_history(&iface, &talk.chat).await;
+                None
+            }
+            Command::ResumeChat(timestamp) => {
+                // What is going on goes to the archive, as any ended conversation does; the
+                // chosen one comes back as the conversation, the AI's own with it.
+                if let Some((old, _)) = talk.undo.take() {
+                    talk.archive_replaced(old);
+                }
+                talk.archive(&mut session);
+                if let Some(back) = crate::assistant::chat::archived_chat(timestamp) {
+                    session.drop_conversation();
+                    session.provider = Provider::from_id(&back.provider).or(session.provider);
+                    session.conversation =
+                        Some(back.conversation.clone()).filter(|id| !id.is_empty());
+                    talk.chat = back;
+                    talk.save(&session);
+                }
                 show_history(&iface, &talk.chat).await;
                 None
             }
