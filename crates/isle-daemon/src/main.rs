@@ -176,7 +176,6 @@ async fn run() -> anyhow::Result<()> {
     server.at(OBJECT_PATH, AppUsageService::load()).await?;
     server.at(OBJECT_PATH, assistant).await?;
     server.at(OBJECT_PATH, usage).await?;
-    server.at(OBJECT_PATH, RouterService::new().0).await?;
     server.at(OBJECT_PATH, updates).await?;
     server.at(OBJECT_PATH, AgentsService::default()).await?;
 
