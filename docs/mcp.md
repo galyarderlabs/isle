@@ -181,3 +181,36 @@ are search-first and never return the whole history at once; assistant and
 agent-permission interfaces stay internal and are not exposed. The shell-only
 assistant control API is an internal control
 interface, not an Isle user feature exposed by this MCP service.
+
+## Live acceptance checklist
+
+Run these on a machine with isled, the Isle extension, and a session bus;
+record exact versions and results in
+[assistant-platform-status.md](assistant-platform-status.md) when they pass.
+
+1. **Service**: `isle-setup-mcp`, then `systemctl --user enable --now
+   isle-mcp.service`; `systemctl --user is-active isle-mcp.service` says
+   `active`, and `curl -s http://127.0.0.1:8765/mcp` answers (not connection
+   refused).
+2. **Tools/list**: with an external MCP client (Claude Code: `claude mcp add
+   --transport http isle http://127.0.0.1:8765/mcp`), `tools/list` returns all
+   54 tools with their scopes in the descriptions.
+3. **Reads**: `list_tasks`, `list_calendar_events`, `list_reminders`,
+   `get_water_entries`, `prayer_schedule`, `now_playing`, `focus_state`,
+   `get_app_usage`, `get_system_state`, `get_router_stats`, `get_usage_quota`,
+   `list_shelf_items`, `get_latest_update` return real data.
+4. **Date filters**: `list_food_entries(date="<today>")` and
+   `list_calendar_events(start_date=…, end_date=…)` return only matching
+   records; an invalid date is rejected with a clear error.
+5. **Writes**: with `ISLE_MCP_WRITE_TOOLS=add_task,log_water` set in `mcp.env`,
+   `add_task` and `log_water` succeed and show up in the Isle UI; a write not
+   in the allowlist (e.g. `add_reminder`) is refused; writes work again after
+   `systemctl --user restart isle-mcp.service`.
+6. **Auth**: generate a key with Settings → MCP (or `isle-mcp-keygen`); without
+   the bearer token the client gets 401; with `tasks:read` only, `list_tasks`
+   works and `add_task` is refused; revoking the key blocks the client after a
+   restart.
+7. **Remote**: `isle-mcp-tunnel run` prints a `trycloudflare.com` URL and the
+   agent reaches `…/mcp` with its token; `isle-mcp-tunnel setup <hostname>`
+   logs in, creates the DNS record (visible in Cloudflare's dashboard), and the
+   agent reaches `https://<hostname>/mcp`; `isle-mcp-tunnel stop` cuts access.
