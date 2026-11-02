@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-//! The assistant's "brain": whichever AI CLI the user has and picked (agy, Claude Code, Codex or Grok), behind one
-//! face. Each runs with the user's own sign-in, kept to answering; isled runs the tools and actions itself.
+//! The assistant's "brain": whichever AI provider the user has and picked, behind one face. Each CLI runs with
+//! the user's own sign-in, kept to answering; isled runs the tools and actions itself.
 
 use std::path::{Path, PathBuf};
 
@@ -15,6 +15,7 @@ use super::codex::Codex;
 use super::grok::Grok;
 use super::omp::Omp;
 use super::openai::Client as ApiClient;
+use super::opencode::Opencode;
 
 /// An AI CLI the assistant can run.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -26,17 +27,19 @@ pub enum Provider {
     Hermes,
     OpenAi,
     OhMyPi,
+    Opencode,
 }
 
 /// Tried in this order when the user picked "auto", signed-in ones first. agy comes last: its terms bar
 /// third-party tools, so it answers only when it is all there is, or picked.
-const AUTO: [Provider; 7] = [
+const AUTO: [Provider; 8] = [
     Provider::Claude,
     Provider::Codex,
     Provider::Grok,
     Provider::Hermes,
     Provider::OpenAi,
     Provider::OhMyPi,
+    Provider::Opencode,
     Provider::Agy,
 ];
 
@@ -51,6 +54,7 @@ impl Provider {
             Provider::Hermes => "hermes",
             Provider::OpenAi => "openai-compatible",
             Provider::OhMyPi => "oh-my-pi",
+            Provider::Opencode => "opencode",
         }
     }
 
@@ -64,6 +68,7 @@ impl Provider {
             Provider::Hermes => "Hermes",
             Provider::OpenAi => "OpenAI-compatible API",
             Provider::OhMyPi => "Oh My Pi",
+            Provider::Opencode => "opencode",
         }
     }
 
@@ -76,6 +81,7 @@ impl Provider {
             Provider::Grok => "grok",
             Provider::Hermes | Provider::OpenAi => "",
             Provider::OhMyPi => "omp",
+            Provider::Opencode => "opencode",
         }
     }
 
@@ -96,7 +102,7 @@ impl Provider {
     pub fn signed_in(self) -> bool {
         let home = dirs::home_dir().unwrap_or_default();
         match self {
-            Provider::Agy => home.join(agy::LOGIN).exists(),
+            Provider::Agy => agy::signed_in_at(&home),
             Provider::Claude => super::claude::signed_in(),
             Provider::Codex => {
                 super::codex::user_auth().exists()
@@ -108,6 +114,7 @@ impl Provider {
             // OMP can use many provider-specific credentials in its own config. Isle checks that
             // the CLI exists, then lets OMP report whether its chosen provider is configured.
             Provider::OhMyPi => self.program().is_some(),
+            Provider::Opencode => super::opencode::signed_in(),
         }
     }
 
@@ -121,6 +128,7 @@ impl Provider {
             Provider::Hermes => "hermes gateway",
             Provider::OpenAi => "configure ISLE_OPENAI_BASE_URL and ISLE_OPENAI_API_KEY",
             Provider::OhMyPi => "omp",
+            Provider::Opencode => "opencode auth login",
         }
     }
 
@@ -136,7 +144,7 @@ impl Provider {
     }
 
     /// Every provider, in "auto" order.
-    pub fn all() -> [Provider; 7] {
+    pub fn all() -> [Provider; 8] {
         AUTO
     }
 
@@ -209,6 +217,7 @@ fn dirs_in(home: &Path, env_dir: impl Fn(&str) -> Option<PathBuf>) -> Vec<PathBu
         // Claude Code's own older install, mise and asdf, yarn, Homebrew on Linux, Nix.
         home.join(".claude/local"),
         home.join(".grok/bin"),
+        home.join(".opencode/bin"),
         home.join(".local/share/mise/shims"),
         home.join(".asdf/shims"),
         home.join(".yarn/bin"),
@@ -253,6 +262,7 @@ pub enum Brain {
     Grok(Grok),
     Api(Provider, ApiClient),
     Omp(Omp),
+    Opencode(Opencode),
 }
 
 impl Brain {
@@ -296,6 +306,9 @@ impl Brain {
             Provider::Grok => {
                 Brain::Grok(Grok::start(&program, model, resume, workspace, instructions).await?)
             }
+            Provider::Opencode => Brain::Opencode(
+                Opencode::start(&program, model, resume, workspace, instructions).await?,
+            ),
             Provider::Hermes | Provider::OpenAi | Provider::OhMyPi => {
                 unreachable!("providers handled above")
             }
@@ -308,6 +321,7 @@ impl Brain {
             Brain::Codex(codex) => codex.warm().await,
             Brain::Agy(_) | Brain::Claude(_) | Brain::Grok(_) | Brain::Api(_, _) => Ok(()),
             Brain::Omp(omp) => omp.warm().await,
+            Brain::Opencode(_) => Ok(()),
         }
     }
 
@@ -320,6 +334,7 @@ impl Brain {
             Brain::Grok(_) => Provider::Grok,
             Brain::Api(provider, _) => *provider,
             Brain::Omp(_) => Provider::OhMyPi,
+            Brain::Opencode(_) => Provider::Opencode,
         }
     }
 
@@ -338,6 +353,7 @@ impl Brain {
             Brain::Grok(grok) => grok.ask(prompt, activity, draft).await,
             Brain::Api(_, client) => client.ask(prompt, activity, draft).await,
             Brain::Omp(omp) => omp.ask(prompt, activity, draft).await,
+            Brain::Opencode(opencode) => opencode.ask(prompt, activity).await,
         }
     }
 
@@ -350,6 +366,7 @@ impl Brain {
             Brain::Grok(grok) => grok.conversation.clone(),
             Brain::Api(_, _) => None,
             Brain::Omp(omp) => omp.conversation(),
+            Brain::Opencode(opencode) => opencode.conversation.clone(),
         }
     }
 
@@ -362,6 +379,7 @@ impl Brain {
             Provider::Grok => super::grok::forget(id),
             Provider::Hermes | Provider::OpenAi => {}
             Provider::OhMyPi => Omp::forget(id),
+            Provider::Opencode => super::opencode::forget(id),
         }
     }
 
@@ -371,6 +389,7 @@ impl Brain {
         super::claude::prune(today);
         super::codex::prune(today);
         super::grok::prune(today);
+        super::opencode::prune(today);
     }
 }
 
@@ -440,6 +459,7 @@ pub fn explain(provider: Provider, error: &str) -> Failure {
         "unknown method",
         "method not found",
         "unknown variant",
+        "too old",
     ]) {
         return Failure::from((
             &*format!("Update {name}"),

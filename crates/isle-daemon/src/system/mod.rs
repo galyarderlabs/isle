@@ -9,7 +9,7 @@ mod camera;
 mod gsconnect;
 mod network;
 mod power;
-mod sleep;
+pub mod sleep;
 
 use std::time::Duration;
 

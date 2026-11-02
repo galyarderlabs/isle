@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-//! The voice assistant: turns a request into text and lets the AI the user picked (agy, Claude Code, Codex
-//! or Grok) answer it step by step, also once the island closes. Nothing runs between requests.
+//! The voice assistant: turns a request into text and lets the AI the user picked answer it step by step,
+//! also once the island closes. Nothing runs between requests.
 
 mod agenda;
 mod agent;
@@ -22,6 +22,7 @@ mod grok;
 mod mic;
 mod models;
 mod music;
+mod opencode;
 mod omp;
 mod openai;
 mod sign_in;
@@ -35,7 +36,7 @@ use std::time::Duration;
 use chrono::NaiveDate;
 
 use isle_core::voice::{Endpointer, Verdict, meter, rms};
-use log::warn;
+use log::{info, warn};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tokio::sync::{mpsc, oneshot};
@@ -165,7 +166,7 @@ struct State {
 #[serde(default)]
 pub struct Context {
     apps: Vec<String>,
-    /// The AI picked in Settings (including Hermes and OMP), and the model picked for each ("" for its own default).
+    /// The AI picked in Settings, and the model picked for each ("" for its own default).
     provider: String,
     agy_model: String,
     claude_model: String,
@@ -174,6 +175,7 @@ pub struct Context {
     hermes_model: String,
     openai_model: String,
     omp_model: String,
+    opencode_model: String,
     custom_instructions: String,
     whisper_model: String,
     language: String,
@@ -608,6 +610,7 @@ impl Session {
             Provider::Hermes => &context.hermes_model,
             Provider::OpenAi => &context.openai_model,
             Provider::OhMyPi => &context.omp_model,
+            Provider::Opencode => &context.opencode_model,
         };
         let catalog = self
             .catalogs
@@ -623,6 +626,7 @@ impl Session {
                 .unwrap_or_else(|| "sonnet".into()),
             Provider::Codex => codex::user_model().unwrap_or_default(),
             Provider::Grok => grok::user_model().unwrap_or_default(),
+            Provider::Opencode => opencode::user_model().unwrap_or_default(),
             Provider::Agy | Provider::Hermes | Provider::OpenAi | Provider::OhMyPi => String::new(),
         };
         let usable = |model: &str| {
@@ -952,7 +956,11 @@ impl Session {
         if self.provider.is_some_and(|provider| {
             matches!(
                 provider,
-                Provider::Claude | Provider::Codex | Provider::OpenAi | Provider::OhMyPi
+                Provider::Claude
+                    | Provider::Codex
+                    | Provider::OpenAi
+                    | Provider::OhMyPi
+                    | Provider::Opencode
             )
         }) {
             let custom: String = self
@@ -1865,7 +1873,7 @@ async fn start_brain(
     let provider = Provider::pick(wanted).ok_or_else(|| {
         Failure::from((
             "No AI is set up",
-            "Set up Hermes Agent or Oh My Pi (OMP), or install and sign in to another assistant, then pick it in Settings.",
+                    "Install Claude Code, Codex, Grok, Hermes, Oh My Pi, opencode or Antigravity (agy), or configure an API provider, then pick it in Settings.",
         ))
     })?;
     if session.provider != Some(provider) {
@@ -1914,6 +1922,11 @@ enum Recorded {
 /// Below this level a chunk is digital silence, as from a muted microphone.
 const SILENT_RMS: f32 = 1e-4;
 
+/// An RMS level (0..1) in dB below full scale.
+fn decibels(rms: f32) -> f32 {
+    20.0 * rms.max(1e-6).log10()
+}
+
 /// Records until the user stops speaking; `None` when nothing was said.
 async fn record(
     iface: &InterfaceRef<AssistantService>,
@@ -1956,13 +1969,27 @@ async fn record(
                     Verdict::Listening => {}
                     Verdict::Done => break,
                     Verdict::NoSpeech if loudest < SILENT_RMS => return Ok(Recorded::Muted),
-                    Verdict::NoSpeech => return Ok(Recorded::Nothing),
+                    Verdict::NoSpeech => {
+                        info!(
+                            "heard no speech: loudest {:.0} dB, the room {:.0} dB",
+                            decibels(loudest),
+                            decibels(endpointer.room())
+                        );
+                        return Ok(Recorded::Nothing);
+                    }
                 }
             }
             command = commands.recv() => match command {
                 // Tapped to finish: answer what was said, if anything was.
                 Some(Command::Stop) if endpointer.heard_speech() => break,
-                Some(Command::Stop) => return Ok(Recorded::Nothing),
+                Some(Command::Stop) => {
+                    info!(
+                        "stopped before any speech was heard: loudest {:.0} dB, the room {:.0} dB",
+                        decibels(loudest),
+                        decibels(endpointer.room())
+                    );
+                    return Ok(Recorded::Nothing);
+                }
                 Some(Command::End | Command::Cancel) | None => return Err(Command::End),
                 // Typed instead: the recording gives way to it.
                 Some(ask @ Command::Ask(..)) => return Err(ask),
@@ -2227,6 +2254,12 @@ pub fn report() -> String {
         } else {
             match provider.program() {
                 None => format!("  {name}: not installed"),
+                // OpenCode's free models need no sign-in.
+                Some(path) if provider == Provider::Opencode => format!(
+                    "  {name}: {} (free models; `{}` for your own providers)",
+                    path.display(),
+                    provider.sign_in_command()
+                ),
                 Some(path) if provider == Provider::OhMyPi => format!(
                     "  {name}: {} (provider setup is managed by OMP)",
                     path.display()
