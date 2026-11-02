@@ -19,6 +19,7 @@ mod login_env;
 mod media;
 mod meeting;
 mod pomodoro;
+mod router;
 mod prayer;
 mod reminders;
 mod shelf;
@@ -54,6 +55,7 @@ use crate::system::SystemService;
 use crate::todo::TodoService;
 use crate::updates::UpdatesService;
 use crate::usage::UsageService;
+use crate::router::RouterService;
 use crate::water::WaterService;
 
 const BUS_NAME: &str = "io.github.zickrian.isle.Daemon";
@@ -174,6 +176,7 @@ async fn run() -> anyhow::Result<()> {
     server.at(OBJECT_PATH, AppUsageService::load()).await?;
     server.at(OBJECT_PATH, assistant).await?;
     server.at(OBJECT_PATH, usage).await?;
+    server.at(OBJECT_PATH, RouterService::new().0).await?;
     server.at(OBJECT_PATH, updates).await?;
     server.at(OBJECT_PATH, AgentsService::default()).await?;
 
@@ -191,6 +194,10 @@ async fn run() -> anyhow::Result<()> {
     let assistant = server.interface::<_, AssistantService>(OBJECT_PATH).await?;
     let usage = server.interface::<_, UsageService>(OBJECT_PATH).await?;
     tokio::spawn(usage::run(usage, usage_refresh));
+    let (router_service, router_refresh) = RouterService::new();
+    server.at(OBJECT_PATH, router_service).await?;
+    let router = server.interface::<_, RouterService>(OBJECT_PATH).await?;
+    tokio::spawn(router::run(router, router_refresh));
     let updates = server.interface::<_, UpdatesService>(OBJECT_PATH).await?;
     tokio::spawn(updates::run(updates, updates_wake));
     let agents = server.interface::<_, AgentsService>(OBJECT_PATH).await?;

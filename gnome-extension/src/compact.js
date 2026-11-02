@@ -127,6 +127,14 @@ export const CompactView = GObject.registerClass({
             visible: false});
         this._phoneStatus.add_child(this._phoneIcon);
         this._phoneStatus.add_child(this._phoneBattery);
+        // The Router chip: the gateway's requests in the period, its cost estimate and the busiest
+        // model, with a dot for its health (green connected, grey offline, red unauthorized).
+        this._routerDot = new St.Widget({style_class: 'isle-router-dot', y_align: Clutter.ActorAlign.CENTER});
+        this._routerText = label('', 'isle-compact-status-time');
+        this._routerStatus = new St.BoxLayout({style_class: 'isle-compact-status-item', y_align: Clutter.ActorAlign.CENTER,
+            visible: false});
+        this._routerStatus.add_child(this._routerDot);
+        this._routerStatus.add_child(this._routerText);
 
         this._assistant = new BotIcon(ASSISTANT_SIZE, this._botLook());
         this._assistant.y_align = Clutter.ActorAlign.CENTER;
@@ -154,7 +162,8 @@ export const CompactView = GObject.registerClass({
         this._botLookChanged = ['bot-shape', 'bot-color', 'bot-glow'].map(key =>
             settings.connect(`changed::${key}`, () => (this._assistant.look = this._botLook())));
         this._statusItems = [this._serviceDown, this._timerStatus, this._recordingStatus,
-            this._callStatus, this._notificationStatus, this._weatherStatus, this._phoneStatus];
+            this._callStatus, this._notificationStatus, this._weatherStatus, this._phoneStatus,
+            this._routerStatus];
         this._leftStatuses = new St.BoxLayout({style_class: 'isle-compact-status',
             y_align: Clutter.ActorAlign.CENTER});
         this._rightStatuses = new St.BoxLayout({style_class: 'isle-compact-status',
@@ -190,7 +199,7 @@ export const CompactView = GObject.registerClass({
         row.add_child(this._rowEndPad);
 
         this._daemonChanged = daemon.connect('changed', (_daemon, key) => {
-            if (['nowPlaying', 'pomodoro', 'system'].includes(key))
+            if (['nowPlaying', 'pomodoro', 'system', 'router'].includes(key))
                 this._refresh();
         });
         this._settingsChanged = settings.connect('changed::privacy-indicators', () => this._refresh());
@@ -367,6 +376,35 @@ export const CompactView = GObject.registerClass({
         this._weatherStatus.accessible_name = [locationName, summary, temperature].filter(Boolean).join(', ');
     }
 
+    /** Updates the Router chip from the daemon's last reading: requests · cost "est." · busiest
+     * model, its dot green connected, grey offline, red unauthorized, and breathing while the
+     * gateway reports requests running. Returns whether the chip is on. */
+    _syncRouter() {
+        const router = this._daemon.state.router;
+        const stats = router?.stats;
+        const connected = router?.status === 'connected';
+        // Off in Settings, off the notch, or nothing published yet: no chip, no trace.
+        const on = !this._isServiceDown && connected &&
+            this._settings.get_boolean('router-notch') &&
+            this._settings.get_boolean('router-enabled');
+        if (on) {
+            // The cost estimate alone: the number worth a glance. Requests and models are the
+            // page's to show; the notch only says what the day has cost so far.
+            const cost = `$${(stats.cost ?? 0).toFixed(2)}`;
+            if (this._routerText.text !== cost) {
+                this._routerText.text = cost;
+                this._routerStatus.accessible_name =
+                    `Router: ${stats.requests} requests, ${cost} estimated`;
+            }
+        }
+        const dot = router?.status === 'unauthorized' ? 'unauthorized'
+            : connected ? 'connected' : 'offline';
+        const style = `isle-router-dot ${dot}${(stats?.active ?? 0) > 0 ? ' busy' : ''}`;
+        if (this._routerDot.style_class !== style)
+            this._routerDot.set_style_class_name(style);
+        return on;
+    }
+
     /** Shows the unread count on the right beside the other live statuses. */
     set unseenNotifications(unseen) {
         unseen = Number(unseen) || 0;
@@ -498,6 +536,7 @@ export const CompactView = GObject.registerClass({
             this._phoneStatus.accessible_name = `${phone.name} battery ${phone.battery} percent`;
             this._phoneBattery.style = phone.battery <= 20 ? 'color: #ff453a;' : null;
         }
+        const router = this._syncRouter();
         // Split every live status across both sides in a stable priority order, so neither side is left
         // bare; a service failure replaces the statuses with a single warning. The unseen
         // notifications always take the clock's side: the date keeps the right one heavy, and the
@@ -509,6 +548,7 @@ export const CompactView = GObject.registerClass({
             this._notificationStatus,
             this._weather.state.temperature && this._weatherStatus,
             phone && this._phoneStatus,
+            router && this._routerStatus,
         ].filter(Boolean);
         this._spreadStatuses(statuses);
         // The cover sits in the left corner while the song plays; the placeholder stands while a

@@ -27,6 +27,7 @@ log.workspace = true
 serde.workspace = true
 # Keeps the keys of Claude Code's settings.json in their order when its hooks are changed.
 serde_json = { workspace = true, features = ["preserve_order"] }
+sha2.workspace = true
 tokio.workspace = true
 toml_edit.workspace = true
 ureq.workspace = true

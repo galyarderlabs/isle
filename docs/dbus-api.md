@@ -286,6 +286,27 @@ nothing runs.
 | `Usage` | `s` | `{providers: [{id, name, plan, windows: [{label, percent, resets_at_ms}], updated_ms, note}]}`; a provider not signed in is left out. |
 | `Alert` (signal) | `ssdx` | `(provider, window, percent, resets_at_ms)`: a limit passed the warning or the critical share, once per window. |
 
+## io.github.zickrian.isle.Router1
+
+What the LLM gateway reports: requests, tokens and its own cost estimate
+("est.", never billing), behind one gateway abstraction so another gateway
+later is one implementation. The first gateway is 9Router, read over HTTP
+only, and only at the address the user configured — locally with the token its
+own CLI derives from its data directory, sent as `x-9r-cli-token` on every
+usage request. Below version 0.4.42 the gateway's usage endpoint once leaked
+API keys: isled publishes the update warning and fetches no usage. Polled
+only while the island shows the chip or the page (10–15 s, 10 s timeout, one
+request in flight), backing off 2 s → 5 s → 15 s → 60 s on failure and
+recovering by itself; every request read-only. Turned off or unwatched,
+nothing runs.
+
+| Member | Signature | |
+|---|---|---|
+| `SetConfig(s config)` | | `{enabled, connection, base_url, period}` (`connection` `local` or `remote`; `period` `today`, `24h` or `7d`), from Settings; `local` looks at the gateway's own default port, `remote` at `base_url`. |
+| `SetWatching(b watching)` | | The chip or the page is shown: poll while `true`, stop while `false`. |
+| `Refresh()` | | Reads again now. |
+| `State` | `s` | `{status, version, period, stats}` — `status` `connected`, `unauthorized`, `unreachable`, `outdated` or empty; `stats`: `{requests, prompt_tokens, completion_tokens, cached_tokens, cost, by_model: [{model, tokens}], recent: [{model, prompt_tokens, completion_tokens, ok, at_ms}], active}`. |
+
 ## io.github.zickrian.isle.Agents1
 
 AI coding agents on the island: Claude Code and Codex ask their permissions

@@ -1808,3 +1808,46 @@
 .isle-chat-archive-row:active { background-color: rgba(255, 255, 255, 0.16); }
 .isle-chat-archive-when { font-size: 13px; font-weight: 600; }
 .isle-chat-archive-count { font-size: 11px; color: rgba(255, 255, 255, 0.55); }
+
+/* Router page and chip: the LLM gateway's own numbers, in the period Settings picked. */
+.isle-router-layout { spacing: 18px; }
+.isle-router-scroll { -st-vfade-offset: 14px; }
+.isle-router-content { spacing: 14px; }
+.isle-router-summary { width: 238px; spacing: 5px; }
+.isle-router-heading { spacing: 8px; }
+.isle-router-title { font-size: 15px; font-weight: 700; }
+.isle-router-periods { spacing: 4px; }
+.isle-router-period { padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 600;
+  color: rgba(255, 255, 255, 0.55); }
+.isle-router-period:hover { color: #ffffff; }
+.isle-router-period.picked { color: #ffffff; background-color: rgba(255, 255, 255, 0.14); }
+.isle-router-totals { font-size: 13px; font-weight: 600; font-feature-settings: "tnum"; }
+.isle-router-status { font-size: 11px; color: rgba(255, 255, 255, 0.55); }
+.isle-router-models { spacing: 7px; }
+.isle-router-model { spacing: 8px; }
+.isle-router-model-name { font-size: 11px; color: rgba(255, 255, 255, 0.75); min-width: 90px; }
+.isle-router-model-track { height: 8px; border-radius: 4px; background-color: rgba(255, 255, 255, 0.1); }
+.isle-router-model-fill { height: 8px; border-radius: 4px; background-color: #0a84ff; }
+.isle-router-model-tokens { font-size: 11px; font-weight: 700; font-feature-settings: "tnum";
+  color: rgba(255, 255, 255, 0.8); min-width: 42px; text-align: right; }
+.isle-router-recent { spacing: 4px; }
+.isle-router-request { spacing: 8px; }
+.isle-router-request-model { font-size: 11px; min-width: 90px; }
+.isle-router-request-tokens { font-size: 11px; font-feature-settings: "tnum";
+  color: rgba(255, 255, 255, 0.65); }
+.isle-router-request-ok { font-size: 11px; font-weight: 600; color: #30d158; }
+.isle-router-request-ok.error { color: #ff453a; }
+.isle-router-request-time { font-size: 11px; color: rgba(255, 255, 255, 0.5); }
+
+/* The chip's health dot in the closed island: green connected, grey offline, red unauthorized;
+   a slow pulse while the gateway reports requests running. */
+.isle-router-dot { width: 8px; height: 8px; border-radius: 4px; background-color: rgba(255, 255, 255, 0.3); }
+.isle-router-dot.connected { background-color: #30d158; }
+.isle-router-dot.offline { background-color: rgba(255, 255, 255, 0.3); }
+.isle-router-dot.unauthorized { background-color: #ff453a; }
+.isle-router-dot.busy { animation: isle-router-pulse 1.6s ease-in-out infinite; }
+@keyframes isle-router-pulse {
+  0% { opacity: 1.0; }
+  50% { opacity: 0.35; }
+  100% { opacity: 1.0; }
+}

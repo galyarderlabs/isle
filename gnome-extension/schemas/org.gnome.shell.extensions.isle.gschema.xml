@@ -162,7 +162,7 @@
     <key name="hidden-pages" type="as">
       <default>[]</default>
       <summary>Pages left out of the island</summary>
-      <description>Names of the open island’s pages that have no tab: music, devices, notifications, focus, reminders, shelf, calendar, calories, water, prayer. The Apps and Usage pages have their own switches (app-usage, usage-enabled).</description>
+      <description>Names of the open island’s pages that have no tab: music, devices, notifications, focus, reminders, shelf, calendar, calories, water, prayer. The Apps and Usage pages have their own switches (app-usage, usage-enabled); the Router page appears only while its gateway is reached.</description>
     </key>
     <key name="app-usage" type="b">
       <default>false</default>
@@ -380,6 +380,38 @@
       <range min="50" max="100"/>
       <default>95</default>
       <summary>Warn again at this share of a limit (%)</summary>
+    </key>
+    <key name="router-enabled" type="b">
+      <default>false</default>
+      <summary>Show LLM Router usage</summary>
+      <description>Requests, tokens and the gateway's estimated cost, on a Router page and a chip in the closed island. Nothing shows while the gateway is missing.</description>
+    </key>
+    <key name="router-connection" type="s">
+      <choices>
+        <choice value="local"/>
+        <choice value="remote"/>
+      </choices>
+      <default>'local'</default>
+      <summary>Where the gateway runs</summary>
+      <description>Local looks for it on this machine where its default install serves; Remote points at a base URL.</description>
+    </key>
+    <key name="router-base-url" type="s">
+      <default>''</default>
+      <summary>The gateway's base URL (Remote)</summary>
+      <description>For example http://192.168.1.10:20128</description>
+    </key>
+    <key name="router-period" type="s">
+      <choices>
+        <choice value="today"/>
+        <choice value="24h"/>
+        <choice value="7d"/>
+      </choices>
+      <default>'today'</default>
+      <summary>The period the numbers cover</summary>
+    </key>
+    <key name="router-notch" type="b">
+      <default>true</default>
+      <summary>Show the Router chip in the closed island</summary>
     </key>
     <key name="chimes" type="b">
       <default>true</default>
