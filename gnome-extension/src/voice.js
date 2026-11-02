@@ -34,6 +34,8 @@ const LISTENING_WIDTH = 280;
 const ANSWER_WIDTH = 600;
 /** The round button at the row's end: type instead, stop or send (see stylesheet.css). */
 const ACTION_SIZE = 32;
+/** The labelled history shortcut beside the row's close button. */
+const CHAT_BUTTON_WIDTH = 74;
 /** Row padding, the face, the action and the gaps between them (see stylesheet.css). */
 const TEXT_INSET = 16 + 16 + FACE_SIZE + 2 * 12 + ACTION_SIZE;
 /** The row's padding above and below the texts; below leaves room for the glow. */
@@ -275,8 +277,14 @@ export const VoiceView = GObject.registerClass({
         this._heardButton.connect('clicked', () => this.openChat());
         // The pill's history button, beside the close: the saved conversation, or the archived
         // ones to resume — a fresh chat still has its past in the archive.
-        this._chatButton = iconButton('isle-backward-symbolic', 'isle-voice-chat-button',
-            () => this.openHistory(), {size: 13, accessibleName: 'Chat history'});
+        const chatButtonContent = new St.BoxLayout({style_class: 'isle-voice-chat-content'});
+        chatButtonContent.add_child(new St.Icon({gicon: icon('document-open-recent-symbolic'), icon_size: 13}));
+        this._chatButtonLabel = new St.Label({text: 'History', style_class: 'isle-voice-chat-label',
+            y_align: Clutter.ActorAlign.CENTER});
+        chatButtonContent.add_child(this._chatButtonLabel);
+        this._chatButton = new St.Button({style_class: 'isle-button isle-voice-chat-button', child: chatButtonContent,
+            can_focus: true, accessible_name: 'Open chat history', y_align: Clutter.ActorAlign.CENTER});
+        this._chatButton.connect('clicked', () => this.openHistory());
         // After +: the old conversation can come back for a moment.
         this._undo = new St.BoxLayout({style_class: 'isle-voice-undo', visible: false});
         this._undo.add_child(new St.Label({text: 'Started a new chat', style_class: 'isle-voice-undo-text', y_align: Clutter.ActorAlign.CENTER}));
@@ -377,8 +385,9 @@ export const VoiceView = GObject.registerClass({
             {accessibleName: 'Type instead'});
         this._stop = iconButton('isle-stop-symbolic', 'isle-voice-action isle-voice-stop', () => this.emit('stop'),
             {size: 12, accessibleName: 'Stop'});
-        this._closeButton = iconButton('isle-close-symbolic', 'isle-voice-action', () => this.emit('close-requested'),
-            {accessibleName: 'Close assistant'});
+        this._closeButton = iconButton('isle-close-symbolic', 'isle-voice-action isle-voice-close',
+            () => this.emit('close-requested'), {size: 14, accessibleName: 'Close assistant'});
+        this._closeButton.tooltip_text = 'Close assistant';
         for (const button of [this._typeButton, this._stop, this._closeButton]) {
             button.set_pivot_point(0.5, 0.5);
             this._action.add_child(button);
@@ -405,6 +414,7 @@ export const VoiceView = GObject.registerClass({
             if (this.typing)
                 this._entry.grab_key_focus();
         });
+        this._chat.connect('size-changed', () => this.emit('size-changed'));
         this._history = [];
         this._column = new St.BoxLayout({...VERTICAL, x_expand: true, y_expand: true});
         this._column.add_child(this._chat);
@@ -620,10 +630,6 @@ export const VoiceView = GObject.registerClass({
     /** The pill's history button: the saved conversation when there is one, else the
      *  archived ones to resume — the chat view shows either. */
     openHistory() {
-        if (this._history.length) {
-            this.openChat();
-            return;
-        }
         if (!this.chatOpen && Boolean(this._archive?.length)) {
             this._chat.showArchive(true);
             this._chat.visible = true;
@@ -632,14 +638,19 @@ export const VoiceView = GObject.registerClass({
             this._syncChatButton();
             this._syncCardText();
             this.emit('size-changed');
+        } else if (!this.chatOpen && this._history.length) {
+            this.openChat();
         }
     }
 
     /** The conversation button shows while the pill's history can be opened, and is not:
      *  a saved conversation or an archived one — a fresh chat still has the archive. */
     _syncChatButton() {
+        const hasArchive = Boolean(this._archive?.length);
+        this._chatButtonLabel.text = hasArchive ? 'History' : 'Conversation';
+        this._chatButton.accessible_name = hasArchive ? 'Open chat history' : 'Open current conversation';
         this._chatSlot.visible = !this.chatOpen &&
-            (Boolean(this._history.length) || Boolean(this._archive?.length));
+            (Boolean(this._history.length) || hasArchive);
     }
 
     /** The chevron by what was heard, when the conversation holds more than the pill shows. */
@@ -667,6 +678,7 @@ export const VoiceView = GObject.registerClass({
     openChat() {
         if (this.chatOpen || !this._history.length)
             return;
+        this._chat.showArchive(false);
         this._chat.visible = true;
         // The row's end button follows the conversation: while it is open, the header's × is
         // the one close, so whatever the phase last showed there goes away.
@@ -935,7 +947,7 @@ export const VoiceView = GObject.registerClass({
         // The conversation button sits beside the end button, and takes that much of the row's
         // width too when it shows, so the texts give way by both, not just one.
         const ends = (this._action.visible || this._card.visible ? 0 : ACTION_SIZE + 12) -
-            (this._chatSlot.visible ? ACTION_SIZE + 12 : 0);
+            (this._chatSlot.visible ? CHAT_BUTTON_WIDTH + 12 : 0);
         const width = this.preferredWidth - (TEXT_INSET - ends) * scale;
         // Measured per label: the box's own answer is the size set below.
         const parts = [this._undo, this._heardButton, this._entry, this._ideas, this._text, this._card, this._stepsBox, this._still,

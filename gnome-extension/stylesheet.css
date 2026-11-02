@@ -359,8 +359,20 @@
 .isle-chat-header { spacing: 6px; }
 .isle-chat-title { font-size: 12px; font-weight: 600; color: rgba(255, 255, 255, 0.46); }
 .isle-chat-copied, .isle-card-copied { color: #30d158; }
-.isle-chat-new, .isle-chat-close { padding: 5px; color: rgba(255, 255, 255, 0.75); background-color: rgba(255, 255, 255, 0.08); }
-.isle-chat-new:hover, .isle-chat-close:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.16); }
+.isle-chat-control-content { spacing: 6px; }
+.isle-chat-control {
+  padding: 6px 10px;
+  color: rgba(255, 255, 255, 0.82);
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.isle-chat-control:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.15); }
+.isle-chat-control:active { background-color: rgba(255, 255, 255, 0.21); }
+.isle-chat-control-label { font-size: 11px; font-weight: 600; }
+.isle-chat-history-active { color: #ffffff; background-color: rgba(48, 209, 88, 0.18); border-color: rgba(48, 209, 88, 0.22); }
+.isle-chat-history-active:hover { background-color: rgba(48, 209, 88, 0.25); }
+.isle-chat-close { padding: 5px; color: rgba(255, 255, 255, 0.75); background-color: rgba(255, 255, 255, 0.08); }
+.isle-chat-close:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.16); }
 .isle-chat-list { spacing: 10px; padding-top: 6px; padding-bottom: 4px; }
 .isle-chat-scroll { -st-vfade-offset: 28px; }
 .isle-chat-user { padding: 6px 12px; spacing: 5px; border-radius: 15px; background-color: rgba(255, 255, 255, 0.12); }
@@ -1778,9 +1790,18 @@
 .isle-devices-action-label { font-size: 12px; font-weight: 600; }
 
 /* The conversation button beside the row's end, opening the saved chat. */
-.isle-voice-chat-button { padding: 8px; color: rgba(255, 255, 255, 0.7); }
-.isle-voice-chat-button:hover { color: #ffffff; }
-.isle-voice-chat-button:active { color: rgba(255, 255, 255, 0.9); }
+.isle-voice-chat-button {
+  padding: 7px 10px;
+  color: rgba(255, 255, 255, 0.86);
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.isle-voice-chat-button:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.17); }
+.isle-voice-chat-button:active { color: #ffffff; background-color: rgba(255, 255, 255, 0.23); }
+.isle-voice-chat-content { spacing: 6px; }
+.isle-voice-chat-label { font-size: 11px; font-weight: 600; }
+.isle-voice-close { color: rgba(255, 255, 255, 0.88); }
+.isle-voice-close:hover { color: #ffffff; background-color: rgba(255, 69, 58, 0.24); }
 #isleIsland.isle-accent-system .isle-pill-decision:active,
 #isleIsland.isle-accent-system .isle-mode-toggle.on:active { background-color: st-darken(-st-accent-color, 5%); }
 #isleIsland.isle-accent-system .isle-entry,

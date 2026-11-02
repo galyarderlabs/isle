@@ -475,7 +475,8 @@ export const CommandCard = GObject.registerClass({
 // commands it ran as short lines; + starts a new one. It scrolls, newest at the bottom.
 export const ChatView = GObject.registerClass({
     // `settled`: a press on its text is over (a selection copied, or a plain click), so the keys go back.
-    Signals: {'new-chat': {}, 'close': {}, 'history': {}, 'resume': {param_types: [GObject.TYPE_INT64]}, 'settled': {}},
+    Signals: {'new-chat': {}, 'close': {}, 'history': {}, 'resume': {param_types: [GObject.TYPE_INT64]}, 'settled': {},
+        'size-changed': {}},
 }, class ChatView extends St.BoxLayout {
     /** Header with New chat and Hide, then the scrolling list that keeps to its end. */
     _init() {
@@ -483,12 +484,26 @@ export const ChatView = GObject.registerClass({
         const header = new St.BoxLayout({style_class: 'isle-chat-header'});
         this._title = label('Chat', 'isle-chat-title', {x_expand: true, y_align: Clutter.ActorAlign.CENTER});
         header.add_child(this._title);
-        header.add_child(iconButton('isle-plus-symbolic', 'isle-button-flat isle-chat-new', () => this.emit('new-chat'),
-            {size: 13, accessibleName: 'New chat'}));
-        header.add_child(iconButton('isle-backward-symbolic', 'isle-button-flat isle-chat-history',
-            () => this.showArchive(!this._showingArchive), {size: 13, accessibleName: 'Chat history'}));
+        const newContent = new St.BoxLayout({style_class: 'isle-chat-control-content'});
+        newContent.add_child(new St.Icon({gicon: icon('isle-plus-symbolic'), icon_size: 12,
+            y_align: Clutter.ActorAlign.CENTER}));
+        newContent.add_child(label('New chat', 'isle-chat-control-label'));
+        this._newButton = new St.Button({child: newContent, style_class: 'isle-button isle-chat-control isle-chat-new',
+            can_focus: true, accessible_name: 'New chat'});
+        this._newButton.connect('clicked', () => this.emit('new-chat'));
+        header.add_child(this._newButton);
+        const historyContent = new St.BoxLayout({style_class: 'isle-chat-control-content'});
+        historyContent.add_child(new St.Icon({gicon: icon('document-open-recent-symbolic'), icon_size: 12,
+            y_align: Clutter.ActorAlign.CENTER}));
+        this._historyButtonLabel = label('History', 'isle-chat-control-label');
+        historyContent.add_child(this._historyButtonLabel);
+        this._historyButton = new St.Button({child: historyContent,
+            style_class: 'isle-button isle-chat-control isle-chat-history', can_focus: true,
+            accessible_name: 'Chat history'});
+        this._historyButton.connect('clicked', () => this.showArchive(!this._showingArchive));
+        header.add_child(this._historyButton);
         this.add_child(header);
-        this._archive = new St.BoxLayout({...VERTICAL, style_class: 'isle-chat', x_expand: true});
+        this._archive = new St.BoxLayout({...VERTICAL, style_class: 'isle-chat-archive-view', x_expand: true});
         this._list = new St.BoxLayout({...VERTICAL, style_class: 'isle-chat-list', x_expand: true});
         this._scroll = new St.ScrollView({
             style_class: 'isle-chat-scroll',
@@ -510,6 +525,7 @@ export const ChatView = GObject.registerClass({
         });
         this._archiveScroll.set_child(this._archiveList);
         this._showingArchive = false;
+        this._archiveCount = 0;
         // GNOME 49+ pans a scroll view by dragging, which would take every press from the text: dragging here
         // selects, to copy. The wheel and the touchpad still scroll it.
         for (const action of this._scroll.get_actions?.() ?? []) {
@@ -552,6 +568,7 @@ export const ChatView = GObject.registerClass({
     /** The archived conversations: [{timestamp, last, items}], newest first (isled's
      *  ArchivedChats). Shown by the header's history button; a click resumes one. */
     setArchive(chats) {
+        this._archiveCount = chats.length;
         this._archiveList.destroy_all_children();
         for (const chat of chats) {
             const when = new Date(chat.last).toLocaleString(undefined, {weekday: 'short', hour: '2-digit', minute: '2-digit'});
@@ -564,6 +581,9 @@ export const ChatView = GObject.registerClass({
             row.connect('clicked', () => this.emit('resume', chat.timestamp));
             this._archiveList.add_child(row);
         }
+        this._syncHistoryButton();
+        if (this._showingArchive)
+            this.emit('size-changed');
     }
 
     /** Shows the archived conversations (true) or the messages (false); the title follows. */
@@ -572,8 +592,20 @@ export const ChatView = GObject.registerClass({
             return;
         this._showingArchive = shown;
         this._title.text = shown ? 'Chat history' : 'Chat';
+        this._historyButtonLabel.text = shown ? 'Conversation' : 'History';
+        this._historyButton.accessible_name = shown ? 'Return to conversation' : 'Chat history';
+        if (shown)
+            this._historyButton.add_style_class_name('isle-chat-history-active');
+        else
+            this._historyButton.remove_style_class_name('isle-chat-history-active');
         this._scroll.visible = !shown;
         this._archive.visible = shown;
+        this._syncHistoryButton();
+        this.emit('size-changed');
+    }
+
+    _syncHistoryButton() {
+        this._historyButton.visible = this._showingArchive ? this._items.length > 0 : this._archiveCount > 0;
     }
 
     /** The messages: [{role: user | assistant | command, text, spoken, command, status, at (ms)}]. A gap of a
@@ -584,6 +616,7 @@ export const ChatView = GObject.registerClass({
         const known = this._items.length && items.length >= this._items.length && items[0] === this._items[0]
             ? this._items.length : items.length;
         this._items = items;
+        this._syncHistoryButton();
         this._list.destroy_all_children();
         let last = null;
         items.forEach((item, index) => {
@@ -663,7 +696,8 @@ export const ChatView = GObject.registerClass({
 
     /** The height it would like at `width`, header and all, for the island to fit (never more than `max`). */
     naturalHeight(width, max) {
-        const parts = [this.get_first_child(), this._list].map(part => part.get_preferred_height(width)[1]);
+        const list = this._showingArchive ? this._archiveList : this._list;
+        const parts = [this.get_first_child(), list].map(part => part.get_preferred_height(width)[1]);
         const node = this.get_theme_node();
         return Math.min(max, Math.ceil(parts[0] + parts[1] + node.get_length('spacing') + node.get_vertical_padding()));
     }
