@@ -273,10 +273,10 @@ export const VoiceView = GObject.registerClass({
         this._heardButton = new St.Button({child: heardRow, style_class: 'isle-voice-heard-button', reactive: false,
             x_align: Clutter.ActorAlign.START, accessible_name: 'Show the conversation'});
         this._heardButton.connect('clicked', () => this.openChat());
-        // The conversation's own button on the row's end, beside the close: with a saved conversation
-        // it is the always-there way in — the chevron needs a heard line, a fresh chat has none.
-        this._chatButton = iconButton('isle-chevron-up-symbolic', 'isle-voice-chat-button',
-            () => this.openChat(), {size: 12, accessibleName: 'Show the conversation'});
+        // The pill's history button, beside the close: the saved conversation, or the archived
+        // ones to resume — a fresh chat still has its past in the archive.
+        this._chatButton = iconButton('isle-backward-symbolic', 'isle-voice-chat-button',
+            () => this.openHistory(), {size: 13, accessibleName: 'Chat history'});
         // After +: the old conversation can come back for a moment.
         this._undo = new St.BoxLayout({style_class: 'isle-voice-undo', visible: false});
         this._undo.add_child(new St.Label({text: 'Started a new chat', style_class: 'isle-voice-undo-text', y_align: Clutter.ActorAlign.CENTER}));
@@ -599,7 +599,9 @@ export const VoiceView = GObject.registerClass({
 
     /** The archived conversations (isled's ArchivedChats), for the history button's list. */
     setArchive(chats) {
+        this._archive = chats;
         this._chat.setArchive(chats);
+        this._syncChatButton();
     }
 
     /** The conversation so far (see ChatView): shown when open, and behind the chevron by what was heard. */
@@ -615,9 +617,29 @@ export const VoiceView = GObject.registerClass({
             this.emit('size-changed');
     }
 
-    /** The conversation button shows while a saved conversation can be opened, and is not. */
+    /** The pill's history button: the saved conversation when there is one, else the
+     *  archived ones to resume — the chat view shows either. */
+    openHistory() {
+        if (this._history.length) {
+            this.openChat();
+            return;
+        }
+        if (!this.chatOpen && Boolean(this._archive?.length)) {
+            this._chat.showArchive(true);
+            this._chat.visible = true;
+            this._heardButton.visible = false;
+            this._syncClose();
+            this._syncChatButton();
+            this._syncCardText();
+            this.emit('size-changed');
+        }
+    }
+
+    /** The conversation button shows while the pill's history can be opened, and is not:
+     *  a saved conversation or an archived one — a fresh chat still has the archive. */
     _syncChatButton() {
-        this._chatSlot.visible = Boolean(this._history.length) && !this.chatOpen;
+        this._chatSlot.visible = !this.chatOpen &&
+            (Boolean(this._history.length) || Boolean(this._archive?.length));
     }
 
     /** The chevron by what was heard, when the conversation holds more than the pill shows. */
@@ -630,10 +652,9 @@ export const VoiceView = GObject.registerClass({
 
     /** The row's end button for the phase now showing, or none while the conversation is open. */
     _refreshAction() {
-        const working = WORKING.includes(this._phase);
-        const open = this.chatOpen;
-        const end = open ? null : ['reply', 'error'].includes(this._phase) ? this._typeButton : this._closeButton;
-        this._showAction(working && !open ? this._stop : end);
+        // The × is always at the row's end — closing to the resting island is one click in
+        // every phase, the conversation's own header holds its controls while it is open.
+        this._showAction(this._closeButton);
     }
 
     /** Whether the conversation is open above the pill. */
@@ -816,8 +837,7 @@ export const VoiceView = GObject.registerClass({
         this._stepsBox.hide();
         this._signIn.hide();
         this._setUp.hide();
-        // The conversation's own header × is the close while it is open; the pill's would be a second.
-        this._showAction(this.chatOpen ? null : this._closeButton);
+        this._refreshAction();
         this._syncSend();
         if (focus)
             this._entry.grab_key_focus();

@@ -24,8 +24,8 @@ const ASSISTANT_SIZE = 26;
 
 /** Icon and assistant sizes, in CSS pixels. */
 const SIZES = {
-    hanging: {center: 34, ring: 20, bars: 16, moon: 14, call: 15, weather: 16, music: 18},
-    inBar: {center: 30, ring: 18, bars: 14, moon: 13, call: 14, weather: 14, music: 16},
+    hanging: {center: 34, ring: 20, bars: 16, moon: 14, call: 15, weather: 16, music: 24},
+    inBar: {center: 30, ring: 18, bars: 14, moon: 13, call: 14, weather: 14, music: 20},
 };
 /** The pointer still for this long no longer holds the eyes (as voice.js's POINTER_REST_S). */
 const POINTER_REST_MS = 2500;
@@ -506,7 +506,7 @@ export const CompactView = GObject.registerClass({
             timerActive && this._timerStatus,
             recording && this._recordingStatus,
             onCall && this._callStatus,
-            this._unseen > 0 && this._notificationStatus,
+            this._notificationStatus,
             this._weather.state.temperature && this._weatherStatus,
             phone && this._phoneStatus,
         ].filter(Boolean);
@@ -518,7 +518,8 @@ export const CompactView = GObject.registerClass({
         this._musicStatus.visible = !this._isServiceDown && hasTrack;
         this._restDate.visible = !this._isServiceDown;
         this._privacyDots.visible = true;
-        this._notificationCount.text = this._unseen > 9 ? '9+' : `${this._unseen || ''}`;
+        this._notificationCount.text = this._unseen > 0 ? (this._unseen > 9 ? '9+' : `${this._unseen}`) : '';
+        this._notificationCount.visible = this._unseen > 0;
         this._micOff.visible = onCall && this._call.muted;
 
         // On a call the green phone already says the microphone is on, unless another app records too.
