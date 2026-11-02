@@ -22,15 +22,18 @@ const SERVICE: &str = "org.gnome.Shell.Extensions.GSConnect";
 const DEVICE: &str = "org.gnome.Shell.Extensions.GSConnect.Device";
 /// The object manager's root, where the devices hang beneath.
 const MANAGER: &str = "/org/gnome/Shell/Extensions/GSConnect";
+/// A device's battery is an action state, not a `Device` property.
+const DEVICE_PATH_PREFIX: &str = "/org/gnome/Shell/Extensions/GSConnect/Device/";
 
 /// A battery at or under this is low; at 100 it is full. Each crossing is one alert, not one per report.
 const LOW: i16 = 15;
 
 /// Follows GSConnect: each connected device and its battery, published to the state as it changes.
 pub async fn watch(session: Connection, iface: InterfaceRef<SystemService>) -> anyhow::Result<()> {
-    // The object manager's own signals say a device came or went; each device's property
-    // changes say one that stayed changed what it shows. Both re-read the list afresh, so
-    // no list of properties is kept in step (the battery is read anew with each).
+    // ObjectManager signals say a device came or went; Device property signals update its
+    // identity and connection. Battery is an org.gtk.Actions state, so its Changed signal
+    // is watched separately. Every signal re-reads the list rather than keeping properties
+    // in step by hand.
     let manager = MatchRule::builder()
         .msg_type(MessageType::Signal)
         .sender(SERVICE)?
@@ -45,6 +48,13 @@ pub async fn watch(session: Connection, iface: InterfaceRef<SystemService>) -> a
         .arg(0, DEVICE)?
         .build();
     let mut properties = MessageStream::for_match_rule(properties, &session, None).await?;
+    let actions = MatchRule::builder()
+        .msg_type(MessageType::Signal)
+        .sender(SERVICE)?
+        .interface("org.gtk.Actions")?
+        .member("Changed")?
+        .build();
+    let mut actions = MessageStream::for_match_rule(actions, &session, None).await?;
 
     // Devices that were already paired when Isle started, before their first change is an event.
     let mut before: Vec<Device> = read_devices(&session).await;
@@ -59,6 +69,11 @@ pub async fn watch(session: Connection, iface: InterfaceRef<SystemService>) -> a
             message = properties.next() => {
                 let Some(Ok(_)) = message else { continue };
                 true
+            }
+            message = actions.next() => {
+                let Some(Ok(message)) = message else { continue };
+                message.header().path()
+                    .is_some_and(|path| path.as_str().starts_with(DEVICE_PATH_PREFIX))
             }
         };
         if !changed {
