@@ -82,22 +82,31 @@ with mode `0600` and remove `ISLE_MCP_TOKEN` from `mcp.env`:
 ```
 
 Read scopes are `tasks:read`, `calendar:read`, `reminders:read`,
-`calories:read`, `water:read`, `prayer:read`, `media:read`, and `focus:read`. The `*:read`
+`calories:read`, `water:read`, `prayer:read`, `media:read`, `focus:read`,
+`apps:read`, `system:read`, `shelf:read`, `clipboard:read`, `router:read`,
+and `usage:read`. The `*:read`
 scope grants all read-only tools. Write scopes use the same category followed
 by `:write`; they still require the global `ISLE_MCP_WRITE_TOOLS` allowlist.
 Each token is bound to its own scopes and client name. A caller's MCP
 `client_id` is not used as an authorization identity.
 
 Read tools expose Isle tasks, calendar events, reminders, calorie entries,
-water entries, prayer times, focus timer state, and current media. Calendar
+water entries, prayer times, focus timer state, current media, app usage,
+system state, AI router stats, AI plan usage, the shelf, and clipboard history
+by search. Calendar
 events and calorie and water entries can be filtered by `date` or a
-`start_date`/`end_date` range (`YYYY-MM-DD`). Write tools are disabled
+`start_date`/`end_date` range (`YYYY-MM-DD`), and prayer times can be requested
+for a `date`. Clipboard reads are search-first (`search_clipboard` returns
+ids, `get_clipboard_text` reads one item), so full history is never returned in
+one call. Write tools are disabled
 unless named in `ISLE_MCP_WRITE_TOOLS`. Available write names are `add_task`,
 `set_task_done`,
 `add_calendar_event`, `remove_calendar_event`, `add_reminder`, `add_food_entry`,
 `update_food_entry`, `remove_food_entry`, `log_water`, `remove_water_entry`,
 `set_prayer_location`, `start_focus`,
-`pause_focus`, `stop_focus`, `control_media`, and `open_url`. `control_media`
+`pause_focus`, `stop_focus`, `control_media`, `add_shelf_files`,
+`remove_shelf_item`, `clear_shelf`, `pin_clipboard`, `remove_clipboard_item`,
+and `open_url`. `control_media`
 permits play/pause, next, and previous. `open_url` opens an HTTP(S) URL through
 the desktop portal and needs the `desktop:write` scope and the matching write
 allowlist entry.
@@ -106,7 +115,8 @@ Prayer city and country are set in Isle Settings → Island → Daily Life; the 
 calorie log is stored at `~/.local/share/isle/calories.json`. Food logging is
 manual and does not estimate calories from meal names.
 
-This current MCP surface uses Isle's public D-Bus interfaces. It does not
-expose clipboard/shelf contents yet; those remain part of the target coverage
-inventory. The shell-only assistant control API is an internal control
+This current MCP surface uses Isle's public D-Bus interfaces. Clipboard reads
+are search-first and never return the whole history at once; assistant and
+agent-permission interfaces stay internal and are not exposed. The shell-only
+assistant control API is an internal control
 interface, not an Isle user feature exposed by this MCP service.

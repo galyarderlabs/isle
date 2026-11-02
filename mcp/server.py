@@ -53,7 +53,9 @@ async def call(interface: str, member: str, signature: str = "", *args):
 READ_SCOPES = {
     "list_tasks": "tasks:read", "list_calendar_events": "calendar:read", "list_reminders": "reminders:read",
     "list_food_entries": "calories:read", "get_water_entries": "water:read", "prayer_schedule": "prayer:read",
-    "now_playing": "media:read", "focus_state": "focus:read",
+    "now_playing": "media:read", "focus_state": "focus:read", "get_app_usage": "apps:read",
+    "get_system_state": "system:read", "list_shelf_items": "shelf:read", "search_clipboard": "clipboard:read",
+    "get_clipboard_text": "clipboard:read", "get_router_stats": "router:read", "get_usage_quota": "usage:read",
 }
 WRITE_SCOPES = {
     "add_task": "tasks:write", "set_task_done": "tasks:write", "add_calendar_event": "calendar:write",
@@ -61,6 +63,8 @@ WRITE_SCOPES = {
     "update_food_entry": "calories:write", "remove_food_entry": "calories:write", "log_water": "water:write",
     "remove_water_entry": "water:write", "set_prayer_location": "prayer:write",
     "control_media": "media:write", "start_focus": "focus:write", "pause_focus": "focus:write", "stop_focus": "focus:write",
+    "add_shelf_files": "shelf:write", "remove_shelf_item": "shelf:write", "clear_shelf": "shelf:write",
+    "pin_clipboard": "clipboard:write", "remove_clipboard_item": "clipboard:write",
     "open_url": "desktop:write",
 }
 
@@ -238,9 +242,12 @@ async def remove_food_entry(entry_id: int) -> str:
 
 
 @mcp.tool
-async def prayer_schedule() -> dict:
-    """Get today's prayer times for the configured Isle location."""
-    await call("io.github.zickrian.isle.Prayer1", "RefreshNow")
+async def prayer_schedule(date: str | None = None) -> dict:
+    """Get prayer times for today or a given date (YYYY-MM-DD) at the configured location."""
+    if date is None:
+        await call("io.github.zickrian.isle.Prayer1", "RefreshNow")
+    else:
+        await call("io.github.zickrian.isle.Prayer1", "RefreshForDate", "s", parse_date(date).isoformat())
     return await read("prayer_schedule", "io.github.zickrian.isle.Prayer1", "Schedule")
 
 
@@ -312,6 +319,97 @@ async def stop_focus() -> str:
     await write("stop_focus")
     await call("io.github.zickrian.isle.Pomodoro1", "Stop")
     return "stopped"
+
+
+@mcp.tool
+async def get_app_usage() -> dict:
+    """Read where screen time went: app usage for today, this week, and this month."""
+    await authorize("get_app_usage")
+    token = get_access_token() if auth else None
+    LOG.info("MCP read tool called: client=%s tool=%s", token.client_id if token else "loopback", "get_app_usage")
+    return json.loads(await call("io.github.zickrian.isle.AppUsage1", "GetStats"))
+
+
+@mcp.tool
+async def get_system_state() -> dict:
+    """Read battery, network, bluetooth, and camera-in-use state."""
+    return await read("get_system_state", "io.github.zickrian.isle.System1", "State")
+
+
+@mcp.tool
+async def get_router_stats() -> dict:
+    """Read the AI gateway state: requests, tokens, estimated cost, and models."""
+    return await read("get_router_stats", "io.github.zickrian.isle.Router1", "State")
+
+
+@mcp.tool
+async def get_usage_quota() -> dict:
+    """Read how much of the user's AI plans is used, per provider."""
+    return await read("get_usage_quota", "io.github.zickrian.isle.Usage1", "Usage")
+
+
+@mcp.tool
+async def list_shelf_items() -> list:
+    """List the files kept close in Isle's shelf."""
+    return await read("list_shelf_items", "io.github.zickrian.isle.Shelf1", "Items")
+
+
+@mcp.tool
+async def add_shelf_files(uris: list[str]) -> str:
+    """Add local file URIs to the shelf (at most 6 files). Requires add_shelf_files permission."""
+    await write("add_shelf_files")
+    await call("io.github.zickrian.isle.Shelf1", "Add", "as", uris)
+    return "added"
+
+
+@mcp.tool
+async def remove_shelf_item(uri: str) -> str:
+    """Remove one file from the shelf. Requires remove_shelf_item permission."""
+    await write("remove_shelf_item")
+    await call("io.github.zickrian.isle.Shelf1", "Remove", "s", uri)
+    return "removed"
+
+
+@mcp.tool
+async def clear_shelf() -> str:
+    """Empty the shelf. Requires clear_shelf permission."""
+    await write("clear_shelf")
+    await call("io.github.zickrian.isle.Shelf1", "Clear")
+    return "cleared"
+
+
+@mcp.tool
+async def search_clipboard(query: str) -> list:
+    """Search clipboard history; returns matching item ids, newest first."""
+    await authorize("search_clipboard")
+    token = get_access_token() if auth else None
+    LOG.info("MCP read tool called: client=%s tool=%s", token.client_id if token else "loopback", "search_clipboard")
+    return list(await call("io.github.zickrian.isle.Clipboard1", "Search", "s", query))
+
+
+@mcp.tool
+async def get_clipboard_text(item_id: int) -> str:
+    """Read one clipboard history item's content by id. Requires clipboard:read permission."""
+    await authorize("get_clipboard_text")
+    token = get_access_token() if auth else None
+    LOG.info("MCP read tool called: client=%s tool=%s", token.client_id if token else "loopback", "get_clipboard_text")
+    return await call("io.github.zickrian.isle.Clipboard1", "GetText", "t", item_id)
+
+
+@mcp.tool
+async def pin_clipboard(item_id: int, pinned: bool = True) -> str:
+    """Pin or unpin a clipboard history item (at most 10 pinned). Requires pin_clipboard permission."""
+    await write("pin_clipboard")
+    await call("io.github.zickrian.isle.Clipboard1", "SetPinned", "tb", item_id, pinned)
+    return "updated"
+
+
+@mcp.tool
+async def remove_clipboard_item(item_id: int) -> str:
+    """Remove one clipboard history item. Requires remove_clipboard_item permission."""
+    await write("remove_clipboard_item")
+    await call("io.github.zickrian.isle.Clipboard1", "Remove", "t", item_id)
+    return "removed"
 
 
 async def serve():
