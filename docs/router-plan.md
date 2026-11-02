@@ -27,9 +27,8 @@ prices — never billing. Isle always labels it "est.".
 
 ## 2. Naming
 
-- UI strings (Settings, page title, notch label): **"LLM Router"** in
-  Settings, **"Router"** on the page and the notch. The brand of the
-  first gateway (9Router) never shows in the UI.
+- UI strings in Settings, the page and the notch say **"Router"**. The
+  brand of the first gateway (9Router) never shows in the UI.
 - Code identifiers are gateway-neutral: `routerUsage`, `RouterPage`,
   `RouterService` — never a brand in a name.
 - The brand appears only in code comments, this documentation's list
@@ -56,7 +55,7 @@ poll loop changes. For now exactly one implementation exists: 9Router.
 
 ## 4. Settings
 
-Settings → LLM Router, one panel:
+Settings → Router, one panel:
 
 - **Connection** (radio):
   - **Local — Same Machine** (default): zero input. Isle looks for the

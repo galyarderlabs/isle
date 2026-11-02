@@ -1984,7 +1984,7 @@ export class Controller {
 
     // Router
 
-    /** Sends the LLM Router settings to isled, and keeps its poll to what is being watched. */
+    /** Sends Router settings to isled, and keeps its poll to what is being watched. */
     _syncRouter() {
         const config = {
             enabled: this._settings.get_boolean('router-enabled'),

@@ -176,15 +176,15 @@ class RouterPage extends Page {
         const statusText = {
             connected: `Connected · ${router.version}`,
             outdated: 'Update your gateway first',
-            unauthorized: 'Authentication failed · check LLM Router settings',
+            unauthorized: 'Authentication failed · check Router settings',
             unreachable: 'Gateway offline · check its URL and make sure it is running',
             'invalid-response': 'Proxy connected, but its usage response is unsupported',
-            'needs-local-setup': 'Local 9Router token not found · install and run 9Router on this computer',
-            'needs-credentials': 'Add the password or proxy API key in LLM Router settings',
-            'needs-configuration': 'Add the Remote base URL in LLM Router settings',
+            'needs-local-setup': 'Local token not found · run the gateway on this computer',
+            'needs-credentials': 'Add the password or proxy API key in Router settings',
+            'needs-configuration': 'Add the Remote base URL in Router settings',
             'keyring-unavailable': 'GNOME Keyring is locked or unavailable',
             'https-required': 'Remote credentials require HTTPS (HTTP works on this computer only)',
-        }[router?.status] ?? 'Waiting for the gateway · configure it in LLM Router settings';
+        }[router?.status] ?? 'Waiting for the gateway · configure it in Router settings';
         this._statusLine.text = statusText;
         this._statusLine.accessible_name = statusText;
         this._statusLine.set_style_class_name(`isle-router-status ${connected ? 'connected' : 'offline'}`);

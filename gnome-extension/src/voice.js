@@ -34,8 +34,8 @@ const LISTENING_WIDTH = 280;
 const ANSWER_WIDTH = 600;
 /** The round button at the row's end: type instead, stop or send (see stylesheet.css). */
 const ACTION_SIZE = 32;
-/** The labelled history shortcut beside the row's close button. */
-const CHAT_BUTTON_WIDTH = 74;
+/** The icon-only history shortcut beside the row's close button. */
+const CHAT_BUTTON_WIDTH = 32;
 /** Row padding, the face, the action and the gaps between them (see stylesheet.css). */
 const TEXT_INSET = 16 + 16 + FACE_SIZE + 2 * 12 + ACTION_SIZE;
 /** The row's padding above and below the texts; below leaves room for the glow. */
@@ -275,15 +275,12 @@ export const VoiceView = GObject.registerClass({
         this._heardButton = new St.Button({child: heardRow, style_class: 'isle-voice-heard-button', reactive: false,
             x_align: Clutter.ActorAlign.START, accessible_name: 'Show the conversation'});
         this._heardButton.connect('clicked', () => this.openChat());
-        // The pill's history button, beside the close: the saved conversation, or the archived
-        // ones to resume — a fresh chat still has its past in the archive.
-        const chatButtonContent = new St.BoxLayout({style_class: 'isle-voice-chat-content'});
-        chatButtonContent.add_child(new St.Icon({gicon: icon('document-open-recent-symbolic'), icon_size: 13}));
-        this._chatButtonLabel = new St.Label({text: 'History', style_class: 'isle-voice-chat-label',
+        // History sits beside Close in the same top-aligned toolbar, with a tooltip for its icon.
+        const chatButtonIcon = new St.Icon({gicon: icon('document-open-recent-symbolic'), icon_size: 14});
+        this._chatButton = new St.Button({style_class: 'isle-button isle-voice-action isle-voice-chat-button',
+            child: chatButtonIcon, can_focus: true, accessible_name: 'Open chat history',
             y_align: Clutter.ActorAlign.CENTER});
-        chatButtonContent.add_child(this._chatButtonLabel);
-        this._chatButton = new St.Button({style_class: 'isle-button isle-voice-chat-button', child: chatButtonContent,
-            can_focus: true, accessible_name: 'Open chat history', y_align: Clutter.ActorAlign.CENTER});
+        this._chatButton.tooltip_text = 'Open chat history';
         this._chatButton.connect('clicked', () => this.openHistory());
         // After +: the old conversation can come back for a moment.
         this._undo = new St.BoxLayout({style_class: 'isle-voice-undo', visible: false});
@@ -381,6 +378,7 @@ export const VoiceView = GObject.registerClass({
         this._action = new St.Widget({layout_manager: new Clutter.BinLayout(), y_align: Clutter.ActorAlign.CENTER});
         this._chatSlot = new St.Widget({layout_manager: new Clutter.BinLayout(), y_align: Clutter.ActorAlign.CENTER});
         onUiScale(this._action, scale => this._action.set_size(ACTION_SIZE * scale, ACTION_SIZE * scale));
+        onUiScale(this._chatSlot, scale => this._chatSlot.set_size(CHAT_BUTTON_WIDTH * scale, ACTION_SIZE * scale));
         this._typeButton = iconButton('isle-keyboard-symbolic', 'isle-voice-action', () => this.emit('type-requested'),
             {accessibleName: 'Type instead'});
         this._stop = iconButton('isle-stop-symbolic', 'isle-voice-action isle-voice-stop', () => this.emit('stop'),
@@ -647,8 +645,8 @@ export const VoiceView = GObject.registerClass({
      *  a saved conversation or an archived one — a fresh chat still has the archive. */
     _syncChatButton() {
         const hasArchive = Boolean(this._archive?.length);
-        this._chatButtonLabel.text = hasArchive ? 'History' : 'Conversation';
         this._chatButton.accessible_name = hasArchive ? 'Open chat history' : 'Open current conversation';
+        this._chatButton.tooltip_text = hasArchive ? 'Open chat history' : 'Open current conversation';
         this._chatSlot.visible = !this.chatOpen &&
             (Boolean(this._history.length) || hasArchive);
     }
@@ -967,8 +965,8 @@ export const VoiceView = GObject.registerClass({
         // Set outright: the row kept an earlier, shorter height for them.
         this._texts.set_size(width, Math.min(natural, most - ROW_PADDING * scale));
         // Beside a line or two it sits in the middle; beside more, level with the first line.
-        this._lead.y_align = this._action.y_align =
-            natural > (FACE_SIZE + 8) * scale ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
+        const align = natural > (FACE_SIZE + 8) * scale ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
+        this._lead.y_align = this._action.y_align = this._chatSlot.y_align = align;
         const row = Math.round(Math.min(most, Math.max(MIN_HEIGHT * scale, natural + ROW_PADDING * scale)));
         this._row.height = row;
         if (!this.chatOpen)

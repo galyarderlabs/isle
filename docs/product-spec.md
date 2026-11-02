@@ -234,7 +234,7 @@ with the wheel or touchpad and never show a scrollbar.
 - Privacy dots, in the same island after the right side's sign: green camera, orange microphone,
   blue screen sharing (7 px, 4 px apart). On a call the microphone's dot shows only while another app
   records too. Settings → Appearance → Privacy indicators.
-- The Router chip, spread with the live statuses like the weather's (Island → Pages → LLM Router,
+- The Router chip, spread with the live statuses like the weather's (Island → Pages → Router,
   off by default): the gateway's cost estimate (always "est.") and a health dot — green connected,
   grey offline, red unauthorized, pulsing while the gateway reports requests running. If the chip
   is enabled but the gateway is unavailable, it says Offline, Setup, Auth or Update so the toggle
@@ -494,7 +494,7 @@ only GNOME Shell may report, read or clear them. Settings → App Usage
 clears them.
 
 **Router** (title "Router"): what the AI gateway reports — the island's own
-word for an LLM router (Island → Pages → LLM Router, off by default; the gateway's
+word for an LLM router (Island → Pages → Router, off by default; the gateway's
 brand never shows). On the left the title and the period's **Today** / **24h**
 / **7d** toggle (kept in step with Settings); below, the summary card —
 requests, tokens in and out, and the gateway's cost estimate, always

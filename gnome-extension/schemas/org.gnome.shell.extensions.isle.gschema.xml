@@ -383,7 +383,7 @@
     </key>
     <key name="router-enabled" type="b">
       <default>false</default>
-      <summary>Show LLM Router usage</summary>
+      <summary>Show Router usage</summary>
       <description>Requests, tokens and the gateway's estimated cost. The Router page stays available to show connection status; the notch chip says Offline or Setup until the gateway connects.</description>
     </key>
     <key name="router-connection" type="s">
@@ -393,7 +393,7 @@
       </choices>
       <default>'local'</default>
       <summary>Where the gateway runs</summary>
-      <description>Local looks for 9Router on this computer. Remote connects to a 9Router server or a compatible Isle usage proxy.</description>
+      <description>Local looks for the gateway on this computer. Remote connects to a server or a compatible usage proxy.</description>
     </key>
     <key name="router-auth" type="s">
       <choices>
@@ -402,7 +402,7 @@
       </choices>
       <default>'password'</default>
       <summary>Remote authentication method</summary>
-      <description>Dashboard password for remote 9Router, or a bearer key for a compatible usage proxy.</description>
+      <description>Dashboard password for a remote gateway, or a bearer key for a compatible usage proxy.</description>
     </key>
     <key name="router-base-url" type="s">
       <default>''</default>

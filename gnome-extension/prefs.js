@@ -149,18 +149,18 @@ export default class IslePreferences extends ExtensionPreferences {
         return page;
     }
 
-    // The LLM Router: the gateway's own usage, on this machine or over the network.
+    // Router usage from the local gateway, a remote server or a compatible proxy.
     _routerPage(settings) {
-        const page = new Adw.PreferencesPage({title: 'LLM Router', icon_name: 'network-transmit-receive-symbolic'});
+        const page = new Adw.PreferencesPage({title: 'Router', icon_name: 'network-transmit-receive-symbolic'});
         const group = new Adw.PreferencesGroup({
-            title: 'LLM Router',
-            description: 'Three modes: Local 9Router uses its CLI token; Remote 9Router uses a dashboard password; ' +
+            title: 'Router',
+            description: 'Three modes: Local uses this computer’s gateway token; Remote uses a dashboard password; ' +
                 'a compatible proxy uses an API key at /notch?period=…. Turn the feature on under Island → Pages. ' +
                 'Remote secrets stay in GNOME Keyring and require HTTPS.',
         });
         group.add(choiceRow(settings, 'router-connection', 'Connection',
             'Local derives the same-machine CLI token automatically. Choose Remote for a server or proxy.', [
-            ['local', 'Local 9Router'],
+            ['local', 'Local · This computer'],
             ['remote', 'Remote'],
         ]));
         const base = new Adw.EntryRow({title: 'Base URL', text: settings.get_string('router-base-url')});
@@ -176,7 +176,7 @@ export default class IslePreferences extends ExtensionPreferences {
         group.add(base);
         const auth = choiceRow(settings, 'router-auth', 'Remote mode',
             'Choose how Isle authenticates to the remote server.', [
-            ['password', '9Router · Dashboard password'],
+            ['password', 'Dashboard password'],
             ['proxy', 'Compatible proxy · API key'],
         ]);
         group.add(auth);
@@ -253,7 +253,7 @@ export default class IslePreferences extends ExtensionPreferences {
             if (state.status === 'unauthorized')
                 return 'Unauthorized: check the selected authentication details';
             if (state.status === 'needs-local-setup')
-                return 'Local token not found · install and run 9Router on this computer';
+                return 'Local token not found · run the gateway on this computer';
             if (state.status === 'needs-credentials')
                 return 'Save the password or proxy key for the selected Remote mode';
             if (state.status === 'needs-configuration')
@@ -273,15 +273,24 @@ export default class IslePreferences extends ExtensionPreferences {
         // isled's Router1 State property, read now and again as the settings that drive it change;
         // isled itself polls only while the island shows the chip or the page.
         const read = () => {
+            let reply;
             try {
-                const [raw] = Gio.DBus.session.call_sync(DAEMON, DAEMON_PATH,
+                reply = Gio.DBus.session.call_sync(DAEMON, DAEMON_PATH,
                     'org.freedesktop.DBus.Properties', 'Get',
                     new GLib.Variant('(ss)', ['io.github.zickrian.isle.Router1', 'State']),
-                    new GLib.VariantType('(v)'), Gio.DBusCallFlags.NONE, -1, null).deepUnpack();
-                status.subtitle = describe(JSON.parse(raw));
-            } catch (e) {
+                    new GLib.VariantType('(v)'), Gio.DBusCallFlags.NONE, -1, null);
+            } catch {
                 status.subtitle = settings.get_boolean('router-enabled')
-                    ? 'Unreachable: the daemon is not answering' : 'Off';
+                    ? 'Isle background service is unavailable' : 'Off';
+                return;
+            }
+            try {
+                // Properties.Get wraps this JSON string in a variant; unwrap its inner string explicitly.
+                const [raw] = reply.get_child_value(0).get_variant().get_string();
+                status.subtitle = describe(JSON.parse(raw));
+            } catch {
+                status.subtitle = settings.get_boolean('router-enabled')
+                    ? 'Router status could not be read' : 'Off';
             }
         };
         const watched = ['router-enabled', 'router-connection', 'router-auth', 'router-base-url', 'router-period']
@@ -1129,8 +1138,8 @@ function pagesGroup(settings, window) {
         usage.subtitle = 'Sign in to Claude Code, Codex or Grok to see your plan';
     }
     group.add(usage);
-    const router = switchRow(settings, 'router-enabled', 'LLM Router',
-        'Usage from your gateway; configure the connection on the LLM Router settings page');
+    const router = switchRow(settings, 'router-enabled', 'Router',
+        'Gateway usage; configure the connection on the Router settings page');
     router.add_prefix(new Gtk.Image({icon_name: 'network-transmit-receive-symbolic'}));
     group.add(router);
     // Not a page but the ✦ beside the tabs: turning it off is how to use Isle without any AI.
