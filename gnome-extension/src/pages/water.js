@@ -64,7 +64,7 @@ class WaterPage extends Page {
 
         const actions = new St.BoxLayout({style_class: 'isle-water-actions'});
         const drinkContents = new St.BoxLayout({style_class: 'isle-water-button-contents'});
-        drinkContents.add_child(new St.Icon({gicon: icon('isle-water'), icon_size: 13}));
+        drinkContents.add_child(new St.Icon({gicon: icon('isle-water-fill'), icon_size: 13}));
         this._drinkLabel = label('', 'isle-water-button-label');
         drinkContents.add_child(this._drinkLabel);
         this._drinkButton = new St.Button({

@@ -38,8 +38,8 @@ const TABS = {
     prayer: {icon: 'isle-prayer', label: 'Prayer'},
     apps: {icon: 'isle-apps', label: 'Apps'},
     usage: {icon: 'isle-gauge', label: 'Usage'},
-    devices: {icon: 'isle-phone-symbolic', label: 'Devices'},
-    router: {icon: 'network-router-symbolic', label: 'Router'},
+    devices: {icon: 'isle-devices', label: 'Devices'},
+    router: {icon: 'isle-router', label: 'Router'},
 };
 /** How bright a tab's icon is: open, under the pointer, otherwise. */
 const TAB_OPACITY = {open: 255, hover: 200, idle: 140};
