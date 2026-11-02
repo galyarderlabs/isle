@@ -9,9 +9,11 @@
 //! `Name` and `Type`. The battery is not a property there; it is the state of
 //! the device's `battery` action, exported over `org.gtk.Actions`.
 
+use std::collections::HashMap;
+
 use futures_util::StreamExt;
 use zbus::object_server::InterfaceRef;
-use zbus::zvariant::Value as ZValue;
+use zbus::zvariant::{OwnedObjectPath, OwnedValue, Signature, Value as ZValue};
 use zbus::{Connection, MatchRule, MessageStream, message::Type as MessageType};
 
 use super::{Device, SystemEvent, SystemService, publish};
@@ -143,14 +145,15 @@ async fn read_devices(session: &Connection) -> Vec<Device> {
     };
     let body = reply.body();
     let objects = body
-        .deserialize::<ZValue>()
-        .ok()
-        .and_then(|objects| serde_json::to_value(&objects).ok());
-    let Some(objects) = objects.and_then(|objects| objects.as_object().cloned()) else {
+        .deserialize::<HashMap<OwnedObjectPath, HashMap<String, HashMap<String, OwnedValue>>>>()
+        .ok();
+    let Some(objects) = objects else {
+        log::debug!("GSConnect managed objects could not be deserialized");
         return Vec::new();
     };
     let mut devices = Vec::new();
     for (path, interfaces) in objects {
+        let path = path.to_string();
         // One device that cannot be read must not cost us the others.
         if let Some(device) = read_device(session, &path, interfaces.get(DEVICE)).await {
             log::debug!(
@@ -172,13 +175,13 @@ async fn read_devices(session: &Connection) -> Vec<Device> {
 async fn read_device(
     session: &Connection,
     path: &str,
-    device: Option<&serde_json::Value>,
+    device: Option<&HashMap<String, OwnedValue>>,
 ) -> Option<Device> {
     let device = device?;
     // Only a connected device shows; a paired-but-disconnected phone is silence, not noise.
     if !device
         .get("Connected")
-        .and_then(|value| value.as_bool())
+        .and_then(bool_property)
         .unwrap_or(false)
     {
         return None;
@@ -188,24 +191,43 @@ async fn read_device(
         id: path.to_owned(),
         name: device
             .get("Name")
-            .and_then(|value| value.as_str())
-            .unwrap_or("Device")
-            .to_owned(),
+            .and_then(string_property)
+            .unwrap_or_else(|| "Device".to_owned()),
         kind: device
             .get("Type")
-            .and_then(|value| value.as_str())
-            .unwrap_or("smartphone")
-            .to_owned(),
+            .and_then(string_property)
+            .unwrap_or_else(|| "smartphone".to_owned()),
         battery,
         charging,
     })
 }
 
+/// A property value in `a{sv}`: unwrap the variant, then read a boolean.
+fn bool_property(value: &OwnedValue) -> Option<bool> {
+    bool::try_from(owned_contents(value)?).ok()
+}
+
+/// A property value in `a{sv}`: unwrap the variant, then read a string.
+fn string_property(value: &OwnedValue) -> Option<String> {
+    String::try_from(owned_contents(value)?).ok()
+}
+
+/// Takes ownership of a D-Bus value and unwraps any variant layers around it.
+fn owned_contents(value: &OwnedValue) -> Option<ZValue<'static>> {
+    let mut value = ZValue::from(value.try_clone().ok()?);
+    loop {
+        match value {
+            ZValue::Value(inner) => value = *inner,
+            _ => return Some(value),
+        }
+    }
+}
+
 /// The device's battery, as the state of its `battery` action over `org.gtk.Actions`
-/// (`DescribeAll`): `{"battery": [["state", <(bsii)>]], ...}` — charging, icon name,
-/// level (-1 when the device reports none), time remaining.
+/// (`DescribeAll`): `a{s(bgav)}`. Its state array holds a `(bsii)` value — charging,
+/// icon name, level (-1 when unknown), and time remaining.
 async fn read_battery(session: &Connection, path: &str) -> (Option<u8>, bool) {
-    let state = session
+    let actions = session
         .call_method(
             Some(SERVICE),
             path,
@@ -216,66 +238,27 @@ async fn read_battery(session: &Connection, path: &str) -> (Option<u8>, bool) {
         .await
         .ok()
         .and_then(|reply| {
-            let body = reply.body();
-            let state = body.deserialize::<ZValue>().ok()?;
-            serde_json::to_value(&state).ok()
+            reply
+                .body()
+                .deserialize::<HashMap<String, (bool, Signature, Vec<OwnedValue>)>>()
+                .ok()
         });
-    let Some(state) = state else {
+    let Some(actions) = actions else {
         return (None, false);
     };
-    // The battery action's state is a (bsii) tuple — charging, icon, level, time — however
-    // DescribeAll's reply nests it (its shape varies by GTK version): search the action's
-    // value for a 4-field array whose first field is the boolean.
-    let found = find_battery_state(state.get("battery"));
-    let Some((charging, level)) = found else {
-        log::debug!(
-            "GSConnect battery state unreadable: {}",
-            state.get("battery").cloned().unwrap_or_default()
-        );
+    let Some((_, _, values)) = actions.get("battery") else {
         return (None, false);
     };
-    (level, charging)
-}
-
-/// The (bsii) battery state wherever the reply's shape nests it: the value itself, or the
-/// first field of the action's entry, or deeper. None when no shape matches.
-fn find_battery_state(value: Option<&serde_json::Value>) -> Option<(bool, Option<u8>)> {
-    let tuple = value?;
-    if let Some(found) = battery_tuple(tuple) {
-        return Some(found);
-    }
-    for nested in value?.as_array()?.iter() {
-        if let Some(found) = battery_tuple(nested) {
-            return Some(found);
-        }
-        if let Some(found) = find_battery_state_array(nested) {
-            return Some(found);
-        }
-    }
-    None
-}
-
-/// The same search one array deeper (the action's entry holding the state in a nested array).
-fn find_battery_state_array(value: &serde_json::Value) -> Option<(bool, Option<u8>)> {
-    for nested in value.as_array()?.iter() {
-        if let Some(found) = battery_tuple(nested) {
-            return Some(found);
-        }
-    }
-    None
-}
-
-/// A (bsii) state: a 4-field array whose first field is the boolean, its third the level.
-fn battery_tuple(value: &serde_json::Value) -> Option<(bool, Option<u8>)> {
-    let fields = value.as_array()?;
-    if fields.len() < 4 {
-        return None;
-    }
-    let charging = fields.first()?.as_bool()?;
-    let level = fields
-        .get(2)
-        .and_then(|value| value.as_i64())
-        .filter(|level| (0..=100).contains(level))
-        .map(|level| level as u8);
-    Some((charging, level))
+    let state = values.iter().find_map(|value| {
+        let value = owned_contents(value)?;
+        <(bool, String, i32, i32)>::try_from(value).ok()
+    });
+    let Some((charging, _icon, level, _time)) = state else {
+        log::debug!("GSConnect battery action has no readable state");
+        return (None, false);
+    };
+    (
+        u8::try_from(level).ok().filter(|level| *level <= 100),
+        charging,
+    )
 }
