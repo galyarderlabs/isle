@@ -42,6 +42,7 @@ stage() {
     install -Dm755 "$SRC/scripts/isle-mcp" "$root/usr/bin/isle-mcp"
     install -Dm644 "$SRC/data/isle-mcp.service" "$root/usr/lib/systemd/user/isle-mcp.service"
     install -Dm644 "$SRC/mcp/server.py" "$root/usr/lib/isle/mcp/server.py"
+    install -Dm644 "$SRC/mcp/isle_oauth.py" "$root/usr/lib/isle/mcp/isle_oauth.py"
     install -Dm644 "$SRC/mcp/requirements.txt" "$root/usr/share/isle/mcp/requirements.txt"
 
     local ext="$root/usr/share/gnome-shell/extensions/$UUID"
@@ -150,6 +151,7 @@ cp -a "$stage/." "%{buildroot}/"
 /usr/bin/isle-setup-mcp
 /usr/bin/isle-mcp
 /usr/lib/isle/mcp/server.py
+/usr/lib/isle/mcp/isle_oauth.py
 /usr/share/isle/mcp/requirements.txt
 /usr/lib/systemd/user/isle-mcp.service
 /usr/bin/isle-charge-limit

@@ -5,13 +5,17 @@ import asyncio
 import json
 import logging
 import os
+import re
 from datetime import datetime, date as calendar_date
+from pathlib import Path
+from urllib.parse import urlsplit
 
 from fastmcp import FastMCP
 from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
 from fastmcp.server.dependencies import get_access_token
 from dbus_next import BusType, Message
 from dbus_next.aio import MessageBus
+from isle_oauth import IsleOAuthProvider
 
 BUS = "io.github.zickrian.isle.Daemon"
 PATH = "/io/github/zickrian/isle/Daemon"
@@ -35,8 +39,6 @@ TOKENS = {entry["token"]: {"sub": name, "client_id": name, "scopes": entry.get("
           for name, entry in CLIENTS.items() if entry.get("token")}
 if HOST not in {"127.0.0.1", "::1", "localhost"} and not TOKENS:
     raise SystemExit("Configure ISLE_MCP_TOKEN or a private ISLE_MCP_CLIENTS_FILE before binding beyond loopback")
-auth = StaticTokenVerifier(tokens=TOKENS) if TOKENS else None
-mcp = FastMCP("Isle", auth=auth)
 bus: MessageBus | None = None
 
 
@@ -76,6 +78,44 @@ WRITE_SCOPES = {
     "pin_clipboard": "clipboard:write", "remove_clipboard_item": "clipboard:write",
     "open_url": "desktop:write",
 }
+
+
+def public_mcp_url() -> str | None:
+    """Find the public HTTPS origin used by the named Cloudflare tunnel."""
+    configured = os.getenv("ISLE_MCP_PUBLIC_URL", "").strip()
+    hostname = ""
+    if configured:
+        parsed = urlsplit(configured)
+        if parsed.scheme != "https" or not parsed.hostname or parsed.query or parsed.fragment:
+            raise SystemExit("ISLE_MCP_PUBLIC_URL must be an https origin")
+        hostname = parsed.hostname
+    else:
+        config_home = Path(os.getenv("XDG_CONFIG_HOME", Path.home() / ".config"))
+        tunnel_config = config_home / "isle" / "cloudflared" / "config.yml"
+        try:
+            config = tunnel_config.read_text(encoding="utf-8")
+        except OSError:
+            return None
+        match = re.search(r"^\s*-\s*hostname:\s*([A-Za-z0-9.-]+)\s*$", config, re.MULTILINE)
+        if not match:
+            return None
+        hostname = match.group(1)
+    return f"https://{hostname}"
+
+
+OAUTH_SCOPES = sorted({"*:read", *READ_SCOPES.values(), *WRITE_SCOPES.values()})
+PUBLIC_MCP_URL = public_mcp_url()
+if PUBLIC_MCP_URL:
+    oauth_state = Path(os.getenv("XDG_STATE_HOME", Path.home() / ".local" / "state"))
+    auth = IsleOAuthProvider(
+        base_url=PUBLIC_MCP_URL,
+        legacy_tokens=TOKENS,
+        scopes=OAUTH_SCOPES,
+        db_path=os.getenv("ISLE_MCP_OAUTH_DB", str(oauth_state / "isle" / "mcp-oauth.sqlite3")),
+    )
+else:
+    auth = StaticTokenVerifier(tokens=TOKENS) if TOKENS else None
+mcp = FastMCP("Isle", auth=auth)
 
 
 async def authorize(tool: str, *, write_access: bool = False):

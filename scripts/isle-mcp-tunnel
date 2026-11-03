@@ -59,7 +59,7 @@ case "${1:-}" in
         need_cloudflared
         need_token
         echo "Starting a Cloudflare quick tunnel to http://$HOST:$PORT (temporary URL, Ctrl+C to stop)."
-        echo "Connect an agent to https://<printed-url>/mcp with its bearer token."
+        echo "ChatGPT needs an OAuth hostname; other agents can use the existing key as a Bearer token."
         exec cloudflared tunnel --url "http://$HOST:$PORT"
         ;;
 
@@ -137,6 +137,9 @@ YML
         chmod 600 "$CONFIG_DIR/config.yml" 2>/dev/null || true
         [ -f "$CREDENTIALS" ] || { echo "Credentials file $CREDENTIALS is missing." >&2; exit 1; }
 
+        # The MCP process reads this hostname to publish OAuth discovery metadata.
+        systemctl --user restart isle-mcp.service
+
         echo "5/5 Installing and starting the user service"
         mkdir -p "$(dirname "$SERVICE_FILE")"
         cat > "$SERVICE_FILE" <<UNIT
@@ -157,7 +160,8 @@ UNIT
         echo
         echo "Done. Isle's MCP server is reachable at:"
         echo "  https://$HOSTNAME/mcp"
-        echo "Give an agent that URL and a key from isle-mcp-keygen (or Settings → MCP)."
+        echo "For ChatGPT, choose OAuth and enter an existing Isle key on the Isle sign-in page."
+        echo "Other clients can use that key as Authorization: Bearer <key>."
         ;;
 
     status)

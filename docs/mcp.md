@@ -101,8 +101,18 @@ Settings → MCP → Remote access does this from the UI: enter your hostname
    4. Writes `~/.config/isle/cloudflared/config.yml` (hostname →
       `http://127.0.0.1:8765`).
    5. Installs and starts the `isle-mcp-tunnel.service` systemd user service.
-2. Point the agent at `https://isle.example.com/mcp` with a client key as
-   bearer token.
+2. Point the agent at `https://isle.example.com/mcp`.
+
+ChatGPT's custom MCP connection uses OAuth and does not accept a custom static
+API key in its authentication form. Isle provides an OAuth sign-in page on the
+same HTTPS hostname; enter the existing client key there. Isle issues OAuth
+access and refresh tokens limited to that key's scopes. The original Bearer
+key remains valid for other MCP clients that let you configure an
+`Authorization: Bearer <key>` header.
+
+The named Cloudflare tunnel hostname is used for OAuth discovery automatically.
+For another HTTPS reverse proxy, set `ISLE_MCP_PUBLIC_URL=https://your-host`
+in `~/.config/isle/mcp.env` and restart `isle-mcp.service`.
 
 Check and stop:
 

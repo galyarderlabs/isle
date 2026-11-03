@@ -574,7 +574,8 @@ export default class IslePreferences extends ExtensionPreferences {
             description: 'Expose Isle through an outbound Cloudflare Tunnel. Use a hostname in your Cloudflare zone; ' +
                 'mcp.example.com is recommended, though example.com also works if its DNS name is free. Enter only the ' +
                 'hostname, without https:// or /mcp. Create a client key first; Set up creates the DNS record and starts ' +
-                'the tunnel. For a temporary URL, run \u201cisle-mcp-tunnel run\u201d in a terminal.'});
+                'the tunnel. ChatGPT uses OAuth and asks for this key on Isle’s sign-in page; other clients can use it as a Bearer key. ' +
+                'For a temporary URL, run \u201cisle-mcp-tunnel run\u201d in a terminal.'});
         const domain = new Adw.EntryRow({title: 'Public hostname (e.g. mcp.example.com)'});
         domain.set_tooltip_text('A hostname in a Cloudflare zone you own. A dedicated subdomain is recommended.');
         const setupStatus = new Adw.ActionRow({title: 'Domain setup',
@@ -599,7 +600,7 @@ export default class IslePreferences extends ExtensionPreferences {
                 setup.sensitive = true;
                 const text = `${out ?? ''}${err ?? ''}`.trim();
                 setupStatus.subtitle = sub.get_successful()
-                    ? `Running: the agent connects to https://${hostname}/mcp with its key.`
+                    ? `Running: ChatGPT uses OAuth at https://${hostname}/mcp; enter an Isle key on the sign-in page.`
                     : `Setup failed: ${text.split('\n').at(-1) ?? 'see journalctl --user -u isle-mcp-tunnel'}`;
             });
         });
