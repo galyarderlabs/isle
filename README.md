@@ -97,7 +97,7 @@ appear in the same place instead of in the middle of the screen.
 </td>
 <td width="50%" valign="top">
 <img src="docs/images/voice.png" alt="The voice assistant at work: what it heard, and the step it is on, finding jazz on Spotify" width="100%"><br>
-<b>Voice assistant.</b> Press Super+I and ask, in English or Indonesian: play a song, find a file, put windows side by side, add a reminder, explain why the laptop is slow. It works as an agent: a request with several steps is done one after another, each step checked, with the AI you already use (Claude Code, Codex, Grok, opencode or Antigravity).
+<b>Voice assistant.</b> Press Super+I and ask, in English or Indonesian: play a song, find a file, put windows side by side, add a reminder, explain why the laptop is slow. It works as an agent: a request with several steps is done one after another, each step checked, with the AI you already use (Claude Code, Codex, Grok, Hermes, Oh My Pi, opencode or Antigravity).
 </td>
 </tr>
 <tr>
@@ -138,6 +138,22 @@ appear in the same place instead of in the middle of the screen.
 <td width="50%" valign="top">
 <img src="docs/images/glass.png" alt="The music page in the glass island, the wallpaper behind it showing through, blurred" width="100%"><br>
 <b>Glass.</b> The island in clear dark glass instead of black, if you prefer: what is behind it shows through, blurred, as you work. Choose it in Settings → Island → Appearance.
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+<b>Router.</b> What your AI gateway reports: requests, tokens in and out and the gateway's cost estimate for today, the last 24 hours or 7 days, the top models as bars, and the last ten requests. A health dot once connected; off by default.
+</td>
+<td width="50%" valign="top">
+<b>Everyday tools.</b> Water and calories logged through the day, and prayer times for your location, all kept on this computer.
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+<b>MCP server.</b> An optional MCP server for agents outside Notchfolk: read tools for your data and actions, with the writes you list in <code>~/.config/isle/mcp.env</code>, on loopback by default and remote access through an authenticated tunnel.
+</td>
+<td width="50%" valign="top">
+<b>More AIs.</b> The assistant also runs Hermes and Oh My Pi with the providers they are configured for, plus any OpenAI-compatible API.
 </td>
 </tr>
 </table>
