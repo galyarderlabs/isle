@@ -52,51 +52,41 @@ appear in the same place instead of in the middle of the screen.
 <table>
 <tr>
 <td width="50%" valign="top">
-<img src="docs/images/music.png" alt="Music page" width="100%"><br>
 <b>Music.</b> Spotify, YouTube in your browser, or any MPRIS player: cover art with the playing app's icon, a scrubber and controls. Volume and output switching are one click away.
 </td>
 <td width="50%" valign="top">
-<img src="docs/images/lyrics.png" alt="Synced lyrics" width="100%"><br>
 <b>Synced lyrics</b> from <a href="https://lrclib.net">LRCLIB</a>: the line being sung large and bright, pauses as breathing dots. The island widens and takes the cover's colour; click a line to jump to it.
 </td>
 </tr>
 <tr>
 <td width="50%" valign="top">
-<img src="docs/images/call.png" alt="A Google Meet call in the island: its length, mute and open" width="100%"><br>
 <b>Calls</b> in WhatsApp, Telegram, Discord, Zoom, Meet and other call apps or call pages in a browser: the closed island shows a green phone beside the time, and the Call page how long the call has lasted. Open it to see the call live (you and whoever you call) while you work in other windows, mute your microphone, or jump back to the call.
 </td>
 <td width="50%" valign="top">
-<img src="docs/images/focus.png" alt="Timer page: the timer's ring, the work and break lengths, and Start" width="100%"><br>
 <b>Timer.</b> A Pomodoro timer with breaks and Do Not Disturb while you focus: a ring with the time left, the work and break lengths to type or change with − and + (they hold still from Start until Reset), and Start. Its time left stays in the closed island; beside a song or a call, it shows as a small ring on the other side of the clock.
 </td>
 </tr>
 <tr>
 <td width="50%" valign="top">
-<img src="docs/images/reminders.png" alt="Reminders page: a list with a long reminder wrapped over two lines" width="100%"><br>
 <b>Reminders</b>, with a completion count beside the list: add tasks, rename them in place, and keep finished tasks checked until midnight. A long title wraps over as many lines as it needs.
 </td>
 <td width="50%" valign="top">
-<img src="docs/images/clipboard.png" alt="Clipboard history" width="100%"><br>
 <b>Shelf.</b> A clipboard history of text, links, images and files (search, filter, pin; Super+V to paste), and a files tray: drop files on the island, then drag them into any app or click one to copy it, ready to paste into a chat. Press <b>Phone</b> and scan the QR code to save the Shelf's files on your phone, or send photos and files from it to the Shelf, in the phone's browser: same Wi-Fi, no app, nothing through the internet. ↓ on a file the phone sent saves it into Downloads.
 </td>
 </tr>
 <tr>
 <td width="50%" valign="top">
-<img src="docs/images/files.png" alt="The files tray with three pictures and a PDF" width="100%"><br>
 <b>Files tray.</b> Files dropped on the island wait here, with their thumbnails, until you drag them into an app or click one to copy it.
 </td>
 <td width="50%" valign="top">
-<img src="docs/images/calendar.png" alt="Calendar: the month beside the day's two events, and the time in New York, London and Tokyo under them" width="100%"><br>
 <b>Calendar.</b> The month beside the chosen day's events. Shows your desktop calendars (Google and others through Online Accounts) and events you add in a line: "Dinner 8:00 pm". Five minutes before an event, the island reminds you, with <b>Join</b> when it has a Google Meet, Zoom, Teams or Webex link. Under them, the time in other cities: GNOME's world clocks.
 </td>
 </tr>
 <tr>
 <td width="50%" valign="top">
-<img src="docs/images/notifications.png" alt="The notifications page" width="100%"><br>
 <b>Notifications.</b> GNOME's notifications collect here as a plain list, newest first, with their buttons ("Reply", "Mark as read") under the pointer, Clear, and Do Not Disturb a click away.
 </td>
 <td width="50%" valign="top">
-<img src="docs/images/voice.png" alt="The voice assistant at work: what it heard, and the step it is on, finding jazz on Spotify" width="100%"><br>
 <b>Voice assistant.</b> Press Super+I and ask, in English or Indonesian: play a song, find a file, put windows side by side, add a reminder, explain why the laptop is slow. It works as an agent: a request with several steps is done one after another, each step checked, with the AI you already use (Claude Code, Codex, Grok, Hermes, Oh My Pi, opencode or Antigravity).
 </td>
 </tr>
@@ -132,11 +122,9 @@ appear in the same place instead of in the middle of the screen.
 </tr>
 <tr>
 <td width="50%" valign="top">
-<img src="docs/images/apps.png" alt="Apps page: Brave Web Browser, Visual Studio Code, Ghostty and Discord with their times today" width="100%"><br>
 <b>App usage.</b> Where your time goes: the application in front today, over the last seven days, or the last 30, with its icon, a bar and its time. Off until you turn it on, it times the app in front even when you are not typing or clicking; five idle minutes pause it unless a video holds the session awake, and locking the screen stops it. Kept on this computer for 30 days.
 </td>
 <td width="50%" valign="top">
-<img src="docs/images/glass.png" alt="The music page in the glass island, the wallpaper behind it showing through, blurred" width="100%"><br>
 <b>Glass.</b> The island in clear dark glass instead of black, if you prefer: what is behind it shows through, blurred, as you work. Choose it in Settings → Island → Appearance.
 </td>
 </tr>
