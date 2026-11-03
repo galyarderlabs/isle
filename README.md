@@ -698,11 +698,9 @@ A star, a bug report or telling a friend helps just as much.
 
 ## License
 
-Copyright © 2026 zickrian
-
 Notchfolk is a modified version of [Isle](https://github.com/zickrian/isle) by
-zickrian. The upstream work remains © zickrian under GPL-3.0-or-later; the
-modifications made by Galyarder Labs are published under the same licence.
+zickrian, used under GPL-3.0-or-later; the modifications made by Galyarder
+Labs are published under the same licence.
 
 Notchfolk is free software: you can redistribute it and/or modify it under the
 terms of the [GNU General Public License](LICENSE) as published by the Free
