@@ -413,12 +413,16 @@ export default class IslePreferences extends ExtensionPreferences {
         const clientList = new Adw.PreferencesGroup({title: 'Client keys',
             description: 'A key is shown once when made; keep it in the agent\'s own MCP settings. ' +
                 'Restart the service after adding or revoking one.'});
+        let clientRows = [];
         const syncClients = () => {
-            while (clientList.get_first_child())
-                clientList.remove(clientList.get_first_child());
+            clientRows.forEach(row => clientList.remove(row));
+            clientRows = [];
             const entries = Object.entries(readClients());
-            if (!entries.length)
-                clientList.add(new Adw.ActionRow({title: 'No clients yet', subtitle: 'No agent has a key.'}));
+            if (!entries.length) {
+                const row = new Adw.ActionRow({title: 'No clients yet', subtitle: 'No agent has a key.'});
+                clientList.add(row);
+                clientRows.push(row);
+            }
             for (const [name, entry] of entries) {
                 const row = new Adw.ActionRow({title: name, subtitle: (entry.scopes ?? []).join(', ')});
                 const revoke = new Gtk.Button({label: 'Revoke', valign: Gtk.Align.CENTER});
@@ -430,6 +434,7 @@ export default class IslePreferences extends ExtensionPreferences {
                 });
                 row.add_suffix(revoke);
                 clientList.add(row);
+                clientRows.push(row);
             }
         };
         syncClients();
@@ -438,6 +443,7 @@ export default class IslePreferences extends ExtensionPreferences {
         const name = new Adw.EntryRow({title: 'New client name'});
         const scopes = new Adw.EntryRow({title: 'Scopes', text: '*:read'});
         const shownGroup = new Adw.PreferencesGroup();
+        let shownRows = [];
         const generate = new Gtk.Button({label: 'Generate key', valign: Gtk.Align.CENTER});
         generate.connect('clicked', () => {
             const client = name.text.trim();
@@ -452,14 +458,15 @@ export default class IslePreferences extends ExtensionPreferences {
             clients[client] = {token, scopes: scopeList.length ? scopeList : ['*:read']};
             writeClients(clients);
             syncClients();
-            while (shownGroup.get_first_child())
-                shownGroup.remove(shownGroup.get_first_child());
+            shownRows.forEach(row => shownGroup.remove(row));
+            shownRows = [];
             const shown = new Adw.ActionRow({title: token,
                 subtitle: `Key for \u201c${client}\u201d; copy it now, it is not shown again.`});
             const copy = new Gtk.Button({label: 'Copy', valign: Gtk.Align.CENTER});
             copy.connect('clicked', () => shown.get_clipboard().set_text(token));
             shown.add_suffix(copy);
             shownGroup.add(shown);
+            shownRows.push(shown);
         });
         scopes.add_suffix(generate);
         newClients.add(name);
