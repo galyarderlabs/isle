@@ -4,6 +4,7 @@
 // Reminders: a completion summary beside the task list. Finished rows stay checked until midnight.
 
 import Clutter from 'gi://Clutter';
+import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import St from 'gi://St';
 
@@ -97,6 +98,18 @@ class TasksPage extends Page {
         layout.add_child(this._buildSummary());
         const column = new St.BoxLayout({...VERTICAL, style_class: 'isle-reminders-content', x_expand: true, y_expand: true});
         this._list = new St.BoxLayout({...VERTICAL, style_class: 'isle-reminder-list'});
+        const contents = new St.BoxLayout({...VERTICAL, style_class: 'isle-reminders-scroll-content'});
+        contents.add_child(this._list);
+        this._scheduled = new St.BoxLayout({...VERTICAL, style_class: 'isle-reminders-scheduled'});
+        this._scheduledHeading = new St.BoxLayout({style_class: 'isle-reminders-scheduled-heading'});
+        this._scheduledHeading.add_child(label('Upcoming', 'isle-reminders-scheduled-title'));
+        this._scheduledCount = label('', 'isle-reminders-scheduled-count');
+        this._scheduledHeading.add_child(this._scheduledCount);
+        this._scheduled.add_child(this._scheduledHeading);
+        this._scheduledRows = new St.BoxLayout({...VERTICAL, style_class: 'isle-reminders-scheduled-list'});
+        this._scheduled.add_child(this._scheduledRows);
+        this._scheduled.visible = false;
+        contents.add_child(this._scheduled);
         this._scroll = new St.ScrollView({
             style_class: 'isle-reminder-scroll',
             hscrollbar_policy: St.PolicyType.NEVER,
@@ -105,7 +118,7 @@ class TasksPage extends Page {
             x_expand: true,
             y_expand: true,
         });
-        this._scroll.set_child(this._list);
+        this._scroll.set_child(contents);
         this._newRow = this._buildNewRow();
         this._newRow.visible = false;
         // Shown over the list when there are no tasks.
@@ -117,7 +130,7 @@ class TasksPage extends Page {
         layout.add_child(column);
         this.add_child(layout);
 
-        this.watch(['tasks'], () => this._update());
+        this.watch(['tasks', 'reminders'], () => this._update());
         this._update();
     }
 
@@ -126,10 +139,16 @@ class TasksPage extends Page {
         return this.daemon.state.tasks ?? [];
     }
 
-    _syncProgress(tasks = this._tasks()) {
+    _scheduledItems() {
+        return [...(this.daemon.state.reminders ?? [])].sort((a, b) => a.due_ms - b.due_ms);
+    }
+
+    _syncProgress(tasks = this._tasks(), scheduled = this._scheduledItems()) {
         const done = tasks.filter(task => task.done || this._leaving.has(task.id) || this._gone.has(task.id)).length;
-        this._progress.text = tasks.length ? `${done}/${tasks.length}` : '0';
-        this._progressSummary.text = tasks.length ? 'tasks completed' : 'No tasks yet';
+        this._progress.text = tasks.length ? `${done}/${tasks.length}` : `${scheduled.length}`;
+        this._progressSummary.text = tasks.length
+            ? 'tasks completed'
+            : scheduled.length === 1 ? 'scheduled reminder' : scheduled.length ? 'scheduled reminders' : 'No reminders yet';
     }
 
     // Building
@@ -245,7 +264,7 @@ class TasksPage extends Page {
         const hadFocus = this._entry.clutter_text.has_key_focus();
         this._entry.text = '';
         this._newRow.visible = false;
-        this._empty.visible = this._tasks().length === 0;
+        this._empty.visible = this._tasks().length === 0 && this._scheduledItems().length === 0;
         if (hadFocus)
             this.emit('request-keyboard', false);
     }
@@ -254,7 +273,8 @@ class TasksPage extends Page {
 
     /** Brings the rows in line with isled's list, unless a rename or a tick is under way. */
     _update() {
-        this._syncProgress();
+        const scheduled = this._scheduledItems();
+        this._syncProgress(this._tasks(), scheduled);
         if (this._renaming !== null || this._leaving.size > 0)
             return;
         const tasks = this._tasks();
@@ -301,8 +321,50 @@ class TasksPage extends Page {
             previous = row;
         }
         this._known = new Set(shown.map(task => task.id));
-        this._empty.visible = shown.length === 0 && !this._newRow.visible;
+        this._empty.visible = tasks.length === 0 && scheduled.length === 0 && !this._newRow.visible;
         this._empty.text = tasks.length ? 'All done' : 'No reminders';
+
+        this._scheduled.visible = scheduled.length > 0;
+        this._scheduledCount.text = `${scheduled.length}`;
+        this._scheduledRows.destroy_all_children();
+        for (const item of scheduled)
+            this._scheduledRows.add_child(this._scheduledRow(item));
+    }
+
+    /** A timed reminder stays visible here until it is dismissed or shown. */
+    _scheduledRow(item) {
+        const row = new St.BoxLayout({style_class: 'isle-reminder-scheduled-row'});
+        row.add_child(new St.Widget({style_class: 'isle-reminder-scheduled-marker', y_align: Clutter.ActorAlign.CENTER}));
+
+        const details = new St.BoxLayout({...VERTICAL, style_class: 'isle-reminder-scheduled-details', x_expand: true});
+        const title = label(item.text, 'isle-reminder-scheduled-text', {x_expand: true});
+        wrapLines(title);
+        details.add_child(title);
+        details.add_child(label(this._scheduledTime(item.due_ms), 'isle-reminder-scheduled-time'));
+        row.add_child(details);
+
+        let dismissing = false;
+        row.add_child(iconButton('isle-close-symbolic', 'isle-button-flat isle-reminder-scheduled-dismiss', () => {
+            if (dismissing)
+                return;
+            dismissing = true;
+            this.daemon.call('reminders', 'Dismiss', item.id);
+        }, {size: 10, accessibleName: `Dismiss ${item.text}`}));
+        return row;
+    }
+
+    /** Uses the shell's local timezone, matching how the reminder was scheduled. */
+    _scheduledTime(dueMs) {
+        const due = GLib.DateTime.new_from_unix_local(Math.floor(Number(dueMs) / 1000));
+        if (!due)
+            return '';
+        const now = GLib.DateTime.new_now_local();
+        const date = due.format('%F');
+        if (date === now.format('%F'))
+            return `Today · ${due.format('%H:%M')}`;
+        if (date === now.add_days(1).format('%F'))
+            return `Tomorrow · ${due.format('%H:%M')}`;
+        return `${due.format('%a, %b %e').trim()} · ${due.format('%H:%M')}`;
     }
 
     /** Opens `row` from nothing to its height, fading in, while the rows below make room. */

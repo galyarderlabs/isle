@@ -714,6 +714,27 @@
 .isle-reminders-edit-action:checked { background-color: #48484a; }
 .isle-reminders-content { spacing: 4px; }
 .isle-reminder-list { spacing: 5px; padding: 4px 0; }
+.isle-reminders-scroll-content { spacing: 6px; }
+.isle-reminders-scheduled { spacing: 7px; padding: 8px 0 4px; }
+.isle-reminders-scheduled-heading { spacing: 8px; padding: 0 4px; }
+.isle-reminders-scheduled-title { font-size: 10px; font-weight: 700; color: rgba(255, 255, 255, 0.48); letter-spacing: 0.7px; text-transform: uppercase; }
+.isle-reminders-scheduled-count { font-size: 10px; color: rgba(255, 255, 255, 0.38); }
+.isle-reminders-scheduled-list { spacing: 5px; }
+.isle-reminder-scheduled-row {
+  min-height: 34px;
+  spacing: 9px;
+  padding: 6px 9px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.055);
+  transition-duration: 120ms;
+}
+.isle-reminder-scheduled-row:hover { background-color: rgba(255, 255, 255, 0.09); }
+.isle-reminder-scheduled-marker { width: 6px; height: 6px; border-radius: 99px; background-color: #ff6259; }
+.isle-reminder-scheduled-details { spacing: 2px; }
+.isle-reminder-scheduled-text { font-size: 12.5px; font-weight: 600; color: #ffffff; }
+.isle-reminder-scheduled-time { font-size: 10.5px; color: rgba(255, 255, 255, 0.52); }
+.isle-reminder-scheduled-dismiss { padding: 4px; border-radius: 99px; color: rgba(255, 255, 255, 0.42); }
+.isle-reminder-scheduled-dismiss:hover { color: #ff6259; background-color: rgba(255, 69, 58, 0.15); }
 
 /* Lists fade out at an edge that scrolls on, instead of being cut. */
 .isle-reminder-scroll { -st-vfade-offset: 14px; }
