@@ -43,32 +43,45 @@ been changed by this plan.
 
 ## Settled decisions
 
+- **Product name:** Notchfolk (lowercase slug `notchfolk`). The name reads as a
+  group of small companions living in the notch, which matches the intended
+  playful, always-with-you product direction rather than a single bot.
+- **Tagline:** "A little world in your notch."
+- **Repository description:** "A living desktop notch for everyday life,
+  bringing AI agents, personal tools, and MCP integrations into one playful,
+  always-with-you space."
+- **Namespace:** `io.galyarderlabs.notchfolk` for the application ID and GNOME
+  extension UUID, with identifiers on other platforms derived from the same
+  namespace as support is added.
+- **Platform direction:** GNOME first, with Windows support planned later. The
+  brand and namespace are platform-neutral; GNOME-specific identifiers are
+  implementation details of the GNOME build.
 - **Install model:** in-place replacement of the current Isle installation
   with a one-time migration. Side-by-side installs are out of scope for the
   first release; they would require fully separate settings, data, services,
   and D-Bus names.
+- **Public D-Bus API:** rename D-Bus well-known names, object paths, and
+  interfaces together with the rest of the runtime identity. The D-Bus API is
+  a Linux implementation detail, no external consumers have committed to the
+  current names, and a future Windows build would not use D-Bus at all;
+  `docs/dbus-api.md` is updated with the new names instead of being kept as a
+  frozen compatibility surface.
 - **Version policy:** start a fresh version sequence independent of upstream
   Isle releases, beginning at `1.0.0` for the first rebranded release, so the
   update check never treats the new release as a downgrade from an Isle
   version number.
-- **Repository rename timing:** keep `galyarderlabs/isle` until the product
-  name is chosen, then rename the repository before the first public
-  rebranded release so that clone URLs, package recipes, and the update feed
-  reference the final slug from day one.
+- **Repository rename timing:** keep `galyarderlabs/isle` until a trademark
+  and domain check on "Notchfolk" passes, then rename the repository before
+  the first public rebranded release so that clone URLs, package recipes, and
+  the update feed reference the final slug from day one.
+
+A quick product search found no notch app named "Notchfolk", but that is not
+a trademark clearance: a formal trademark search and domain availability check
+are still required before public release (Task 1).
 
 ## Rebrand decisions to settle
 
-1. **Product name and spelling:** display name, capitalization, short name, and
-   a pronounceable CLI/package slug.
-2. **Namespace:** a stable reverse-DNS application ID and GNOME extension UUID
-   controlled by Galyarder Labs.
-3. **Public D-Bus API compatibility:** rename D-Bus well-known names,
-   object paths, and interfaces together with the rest of the runtime identity
-   (a breaking change), or keep them unchanged and document that as a
-   compatibility choice. This must be settled before Task 7, because it
-   decides how much of `docs/dbus-api.md` and the daemon/shelf identifiers
-   change.
-4. **Attribution wording:** how the About page and README state that the
+1. **Attribution wording:** how the About page and README state that the
    project is a modified derivative of Isle by zickrian.
 
 ## License, provenance, and marks

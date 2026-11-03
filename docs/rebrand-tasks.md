@@ -1,10 +1,12 @@
 # Galyarder Labs Rebrand Tasks
 
 This is the ordered execution checklist for
-[rebrand-plan.md](rebrand-plan.md). The install model, version policy, and
-repository rename timing are settled there; the product name, namespace, and
-public D-Bus API compatibility are still open. All items are intentionally
-unchecked: this commit records the plan only and does not rebrand the app.
+[rebrand-plan.md](rebrand-plan.md). The product name (Notchfolk), tagline,
+namespace, platform direction, install model, D-Bus naming, version policy, and
+repository rename timing are settled there; the attribution wording and the
+formal trademark/domain check for "Notchfolk" are still open. All items are
+intentionally unchecked: this commit records the plan only and does not rebrand
+the app.
 
 ## Phase 1: Decide and audit
 
@@ -12,19 +14,19 @@ unchecked: this commit records the plan only and does not rebrand the app.
 
 **Description:** Settle the product name, short name, lowercase command/package
 slug, reverse-DNS namespace, GNOME extension UUID, final repository slug, and
-version sequence. The install model (in-place replacement), version policy
-(fresh sequence starting at `1.0.0`), and repository rename timing (rename
-after the name is chosen, before the first public rebranded release) are
-already decided in `rebrand-plan.md`.
+version sequence. The product name (Notchfolk, slug `notchfolk`), tagline
+("A little world in your notch."), namespace
+(`io.galyarderlabs.notchfolk`), platform direction (GNOME first, Windows
+planned), install model (in-place replacement), public D-Bus naming (rename
+with the runtime identity), version policy (fresh sequence starting at `1.0.0`),
+and repository rename timing (rename after the trademark/domain check passes,
+before the first public rebranded release) are already decided in
+`rebrand-plan.md`.
 
 **Acceptance criteria:**
-- [ ] Name, spelling, slug, and namespace are recorded in `rebrand-plan.md`;
-  the settled install model, version policy, and rename timing are kept in
-  sync there.
-- [ ] The selected name has a trademark search recorded before public release.
-- [ ] The public D-Bus API compatibility choice (rename with the runtime
-  identity, or keep names and document as compatibility) is recorded in
-  `rebrand-plan.md` before Task 7 starts.
+- [ ] A formal trademark search and domain availability check for "Notchfolk"
+  are recorded in `rebrand-plan.md` before public release.
+- [ ] The settled decisions are kept in sync in `rebrand-plan.md`.
 
 **Verification:** Review branding and namespace decisions together before code
 changes. Confirm the repository slug and namespace are available to Galyarder
