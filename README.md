@@ -235,7 +235,3 @@ Jérémy Perret, under the MIT License
 from [Lucide](https://lucide.dev)'s "calendar-days", under the ISC License
 ([notice](gnome-extension/NOTICE-lucide.txt)).
 
-The demo video shows "Clouds" by Tibor Mokanszki from the Ubuntu 24.04
-wallpapers, under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/);
-the video is shared under the same licence. Its songs, lyrics, notifications
-and events are made up.
