@@ -354,8 +354,22 @@ export default class IslePreferences extends ExtensionPreferences {
                 Gio.FileQueryInfoFlags.NONE, null);
         };
         const randomToken = () => {
-            const [, bytes] = GLib.file_get_contents('/dev/urandom');
-            return GLib.base64_encode(bytes.slice(0, 32))
+            // /dev/urandom is endless: read only the 32 bytes a key needs.
+            const stream = Gio.File.new_for_path('/dev/urandom').read(null);
+            const bytes = new Uint8Array(32);
+            let offset = 0;
+            try {
+                while (offset < bytes.length) {
+                    const chunk = stream.read_bytes(bytes.length - offset, null).get_data();
+                    if (chunk.length === 0)
+                        throw new Error('Could not read secure random bytes.');
+                    bytes.set(chunk, offset);
+                    offset += chunk.length;
+                }
+            } finally {
+                stream.close(null);
+            }
+            return GLib.base64_encode(bytes)
                 .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
         };
 
