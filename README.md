@@ -349,8 +349,10 @@ or fixing software with a command you approve. Ask a follow-up while the
 answer shows, or later the same day: it remembers the conversation (see
 [the conversation](#the-conversation)).
 
-Isle also provides an optional MCP server for agents outside Isle. Its current
-tool set is partial; the target is access to all Isle data and actions. See
+Isle also provides an optional MCP server for agents outside Isle. Its tool
+set covers Isle's data and actions (daily life, media, focus, shelf, clipboard
+search, system, AI usage); keys, scopes and remote access are managed in
+Settings → MCP or with `isle-mcp-keygen` and `isle-mcp-tunnel`. See
 [the MCP server guide](docs/mcp.md) for setup and permissions. See
 [assistant runtime setup](docs/assistant-runtimes.md) for Hermes, OMP, and MCP.
 See [assistant platform status](docs/assistant-platform-status.md) for implemented features and remaining verification.

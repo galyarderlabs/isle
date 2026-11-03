@@ -41,6 +41,7 @@ export default class IslePreferences extends ExtensionPreferences {
         window.add(this._voicePage(settings, window));
         window.add(this._usagePage(settings, window));
         window.add(this._routerPage(settings));
+        window.add(this._mcpPage());
         window.add(this._aboutPage(settings, window));
         // A page asked for by the island (its Update button: About), once, also while open.
         const showAsked = () => {
@@ -331,6 +332,185 @@ export default class IslePreferences extends ExtensionPreferences {
         page.connect('destroy', () => modeChanged.forEach(id => settings.disconnect(id)));
         syncMode();
         page.add(group);
+        return page;
+    }
+
+    // The external MCP server: keys for AI agents outside Isle, and its service.
+    _mcpPage() {
+        const page = new Adw.PreferencesPage({title: 'MCP', icon_name: 'application-x-executable-symbolic'});
+        const group = new Adw.PreferencesGroup({
+            title: 'External AI agents',
+            description: 'Isle\'s optional MCP server lets AI agents outside Isle (Claude Code, Codex, ' +
+                'Antigravity) use Isle\'s data and actions. Each agent gets its own key and scopes. ' +
+                'See docs/mcp.md for the endpoint, scopes and write allowlists.',
+        });
+        page.add(group);
+
+        const clientsPath = () => GLib.build_filenamev([GLib.get_user_config_dir(), 'isle', 'mcp-clients.json']);
+        const readClients = () => {
+            try {
+                const [, bytes] = GLib.file_get_contents(clientsPath());
+                return JSON.parse(new TextDecoder().decode(bytes));
+            } catch {
+                return {};
+            }
+        };
+        const writeClients = (clients) => {
+            const path = clientsPath();
+            GLib.mkdir_with_parents(GLib.path_get_dirname(path), 0o700);
+            GLib.file_set_contents(path, JSON.stringify(clients, null, 2));
+            Gio.File.new_for_path(path).set_attribute_uint32('unix::mode', 0o600,
+                Gio.FileQueryInfoFlags.NONE, null);
+        };
+        const randomToken = () => {
+            // /dev/urandom is endless: read only the 32 bytes a key needs.
+            const stream = Gio.File.new_for_path('/dev/urandom').read(null);
+            const bytes = new Uint8Array(32);
+            let offset = 0;
+            try {
+                while (offset < bytes.length) {
+                    const chunk = stream.read_bytes(bytes.length - offset, null).get_data();
+                    if (chunk.length === 0)
+                        throw new Error('Could not read secure random bytes.');
+                    bytes.set(chunk, offset);
+                    offset += chunk.length;
+                }
+            } finally {
+                stream.close(null);
+            }
+            return GLib.base64_encode(bytes)
+                .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        };
+
+        const status = new Adw.ActionRow({title: 'Service', subtitle: 'Not checked yet'});
+        const statusSync = () => {
+            try {
+                const subprocess = Gio.Subprocess.new(['systemctl', '--user', 'is-active', 'isle-mcp.service'],
+                    Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE);
+                subprocess.communicate_utf8_async(null, null, (sub, result) => {
+                    const active = sub.get_successful() &&
+                        sub.communicate_utf8_finish(result)[1].trim() === 'active';
+                    status.subtitle = active
+                        ? 'Running on http://127.0.0.1:8765/mcp'
+                        : 'Not running. Turn it on with: systemctl --user enable --now isle-mcp.service';
+                });
+            } catch {
+                status.subtitle = 'Status unknown: systemctl is not available.';
+            }
+        };
+        statusSync();
+        const restart = new Gtk.Button({label: 'Restart', valign: Gtk.Align.CENTER});
+        restart.connect('clicked', () => {
+            try {
+                Gio.Subprocess.new(['systemctl', '--user', 'restart', 'isle-mcp.service'],
+                    Gio.SubprocessFlags.NONE);
+            } catch { }
+            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => { statusSync(); return false; });
+        });
+        status.add_suffix(restart);
+        group.add(status);
+
+        const clientList = new Adw.PreferencesGroup({title: 'Client keys',
+            description: 'A key is shown once when made; keep it in the agent\'s own MCP settings. ' +
+                'Restart the service after adding or revoking one.'});
+        const syncClients = () => {
+            while (clientList.get_first_child())
+                clientList.remove(clientList.get_first_child());
+            const entries = Object.entries(readClients());
+            if (!entries.length)
+                clientList.add(new Adw.ActionRow({title: 'No clients yet', subtitle: 'No agent has a key.'}));
+            for (const [name, entry] of entries) {
+                const row = new Adw.ActionRow({title: name, subtitle: (entry.scopes ?? []).join(', ')});
+                const revoke = new Gtk.Button({label: 'Revoke', valign: Gtk.Align.CENTER});
+                revoke.connect('clicked', () => {
+                    const clients = readClients();
+                    delete clients[name];
+                    writeClients(clients);
+                    syncClients();
+                });
+                row.add_suffix(revoke);
+                clientList.add(row);
+            }
+        };
+        syncClients();
+
+        const newClients = new Adw.PreferencesGroup();
+        const name = new Adw.EntryRow({title: 'New client name'});
+        const scopes = new Adw.EntryRow({title: 'Scopes', text: '*:read'});
+        const shownGroup = new Adw.PreferencesGroup();
+        const generate = new Gtk.Button({label: 'Generate key', valign: Gtk.Align.CENTER});
+        generate.connect('clicked', () => {
+            const client = name.text.trim();
+            const scopeList = scopes.text.trim().split(/[\s,]+/).filter(Boolean);
+            name.remove_css_class('error');
+            if (!client || readClients()[client]) {
+                name.add_css_class('error');
+                return;
+            }
+            const token = randomToken();
+            const clients = readClients();
+            clients[client] = {token, scopes: scopeList.length ? scopeList : ['*:read']};
+            writeClients(clients);
+            syncClients();
+            while (shownGroup.get_first_child())
+                shownGroup.remove(shownGroup.get_first_child());
+            const shown = new Adw.ActionRow({title: token,
+                subtitle: `Key for \u201c${client}\u201d; copy it now, it is not shown again.`});
+            const copy = new Gtk.Button({label: 'Copy', valign: Gtk.Align.CENTER});
+            copy.connect('clicked', () => shown.get_clipboard().set_text(token));
+            shown.add_suffix(copy);
+            shownGroup.add(shown);
+        });
+        scopes.add_suffix(generate);
+        newClients.add(name);
+        newClients.add(scopes);
+        page.add(clientList);
+        page.add(newClients);
+        page.add(shownGroup);
+
+        const tunnel = new Adw.PreferencesGroup({title: 'Remote access',
+            description: 'Keep the server on loopback and reach it through a Cloudflare tunnel. ' +
+                'For a quick temporary URL, run \u201cisle-mcp-tunnel run\u201d in a terminal and point ' +
+                'the agent at the printed URL\'s /mcp path. Keys still apply.'});
+        const domain = new Adw.EntryRow({title: 'Your domain'});
+        domain.set_tooltip_text('A hostname on a Cloudflare zone, e.g. isle.example.com');
+        const setupStatus = new Adw.ActionRow({title: 'Domain setup',
+            subtitle: 'Not set up. \u201cSet up\u201d logs in to Cloudflare, creates the tunnel, points the ' +
+                'domain at it and starts a user service.'});
+        const setup = new Gtk.Button({label: 'Set up', valign: Gtk.Align.CENTER});
+        setup.connect('clicked', () => {
+            const hostname = domain.text.trim();
+            if (!hostname || !hostname.includes('.')) {
+                domain.add_css_class('error');
+                return;
+            }
+            domain.remove_css_class('error');
+            setup.sensitive = false;
+            setupStatus.subtitle = `Setting up ${hostname}… (the browser opens once for the Cloudflare login)`;
+            const subprocess = Gio.Subprocess.new(['isle-mcp-tunnel', 'setup', hostname],
+                Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
+            subprocess.communicate_utf8_async(null, null, (sub, result) => {
+                const [, out, err] = sub.communicate_utf8_finish(result);
+                setup.sensitive = true;
+                const text = `${out ?? ''}${err ?? ''}`.trim();
+                setupStatus.subtitle = sub.get_successful()
+                    ? `Running: the agent connects to https://${hostname}/mcp with its key.`
+                    : `Setup failed: ${text.split('\n').at(-1) ?? 'see journalctl --user -u isle-mcp-tunnel'}`;
+            });
+        });
+        domain.add_suffix(setup);
+        const stopTunnel = new Gtk.Button({label: 'Stop tunnel', valign: Gtk.Align.CENTER});
+        stopTunnel.connect('clicked', () => {
+            try {
+                Gio.Subprocess.new(['systemctl', '--user', 'disable', '--now', 'isle-mcp-tunnel.service'],
+                    Gio.SubprocessFlags.NONE);
+                setupStatus.subtitle = 'Tunnel stopped; the domain no longer reaches this machine.';
+            } catch { }
+        });
+        setupStatus.add_suffix(stopTunnel);
+        tunnel.add(domain);
+        tunnel.add(setupStatus);
+        page.add(tunnel);
         return page;
     }
 
