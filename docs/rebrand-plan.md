@@ -41,21 +41,34 @@ been changed by this plan.
 - The README identifies components under separate licenses, including Inter
   (OFL-1.1), bloub (MIT), Lucide (ISC), and the demo video (CC BY-SA 4.0).
 
+## Settled decisions
+
+- **Install model:** in-place replacement of the current Isle installation
+  with a one-time migration. Side-by-side installs are out of scope for the
+  first release; they would require fully separate settings, data, services,
+  and D-Bus names.
+- **Version policy:** start a fresh version sequence independent of upstream
+  Isle releases, beginning at `1.0.0` for the first rebranded release, so the
+  update check never treats the new release as a downgrade from an Isle
+  version number.
+- **Repository rename timing:** keep `galyarderlabs/isle` until the product
+  name is chosen, then rename the repository before the first public
+  rebranded release so that clone URLs, package recipes, and the update feed
+  reference the final slug from day one.
+
 ## Rebrand decisions to settle
 
 1. **Product name and spelling:** display name, capitalization, short name, and
    a pronounceable CLI/package slug.
 2. **Namespace:** a stable reverse-DNS application ID and GNOME extension UUID
    controlled by Galyarder Labs.
-3. **Install model:** replace the current Isle installation in place, or allow
-   the new app to run beside upstream Isle. The recommended first release is an
-   in-place replacement with a one-time migration; side-by-side installs need
-   fully separate settings, data, services, and D-Bus names.
-4. **Repository and release identity:** final GitHub slug, homepage, issue
-   tracker, release tag sequence, package names, and update feed. The existing
-   `galyarderlabs/isle` repository can be renamed after the product slug is
-   chosen.
-5. **Attribution wording:** how the About page and README state that the
+3. **Public D-Bus API compatibility:** rename D-Bus well-known names,
+   object paths, and interfaces together with the rest of the runtime identity
+   (a breaking change), or keep them unchanged and document that as a
+   compatibility choice. This must be settled before Task 7, because it
+   decides how much of `docs/dbus-api.md` and the daemon/shelf identifiers
+   change.
+4. **Attribution wording:** how the About page and README state that the
    project is a modified derivative of Isle by zickrian.
 
 ## License, provenance, and marks
@@ -101,7 +114,10 @@ The first implementation must define how the current installation upgrades.
 Copy settings without losing key types or values; retain reminders, tasks,
 calendar entries, water/calorie history, credentials, and MCP configuration;
 disable/remove only the old extension instance owned by this installation;
-and avoid two daemons or duplicate notches during transition. Keep data paths
+and avoid two daemons or duplicate notches during transition. Keyring entries
+are often bound to their service attribute: if the keyring service name
+changes, the migration must explicitly copy or relabel existing items under
+the new service name, not merely assume they will be found. Keep data paths
 unchanged unless a separate migration is necessary and tested.
 
 ## Delivery phases
