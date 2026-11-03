@@ -362,6 +362,26 @@ export default class IslePreferences extends ExtensionPreferences {
             Gio.File.new_for_path(path).set_attribute_uint32('unix::mode', 0o600,
                 Gio.FileQueryInfoFlags.NONE, null);
         };
+        const readScopes = [
+            ['tasks:read', 'Tasks'], ['calendar:read', 'Calendar'], ['reminders:read', 'Reminders'],
+            ['calories:read', 'Calories'], ['water:read', 'Water'], ['prayer:read', 'Prayer'],
+            ['media:read', 'Music and media'], ['focus:read', 'Focus timer'], ['apps:read', 'App usage'],
+            ['system:read', 'System status'], ['shelf:read', 'Shelf'], ['clipboard:read', 'Clipboard'],
+            ['router:read', 'Router usage'], ['usage:read', 'AI usage'],
+        ];
+        const writeScopes = [
+            ['tasks:write', 'Tasks'], ['calendar:write', 'Calendar'], ['reminders:write', 'Reminders'],
+            ['calories:write', 'Calories'], ['water:write', 'Water'], ['prayer:write', 'Prayer'],
+            ['media:write', 'Music and media'], ['focus:write', 'Focus timer'], ['shelf:write', 'Shelf'],
+            ['clipboard:write', 'Clipboard'], ['desktop:write', 'Open links'],
+        ];
+        const scopeLabel = scope => {
+            if (scope === '*:read')
+                return 'All data · read only';
+            const title = [...readScopes, ...writeScopes].find(([value]) => value === scope)?.[1]
+                ?? scope.split(':')[0];
+            return `${title} · ${scope.endsWith(':read') ? 'read' : 'write'}`;
+        };
         const randomToken = () => {
             // /dev/urandom is endless: read only the 32 bytes a key needs.
             const stream = Gio.File.new_for_path('/dev/urandom').read(null);
@@ -424,7 +444,8 @@ export default class IslePreferences extends ExtensionPreferences {
                 clientRows.push(row);
             }
             for (const [name, entry] of entries) {
-                const row = new Adw.ActionRow({title: name, subtitle: (entry.scopes ?? []).join(', ')});
+                const row = new Adw.ActionRow({title: name,
+                    subtitle: (entry.scopes ?? []).map(scopeLabel).join(', ') || 'No access'});
                 const revoke = new Gtk.Button({label: 'Revoke', valign: Gtk.Align.CENTER});
                 revoke.connect('clicked', () => {
                     const clients = readClients();
@@ -441,21 +462,68 @@ export default class IslePreferences extends ExtensionPreferences {
 
         const newClients = new Adw.PreferencesGroup();
         const name = new Adw.EntryRow({title: 'New client name'});
-        const scopes = new Adw.EntryRow({title: 'Scopes', text: '*:read'});
+        const access = new Adw.PreferencesGroup({title: 'Access scopes',
+            description: 'Choose what this key can read or request to change.'});
+        const readAccess = new Adw.ExpanderRow({title: 'Read access', subtitle: 'All Isle data, read only', expanded: true});
+        const allRead = new Adw.SwitchRow({title: 'All read-only data'});
+        allRead.active = true;
+        readAccess.add_row(allRead);
+        const readRows = readScopes.map(([scope, title]) => {
+            const row = new Adw.SwitchRow({title});
+            readAccess.add_row(row);
+            return [scope, row];
+        });
+        const writeAccess = new Adw.ExpanderRow({title: 'Write actions',
+            subtitle: 'Off · server allowlist also required'});
+        const writeRows = writeScopes.map(([scope, title]) => {
+            const row = new Adw.SwitchRow({title});
+            writeAccess.add_row(row);
+            return [scope, row];
+        });
+        const syncScopeSummary = () => {
+            const selectedReads = allRead.active
+                ? readScopes.length : readRows.filter(([, row]) => row.active).length;
+            const selectedWrites = writeRows.filter(([, row]) => row.active).length;
+            readAccess.subtitle = allRead.active ? 'All Isle data, read only'
+                : selectedReads ? `${selectedReads} data ${selectedReads === 1 ? 'area' : 'areas'}` : 'None selected';
+            writeAccess.subtitle = selectedWrites
+                ? `${selectedWrites} action ${selectedWrites === 1 ? 'area' : 'areas'} · server allowlist also required`
+                : 'Off · server allowlist also required';
+        };
+        allRead.connect('notify::active', () => {
+            if (allRead.active)
+                readRows.forEach(([, row]) => (row.active = false));
+            syncScopeSummary();
+        });
+        readRows.forEach(([, row]) => row.connect('notify::active', () => {
+            if (row.active && allRead.active)
+                allRead.active = false;
+            syncScopeSummary();
+        }));
+        writeRows.forEach(([, row]) => row.connect('notify::active', syncScopeSummary));
+        access.add(readAccess);
+        access.add(writeAccess);
+        syncScopeSummary();
         const shownGroup = new Adw.PreferencesGroup();
         let shownRows = [];
         const generate = new Gtk.Button({label: 'Generate key', valign: Gtk.Align.CENTER});
         generate.connect('clicked', () => {
             const client = name.text.trim();
-            const scopeList = scopes.text.trim().split(/[\s,]+/).filter(Boolean);
+            const scopeList = [
+                ...(allRead.active ? ['*:read'] : readRows.filter(([, row]) => row.active).map(([scope]) => scope)),
+                ...writeRows.filter(([, row]) => row.active).map(([scope]) => scope),
+            ];
             name.remove_css_class('error');
-            if (!client || readClients()[client]) {
+            if (!client || readClients()[client] || !scopeList.length) {
                 name.add_css_class('error');
+                if (!scopeList.length)
+                    access.description = 'Choose at least one read or write scope.';
                 return;
             }
+            access.description = 'Choose what this key can read or request to change.';
             const token = randomToken();
             const clients = readClients();
-            clients[client] = {token, scopes: scopeList.length ? scopeList : ['*:read']};
+            clients[client] = {token, scopes: scopeList};
             writeClients(clients);
             syncClients();
             shownRows.forEach(row => shownGroup.remove(row));
@@ -468,11 +536,11 @@ export default class IslePreferences extends ExtensionPreferences {
             shownGroup.add(shown);
             shownRows.push(shown);
         });
-        scopes.add_suffix(generate);
+        name.add_suffix(generate);
         newClients.add(name);
-        newClients.add(scopes);
         page.add(clientList);
         page.add(newClients);
+        page.add(access);
         page.add(shownGroup);
 
         const tunnel = new Adw.PreferencesGroup({title: 'Remote access',
