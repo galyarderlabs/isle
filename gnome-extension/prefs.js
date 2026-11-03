@@ -8,6 +8,7 @@ import Adw from 'gi://Adw';
 import Gdk from 'gi://Gdk';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Pango from 'gi://Pango';
 import PangoCairo from 'gi://PangoCairo';
@@ -531,7 +532,33 @@ export default class IslePreferences extends ExtensionPreferences {
             const shown = new Adw.ActionRow({title: token,
                 subtitle: `Key for \u201c${client}\u201d; copy it now, it is not shown again.`});
             const copy = new Gtk.Button({label: 'Copy', valign: Gtk.Align.CENTER});
-            copy.connect('clicked', () => shown.get_clipboard().set_text(token));
+            copy.set_tooltip_text('Copy this key to the clipboard');
+            copy.connect('clicked', () => {
+                try {
+                    const clipboard = Gdk.Display.get_default()?.get_clipboard();
+                    if (!clipboard)
+                        throw new Error('The system clipboard is unavailable.');
+                    const value = new GObject.Value();
+                    value.init(GObject.TYPE_STRING);
+                    value.set_string(token);
+                    const provider = Gdk.ContentProvider.new_for_value(value);
+                    if (!clipboard.set_content(provider))
+                        throw new Error('The desktop did not accept the clipboard content.');
+                    copy.label = 'Copied';
+                    copy.set_tooltip_text('Key copied to the clipboard');
+                    GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 2, () => {
+                        if (!copy.get_parent())
+                            return GLib.SOURCE_REMOVE;
+                        copy.label = 'Copy';
+                        copy.set_tooltip_text('Copy this key to the clipboard');
+                        return GLib.SOURCE_REMOVE;
+                    });
+                } catch (error) {
+                    copy.label = 'Copy failed';
+                    copy.set_tooltip_text(error.message);
+                    console.warn(`Isle: could not copy MCP key: ${error.message}`);
+                }
+            });
             shown.add_suffix(copy);
             shownGroup.add(shown);
             shownRows.push(shown);
@@ -544,19 +571,22 @@ export default class IslePreferences extends ExtensionPreferences {
         page.add(shownGroup);
 
         const tunnel = new Adw.PreferencesGroup({title: 'Remote access',
-            description: 'Keep the server on loopback and reach it through a Cloudflare tunnel. ' +
-                'For a quick temporary URL, run \u201cisle-mcp-tunnel run\u201d in a terminal and point ' +
-                'the agent at the printed URL\'s /mcp path. Keys still apply.'});
-        const domain = new Adw.EntryRow({title: 'Your domain'});
-        domain.set_tooltip_text('A hostname on a Cloudflare zone, e.g. isle.example.com');
+            description: 'Expose Isle through an outbound Cloudflare Tunnel. Use a hostname in your Cloudflare zone; ' +
+                'mcp.example.com is recommended, though example.com also works if its DNS name is free. Enter only the ' +
+                'hostname, without https:// or /mcp. Create a client key first; Set up creates the DNS record and starts ' +
+                'the tunnel. For a temporary URL, run \u201cisle-mcp-tunnel run\u201d in a terminal.'});
+        const domain = new Adw.EntryRow({title: 'Public hostname (e.g. mcp.example.com)'});
+        domain.set_tooltip_text('A hostname in a Cloudflare zone you own. A dedicated subdomain is recommended.');
         const setupStatus = new Adw.ActionRow({title: 'Domain setup',
-            subtitle: 'Not set up. \u201cSet up\u201d logs in to Cloudflare, creates the tunnel, points the ' +
-                'domain at it and starts a user service.'});
+            subtitle: 'Not set up. Set up opens Cloudflare login if needed, creates or reuses the tunnel, adds DNS and starts it.'});
         const setup = new Gtk.Button({label: 'Set up', valign: Gtk.Align.CENTER});
         setup.connect('clicked', () => {
             const hostname = domain.text.trim();
-            if (!hostname || !hostname.includes('.')) {
+            const validHostname = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i
+                .test(hostname);
+            if (!validHostname) {
                 domain.add_css_class('error');
+                setupStatus.subtitle = 'Enter a hostname such as mcp.example.com, without https:// or /mcp.';
                 return;
             }
             domain.remove_css_class('error');
