@@ -4,24 +4,13 @@
 
 **A little world in your notch.**
 
-A living desktop notch for everyday life: music with synced lyrics, calls,
-notifications, a focus timer, reminders, a water tracker, calories, prayer
-times, a calendar that tells you when to join a meeting, a clipboard shelf,
-app usage, Claude Code and Codex asking you right there, and an assistant that
-installs and fixes things with the AI you already use — AI agents, personal
-tools and MCP integrations in one playful, always-with-you space.
-
-Notchfolk is a modified derivative of [Isle](https://github.com/zickrian/isle)
-by zickrian, published under the same GPL-3.0-or-later licence.
+A living desktop notch for everyday life — AI agents, personal tools, and MCP
+integrations in one playful, always-with-you space.
 
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
 ![GNOME Shell 46–51](https://img.shields.io/badge/GNOME%20Shell-46%E2%80%9351-4a86cf.svg)
 ![Rust 1.92+](https://img.shields.io/badge/Rust-1.92%2B-orange.svg)
-[![Buy me a coffee](https://img.shields.io/badge/support-buy%20me%20a%20coffee-ffdd00.svg)](https://sociabuzz.com/zickrian/tribe)
-
-<img src="docs/images/demo.webp" alt="Notchfolk on a GNOME desktop: the assistant playing music when asked, a command waiting for Run, every page of the island one hover away, and Claude Code asking for permission" width="800">
-
-[![Watch the full demo on YouTube](https://img.shields.io/badge/Watch%20the%20full%20demo-2%20min%2C%20with%20sound-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/D65nLECDgOo)
+[![Sponsor](https://img.shields.io/badge/sponsor-support-ff69b4?logo=githubsponsors)](https://github.com/sponsors/galyarderlabs)
 
 </div>
 
@@ -700,8 +689,8 @@ Thanks to everyone who has made Notchfolk better:
 ## Support
 
 Notchfolk is free and always will be. If it makes your desktop nicer, you can
-[buy me a coffee](https://sociabuzz.com/zickrian/tribe). A star, a bug report
-or telling a friend helps just as much.
+[sponsor Galyarder Labs on GitHub](https://github.com/sponsors/galyarderlabs).
+A star, a bug report or telling a friend helps just as much.
 
 ## License
 
