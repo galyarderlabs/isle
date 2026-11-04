@@ -5,16 +5,23 @@ import asyncio
 import json
 import logging
 import os
+import re
 from datetime import datetime, date as calendar_date
+from pathlib import Path
+from urllib.parse import urlsplit
 
 from fastmcp import FastMCP
 from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
 from fastmcp.server.dependencies import get_access_token
 from dbus_next import BusType, Message
 from dbus_next.aio import MessageBus
+from isle_oauth import IsleOAuthProvider
 
 BUS = "io.github.zickrian.isle.Daemon"
 PATH = "/io/github/zickrian/isle/Daemon"
+SHELL_BUS = "org.gnome.Shell"
+SHELL_PATH = "/io/github/zickrian/isle/Shell"
+SHELL_INTERFACE = "io.github.zickrian.isle.Shell1"
 WRITE_TOOLS = {item.strip() for item in os.getenv("ISLE_MCP_WRITE_TOOLS", "").split(",") if item.strip()}
 HOST = os.getenv("ISLE_MCP_HOST", "127.0.0.1")
 PORT = int(os.getenv("ISLE_MCP_PORT", "8765"))
@@ -35,19 +42,41 @@ TOKENS = {entry["token"]: {"sub": name, "client_id": name, "scopes": entry.get("
           for name, entry in CLIENTS.items() if entry.get("token")}
 if HOST not in {"127.0.0.1", "::1", "localhost"} and not TOKENS:
     raise SystemExit("Configure ISLE_MCP_TOKEN or a private ISLE_MCP_CLIENTS_FILE before binding beyond loopback")
-auth = StaticTokenVerifier(tokens=TOKENS) if TOKENS else None
-mcp = FastMCP("Isle", auth=auth)
 bus: MessageBus | None = None
 
 
-async def call(interface: str, member: str, signature: str = "", *args):
+async def call(interface: str, member: str, signature: str = "", *args, bus_name: str = BUS, path: str = PATH):
     if bus is None:
         raise RuntimeError("Isle MCP server is not connected to the session bus")
-    response = await bus.call(Message(destination=BUS, path=PATH, interface=interface,
+    response = await bus.call(Message(destination=bus_name, path=path, interface=interface,
                                       member=member, signature=signature, body=list(args)))
     if response.message_type.name == "ERROR":
-        raise RuntimeError(response.body[0] if response.body else response.error_name)
+        error = RuntimeError(response.body[0] if response.body else response.error_name)
+        error.dbus_error = response.error_name
+        raise error
     return response.body[0] if response.body else None
+
+
+async def shell_call(member: str, signature: str = "", *args):
+    """Asks the Isle extension, in GNOME Shell's name, for what isled tells only Shell.
+
+    The extension exports Shell1 (see gnome-extension/src/shellProxy.js); without it there is
+    nothing at that address, and the caller hears that as the reason. Anything else — the bus
+    itself failing, or the extension refusing — keeps its own words.
+    """
+    try:
+        return await call(SHELL_INTERFACE, member, signature, *args,
+                          bus_name=SHELL_BUS, path=SHELL_PATH)
+    except RuntimeError as error:
+        if getattr(error, "dbus_error", None) in {
+            "org.freedesktop.DBus.Error.UnknownObject",
+            "org.freedesktop.DBus.Error.UnknownInterface",
+            "org.freedesktop.DBus.Error.UnknownMethod",
+            "org.freedesktop.DBus.Error.ServiceUnknown",
+            "org.freedesktop.DBus.Error.NameHasNoOwner",
+        }:
+            raise RuntimeError(f"{member} needs Isle's GNOME Shell extension: {error}") from error
+        raise
 
 
 READ_SCOPES = {
@@ -76,6 +105,44 @@ WRITE_SCOPES = {
     "pin_clipboard": "clipboard:write", "remove_clipboard_item": "clipboard:write",
     "open_url": "desktop:write",
 }
+
+
+def public_mcp_url() -> str | None:
+    """Find the public HTTPS origin used by the named Cloudflare tunnel."""
+    configured = os.getenv("ISLE_MCP_PUBLIC_URL", "").strip()
+    hostname = ""
+    if configured:
+        parsed = urlsplit(configured)
+        if parsed.scheme != "https" or not parsed.hostname or parsed.query or parsed.fragment:
+            raise SystemExit("ISLE_MCP_PUBLIC_URL must be an https origin")
+        hostname = parsed.hostname
+    else:
+        config_home = Path(os.getenv("XDG_CONFIG_HOME", Path.home() / ".config"))
+        tunnel_config = config_home / "isle" / "cloudflared" / "config.yml"
+        try:
+            config = tunnel_config.read_text(encoding="utf-8")
+        except OSError:
+            return None
+        match = re.search(r"^\s*-\s*hostname:\s*([A-Za-z0-9.-]+)\s*$", config, re.MULTILINE)
+        if not match:
+            return None
+        hostname = match.group(1)
+    return f"https://{hostname}"
+
+
+OAUTH_SCOPES = sorted({"*:read", *READ_SCOPES.values(), *WRITE_SCOPES.values()})
+PUBLIC_MCP_URL = public_mcp_url()
+if PUBLIC_MCP_URL:
+    oauth_state = Path(os.getenv("XDG_STATE_HOME", Path.home() / ".local" / "state"))
+    auth = IsleOAuthProvider(
+        base_url=PUBLIC_MCP_URL,
+        legacy_tokens=TOKENS,
+        scopes=OAUTH_SCOPES,
+        db_path=os.getenv("ISLE_MCP_OAUTH_DB", str(oauth_state / "isle" / "mcp-oauth.sqlite3")),
+    )
+else:
+    auth = StaticTokenVerifier(tokens=TOKENS) if TOKENS else None
+mcp = FastMCP("Isle", auth=auth)
 
 
 async def authorize(tool: str, *, write_access: bool = False):
@@ -124,13 +191,21 @@ async def read(tool: str, interface: str, prop: str):
     return json.loads(variant.value)
 
 
+async def read_text(tool: str, interface: str, prop: str):
+    """As `read`, for a property that is a plain string rather than JSON (Updates1.Latest)."""
+    await authorize(tool)
+    token = get_access_token() if auth else None
+    LOG.info("MCP read tool called: client=%s tool=%s", token.client_id if token else "loopback", tool)
+    variant = await call("org.freedesktop.DBus.Properties", "Get", "ss", interface, prop)
+    return variant.value
+
+
 async def write(tool: str):
     await authorize(tool, write_access=True)
-    if tool not in WRITE_TOOLS:
-        token = get_access_token() if auth else None
-        LOG.warning("MCP write denied: client=%s tool=%s", token.client_id if token else "loopback", tool)
-        raise PermissionError(f"{tool} is disabled; add it to ISLE_MCP_WRITE_TOOLS to allow it")
     token = get_access_token() if auth else None
+    if token is None and tool not in WRITE_TOOLS:
+        LOG.warning("MCP write denied: client=loopback tool=%s", tool)
+        raise PermissionError(f"{tool} is disabled; add it to ISLE_MCP_WRITE_TOOLS to allow it")
     LOG.info("MCP write tool called: client=%s tool=%s", token.client_id if token else "loopback", tool)
 
 
@@ -465,7 +540,7 @@ async def get_app_usage() -> dict:
     await authorize("get_app_usage")
     token = get_access_token() if auth else None
     LOG.info("MCP read tool called: client=%s tool=%s", token.client_id if token else "loopback", "get_app_usage")
-    return json.loads(await call("io.github.zickrian.isle.AppUsage1", "GetStats"))
+    return json.loads(await shell_call("GetAppStats"))
 
 
 @mcp.tool
@@ -527,7 +602,7 @@ async def refresh_shelf() -> str:
 @mcp.tool
 async def get_latest_update() -> str:
     """Read the newer Isle version, when one is out; empty otherwise."""
-    return await read("get_latest_update", "io.github.zickrian.isle.Updates1", "Latest")
+    return await read_text("get_latest_update", "io.github.zickrian.isle.Updates1", "Latest")
 
 
 @mcp.tool
@@ -536,7 +611,7 @@ async def search_clipboard(query: str) -> list:
     await authorize("search_clipboard")
     token = get_access_token() if auth else None
     LOG.info("MCP read tool called: client=%s tool=%s", token.client_id if token else "loopback", "search_clipboard")
-    return list(await call("io.github.zickrian.isle.Clipboard1", "Search", "s", query))
+    return list(await shell_call("SearchClipboard", "s", query))
 
 
 @mcp.tool
@@ -545,7 +620,7 @@ async def get_clipboard_text(item_id: int) -> str:
     await authorize("get_clipboard_text")
     token = get_access_token() if auth else None
     LOG.info("MCP read tool called: client=%s tool=%s", token.client_id if token else "loopback", "get_clipboard_text")
-    return await call("io.github.zickrian.isle.Clipboard1", "GetText", "t", item_id)
+    return await shell_call("GetClipboardText", "t", item_id)
 
 
 @mcp.tool

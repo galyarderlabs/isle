@@ -66,13 +66,17 @@ credentials, data directories, caches, and rollback.
 **Acceptance criteria:**
 - [ ] List every user state store and whether it stays at its current path or
   migrates.
-- [ ] Define a one-time settings migration that preserves values and types.
-- [ ] Define safe handling for keyring credentials and MCP client config,
-  including explicitly copying or relabelling keyring items under the new
-  service name if it changes, since items are bound to their service
-  attribute.
-- [ ] Define how the installed Isle build's update check stops pointing at
-  upstream after the in-place replacement.
+- [x] Define a one-time settings migration that preserves values and types
+      (`scripts/notchfolk-migrate-from-isle.sh`, documented in
+      [migrate-from-isle.md](migrate-from-isle.md)).
+- [x] Define safe handling for keyring credentials and MCP client config,
+      including explicitly copying or relabelling keyring items under the new
+      service name if it changes, since items are bound to their service
+      attribute (the migration script reads each entry's plaintext with
+      `secret-tool lookup` and stores it under the new service name).
+- [x] Define how the installed Isle build's update check stops pointing at
+      upstream after the in-place replacement (`get.sh` and the daemon's
+      latest-version check point at this repository).
 - [ ] Define failure/rollback behavior and ensure no duplicate notch or daemon
   is left behind.
 
@@ -208,8 +212,11 @@ verification without replacing historical upstream release records.
 
 **Acceptance criteria:**
 - [ ] Clean install and update use only Galyarder Labs artifacts.
-- [ ] The update feed and latest-version check for the previous identity no
-  longer direct existing installations to upstream Isle artifacts.
+- [x] The update feed and latest-version check for the previous identity no
+      longer direct existing installations to upstream Isle artifacts
+      (`get.sh` and the daemon's check point at this repository; until it has
+      Releases with the `isle-*-linux.tar.gz` assets, installs and update
+      checks find nothing, which is safe: the checker just retries later).
 - [ ] Package upgrade/uninstall removes only files owned by the new package.
 - [ ] Release workflow publishes source and correctly named artifacts from the
   standalone repository.

@@ -59,7 +59,7 @@ case "${1:-}" in
         need_cloudflared
         need_token
         echo "Starting a Cloudflare quick tunnel to http://$HOST:$PORT (temporary URL, Ctrl+C to stop)."
-        echo "Connect an agent to https://<printed-url>/mcp with its bearer token."
+        echo "ChatGPT needs an OAuth hostname; other agents can use the existing key as a Bearer token."
         exec cloudflared tunnel --url "http://$HOST:$PORT"
         ;;
 
@@ -94,8 +94,32 @@ for tunnel in json.load(sys.stdin):
         echo "    Tunnel id: $TUNNEL_ID"
 
         echo "3/5 Pointing $HOSTNAME at the tunnel (automatic DNS CNAME)"
-        cloudflared tunnel route dns "$TUNNEL_ID" "$HOSTNAME" 2>/dev/null \
-            || echo "    DNS record already exists for $HOSTNAME; leaving it as it is."
+        if ! ROUTE_OUTPUT="$(cloudflared tunnel route dns "$TUNNEL_ID" "$HOSTNAME" 2>&1)"; then
+            if printf '%s' "$ROUTE_OUTPUT" | grep -qi 'Authentication error'; then
+                echo "Cloudflare rejected the saved login; opening the browser to refresh access."
+                CERT_BACKUP="${CERT}.backup-$(date +%Y%m%d-%H%M%S)"
+                if [ -f "$CERT" ]; then
+                    mv "$CERT" "$CERT_BACKUP"
+                fi
+                if ! cloudflared tunnel login; then
+                    if [ ! -f "$CERT" ] && [ -f "$CERT_BACKUP" ]; then
+                        mv "$CERT_BACKUP" "$CERT"
+                    fi
+                    echo "Cloudflare login failed; the previous certificate is preserved at $CERT_BACKUP." >&2
+                    exit 1
+                fi
+                if ! ROUTE_OUTPUT="$(cloudflared tunnel route dns "$TUNNEL_ID" "$HOSTNAME" 2>&1)"; then
+                    printf '%s\n' "$ROUTE_OUTPUT" >&2
+                    echo "Could not create the DNS record for $HOSTNAME." >&2
+                    exit 1
+                fi
+            else
+                printf '%s\n' "$ROUTE_OUTPUT" >&2
+                echo "Could not create the DNS record for $HOSTNAME. If a DNS record already exists, check that it points to this tunnel." >&2
+                exit 1
+            fi
+        fi
+        [ -z "$ROUTE_OUTPUT" ] || printf '%s\n' "$ROUTE_OUTPUT"
 
         echo "4/5 Writing the tunnel config"
         mkdir -p "$CONFIG_DIR"
@@ -112,6 +136,9 @@ ingress:
 YML
         chmod 600 "$CONFIG_DIR/config.yml" 2>/dev/null || true
         [ -f "$CREDENTIALS" ] || { echo "Credentials file $CREDENTIALS is missing." >&2; exit 1; }
+
+        # The MCP process reads this hostname to publish OAuth discovery metadata.
+        systemctl --user restart isle-mcp.service
 
         echo "5/5 Installing and starting the user service"
         mkdir -p "$(dirname "$SERVICE_FILE")"
@@ -133,7 +160,8 @@ UNIT
         echo
         echo "Done. Isle's MCP server is reachable at:"
         echo "  https://$HOSTNAME/mcp"
-        echo "Give an agent that URL and a key from isle-mcp-keygen (or Settings → MCP)."
+        echo "For ChatGPT, choose OAuth and enter an existing Isle key on the Isle sign-in page."
+        echo "Other clients can use that key as Authorization: Bearer <key>."
         ;;
 
     status)

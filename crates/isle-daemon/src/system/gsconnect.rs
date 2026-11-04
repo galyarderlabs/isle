@@ -177,7 +177,7 @@ async fn read_devices(session: &Connection) -> Vec<Device> {
                 device.kind
             );
             devices.push(device);
-        } else if interfaces.get(DEVICE).is_some() {
+        } else if interfaces.contains_key(DEVICE) {
             log::debug!("GSConnect device not read: {path}");
         }
     }

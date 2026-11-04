@@ -8,6 +8,7 @@ import Adw from 'gi://Adw';
 import Gdk from 'gi://Gdk';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Pango from 'gi://Pango';
 import PangoCairo from 'gi://PangoCairo';
@@ -362,6 +363,26 @@ export default class IslePreferences extends ExtensionPreferences {
             Gio.File.new_for_path(path).set_attribute_uint32('unix::mode', 0o600,
                 Gio.FileQueryInfoFlags.NONE, null);
         };
+        const readScopes = [
+            ['tasks:read', 'Tasks'], ['calendar:read', 'Calendar'], ['reminders:read', 'Reminders'],
+            ['calories:read', 'Calories'], ['water:read', 'Water'], ['prayer:read', 'Prayer'],
+            ['media:read', 'Music and media'], ['focus:read', 'Focus timer'], ['apps:read', 'App usage'],
+            ['system:read', 'System status'], ['shelf:read', 'Shelf'], ['clipboard:read', 'Clipboard'],
+            ['router:read', 'Router usage'], ['usage:read', 'AI usage'],
+        ];
+        const writeScopes = [
+            ['tasks:write', 'Tasks'], ['calendar:write', 'Calendar'], ['reminders:write', 'Reminders'],
+            ['calories:write', 'Calories'], ['water:write', 'Water'], ['prayer:write', 'Prayer'],
+            ['media:write', 'Music and media'], ['focus:write', 'Focus timer'], ['shelf:write', 'Shelf'],
+            ['clipboard:write', 'Clipboard'], ['desktop:write', 'Open links'],
+        ];
+        const scopeLabel = scope => {
+            if (scope === '*:read')
+                return 'All data · read only';
+            const title = [...readScopes, ...writeScopes].find(([value]) => value === scope)?.[1]
+                ?? scope.split(':')[0];
+            return `${title} · ${scope.endsWith(':read') ? 'read' : 'write'}`;
+        };
         const randomToken = () => {
             // /dev/urandom is endless: read only the 32 bytes a key needs.
             const stream = Gio.File.new_for_path('/dev/urandom').read(null);
@@ -413,14 +434,19 @@ export default class IslePreferences extends ExtensionPreferences {
         const clientList = new Adw.PreferencesGroup({title: 'Client keys',
             description: 'A key is shown once when made; keep it in the agent\'s own MCP settings. ' +
                 'Restart the service after adding or revoking one.'});
+        let clientRows = [];
         const syncClients = () => {
-            while (clientList.get_first_child())
-                clientList.remove(clientList.get_first_child());
+            clientRows.forEach(row => clientList.remove(row));
+            clientRows = [];
             const entries = Object.entries(readClients());
-            if (!entries.length)
-                clientList.add(new Adw.ActionRow({title: 'No clients yet', subtitle: 'No agent has a key.'}));
+            if (!entries.length) {
+                const row = new Adw.ActionRow({title: 'No clients yet', subtitle: 'No agent has a key.'});
+                clientList.add(row);
+                clientRows.push(row);
+            }
             for (const [name, entry] of entries) {
-                const row = new Adw.ActionRow({title: name, subtitle: (entry.scopes ?? []).join(', ')});
+                const row = new Adw.ActionRow({title: name,
+                    subtitle: (entry.scopes ?? []).map(scopeLabel).join(', ') || 'No access'});
                 const revoke = new Gtk.Button({label: 'Revoke', valign: Gtk.Align.CENTER});
                 revoke.connect('clicked', () => {
                     const clients = readClients();
@@ -430,58 +456,137 @@ export default class IslePreferences extends ExtensionPreferences {
                 });
                 row.add_suffix(revoke);
                 clientList.add(row);
+                clientRows.push(row);
             }
         };
         syncClients();
 
         const newClients = new Adw.PreferencesGroup();
         const name = new Adw.EntryRow({title: 'New client name'});
-        const scopes = new Adw.EntryRow({title: 'Scopes', text: '*:read'});
+        const access = new Adw.PreferencesGroup({title: 'Access scopes',
+            description: 'Choose what this key can read or request to change.'});
+        const readAccess = new Adw.ExpanderRow({title: 'Read access', subtitle: 'All Isle data, read only', expanded: true});
+        const allRead = new Adw.SwitchRow({title: 'All read-only data'});
+        allRead.active = true;
+        readAccess.add_row(allRead);
+        const readRows = readScopes.map(([scope, title]) => {
+            const row = new Adw.SwitchRow({title});
+            readAccess.add_row(row);
+            return [scope, row];
+        });
+        const writeAccess = new Adw.ExpanderRow({title: 'Write actions', subtitle: 'Off'});
+        const writeRows = writeScopes.map(([scope, title]) => {
+            const row = new Adw.SwitchRow({title});
+            writeAccess.add_row(row);
+            return [scope, row];
+        });
+        const syncScopeSummary = () => {
+            const selectedReads = allRead.active
+                ? readScopes.length : readRows.filter(([, row]) => row.active).length;
+            const selectedWrites = writeRows.filter(([, row]) => row.active).length;
+            readAccess.subtitle = allRead.active ? 'All Isle data, read only'
+                : selectedReads ? `${selectedReads} data ${selectedReads === 1 ? 'area' : 'areas'}` : 'None selected';
+            writeAccess.subtitle = selectedWrites
+                ? `${selectedWrites} action ${selectedWrites === 1 ? 'area' : 'areas'}`
+                : 'Off';
+        };
+        allRead.connect('notify::active', () => {
+            if (allRead.active)
+                readRows.forEach(([, row]) => (row.active = false));
+            syncScopeSummary();
+        });
+        readRows.forEach(([, row]) => row.connect('notify::active', () => {
+            if (row.active && allRead.active)
+                allRead.active = false;
+            syncScopeSummary();
+        }));
+        writeRows.forEach(([, row]) => row.connect('notify::active', syncScopeSummary));
+        access.add(readAccess);
+        access.add(writeAccess);
+        syncScopeSummary();
         const shownGroup = new Adw.PreferencesGroup();
+        let shownRows = [];
         const generate = new Gtk.Button({label: 'Generate key', valign: Gtk.Align.CENTER});
         generate.connect('clicked', () => {
             const client = name.text.trim();
-            const scopeList = scopes.text.trim().split(/[\s,]+/).filter(Boolean);
+            const scopeList = [
+                ...(allRead.active ? ['*:read'] : readRows.filter(([, row]) => row.active).map(([scope]) => scope)),
+                ...writeRows.filter(([, row]) => row.active).map(([scope]) => scope),
+            ];
             name.remove_css_class('error');
-            if (!client || readClients()[client]) {
+            if (!client || readClients()[client] || !scopeList.length) {
                 name.add_css_class('error');
+                if (!scopeList.length)
+                    access.description = 'Choose at least one read or write scope.';
                 return;
             }
+            access.description = 'Choose what this key can read or request to change.';
             const token = randomToken();
             const clients = readClients();
-            clients[client] = {token, scopes: scopeList.length ? scopeList : ['*:read']};
+            clients[client] = {token, scopes: scopeList};
             writeClients(clients);
             syncClients();
-            while (shownGroup.get_first_child())
-                shownGroup.remove(shownGroup.get_first_child());
+            shownRows.forEach(row => shownGroup.remove(row));
+            shownRows = [];
             const shown = new Adw.ActionRow({title: token,
                 subtitle: `Key for \u201c${client}\u201d; copy it now, it is not shown again.`});
             const copy = new Gtk.Button({label: 'Copy', valign: Gtk.Align.CENTER});
-            copy.connect('clicked', () => shown.get_clipboard().set_text(token));
+            copy.set_tooltip_text('Copy this key to the clipboard');
+            copy.connect('clicked', () => {
+                try {
+                    const clipboard = Gdk.Display.get_default()?.get_clipboard();
+                    if (!clipboard)
+                        throw new Error('The system clipboard is unavailable.');
+                    const value = new GObject.Value();
+                    value.init(GObject.TYPE_STRING);
+                    value.set_string(token);
+                    const provider = Gdk.ContentProvider.new_for_value(value);
+                    if (!clipboard.set_content(provider))
+                        throw new Error('The desktop did not accept the clipboard content.');
+                    copy.label = 'Copied';
+                    copy.set_tooltip_text('Key copied to the clipboard');
+                    GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 2, () => {
+                        if (!copy.get_parent())
+                            return GLib.SOURCE_REMOVE;
+                        copy.label = 'Copy';
+                        copy.set_tooltip_text('Copy this key to the clipboard');
+                        return GLib.SOURCE_REMOVE;
+                    });
+                } catch (error) {
+                    copy.label = 'Copy failed';
+                    copy.set_tooltip_text(error.message);
+                    console.warn(`Isle: could not copy MCP key: ${error.message}`);
+                }
+            });
             shown.add_suffix(copy);
             shownGroup.add(shown);
+            shownRows.push(shown);
         });
-        scopes.add_suffix(generate);
+        name.add_suffix(generate);
         newClients.add(name);
-        newClients.add(scopes);
         page.add(clientList);
         page.add(newClients);
+        page.add(access);
         page.add(shownGroup);
 
         const tunnel = new Adw.PreferencesGroup({title: 'Remote access',
-            description: 'Keep the server on loopback and reach it through a Cloudflare tunnel. ' +
-                'For a quick temporary URL, run \u201cisle-mcp-tunnel run\u201d in a terminal and point ' +
-                'the agent at the printed URL\'s /mcp path. Keys still apply.'});
-        const domain = new Adw.EntryRow({title: 'Your domain'});
-        domain.set_tooltip_text('A hostname on a Cloudflare zone, e.g. isle.example.com');
+            description: 'Expose Isle through an outbound Cloudflare Tunnel. Use a hostname in your Cloudflare zone; ' +
+                'mcp.example.com is recommended, though example.com also works if its DNS name is free. Enter only the ' +
+                'hostname, without https:// or /mcp. Create a client key first; Set up creates the DNS record and starts ' +
+                'the tunnel. ChatGPT uses OAuth and asks for this key on Isle’s sign-in page; other clients can use it as a Bearer key. ' +
+                'For a temporary URL, run \u201cisle-mcp-tunnel run\u201d in a terminal.'});
+        const domain = new Adw.EntryRow({title: 'Public hostname (e.g. mcp.example.com)'});
+        domain.set_tooltip_text('A hostname in a Cloudflare zone you own. A dedicated subdomain is recommended.');
         const setupStatus = new Adw.ActionRow({title: 'Domain setup',
-            subtitle: 'Not set up. \u201cSet up\u201d logs in to Cloudflare, creates the tunnel, points the ' +
-                'domain at it and starts a user service.'});
+            subtitle: 'Not set up. Set up opens Cloudflare login if needed, creates or reuses the tunnel, adds DNS and starts it.'});
         const setup = new Gtk.Button({label: 'Set up', valign: Gtk.Align.CENTER});
         setup.connect('clicked', () => {
             const hostname = domain.text.trim();
-            if (!hostname || !hostname.includes('.')) {
+            const validHostname = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i
+                .test(hostname);
+            if (!validHostname) {
                 domain.add_css_class('error');
+                setupStatus.subtitle = 'Enter a hostname such as mcp.example.com, without https:// or /mcp.';
                 return;
             }
             domain.remove_css_class('error');
@@ -494,7 +599,7 @@ export default class IslePreferences extends ExtensionPreferences {
                 setup.sensitive = true;
                 const text = `${out ?? ''}${err ?? ''}`.trim();
                 setupStatus.subtitle = sub.get_successful()
-                    ? `Running: the agent connects to https://${hostname}/mcp with its key.`
+                    ? `Running: ChatGPT uses OAuth at https://${hostname}/mcp; enter an Isle key on the sign-in page.`
                     : `Setup failed: ${text.split('\n').at(-1) ?? 'see journalctl --user -u isle-mcp-tunnel'}`;
             });
         });

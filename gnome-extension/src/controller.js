@@ -22,6 +22,7 @@ import {ClipboardHistory} from './clipboard.js';
 import {CompactView} from './compact.js';
 import {HAS_ACCENT, grabsKeyboard, inhibitScanout, isWayland, onUiScale, px, uiScale} from './compat.js';
 import {Daemon} from './daemon.js';
+import {ShellProxy} from './shellProxy.js';
 import {BOTTOM_PADDING, ExpandedView, PAGE_HEIGHT} from './expanded.js';
 import {Island} from './island.js';
 import {AudioOutputs} from './audio.js';
@@ -37,15 +38,6 @@ import {KeyboardWatcher, OsdHook, REACH_PX, TopBar, windowAtTop} from './shell.j
 import {ShelfHelper} from './shelfHelper.js';
 import {PrayerWatcher, ReminderWatcher, WellbeingWatcher} from './reminders.js';
 import {isShelfCopy, saveToDownloads, showInFiles} from './downloads.js';
-import {AppsPage} from './pages/apps.js';
-import {CallPage} from './pages/call.js';
-import {CalendarPage} from './pages/calendar.js';
-import {MediaPage} from './pages/media.js';
-import {NotificationsPage} from './pages/notifications.js';
-import {ShelfPage} from './pages/shelf.js';
-import {TasksPage} from './pages/tasks.js';
-import {TimerPage} from './pages/timer.js';
-import {UsagePage} from './pages/usage.js';
 import * as Theme from './theme.js';
 import {GREETING, InstalledApps, UNDO_MS, VoiceView, stopUnit, actionTypes, aiSettings, openSetUp, openSignIn, runActions, signInHint, stopPending, voiceContext} from './voice.js';
 import {autoHide, revealBand} from './visibilityRules.js';
@@ -163,6 +155,7 @@ export class Controller {
         // Before any view shows a time: 24 or 12 hours, or as GNOME's clock (Settings → Appearance → Clock).
         Format.setClockFormat(this._settings.get_string('clock-format'));
         this._daemon = new Daemon();
+        this._shellProxy = new ShellProxy(this._daemon);
         // Heard once everything listening is built (see `_connectAll`).
         this._daemon.hold();
         this._timeouts = new Map();
@@ -3002,6 +2995,7 @@ export class Controller {
         this._audio.destroy();
         this._notifications.destroy();
         this._topBar.destroy();
+        this._shellProxy.destroy();
         this._daemon.destroy();
         this._settings = null;
         Format.release();
@@ -3070,7 +3064,7 @@ export class Controller {
         }
         this._island?.destroy();
         for (const service of [this._topBar, this._writer, this._appUsage, this._clipboard, this._focusMode, this._call,
-            this._privacy, this._audio, this._notifications, this._daemon])
+            this._privacy, this._audio, this._notifications, this._shellProxy, this._daemon])
             service?.destroy();
         this._settings = null;
         Format.release();
