@@ -47,15 +47,16 @@ been changed by this plan.
   group of small companions living in the notch, which matches the intended
   playful, always-with-you product direction rather than a single bot.
 - **Tagline:** "A little world in your notch."
-- **Repository description:** "A living desktop notch for everyday life,
-  bringing AI agents, personal tools, and MCP integrations into one playful,
-  always-with-you space."
+- **Repository description:** "A living desktop notch: music with synced
+  lyrics, tasks, reminders, calendar, AI agents (Hermes, Claude Code, Codex,
+  OMP), a built-in MCP server, AI router analytics, and subscription usage
+  quota tracking. GNOME today — Windows and macOS coming."
 - **Namespace:** `io.galyarderlabs.notchfolk` for the application ID and GNOME
   extension UUID, with identifiers on other platforms derived from the same
   namespace as support is added.
-- **Platform direction:** GNOME first, with Windows support planned later. The
-  brand and namespace are platform-neutral; GNOME-specific identifiers are
-  implementation details of the GNOME build.
+- **Platform direction:** GNOME first, with Windows and macOS support planned
+  later. The brand and namespace are platform-neutral; GNOME-specific
+  identifiers are implementation details of the GNOME build.
 - **Install model:** in-place replacement of the current Isle installation
   with a one-time migration. Side-by-side installs are out of scope for the
   first release; they would require fully separate settings, data, services,

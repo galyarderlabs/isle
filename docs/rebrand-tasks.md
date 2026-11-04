@@ -17,7 +17,7 @@ slug, reverse-DNS namespace, GNOME extension UUID, final repository slug, and
 version sequence. The product name (Notchfolk, slug `notchfolk`), tagline
 ("A little world in your notch."), namespace
 (`io.galyarderlabs.notchfolk`), platform direction (GNOME first, Windows
-planned), install model (in-place replacement), public D-Bus naming (rename
+and macOS planned), install model (in-place replacement), public D-Bus naming (rename
 with the runtime identity), version policy (fresh sequence starting at `1.0.0`),
 and repository rename timing (rename after the trademark/domain check passes,
 before the first public rebranded release) are already decided in
