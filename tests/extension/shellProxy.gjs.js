@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// The Shell-side proxy for the three isled methods the MCP tools need, against a stub bus and
-// daemon: `gjs -m tests/extension/shellProxy.gjs.js`.
+// The Shell-side proxy for the three isled methods the MCP tools need, against a stub
+// exporter and daemon: `gjs -m tests/extension/shellProxy.gjs.js`.
 
 import Gio from 'gi://Gio';
 
@@ -16,16 +16,20 @@ function check(what, actual, expected) {
     printerr(`FAIL ${what}: ${JSON.stringify(actual)}, wanted ${JSON.stringify(expected)}`);
 }
 
-/** A bus that only counts what a proxy exports and unexports. */
-const bus = {
-    export: (path) => {
-        check('the object path', path, '/io/github/zickrian/isle/Shell');
+// What the proxy does with what wrapJSObject hands back: its export and unexport calls
+// are this test's business; how wrapJSObject builds the object is GJS's, so it is stood
+// in for here.
+const exported = [];
+const bus = {};
+Gio.DBusExportedObject.wrapJSObject = (xml, impl) => ({
+    export: (connection, path) => {
+        exported.push({connection, path, impl});
         return true;
     },
     unexport: () => {
         bus.unexported = true;
     },
-};
+});
 
 /** isled as the test wants it: canned answers, or a refusal with its own words. */
 const daemon = {
@@ -38,6 +42,9 @@ const daemon = {
 };
 
 const proxy = new ShellProxy(daemon, bus);
+check('exported once, on the given bus and path',
+    exported.map(({connection, path}) => [connection === bus, path]), [[true, '/io/github/zickrian/isle/Shell']]);
+check('the exported implementation is the proxy itself', exported[0].impl === proxy, true);
 check('a proxy with the three methods',
     ['GetAppStats', 'SearchClipboard', 'GetClipboardText'].every(name => typeof proxy[name] === 'function'),
     true);
