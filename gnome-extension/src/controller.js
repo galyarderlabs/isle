@@ -37,15 +37,6 @@ import {KeyboardWatcher, OsdHook, REACH_PX, TopBar, windowAtTop} from './shell.j
 import {ShelfHelper} from './shelfHelper.js';
 import {PrayerWatcher, ReminderWatcher, WellbeingWatcher} from './reminders.js';
 import {isShelfCopy, saveToDownloads, showInFiles} from './downloads.js';
-import {AppsPage} from './pages/apps.js';
-import {CallPage} from './pages/call.js';
-import {CalendarPage} from './pages/calendar.js';
-import {MediaPage} from './pages/media.js';
-import {NotificationsPage} from './pages/notifications.js';
-import {ShelfPage} from './pages/shelf.js';
-import {TasksPage} from './pages/tasks.js';
-import {TimerPage} from './pages/timer.js';
-import {UsagePage} from './pages/usage.js';
 import * as Theme from './theme.js';
 import {GREETING, InstalledApps, UNDO_MS, VoiceView, stopUnit, actionTypes, aiSettings, openSetUp, openSignIn, runActions, signInHint, stopPending, voiceContext} from './voice.js';
 import {autoHide, revealBand} from './visibilityRules.js';

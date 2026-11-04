@@ -378,7 +378,10 @@ impl Shared {
 /// `provider`'s plan and models now.
 async fn read(provider: Provider) -> Found {
     // These providers expose their own model lists through `ListModels`; they have no account-plan catalog.
-    if matches!(provider, Provider::Hermes | Provider::OpenAi | Provider::OhMyPi) {
+    if matches!(
+        provider,
+        Provider::Hermes | Provider::OpenAi | Provider::OhMyPi
+    ) {
         return Found::Gone;
     }
     // opencode answers with OpenCode's free models signed in or not.
