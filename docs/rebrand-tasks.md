@@ -57,7 +57,9 @@ credentials, data directories, caches, and rollback.
 **Acceptance criteria:**
 - [ ] List every user state store and whether it stays at its current path or
   migrates.
-- [ ] Define a one-time settings migration that preserves values and types.
+- [x] Define a one-time settings migration that preserves values and types
+      (`scripts/notchfolk-migrate-from-isle.sh`, documented in
+      [migrate-from-isle.md](migrate-from-isle.md)).
 - [ ] Define safe handling for keyring credentials and MCP client config.
 - [ ] Define failure/rollback behavior and ensure no duplicate notch or daemon
   is left behind.

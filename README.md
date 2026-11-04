@@ -26,7 +26,9 @@ appear in the same place instead of in the middle of the screen.
 > Notchfolk is newly named. The program names and identifiers it installs
 > (`isled`, `isle-shelf`, the `isle@zickrian.github.io` extension, and the
 > `~/.local/share/isle` data folder) still carry the Isle names and keep
-> working exactly as before; they will be renamed in a later release.
+> working exactly as before; they will be renamed in a later release, which
+> ships [a one-time migration script for existing settings and
+> data](docs/migrate-from-isle.md).
 
 ## Features
 
