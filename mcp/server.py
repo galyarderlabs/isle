@@ -51,7 +51,9 @@ async def call(interface: str, member: str, signature: str = "", *args, bus_name
     response = await bus.call(Message(destination=bus_name, path=path, interface=interface,
                                       member=member, signature=signature, body=list(args)))
     if response.message_type.name == "ERROR":
-        raise RuntimeError(response.body[0] if response.body else response.error_name)
+        error = RuntimeError(response.body[0] if response.body else response.error_name)
+        error.dbus_error = response.error_name
+        raise error
     return response.body[0] if response.body else None
 
 
@@ -59,13 +61,22 @@ async def shell_call(member: str, signature: str = "", *args):
     """Asks the Isle extension, in GNOME Shell's name, for what isled tells only Shell.
 
     The extension exports Shell1 (see gnome-extension/src/shellProxy.js); without it there is
-    nothing at that address, and the caller hears that as the reason.
+    nothing at that address, and the caller hears that as the reason. Anything else — the bus
+    itself failing, or the extension refusing — keeps its own words.
     """
     try:
         return await call(SHELL_INTERFACE, member, signature, *args,
                           bus_name=SHELL_BUS, path=SHELL_PATH)
     except RuntimeError as error:
-        raise RuntimeError(f"{member} needs Isle's GNOME Shell extension: {error}") from error
+        if getattr(error, "dbus_error", None) in {
+            "org.freedesktop.DBus.Error.UnknownObject",
+            "org.freedesktop.DBus.Error.UnknownInterface",
+            "org.freedesktop.DBus.Error.UnknownMethod",
+            "org.freedesktop.DBus.Error.ServiceUnknown",
+            "org.freedesktop.DBus.Error.NameHasNoOwner",
+        }:
+            raise RuntimeError(f"{member} needs Isle's GNOME Shell extension: {error}") from error
+        raise
 
 
 READ_SCOPES = {
