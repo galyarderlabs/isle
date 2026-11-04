@@ -180,6 +180,15 @@ async def read(tool: str, interface: str, prop: str):
     return json.loads(variant.value)
 
 
+async def read_text(tool: str, interface: str, prop: str):
+    """As `read`, for a property that is a plain string rather than JSON (Updates1.Latest)."""
+    await authorize(tool)
+    token = get_access_token() if auth else None
+    LOG.info("MCP read tool called: client=%s tool=%s", token.client_id if token else "loopback", tool)
+    variant = await call("org.freedesktop.DBus.Properties", "Get", "ss", interface, prop)
+    return variant.value
+
+
 async def write(tool: str):
     await authorize(tool, write_access=True)
     token = get_access_token() if auth else None
@@ -582,7 +591,7 @@ async def refresh_shelf() -> str:
 @mcp.tool
 async def get_latest_update() -> str:
     """Read the newer Isle version, when one is out; empty otherwise."""
-    return await read("get_latest_update", "io.github.zickrian.isle.Updates1", "Latest")
+    return await read_text("get_latest_update", "io.github.zickrian.isle.Updates1", "Latest")
 
 
 @mcp.tool
