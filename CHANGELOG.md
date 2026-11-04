@@ -6,6 +6,18 @@ All notable changes to Isle are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- **The rebrand is done: Notchfolk's own identifiers everywhere.** The extension is
+  `io.galyarderlabs.notchfolk` (schema `org.gnome.shell.extensions.notchfolk`), isled answers
+  on `io.galyarderlabs.notchfolk.*` as `notchfolkd`, the commands are `notchfolk-setup-voice`,
+  `notchfolk-setup-mcp`, `notchfolk-mcp`, `notchfolk-mcp-keygen`, `notchfolk-mcp-tunnel` and
+  `notchfolk-charge-limit`, the environment variables are `NOTCHFOLK_MCP_*`, and the data,
+  config, cache and state folders are `~/.local/share/notchfolk`, `~/.config/notchfolk`,
+  `~/.cache/notchfolk` and `~/.local/state/notchfolk`. Settings, data, keyring credentials
+  and services carry over with
+  [the one-time migration script](migrate-from-isle.md).
+
 ## [1.6.1] - 2026-11-04
 
 The first Galyarder Labs release: MCP write tools answer the key they were made for, the agent can read app usage and

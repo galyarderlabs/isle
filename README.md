@@ -24,12 +24,9 @@ leaves it closed. Alerts for volume, charging, Caps Lock and notifications
 appear in the same place instead of in the middle of the screen.
 
 > [!NOTE]
-> Notchfolk is newly named. The program names and identifiers it installs
-> (`isled`, `isle-shelf`, the `isle@zickrian.github.io` extension, and the
-> `~/.local/share/isle` data folder) still carry the Isle names and keep
-> working exactly as before; they will be renamed in a later release, which
-> ships [a one-time migration script for existing settings and
-> data](docs/migrate-from-isle.md).
+> Notchfolk was formerly Isle. If you are upgrading from an Isle installation, run
+> [the one-time migration script](docs/migrate-from-isle.md) once after installing,
+> to carry your settings, data, credentials and services to the new names.
 
 ## Features
 
@@ -122,7 +119,7 @@ appear in the same place instead of in the middle of the screen.
 </tr>
 <tr>
 <td width="50%" valign="top">
-<b>MCP server.</b> An optional MCP server for agents outside Notchfolk: read tools for your data and actions, with the writes you list in <code>~/.config/isle/mcp.env</code>, on loopback by default and remote access through an authenticated tunnel.
+<b>MCP server.</b> An optional MCP server for agents outside Notchfolk: read tools for your data and actions, with the writes you list in <code>~/.config/notchfolk/mcp.env</code>, on loopback by default and remote access through an authenticated tunnel.
 </td>
 <td width="50%" valign="top">
 <b>More AIs.</b> The assistant also runs Hermes and Oh My Pi with the providers they are configured for, plus any OpenAI-compatible API.

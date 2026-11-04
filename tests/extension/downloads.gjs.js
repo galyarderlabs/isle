@@ -6,7 +6,7 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
-const home = GLib.dir_make_tmp('isle-downloads-XXXXXX');
+const home = GLib.dir_make_tmp('notchfolk-downloads-XXXXXX');
 GLib.setenv('HOME', home, true);
 GLib.setenv('XDG_DATA_HOME', `${home}/.local/share`, true);
 GLib.setenv('XDG_CONFIG_HOME', `${home}/.config`, true);
@@ -24,7 +24,7 @@ function check(what, actual, expected) {
 }
 const read = path => new TextDecoder().decode(GLib.file_get_contents(path)[1]);
 
-const shelf = `${home}/.local/share/isle/shelf`;
+const shelf = `${home}/.local/share/notchfolk/shelf`;
 GLib.mkdir_with_parents(shelf, 0o700);
 const photo = `${shelf}/Photo.jpg`;
 GLib.file_set_contents(photo, 'picture');
@@ -57,8 +57,8 @@ try {
 }
 check('a file gone', reason, 'It is no longer on the Shelf');
 
-// Another program takes the free name just as Isle goes to write it, and Isle's copy then fails: that
-// program's file is never deleted, and Isle's half file is.
+// Another program takes the free name just as Notchfolk goes to write it, and Notchfolk's copy then fails: that
+// program's file is never deleted, and Notchfolk's half file is.
 let raced = null;
 const realCreate = Gio.File.prototype.create_async;
 Gio.File.prototype.create_async = function (...args) {
@@ -83,7 +83,7 @@ Gio.OutputStream.prototype.splice_finish = realSplice;
 check('the race: their file kept', raced && read(raced), 'theirs');
 check('the race: the reason', reason, 'Not enough space in Downloads');
 GLib.usleep(200000);
-check('the race: no half file of Isle\u2019s', GLib.file_test(`${downloads}/Photo (6).jpg`, GLib.FileTest.EXISTS), false);
+check('the race: no half file of Notchfolk\u2019s', GLib.file_test(`${downloads}/Photo (6).jpg`, GLib.FileTest.EXISTS), false);
 
 // Two saves of files with the same name at once: both kept, each whole.
 const elsewhere = `${home}/Elsewhere`;

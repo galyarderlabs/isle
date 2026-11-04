@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// Mic, camera (from isled), screen sharing and recording; all event driven.
+// Mic, camera (from notchfolkd), screen sharing and recording; all event driven.
 // Mic streams that only meter input (sound settings) are ignored, as GNOME does, and so are those that record
 // a speaker's sound rather than a microphone (an app's equaliser or visualizer).
 
@@ -137,7 +137,7 @@ export class PrivacyMonitor extends Signals.EventEmitter {
         }
     }
 
-    /** The camera as isled sees it. */
+    /** The camera as notchfolkd sees it. */
     _syncCamera() {
         this._set('camera', Boolean(this._daemon.state.system?.camera_in_use));
     }
@@ -154,7 +154,7 @@ export class PrivacyMonitor extends Signals.EventEmitter {
             this.emit('recording-started');
     }
 
-    // A share started before Isle (turned on again after unlocking, or updated mid-call) came as no
+    // A share started before Notchfolk (turned on again after unlocking, or updated mid-call) came as no
     // `new-handle`: GNOME's sharing indicator knows it (private: its `_handles`, else its being shown).
     _seedShares() {
         const indicator = Main.panel.statusArea.screenSharing;

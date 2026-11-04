@@ -49,20 +49,20 @@ export function describeActions(actions = []) {
     return actions.length > 1 ? `${what.replace(/…$/, '')} and ${actions.length - 1} more…` : what;
 }
 
-/** What isled's runner wraps each command in (see tasks.rs); a command to start must use exactly this. */
-export const RUN_WRAPPER = '( eval "$1" ); printf \'\\n[isle-exit %d]\\n\' "$?"';
+/** What notchfolkd's runner wraps each command in (see tasks.rs); a command to start must use exactly this. */
+export const RUN_WRAPPER = '( eval "$1" ); printf \'\\n[notchfolk-exit %d]\\n\' "$?"';
 /** As root: the same, its output written to the log by the user ($2, $3) rather than root. */
 export const ROOT_WRAPPER = `{ ${RUN_WRAPPER}; } 2>&1 | chroot --userspec="$2:$3" / tee -a -- "$4" >/dev/null`;
 
-/** Whether `action` starts exactly what its card shows: `systemd-run` with Isle's own options, its log in Isle's
- * cache, the shown command last. Nothing else starts, even if something posed as isled on the bus. */
+/** Whether `action` starts exactly what its card shows: `systemd-run` with Notchfolk's own options, its log in Notchfolk's
+ * cache, the shown command last. Nothing else starts, even if something posed as notchfolkd on the bus. */
 export function runnable(action, {home, cache = `${home}/.cache`, uid, gid}) {
     const argv = action?.spawn;
     if (!Array.isArray(argv) || argv[0] !== 'systemd-run' || typeof action.command !== 'string')
         return false;
     const end = argv.indexOf('--');
     const root = !argv.slice(0, end).includes('--user');
-    const logPath = new RegExp(`^${literal(`${cache}/isle/runs/`)}run-[\\w-]+\\.log$`);
+    const logPath = new RegExp(`^${literal(`${cache}/notchfolk/runs/`)}run-[\\w-]+\\.log$`);
     if (end < 0 || argv.length !== end + (root ? 9 : 6))
         return false;
     const [bash, flag, wrapper, name, command, ...rest] = argv.slice(end + 1);
@@ -70,14 +70,14 @@ export function runnable(action, {home, cache = `${home}/.cache`, uid, gid}) {
     if (root !== action.command.startsWith('sudo ') || !showsWhole(action.command, MAX_COMMAND + (root ? 5 : 0)))
         return false;
     const shown = root ? action.command.replace(/^sudo /, '') : action.command;
-    if (bash !== 'bash' || flag !== '-c' || wrapper !== (root ? ROOT_WRAPPER : RUN_WRAPPER) || name !== 'isle' ||
+    if (bash !== 'bash' || flag !== '-c' || wrapper !== (root ? ROOT_WRAPPER : RUN_WRAPPER) || name !== 'notchfolk' ||
         command !== shown)
         return false;
     // As root, the output reaches the log through the user, never a file root opens in their home.
     if (root && (rest[0] !== String(uid) || rest[1] !== String(gid) || !logPath.test(rest[2])))
         return false;
     const allowed = [
-        /^--user$/, /^--unit=isle-run-[\w-]+$/, /^--collect$/, /^--quiet$/, /^--property=RuntimeMaxSec=\d+$/,
+        /^--user$/, /^--unit=notchfolk-run-[\w-]+$/, /^--collect$/, /^--quiet$/, /^--property=RuntimeMaxSec=\d+$/,
         /^--setenv=(DEBIAN_FRONTEND|LANG)=[\w.-]*$/,
     ];
     return argv.slice(1, end).every(option => allowed.some(rule => rule.test(option)) ||
@@ -118,7 +118,7 @@ export function terminalLine(command) {
     return showsWhole(line, MAX_COMMAND) ? line : null;
 }
 
-/** Whether a window `title` names `project` as a word of its own: "isle — Terminal", not "WhatsApp" for "app". */
+/** Whether a window `title` names `project` as a word of its own: "notchfolk — Terminal", not "WhatsApp" for "app". */
 export function namesProject(title, project) {
     if (!project)
         return false;
@@ -126,11 +126,11 @@ export function namesProject(title, project) {
     return new RegExp(`(^|[^\\p{L}\\p{N}_-])${escaped}($|[^\\p{L}\\p{N}_-])`, 'u').test(title);
 }
 
-/** Whether `argv` only stops one of Isle's commands. */
+/** Whether `argv` only stops one of Notchfolk's commands. */
 export function stoppable(argv) {
     return Array.isArray(argv) && argv[0] === 'systemctl' &&
         (argv.length === 3 || (argv.length === 4 && argv[1] === '--user')) &&
-        argv.at(-2) === 'stop' && /^isle-run-[\w-]+$/.test(argv.at(-1));
+        argv.at(-2) === 'stop' && /^notchfolk-run-[\w-]+$/.test(argv.at(-1));
 }
 
 /** `text` escaped to match itself inside a RegExp. */

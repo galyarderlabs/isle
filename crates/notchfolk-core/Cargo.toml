@@ -1,0 +1,15 @@
+[package]
+name = "notchfolk-core"
+description = "Platform-independent state and logic for Notchfolk"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true

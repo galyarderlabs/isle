@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// The Shell-side proxy for the three isled methods the MCP tools need, against a stub
+// The Shell-side proxy for the three notchfolkd methods the MCP tools need, against a stub
 // exporter and daemon: `gjs -m tests/extension/shellProxy.gjs.js`.
 
 import Gio from 'gi://Gio';
@@ -31,7 +31,7 @@ Gio.DBusExportedObject.wrapJSObject = (xml, impl) => ({
     },
 });
 
-/** isled as the test wants it: canned answers, or a refusal with its own words. */
+/** notchfolkd as the test wants it: canned answers, or a refusal with its own words. */
 const daemon = {
     attempt: async (name, method, ...args) => {
         const answer = daemon.answers[method];
@@ -43,14 +43,14 @@ const daemon = {
 
 const proxy = new ShellProxy(daemon, bus);
 check('exported once, on the given bus and path',
-    exported.map(({connection, path}) => [connection === bus, path]), [[true, '/io/github/zickrian/isle/Shell']]);
+    exported.map(({connection, path}) => [connection === bus, path]), [[true, '/io/galyarderlabs/notchfolk/Shell']]);
 check('the exported implementation is the proxy itself', exported[0].impl === proxy, true);
 check('a proxy with the three methods',
     ['GetAppStats', 'SearchClipboard', 'GetClipboardText'].every(name => typeof proxy[name] === 'function'),
     true);
 
 daemon.answers = {GetStats: {result: ['{"today":[]}']}};
-check('app stats as isled wrote them', await proxy.GetAppStats(), '{"today":[]}');
+check('app stats as notchfolkd wrote them', await proxy.GetAppStats(), '{"today":[]}');
 
 daemon.answers = {Search: {result: [[3, 1]]}};
 check('clipboard ids in the list order', await proxy.SearchClipboard('report'), [3, 1]);
@@ -65,7 +65,7 @@ try {
 } catch (e) {
     refused = e.message;
 }
-check("isled's refusal in the caller's answer", refused, 'only GNOME Shell may call this');
+check("notchfolkd's refusal in the caller's answer", refused, 'only GNOME Shell may call this');
 
 daemon.answers = {Search: {result: null, error: null}};
 let silent = null;
@@ -74,7 +74,7 @@ try {
 } catch (e) {
     silent = e.message;
 }
-check('silence named as such', silent, 'isled did not answer');
+check('silence named as such', silent, 'notchfolkd did not answer');
 
 proxy.destroy();
 check('unexported what it exported', bus.unexported, true);

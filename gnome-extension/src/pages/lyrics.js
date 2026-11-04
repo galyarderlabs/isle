@@ -32,21 +32,21 @@ const INTRO_MS = 3000;
 /** What the view says when there are no lines to show. */
 const STATES = {
     loading: {dots: true, title: 'Looking for lyrics'},
-    not_found: {icon: 'isle-lyrics', title: 'No lyrics for this song', hint: 'Lyrics come from LRCLIB'},
-    instrumental: {icon: 'isle-music', title: 'Instrumental', hint: 'Nothing to sing along to'},
-    off: {icon: 'isle-lyrics', title: 'Lyrics are off', hint: 'Turn them on in Isle’s settings'},
-    error: {icon: 'isle-lyrics', title: 'Can’t reach the lyrics', hint: 'Check your connection · trying again soon'},
-    unavailable: {icon: 'isle-lyrics', title: 'Lyrics are busy right now', hint: 'Trying again in a moment'},
+    not_found: {icon: 'notchfolk-lyrics', title: 'No lyrics for this song', hint: 'Lyrics come from LRCLIB'},
+    instrumental: {icon: 'notchfolk-music', title: 'Instrumental', hint: 'Nothing to sing along to'},
+    off: {icon: 'notchfolk-lyrics', title: 'Lyrics are off', hint: 'Turn them on in Notchfolk’s settings'},
+    error: {icon: 'notchfolk-lyrics', title: 'Can’t reach the lyrics', hint: 'Check your connection · trying again soon'},
+    unavailable: {icon: 'notchfolk-lyrics', title: 'Lyrics are busy right now', hint: 'Trying again in a moment'},
 };
 
 /** Three dots that breathe while the singing pauses. */
 const PauseDots = GObject.registerClass(
 class PauseDots extends St.BoxLayout {
     /** Three still dots; they breathe once `breathing` is set and they are on screen. */
-    _init(styleClass = 'isle-lyric-dots') {
+    _init(styleClass = 'notchfolk-lyric-dots') {
         super._init({style_class: styleClass});
         this._dots = [0, 1, 2].map(() => {
-            const dot = new St.Widget({style_class: 'isle-lyric-dot', y_align: Clutter.ActorAlign.CENTER});
+            const dot = new St.Widget({style_class: 'notchfolk-lyric-dot', y_align: Clutter.ActorAlign.CENTER});
             dot.set_pivot_point(0.5, 0.5);
             this.add_child(dot);
             return dot;
@@ -93,7 +93,7 @@ class LyricsPane extends St.Widget {
     /** Scroll view for the lines with a centred state message over it. */
     _init(page) {
         super._init({
-            style_class: 'isle-lyrics',
+            style_class: 'notchfolk-lyrics',
             layout_manager: new Clutter.BinLayout(),
             x_expand: true,
             y_expand: true,
@@ -116,9 +116,9 @@ class LyricsPane extends St.Widget {
                 this._scrollTo(this._current);
         });
 
-        this._column = new St.BoxLayout({...VERTICAL, style_class: 'isle-lyrics-column', x_expand: true});
+        this._column = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-lyrics-column', x_expand: true});
         this._scroll = new St.ScrollView({
-            style_class: 'isle-lyrics-scroll',
+            style_class: 'notchfolk-lyrics-scroll',
             hscrollbar_policy: St.PolicyType.NEVER,
             // Scrolls with the wheel or touchpad; no scrollbar over the words.
             vscrollbar_policy: St.PolicyType.EXTERNAL,
@@ -145,15 +145,15 @@ class LyricsPane extends St.Widget {
 
         this._state = new St.BoxLayout({
             ...VERTICAL,
-            style_class: 'isle-lyrics-state',
+            style_class: 'notchfolk-lyrics-state',
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
         });
-        this._stateIcon = new St.Icon({icon_size: 22, style_class: 'isle-lyrics-state-icon', x_align: Clutter.ActorAlign.CENTER});
-        this._stateDots = new PauseDots('isle-lyric-dots isle-lyrics-state-dots');
+        this._stateIcon = new St.Icon({icon_size: 22, style_class: 'notchfolk-lyrics-state-icon', x_align: Clutter.ActorAlign.CENTER});
+        this._stateDots = new PauseDots('notchfolk-lyric-dots notchfolk-lyrics-state-dots');
         this._stateDots.x_align = Clutter.ActorAlign.CENTER;
-        this._stateTitle = label('', 'isle-lyrics-state-title', {x_align: Clutter.ActorAlign.CENTER});
-        this._stateHint = label('', 'isle-lyrics-state-hint', {x_align: Clutter.ActorAlign.CENTER});
+        this._stateTitle = label('', 'notchfolk-lyrics-state-title', {x_align: Clutter.ActorAlign.CENTER});
+        this._stateHint = label('', 'notchfolk-lyrics-state-hint', {x_align: Clutter.ActorAlign.CENTER});
         for (const part of [this._stateIcon, this._stateDots, this._stateTitle, this._stateHint])
             this._state.add_child(part);
         this.add_child(this._state);
@@ -164,7 +164,7 @@ class LyricsPane extends St.Widget {
         this._syncBlocks();
     }
 
-    /** Catches up with isled's lyrics: rebuilt only for a new track or status. */
+    /** Catches up with notchfolkd's lyrics: rebuilt only for a new track or status. */
     update() {
         const {lyrics} = this._page.daemon.state;
         const status = lyrics?.status ?? 'none';
@@ -213,7 +213,7 @@ class LyricsPane extends St.Widget {
         this._opacities = this._rows.map(() => COMING_OPACITY.at(-1));
         this._scales = this._rows.map(() => RESTING_SCALE);
         for (let i = 0; i < this._rows.length; i += BLOCK_LINES) {
-            const block = new St.BoxLayout({...VERTICAL, style_class: 'isle-lyrics-block'});
+            const block = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-lyrics-block'});
             this._rows.slice(i, i + BLOCK_LINES).forEach(row => block.add_child(row));
             this._column.add_child(block);
             this._blocks.push(block);
@@ -221,7 +221,7 @@ class LyricsPane extends St.Widget {
         // Room after the last line, so it too can reach the reading line.
         // (Padding would not do: St takes it off the scrolled view.)
         if (this._rows.length)
-            this._column.add_child(new St.Widget({style_class: 'isle-lyrics-end'}));
+            this._column.add_child(new St.Widget({style_class: 'notchfolk-lyrics-end'}));
         // Built out of sight (the player shown), they are laid out ahead of their showing (see `Page.markCold`).
         if (!this.mapped)
             this._page.markCold({force: true});
@@ -236,7 +236,7 @@ class LyricsPane extends St.Widget {
         } else {
             row = new St.Label({
                 text: words || '♪',
-                style_class: this._synced ? 'isle-lyric-line' : 'isle-lyric-line plain',
+                style_class: this._synced ? 'notchfolk-lyric-line' : 'notchfolk-lyric-line plain',
             });
             wrapFixedLines(row);
         }

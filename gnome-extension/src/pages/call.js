@@ -44,7 +44,7 @@ class WindowPreview extends St.Widget {
     /** Builds the stacked layers: copy, icon placeholder, corners and hover mark. */
     _init() {
         super._init({
-            style_class: 'isle-call-preview',
+            style_class: 'notchfolk-call-preview',
             layout_manager: new Clutter.BinLayout(),
             clip_to_allocation: true,
             // Its parts expand to fill it; kept from spreading to the row, which would widen it.
@@ -62,20 +62,20 @@ class WindowPreview extends St.Widget {
         this._view = new St.Widget({layout_manager: new Clutter.FixedLayout(), x_expand: true, y_expand: true});
         this._placeholder = new St.BoxLayout({
             ...VERTICAL,
-            style_class: 'isle-call-placeholder',
+            style_class: 'notchfolk-call-placeholder',
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
         });
         this._appIcon = new St.Icon({icon_size: 40, x_align: Clutter.ActorAlign.CENTER});
-        this._hint = label('', 'isle-call-hint', {x_align: Clutter.ActorAlign.CENTER});
+        this._hint = label('', 'notchfolk-call-hint', {x_align: Clutter.ActorAlign.CENTER});
         this._placeholder.add_child(this._appIcon);
         this._placeholder.add_child(this._hint);
         // Rounds the corners by painting them in the island's colour, with a hairline edge.
         this._corners = new St.DrawingArea({x_expand: true, y_expand: true});
         this._corners.connect('repaint', area => this._repaintCorners(area));
         this._hover = new St.Bin({
-            style_class: 'isle-call-preview-hover',
-            child: new St.Icon({gicon: icon('isle-open-symbolic'), icon_size: 16}),
+            style_class: 'notchfolk-call-preview-hover',
+            child: new St.Icon({gicon: icon('notchfolk-open-symbolic'), icon_size: 16}),
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
             opacity: 0,
@@ -200,7 +200,7 @@ class CallPage extends Page {
     /** `call` is the call tracker; `privacy` says when the screen is shared or recorded. */
     _init(daemon, call, privacy, settings, {height}) {
         super._init(daemon, {
-            style_class: 'isle-page isle-call',
+            style_class: 'notchfolk-page notchfolk-call',
             // St's `spacing` only reaches St.BoxLayout, so it is set here, scaled as St would.
             layout_manager: new Clutter.BoxLayout(),
             height,
@@ -214,7 +214,7 @@ class CallPage extends Page {
 
         this._preview = new WindowPreview();
         this._previewButton = new St.Button({
-            style_class: 'isle-call-preview-button',
+            style_class: 'notchfolk-call-preview-button',
             child: this._preview,
             can_focus: true,
             track_hover: true,
@@ -225,27 +225,27 @@ class CallPage extends Page {
         this._previewButton.connect('notify::hover', () => (this._preview.hovered = this._previewButton.hover));
         this.add_child(this._previewButton);
 
-        const side = new St.BoxLayout({...VERTICAL, x_expand: true, y_align: Clutter.ActorAlign.CENTER, style_class: 'isle-call-side'});
-        const head = new St.BoxLayout({style_class: 'isle-call-head'});
+        const side = new St.BoxLayout({...VERTICAL, x_expand: true, y_align: Clutter.ActorAlign.CENTER, style_class: 'notchfolk-call-side'});
+        const head = new St.BoxLayout({style_class: 'notchfolk-call-head'});
         this._appIcon = new St.Icon({icon_size: 20, y_align: Clutter.ActorAlign.CENTER});
-        this._name = label('', 'isle-call-name');
+        this._name = label('', 'notchfolk-call-name');
         this._name.clutter_text.ellipsize = Pango.EllipsizeMode.END;
         head.add_child(this._appIcon);
         head.add_child(this._name);
         side.add_child(head);
 
         // "Video call · 12:34", the time in green as in the closed island.
-        const status = new St.BoxLayout({style_class: 'isle-call-status'});
-        this._kind = label('', 'isle-call-kind');
-        this._duration = label('0:00', 'isle-call-duration');
+        const status = new St.BoxLayout({style_class: 'notchfolk-call-status'});
+        this._kind = label('', 'notchfolk-call-kind');
+        this._duration = label('0:00', 'notchfolk-call-duration');
         status.add_child(this._kind);
-        status.add_child(label('·', 'isle-call-kind'));
+        status.add_child(label('·', 'notchfolk-call-kind'));
         status.add_child(this._duration);
         side.add_child(status);
 
-        const controls = new St.BoxLayout({style_class: 'isle-call-controls'});
-        this._mute = this._control('isle-mic-symbolic', 'Mute', () => call.toggleMuted());
-        this._show = this._control('isle-open-symbolic', 'Open', () => this._open());
+        const controls = new St.BoxLayout({style_class: 'notchfolk-call-controls'});
+        this._mute = this._control('notchfolk-mic-symbolic', 'Mute', () => call.toggleMuted());
+        this._show = this._control('notchfolk-open-symbolic', 'Open', () => this._open());
         controls.add_child(this._mute.box);
         controls.add_child(this._show.box);
         side.add_child(controls);
@@ -270,15 +270,15 @@ class CallPage extends Page {
     /** A round button with its caption below. */
     _control(iconName, caption, onClick) {
         const button = new St.Button({
-            style_class: 'isle-call-control',
+            style_class: 'notchfolk-call-control',
             child: new St.Icon({gicon: icon(iconName), icon_size: 18}),
             can_focus: true,
             accessible_name: caption,
             x_align: Clutter.ActorAlign.CENTER,
         });
         button.connect('clicked', () => onClick());
-        const text = label(caption, 'isle-call-control-label', {x_align: Clutter.ActorAlign.CENTER});
-        const box = new St.BoxLayout({...VERTICAL, style_class: 'isle-call-control-box'});
+        const text = label(caption, 'notchfolk-call-control-label', {x_align: Clutter.ActorAlign.CENTER});
+        const box = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-call-control-box'});
         box.add_child(button);
         box.add_child(text);
         return {box, button, text};
@@ -301,13 +301,13 @@ class CallPage extends Page {
             this._preview.update({});
             return;
         }
-        const gicon = call.gicon ?? icon('isle-phone-symbolic');
+        const gicon = call.gicon ?? icon('notchfolk-phone-symbolic');
         this._appIcon.gicon = gicon;
         this._name.text = call.name;
         this._kind.text = call.video ? 'Video call' : 'Voice call';
 
         const muted = call.muted;
-        this._mute.button.child.gicon = icon(muted ? 'isle-mic-off-symbolic' : 'isle-mic-symbolic');
+        this._mute.button.child.gicon = icon(muted ? 'notchfolk-mic-off-symbolic' : 'notchfolk-mic-symbolic');
         if (muted)
             this._mute.button.add_style_pseudo_class('checked');
         else

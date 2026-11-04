@@ -2,7 +2,7 @@
 // Copyright (C) 2026 zickrian
 
 // App usage: time in each application today, or over the last seven or 30 days, most used first.
-// The extension times focus changes and isled keeps the days (see appUsage.js and AppUsage1).
+// The extension times focus changes and notchfolkd keeps the days (see appUsage.js and AppUsage1).
 
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
@@ -24,9 +24,9 @@ const PERIODS = [
 // A row's bar: the fill is `share` (0..1) of the width.
 const Bar = GObject.registerClass(class Bar extends St.Widget {
     _init(share) {
-        super._init({style_class: 'isle-apps-track', y_align: Clutter.ActorAlign.CENTER});
+        super._init({style_class: 'notchfolk-apps-track', y_align: Clutter.ActorAlign.CENTER});
         this._share = share;
-        this._fill = new St.Widget({style_class: 'isle-apps-fill'});
+        this._fill = new St.Widget({style_class: 'notchfolk-apps-fill'});
         this.add_child(this._fill);
     }
 
@@ -55,7 +55,7 @@ class AppsPage extends Page {
     /** `height` is the expanded island's page height; `tracker` sends what is timed so far when opened. */
     _init(daemon, tracker, {height}) {
         super._init(daemon, {
-            style_class: 'isle-page isle-apps',
+            style_class: 'notchfolk-page notchfolk-apps',
             layout_manager: new Clutter.BoxLayout({orientation: Clutter.Orientation.VERTICAL}),
             height,
         });
@@ -74,15 +74,15 @@ class AppsPage extends Page {
 
     /** The heading, the period's total, and the switch between today, 7 days and 30 days. */
     _buildBar() {
-        const bar = new St.BoxLayout({style_class: 'isle-apps-bar'});
-        bar.add_child(label('App Usage', 'isle-apps-heading', {x_expand: true}));
-        this._total = label('', 'isle-apps-total');
+        const bar = new St.BoxLayout({style_class: 'notchfolk-apps-bar'});
+        bar.add_child(label('App Usage', 'notchfolk-apps-heading', {x_expand: true}));
+        this._total = label('', 'notchfolk-apps-total');
         bar.add_child(this._total);
 
-        const toggle = new St.BoxLayout({style_class: 'isle-segmented isle-apps-toggle'});
+        const toggle = new St.BoxLayout({style_class: 'notchfolk-segmented notchfolk-apps-toggle'});
         this._buttons = new Map();
         for (const {name, label: text} of PERIODS) {
-            const button = new St.Button({style_class: 'isle-segment', label: text, can_focus: true});
+            const button = new St.Button({style_class: 'notchfolk-segment', label: text, can_focus: true});
             button.connect('clicked', () => this._show(name));
             this._buttons.set(name, button);
             toggle.add_child(button);
@@ -94,9 +94,9 @@ class AppsPage extends Page {
 
     /** The scrolling rows, with an empty state in their place when nothing is timed yet. */
     _buildList() {
-        this._list = new St.BoxLayout({...VERTICAL, style_class: 'isle-apps-list'});
+        this._list = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-apps-list'});
         this._scroll = new St.ScrollView({
-            style_class: 'isle-apps-scroll',
+            style_class: 'notchfolk-apps-scroll',
             hscrollbar_policy: St.PolicyType.NEVER,
             // Scrolls with the wheel or touchpad; no scrollbar over the rows.
             vscrollbar_policy: St.PolicyType.EXTERNAL,
@@ -105,17 +105,17 @@ class AppsPage extends Page {
         });
         this._scroll.set_child(this._list);
 
-        this._empty = new St.BoxLayout({...VERTICAL, style_class: 'isle-empty',
+        this._empty = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-empty',
             x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER, x_expand: true});
         this._empty.add_child(new St.Icon({
-            gicon: icon('isle-apps'),
+            gicon: icon('notchfolk-apps'),
             icon_size: 24,
-            style_class: 'isle-empty-icon',
+            style_class: 'notchfolk-empty-icon',
             x_align: Clutter.ActorAlign.CENTER,
         }));
-        this._empty.add_child(label('No usage yet', 'isle-empty-title', {x_align: Clutter.ActorAlign.CENTER}));
+        this._empty.add_child(label('No usage yet', 'notchfolk-empty-title', {x_align: Clutter.ActorAlign.CENTER}));
         this._empty.add_child(label('Time in the app in front shows up here',
-            'isle-empty-hint', {x_align: Clutter.ActorAlign.CENTER}));
+            'notchfolk-empty-hint', {x_align: Clutter.ActorAlign.CENTER}));
 
         const column = new St.Widget({layout_manager: new Clutter.BinLayout(), x_expand: true, y_expand: true});
         column.add_child(this._scroll);
@@ -123,7 +123,7 @@ class AppsPage extends Page {
         return column;
     }
 
-    /** The apps of the period shown, as isled last summed them. */
+    /** The apps of the period shown, as notchfolkd last summed them. */
     _apps() {
         return this._stats?.[this._period] ?? [];
     }
@@ -170,21 +170,21 @@ class AppsPage extends Page {
 
     /** Adds one app's row: its icon, name, a bar against the most used, and its time; returns its updater. */
     _row(app, most) {
-        const row = new St.BoxLayout({style_class: 'isle-apps-row'});
+        const row = new St.BoxLayout({style_class: 'notchfolk-apps-row'});
         const shellApp = Shell.AppSystem.get_default().lookup_app(app.id);
         row.add_child(new St.Icon({
             gicon: shellApp?.get_icon() ?? icon('application-x-executable-symbolic'),
             icon_size: 18,
-            style_class: 'isle-apps-icon',
+            style_class: 'notchfolk-apps-icon',
             y_align: Clutter.ActorAlign.CENTER,
         }));
 
-        const name = label(shellApp?.get_name() ?? app.name ?? app.id, 'isle-apps-name', {x_expand: true});
+        const name = label(shellApp?.get_name() ?? app.name ?? app.id, 'notchfolk-apps-name', {x_expand: true});
         name.clutter_text.ellipsize = Pango.EllipsizeMode.END;
         row.add_child(name);
         const bar = new Bar(Math.max(0, app.ms) / most);
         row.add_child(bar);
-        const time = label(Format.hoursMinutes(app.ms), 'isle-apps-time');
+        const time = label(Format.hoursMinutes(app.ms), 'notchfolk-apps-time');
         row.add_child(time);
         this._list.add_child(row);
         return {
@@ -233,7 +233,7 @@ class AppsPage extends Page {
             try {
                 this._stats = JSON.parse(stats);
             } catch (e) {
-                console.warn(`Isle: invalid app usage: ${e.message}`);
+                console.warn(`Notchfolk: invalid app usage: ${e.message}`);
             }
         }
         this._update();

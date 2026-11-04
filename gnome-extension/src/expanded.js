@@ -21,25 +21,25 @@ const EXPANDED_WIDTH = 600;
 /** The least room between the centred tabs and either side of the header. */
 const HEADER_GAP = 16;
 export const PAGE_HEIGHT = 150;
-/** Room below the page, as at its sides (.isle-page): 20 px all round, cards' 12 px corners concentric with the 32. */
+/** Room below the page, as at its sides (.notchfolk-page): 20 px all round, cards' 12 px corners concentric with the 32. */
 export const BOTTOM_PADDING = 20;
 
 /** Each page's tab: its icon, and the label shown while it is open. */
 const TABS = {
-    call: {icon: 'isle-phone', label: 'Call'},
-    music: {icon: 'isle-music', label: 'Music'},
-    notifications: {icon: 'isle-bell', label: 'Notifications'},
-    focus: {icon: 'isle-timer', label: 'Timer'},
-    reminders: {icon: 'isle-tasks', label: 'Reminders'},
-    shelf: {icon: 'isle-shelf', label: 'Shelf'},
-    calendar: {icon: 'isle-calendar', label: 'Calendar'},
-    calories: {icon: 'isle-flame', label: 'Calories'},
-    water: {icon: 'isle-water-tab', label: 'Water'},
-    prayer: {icon: 'isle-prayer', label: 'Prayer'},
-    apps: {icon: 'isle-apps', label: 'Apps'},
-    usage: {icon: 'isle-gauge', label: 'Usage'},
-    devices: {icon: 'isle-devices', label: 'Devices'},
-    router: {icon: 'isle-router', label: 'Router'},
+    call: {icon: 'notchfolk-phone', label: 'Call'},
+    music: {icon: 'notchfolk-music', label: 'Music'},
+    notifications: {icon: 'notchfolk-bell', label: 'Notifications'},
+    focus: {icon: 'notchfolk-timer', label: 'Timer'},
+    reminders: {icon: 'notchfolk-tasks', label: 'Reminders'},
+    shelf: {icon: 'notchfolk-shelf', label: 'Shelf'},
+    calendar: {icon: 'notchfolk-calendar', label: 'Calendar'},
+    calories: {icon: 'notchfolk-flame', label: 'Calories'},
+    water: {icon: 'notchfolk-water-tab', label: 'Water'},
+    prayer: {icon: 'notchfolk-prayer', label: 'Prayer'},
+    apps: {icon: 'notchfolk-apps', label: 'Apps'},
+    usage: {icon: 'notchfolk-gauge', label: 'Usage'},
+    devices: {icon: 'notchfolk-devices', label: 'Devices'},
+    router: {icon: 'notchfolk-router', label: 'Router'},
 };
 /** How bright a tab's icon is: open, under the pointer, otherwise. */
 const TAB_OPACITY = {open: 255, hover: 200, idle: 140};
@@ -84,7 +84,7 @@ export const ExpandedView = GObject.registerClass({
 }, class ExpandedView extends St.BoxLayout {
     /** `privacy` and `call` feed the header's status; `pages` are built by the island, in tab order. */
     _init(daemon, privacy, call, settings, pages) {
-        super._init({...VERTICAL, style_class: 'isle-expanded', width: px(EXPANDED_WIDTH)});
+        super._init({...VERTICAL, style_class: 'notchfolk-expanded', width: px(EXPANDED_WIDTH)});
         this._daemon = daemon;
         this._privacy = privacy;
         this._call = call;
@@ -161,7 +161,7 @@ export const ExpandedView = GObject.registerClass({
     _buildHeader() {
         // A row of three zones — the clock, the centred tabs, the utility buttons — laid out by
         // the box itself; scrolls over it turn pages.
-        const header = new St.BoxLayout({style_class: 'isle-header', x_expand: true, reactive: true});
+        const header = new St.BoxLayout({style_class: 'notchfolk-header', x_expand: true, reactive: true});
         header.connect('scroll-event', (_actor, event) => this._flipFromScroll(event));
 
         // Keep the left and right zones the same width. The tab strip then stays centred
@@ -171,13 +171,13 @@ export const ExpandedView = GObject.registerClass({
         const clock = this._clock = new St.BoxLayout({
             y_align: Clutter.ActorAlign.CENTER,
             x_align: Clutter.ActorAlign.START,
-            style_class: 'isle-header-clock',
+            style_class: 'notchfolk-header-clock',
         });
         this._headerRing = new Ring({size: 15, lineWidth: 2.5});
-        this._date = label('', 'isle-header-date');
-        this._time = label('', 'isle-header-time');
+        this._date = label('', 'notchfolk-header-date');
+        this._time = label('', 'notchfolk-header-time');
         // With a 12-hour clock, AM or PM after it, smaller (a label of its own, as in the closed island).
-        this._meridiem = label('', 'isle-header-meridiem', {visible: false});
+        this._meridiem = label('', 'notchfolk-header-meridiem', {visible: false});
         clock.add_child(this._headerRing);
         clock.add_child(this._date);
         clock.add_child(this._time);
@@ -197,16 +197,16 @@ export const ExpandedView = GObject.registerClass({
         // Right: recording (click to stop), privacy dots, music, the assistant and settings.
         // A call has its own green tab among the centred features.
         const status = this._status = new St.BoxLayout({
-            style_class: 'isle-header-status',
+            style_class: 'notchfolk-header-status',
             x_align: Clutter.ActorAlign.END,
             y_align: Clutter.ActorAlign.CENTER,
         });
-        const recordingBox = new St.BoxLayout({style_class: 'isle-recording-pill-box'});
+        const recordingBox = new St.BoxLayout({style_class: 'notchfolk-recording-pill-box'});
         recordingBox.add_child(new RecordingDot());
-        this._recordingTime = label('', 'isle-recording-time');
+        this._recordingTime = label('', 'notchfolk-recording-time');
         recordingBox.add_child(this._recordingTime);
         this._recordingButton = new St.Button({
-            style_class: 'isle-recording-pill',
+            style_class: 'notchfolk-recording-pill',
             child: recordingBox,
             accessible_name: 'Stop recording',
             visible: false,
@@ -219,11 +219,11 @@ export const ExpandedView = GObject.registerClass({
         status.add_child(this._privacyDots);
         status.add_child(this._headerBars);
         // The assistant, as AI rather than a microphone: it listens, and it can be typed to.
-        this._micButton = iconButton('isle-sparkle-symbolic', 'isle-button-flat isle-header-mic',
+        this._micButton = iconButton('notchfolk-sparkle-symbolic', 'notchfolk-button-flat notchfolk-header-mic',
             () => this.emit('voice-requested'), {size: 15, accessibleName: 'AI assistant'});
         status.add_child(this._micButton);
 
-        const settings = iconButton('isle-settings', 'isle-button-flat isle-header-settings',
+        const settings = iconButton('notchfolk-settings', 'notchfolk-button-flat notchfolk-header-settings',
             () => this.emit('settings-requested'), {size: 15, accessibleName: 'Settings'});
         // Its icon is an image, which takes no CSS colour: dimmed as the sparkle beside it, lit under the pointer.
         settings.child.opacity = SETTINGS_OPACITY;
@@ -244,7 +244,7 @@ export const ExpandedView = GObject.registerClass({
 
     /** A tab per page; the open one is lit and says its name. */
     _buildTabs() {
-        const tabs = new St.BoxLayout({style_class: 'isle-tabs', x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER});
+        const tabs = new St.BoxLayout({style_class: 'notchfolk-tabs', x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER});
         /** The open name's width per tab, measured once (see `_syncTabs`). */
         this._nameWidths = new Map();
         this._tabs = this._pages.map((page, index) => {
@@ -254,7 +254,7 @@ export const ExpandedView = GObject.registerClass({
             glyph.add_child(tabIcon);
             // Something new waits on this page (unseen notifications).
             const badge = new St.Widget({
-                style_class: 'isle-tab-badge',
+                style_class: 'notchfolk-tab-badge',
                 x_expand: true,
                 y_expand: true,
                 x_align: Clutter.ActorAlign.END,
@@ -262,15 +262,15 @@ export const ExpandedView = GObject.registerClass({
                 visible: false,
             });
             glyph.add_child(badge);
-            const name = label(text, 'isle-tab-label', {y_align: Clutter.ActorAlign.CENTER});
+            const name = label(text, 'notchfolk-tab-label', {y_align: Clutter.ActorAlign.CENTER});
             // The name opens and closes by width, so the tabs beside it slide over instead of jumping.
             const nameClip = new St.Widget({layout_manager: new Clutter.BinLayout(), clip_to_allocation: true, width: 0, y_align: Clutter.ActorAlign.CENTER});
             nameClip.add_child(name);
-            const box = new St.BoxLayout({style_class: 'isle-tab-box'});
+            const box = new St.BoxLayout({style_class: 'notchfolk-tab-box'});
             box.add_child(glyph);
             box.add_child(nameClip);
             const tab = new St.Button({
-                style_class: `isle-tab isle-tab-${page.name}`,
+                style_class: `notchfolk-tab notchfolk-tab-${page.name}`,
                 child: box,
                 can_focus: true,
                 track_hover: true,
@@ -475,7 +475,7 @@ export const ExpandedView = GObject.registerClass({
         }
     }
 
-    /** Null if Isle has no such page. */
+    /** Null if Notchfolk has no such page. */
     pageNamed(name) {
         return this._pages.find(page => page.name === name) ?? null;
     }

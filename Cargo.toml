@@ -1,23 +1,23 @@
 [workspace]
 resolver = "3"
 members = [
-    "crates/isle-core",
-    "crates/isle-daemon",
-    "crates/isle-shelf",
-    "crates/isle-whisper",
+    "crates/notchfolk-core",
+    "crates/notchfolk-daemon",
+    "crates/notchfolk-shelf",
+    "crates/notchfolk-whisper",
 ]
-# isle-shelf needs the GTK 4 development files, and isle-whisper cmake, a C++
+# notchfolk-shelf needs the GTK 4 development files, and notchfolk-whisper cmake, a C++
 # compiler, libclang and (for the GPU) the Vulkan headers and glslc, so they
-# are only built when asked for: `cargo build -p isle-shelf -p isle-whisper`.
-default-members = ["crates/isle-core", "crates/isle-daemon"]
+# are only built when asked for: `cargo build -p notchfolk-shelf -p notchfolk-whisper`.
+default-members = ["crates/notchfolk-core", "crates/notchfolk-daemon"]
 
 [workspace.package]
 version = "1.6.1"
 edition = "2024"
-# isle-core and isled use let chains (1.88); isle-shelf sets its own, for gtk-rs.
+# notchfolk-core and notchfolkd use let chains (1.88); notchfolk-shelf sets its own, for gtk-rs.
 rust-version = "1.88"
 license = "GPL-3.0-or-later"
-repository = "https://github.com/zickrian/isle"
+repository = "https://github.com/galyarderlabs/notchfolk"
 description = "Notchfolk: A living notch-style desktop island and AI companion for GNOME Shell with MCP and local voice support"
 keywords = ["gnome", "desktop-island", "dynamic-island", "ai-assistant", "mcp"]
 categories = ["command-line-utilities", "multimedia", "accessibility"]
@@ -25,7 +25,7 @@ categories = ["command-line-utilities", "multimedia", "accessibility"]
 publish = false
 
 [workspace.dependencies]
-isle-core = { path = "crates/isle-core" }
+notchfolk-core = { path = "crates/notchfolk-core" }
 
 anyhow = "1"
 chrono = { version = "0.4", default-features = false, features = ["clock", "serde"] }
@@ -64,18 +64,18 @@ lto = "fat"
 codegen-units = 1
 strip = true
 
-# The service and the shelf are small and mostly wait: built for size. isle-whisper keeps
+# The service and the shelf are small and mostly wait: built for size. notchfolk-whisper keeps
 # full speed for transcribing.
-[profile.release.package.isle-daemon]
+[profile.release.package.notchfolk-daemon]
 opt-level = "s"
 
-[profile.release.package.isle-core]
+[profile.release.package.notchfolk-core]
 opt-level = "s"
 
-[profile.release.package.isle-shelf]
+[profile.release.package.notchfolk-shelf]
 opt-level = "s"
 
-# Their libraries too (zbus, tokio, image, ureq...): less code for isled to hold in memory. Not
+# Their libraries too (zbus, tokio, image, ureq...): less code for notchfolkd to hold in memory. Not
 # whisper's, which keep full speed.
 [profile.release.package."*"]
 opt-level = "s"

@@ -41,19 +41,19 @@ test('windows are laid out over the whole screen', () => {
         assert.ok(x + width <= 1 + 1e-9 && y + height <= 1 + 1e-9);
 });
 
-// As isled's tasks.rs builds them.
+// As notchfolkd's tasks.rs builds them.
 const HOME = '/home/ana';
 const USER = {home: HOME, cache: `${HOME}/.cache`, uid: '1000', gid: '1000'};
 const SYSTEM_PATH = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin';
-const LOG = `${HOME}/.cache/isle/runs/run-1-0.log`;
-// The systemd-run argv isled sends to run `command`, as the user or as root.
+const LOG = `${HOME}/.cache/notchfolk/runs/run-1-0.log`;
+// The systemd-run argv notchfolkd sends to run `command`, as the user or as root.
 function spawn(command, {user = false, path = null, who = ['1000', '1000', LOG]} = {}) {
     return [
-        'systemd-run', ...user ? ['--user'] : [], '--unit=isle-run-1-0', '--collect', '--quiet',
+        'systemd-run', ...user ? ['--user'] : [], '--unit=notchfolk-run-1-0', '--collect', '--quiet',
         ...user ? [`--property=StandardOutput=append:${LOG}`, `--property=StandardError=append:${LOG}`] : [],
         '--property=RuntimeMaxSec=1800', '--setenv=DEBIAN_FRONTEND=noninteractive', '--setenv=LANG=C.UTF-8',
         `--setenv=PATH=${path ?? (user ? `${HOME}/.local/bin:${HOME}/.npm-global/bin:${SYSTEM_PATH}` : SYSTEM_PATH)}`,
-        ...user ? [`--working-directory=${HOME}`] : [], '--', 'bash', '-c', user ? RUN_WRAPPER : ROOT_WRAPPER, 'isle',
+        ...user ? [`--working-directory=${HOME}`] : [], '--', 'bash', '-c', user ? RUN_WRAPPER : ROOT_WRAPPER, 'notchfolk',
         command, ...user ? [] : who,
     ];
 }
@@ -67,7 +67,7 @@ test('only the command shown runs', () => {
     assert.ok(!runnable({command: 'ls', spawn: spawn('ls', {user: true, path: `relative/bin:${SYSTEM_PATH}`})}, USER));
     assert.ok(!runnable({command: 'sudo apt install x', spawn: spawn('apt install x', {path: `${HOME}/.local/bin:${SYSTEM_PATH}`})}, USER));
     assert.ok(!runnable({command: 'ls', spawn: spawn('ls', {user: true, path: `${HOME}/../../tmp:${SYSTEM_PATH}`})}, USER));
-    // As root, the log is written as the user, to Isle's own folder.
+    // As root, the log is written as the user, to Notchfolk's own folder.
     assert.ok(!runnable({command: 'sudo apt install x', spawn: spawn('apt install x', {who: ['0', '0', LOG]})}, USER));
     assert.ok(!runnable({command: 'sudo apt install x', spawn: spawn('apt install x', {who: ['1000', '1000', '/etc/shadow']})}, USER));
     const rootLog = spawn('apt install x');
@@ -81,10 +81,10 @@ test('only the command shown runs', () => {
     assert.ok(!runnable({command: 'ls', spawn: env}, USER));
     assert.ok(!runnable({command: 'ls', spawn: ['bash', '-c', 'ls']}, USER));
 
-    assert.ok(stoppable(['systemctl', '--user', 'stop', 'isle-run-1-0']));
-    assert.ok(stoppable(['systemctl', 'stop', 'isle-run-1-0']));
+    assert.ok(stoppable(['systemctl', '--user', 'stop', 'notchfolk-run-1-0']));
+    assert.ok(stoppable(['systemctl', 'stop', 'notchfolk-run-1-0']));
     assert.ok(!stoppable(['systemctl', 'stop', 'gdm']));
-    assert.ok(!stoppable(['systemctl', 'stop', 'isle-run-1-0', 'gdm']));
+    assert.ok(!stoppable(['systemctl', 'stop', 'notchfolk-run-1-0', 'gdm']));
 });
 
 test('a command runs only as shown whole', () => {
@@ -100,7 +100,7 @@ test('a command runs only as shown whole', () => {
 
 test('a command is typed into a terminal only as the user sees it', () => {
     // Its lines one after another, on one line: a newline would press Enter.
-    assert.equal(terminalLine('cd ~/isle\n  git status  \n'), 'cd ~/isle && git status');
+    assert.equal(terminalLine('cd ~/notchfolk\n  git status  \n'), 'cd ~/notchfolk && git status');
     assert.equal(terminalLine('grep "a  b" f'), 'grep "a  b" f');
     assert.equal(terminalLine(' \n '), '');
     // Hidden, reordering or control characters, or more than a card shows: never typed.
@@ -116,7 +116,7 @@ test('a window names the agent\'s project only as a word of its own', () => {
     assert.equal(namesProject('kz@laptop: ~/code/korus', 'korus'), true);
     assert.equal(namesProject('WhatsApp', 'app'), false);
     assert.equal(namesProject('whatsapp web', 'app'), false);
-    assert.equal(namesProject('isle-ad — Visual Studio Code', 'isle'), false);
+    assert.equal(namesProject('notchfolk-ad — Visual Studio Code', 'notchfolk'), false);
     assert.equal(namesProject('my-app (main) — Terminal', 'my-app'), true);
     assert.equal(namesProject('c++ notes', 'c++'), true);
     assert.equal(namesProject('anything', ''), false);

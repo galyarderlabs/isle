@@ -2,7 +2,7 @@
 // Copyright (C) 2026 zickrian
 
 // The voice assistant's view: a little character with lively eyes that listens, thinks and answers,
-// beside what was heard and the answer. isled listens and asks the AI; the actions it answers with run here.
+// beside what was heard and the answer. notchfolkd listens and asks the AI; the actions it answers with run here.
 
 import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
@@ -109,7 +109,7 @@ const STILL_LEVEL = 0.2;
 const REPLY_BOOST = 0.7;
 /** Without the pointer moving for this long (s), the eyes wander on their own. */
 const POINTER_REST_S = 2.5;
-/** Errors that come from not hearing you (isled's wording): it looks confused at them, sad at others. */
+/** Errors that come from not hearing you (notchfolkd's wording): it looks confused at them, sad at others. */
 const NOT_HEARD = /^(Didn[’']t catch that|The microphone is muted|No microphone)/;
 /** How much each key typed lights the edge, as a syllable does. */
 const KEY_LEVEL = 0.32;
@@ -233,9 +233,9 @@ export const VoiceView = GObject.registerClass({
     /** Builds the row (face, texts, action button) and the conversation that opens above it. */
     _init(look) {
         // Reactive, so a scroll over it can open the conversation (see `vfunc_scroll_event`).
-        super._init({style_class: 'isle-voice', layout_manager: new Clutter.BinLayout(), reactive: true});
+        super._init({style_class: 'notchfolk-voice', layout_manager: new Clutter.BinLayout(), reactive: true});
         this._phase = 'listening';
-        /** Whether isled is not recording yet (see `micWaiting`). */
+        /** Whether notchfolkd is not recording yet (see `micWaiting`). */
         this._micWaiting = false;
         /** Shown instead of "Listening…" while it listens for the first request. */
         this.greeting = null;
@@ -247,10 +247,10 @@ export const VoiceView = GObject.registerClass({
         this._micTarget = 0;
         this._level = 0;
 
-        const row = new St.BoxLayout({style_class: 'isle-voice-row', x_expand: true, y_expand: true});
+        const row = new St.BoxLayout({style_class: 'notchfolk-voice-row', x_expand: true, y_expand: true});
         this._face = new Face(look);
         this._faceButton = new St.Button({
-            style_class: 'isle-voice-orb',
+            style_class: 'notchfolk-voice-orb',
             child: this._face,
             accessible_name: 'Speak',
             y_align: Clutter.ActorAlign.CENTER,
@@ -266,30 +266,30 @@ export const VoiceView = GObject.registerClass({
 
         this._texts = new St.BoxLayout({...VERTICAL, y_align: Clutter.ActorAlign.CENTER});
         // What was heard, or what it asked; with earlier messages, a chevron opens the conversation.
-        this._heard = new St.Label({style_class: 'isle-voice-heard', y_align: Clutter.ActorAlign.CENTER});
+        this._heard = new St.Label({style_class: 'notchfolk-voice-heard', y_align: Clutter.ActorAlign.CENTER});
         this._heard.clutter_text.ellipsize = Pango.EllipsizeMode.END;
-        const heardRow = new St.BoxLayout({style_class: 'isle-voice-heard-row'});
-        this._earlier = new St.Icon({gicon: icon('isle-chevron-up-symbolic'), icon_size: 10, style_class: 'isle-voice-earlier',
+        const heardRow = new St.BoxLayout({style_class: 'notchfolk-voice-heard-row'});
+        this._earlier = new St.Icon({gicon: icon('notchfolk-chevron-up-symbolic'), icon_size: 10, style_class: 'notchfolk-voice-earlier',
             y_align: Clutter.ActorAlign.CENTER, visible: false});
         heardRow.add_child(this._earlier);
         heardRow.add_child(this._heard);
-        this._heardButton = new St.Button({child: heardRow, style_class: 'isle-voice-heard-button', reactive: false,
+        this._heardButton = new St.Button({child: heardRow, style_class: 'notchfolk-voice-heard-button', reactive: false,
             x_align: Clutter.ActorAlign.START, accessible_name: 'Show the conversation'});
         this._heardButton.connect('clicked', () => this.openChat());
         // A labelled History pill is easier to recognize than an icon tucked beside Close.
-        const chatButtonContent = new St.BoxLayout({style_class: 'isle-voice-chat-content'});
-        chatButtonContent.add_child(new St.Icon({gicon: icon('isle-history'), icon_size: 13,
+        const chatButtonContent = new St.BoxLayout({style_class: 'notchfolk-voice-chat-content'});
+        chatButtonContent.add_child(new St.Icon({gicon: icon('notchfolk-history'), icon_size: 13,
             y_align: Clutter.ActorAlign.CENTER}));
-        chatButtonContent.add_child(label('History', 'isle-voice-chat-label', {y_align: Clutter.ActorAlign.CENTER}));
-        this._chatButton = new St.Button({style_class: 'isle-button isle-voice-action isle-voice-chat-button',
+        chatButtonContent.add_child(label('History', 'notchfolk-voice-chat-label', {y_align: Clutter.ActorAlign.CENTER}));
+        this._chatButton = new St.Button({style_class: 'notchfolk-button notchfolk-voice-action notchfolk-voice-chat-button',
             child: chatButtonContent, can_focus: true, accessible_name: 'Open chat history',
             y_align: Clutter.ActorAlign.CENTER});
         this._chatButton.tooltip_text = 'Open chat history';
         this._chatButton.connect('clicked', () => this.openHistory());
         // After +: the old conversation can come back for a moment.
-        this._undo = new St.BoxLayout({style_class: 'isle-voice-undo', visible: false});
-        this._undo.add_child(new St.Label({text: 'Started a new chat', style_class: 'isle-voice-undo-text', y_align: Clutter.ActorAlign.CENTER}));
-        this._undo.add_child(pillButton('Undo', 'isle-pill-small isle-voice-undo-button', () => {
+        this._undo = new St.BoxLayout({style_class: 'notchfolk-voice-undo', visible: false});
+        this._undo.add_child(new St.Label({text: 'Started a new chat', style_class: 'notchfolk-voice-undo-text', y_align: Clutter.ActorAlign.CENTER}));
+        this._undo.add_child(pillButton('Undo', 'notchfolk-pill-small notchfolk-voice-undo-button', () => {
             this.showUndo(false);
             this.emit('undo-new-chat');
         }));
@@ -310,24 +310,24 @@ export const VoiceView = GObject.registerClass({
             this.emit('card-decided', run);
         });
         this._card.connect('stop', () => this.emit('card-stop'));
-        this._still = new St.Label({style_class: 'isle-voice-still', visible: false});
-        this._text = new St.Label({style_class: 'isle-voice-text'});
-        this._hint = new St.Label({style_class: 'isle-voice-hint'});
+        this._still = new St.Label({style_class: 'notchfolk-voice-still', visible: false});
+        this._text = new St.Label({style_class: 'notchfolk-voice-text'});
+        this._hint = new St.Label({style_class: 'notchfolk-voice-hint'});
         for (const label of [this._text, this._hint])
             wrapLines(label);
         // Not wider than its label, at the start of the line.
-        this._signIn = pillButton('Sign in', 'isle-pill-small isle-voice-sign-in', () => this.emit('sign-in'));
+        this._signIn = pillButton('Sign in', 'notchfolk-pill-small notchfolk-voice-sign-in', () => this.emit('sign-in'));
         this._signIn.x_align = Clutter.ActorAlign.START;
-        this._setUp = pillButton('Set up', 'isle-pill-small isle-voice-sign-in', () => this.emit('set-up'));
+        this._setUp = pillButton('Set up', 'notchfolk-pill-small notchfolk-voice-sign-in', () => this.emit('set-up'));
         this._setUp.x_align = Clutter.ActorAlign.START;
         /** The steps of the request being worked on, done ones first. */
         this._steps = [];
         // Those done, below the one now: a tick and a line each.
-        this._stepsBox = new St.BoxLayout({...VERTICAL, style_class: 'isle-voice-steps', visible: false});
+        this._stepsBox = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-voice-steps', visible: false});
         // Ideas under an empty field, so what it can do is never a guess: one asks at once, one starts the words.
-        this._ideas = new St.BoxLayout({style_class: 'isle-voice-ideas', visible: false});
+        this._ideas = new St.BoxLayout({style_class: 'notchfolk-voice-ideas', visible: false});
         for (const [text, words, send] of IDEAS) {
-            const chip = new St.Button({label: text, style_class: 'isle-voice-idea', can_focus: true});
+            const chip = new St.Button({label: text, style_class: 'notchfolk-voice-idea', can_focus: true});
             chip.connect('clicked', () => {
                 this._entry.text = words;
                 this._entry.clutter_text.set_cursor_position(-1);
@@ -338,13 +338,13 @@ export const VoiceView = GObject.registerClass({
             this._ideas.add_child(chip);
         }
         // A typed request, instead of a spoken one (see `startTyping`).
-        this._entry = new St.Entry({style_class: 'isle-voice-entry', hint_text: 'Ask anything…', can_focus: true,
+        this._entry = new St.Entry({style_class: 'notchfolk-voice-entry', hint_text: 'Ask anything…', can_focus: true,
             x_expand: true, visible: false});
         const caret = this._entry.clutter_text;
         caret.connect('activate', () => this._send());
         // Inside the field, as in Messages: a mic while it is empty (speak instead), Send once there are words.
-        this._sendIcon = new St.Icon({gicon: icon('isle-mic-symbolic'), icon_size: 14});
-        this._sendButton = new St.Bin({style_class: 'isle-voice-send', reactive: true, child: this._sendIcon});
+        this._sendIcon = new St.Icon({gicon: icon('notchfolk-mic-symbolic'), icon_size: 14});
+        this._sendButton = new St.Bin({style_class: 'notchfolk-voice-send', reactive: true, child: this._sendIcon});
         this._sendButton.set_pivot_point(0.5, 0.5);
         this._sendShows = null;
         this._entry.set_secondary_icon(this._sendButton);
@@ -383,11 +383,11 @@ export const VoiceView = GObject.registerClass({
         this._chatSlot = new St.Widget({layout_manager: new Clutter.BinLayout(), y_align: Clutter.ActorAlign.CENTER});
         onUiScale(this._action, scale => this._action.set_size(ACTION_SIZE * scale, ACTION_SIZE * scale));
         onUiScale(this._chatSlot, scale => this._chatSlot.set_size(CHAT_BUTTON_WIDTH * scale, ACTION_SIZE * scale));
-        this._typeButton = iconButton('isle-keyboard-symbolic', 'isle-voice-action', () => this.emit('type-requested'),
+        this._typeButton = iconButton('notchfolk-keyboard-symbolic', 'notchfolk-voice-action', () => this.emit('type-requested'),
             {accessibleName: 'Type instead'});
-        this._stop = iconButton('isle-stop-symbolic', 'isle-voice-action isle-voice-stop', () => this.emit('stop'),
+        this._stop = iconButton('notchfolk-stop-symbolic', 'notchfolk-voice-action notchfolk-voice-stop', () => this.emit('stop'),
             {size: 12, accessibleName: 'Stop'});
-        this._closeButton = iconButton('isle-close-symbolic', 'isle-voice-action isle-voice-close',
+        this._closeButton = iconButton('notchfolk-close-symbolic', 'notchfolk-voice-action notchfolk-voice-close',
             () => this.emit('close-requested'), {size: 14, accessibleName: 'Close assistant'});
         this._closeButton.tooltip_text = 'Close assistant';
         for (const button of [this._typeButton, this._stop, this._closeButton]) {
@@ -396,7 +396,7 @@ export const VoiceView = GObject.registerClass({
         }
         this._chatButton.set_pivot_point(0.5, 0.5);
         this._chatSlot.add_child(this._chatButton);
-        this._toolbar = new St.BoxLayout({style_class: 'isle-voice-toolbar', y_align: Clutter.ActorAlign.CENTER,
+        this._toolbar = new St.BoxLayout({style_class: 'notchfolk-voice-toolbar', y_align: Clutter.ActorAlign.CENTER,
             visible: false});
         this._toolbar.add_child(this._chatSlot);
         this._toolbar.add_child(this._action);
@@ -442,7 +442,7 @@ export const VoiceView = GObject.registerClass({
         this.setState({phase: 'listening'});
     }
 
-    /** Shows `state` from isled: {phase, heard, reply, error, hint, sign_in, activity, actions}. */
+    /** Shows `state` from notchfolkd: {phase, heard, reply, error, hint, sign_in, activity, actions}. */
     setState(state) {
         this.stopTyping();
         if (['listening', 'transcribing'].includes(state.phase))
@@ -489,13 +489,13 @@ export const VoiceView = GObject.registerClass({
             this._text.text = main;
         }
         if (dim)
-            this._text.add_style_class_name('isle-voice-text-dim');
+            this._text.add_style_class_name('notchfolk-voice-text-dim');
         else
-            this._text.remove_style_class_name('isle-voice-text-dim');
+            this._text.remove_style_class_name('notchfolk-voice-text-dim');
         if (!dim && main.length > LONG_REPLY)
-            this._text.add_style_class_name('isle-voice-text-long');
+            this._text.add_style_class_name('notchfolk-voice-text-long');
         else
-            this._text.remove_style_class_name('isle-voice-text-long');
+            this._text.remove_style_class_name('notchfolk-voice-text-long');
         const working = WORKING.includes(state.phase);
         const hint = state.phase === 'error' ? this.withShortcut(state.hint ?? '') : '';
         this._hint.text = hint;
@@ -520,12 +520,12 @@ export const VoiceView = GObject.registerClass({
         this._lastGroup = group;
     }
 
-    // The command card as isled has it. Once over, it stays until the next request; in an open
+    // The command card as notchfolkd has it. Once over, it stays until the next request; in an open
     // conversation it is a line of the list instead (see ChatView).
     _syncCard(card) {
         const live = card && ['waiting', 'running'].includes(card.status);
         const asking = ['listening', 'transcribing'].includes(this._phase);
-        // One that ended before this request is the last one's, which isled may still send (with an error).
+        // One that ended before this request is the last one's, which notchfolkd may still send (with an error).
         const stale = card && !live && card.id === this._staleCardId;
         if (card && !stale && (live || (!this.chatOpen && !asking)))
             this.showCard(card);
@@ -558,7 +558,7 @@ export const VoiceView = GObject.registerClass({
     }
 
     // A new request: the card of the last one has had its say (it is in the conversation now). It, or
-    // isled's card as the request starts (`card`), never shows again with this one.
+    // notchfolkd's card as the request starts (`card`), never shows again with this one.
     _dropEndedCard(card = null) {
         const old = card ?? this.endedCard;
         if (old)
@@ -612,7 +612,7 @@ export const VoiceView = GObject.registerClass({
         this.emit('size-changed');
     }
 
-    /** The archived conversations (isled's ArchivedChats), for the history button's list. */
+    /** The archived conversations (notchfolkd's ArchivedChats), for the history button's list. */
     setArchive(chats) {
         this._archive = chats;
         this._chat.setArchive(chats);
@@ -766,8 +766,8 @@ export const VoiceView = GObject.registerClass({
         if (shows === this._sendShows)
             return;
         this._sendShows = shows;
-        this._sendIcon.gicon = icon(shows === 'send' ? 'isle-send-symbolic' : 'isle-mic-symbolic');
-        this._sendButton.style_class = shows === 'send' ? 'isle-voice-send' : 'isle-voice-send isle-voice-send-mic';
+        this._sendIcon.gicon = icon(shows === 'send' ? 'notchfolk-send-symbolic' : 'notchfolk-mic-symbolic');
+        this._sendButton.style_class = shows === 'send' ? 'notchfolk-voice-send' : 'notchfolk-voice-send notchfolk-voice-send-mic';
         this._sendButton.accessible_name = shows === 'send' ? 'Send' : 'Speak instead';
         if (!St.Settings.get().enable_animations || !this._sendButton.mapped)
             return;
@@ -781,11 +781,11 @@ export const VoiceView = GObject.registerClass({
         const before = this._stepsBox.visible ? this._stepsBox.get_n_children() : 0;
         this._stepsBox.destroy_all_children();
         for (const step of done) {
-            const row = new St.BoxLayout({style_class: 'isle-voice-step'});
-            row.add_child(new St.Icon({gicon: icon('isle-check-symbolic'), icon_size: 11, style_class: 'isle-voice-step-tick',
+            const row = new St.BoxLayout({style_class: 'notchfolk-voice-step'});
+            row.add_child(new St.Icon({gicon: icon('notchfolk-check-symbolic'), icon_size: 11, style_class: 'notchfolk-voice-step-tick',
                 y_align: Clutter.ActorAlign.CENTER}));
             // As read, not as written: an AI's step may come with Markdown ("**done**").
-            const line = new St.Label({text: answerPlain(step).replace(/\s+/g, ' '), style_class: 'isle-voice-step-text', y_align: Clutter.ActorAlign.CENTER});
+            const line = new St.Label({text: answerPlain(step).replace(/\s+/g, ' '), style_class: 'notchfolk-voice-step-text', y_align: Clutter.ActorAlign.CENTER});
             line.clutter_text.ellipsize = Pango.EllipsizeMode.END;
             row.add_child(line);
             this._stepsBox.add_child(row);
@@ -796,7 +796,7 @@ export const VoiceView = GObject.registerClass({
             fadeIn(this._stepsBox.get_last_child());
     }
 
-    /** `text` naming the shortcut as set instead of the default one isled's hints name. */
+    /** `text` naming the shortcut as set instead of the default one notchfolkd's hints name. */
     withShortcut(text) {
         if (this.shortcut)
             return text.replaceAll('Super+I', this.shortcut);
@@ -810,7 +810,7 @@ export const VoiceView = GObject.registerClass({
         return this._entry.visible;
     }
 
-    /** While isled is not recording yet (getting the AI or the speech model ready), "Getting ready…" in place of
+    /** While notchfolkd is not recording yet (getting the AI or the speech model ready), "Getting ready…" in place of
      * "Listening…": what was said then would be lost. */
     set micWaiting(waiting) {
         if (waiting === this._micWaiting)
@@ -821,9 +821,9 @@ export const VoiceView = GObject.registerClass({
         this._text.clutter_text.use_markup = false;
         this._text.text = this._listeningText();
         if (waiting || !this.greeting)
-            this._text.add_style_class_name('isle-voice-text-dim');
+            this._text.add_style_class_name('notchfolk-voice-text-dim');
         else
-            this._text.remove_style_class_name('isle-voice-text-dim');
+            this._text.remove_style_class_name('notchfolk-voice-text-dim');
         this.emit('size-changed');
     }
 
@@ -843,7 +843,7 @@ export const VoiceView = GObject.registerClass({
         revealClose(this._close, this._pointerOn && ['reply', 'error'].includes(this._phase) && !this.chatOpen);
     }
 
-    /** Shows the field to type a request in, starting with `initial` (a key typed while it listened); `card` is isled's. */
+    /** Shows the field to type a request in, starting with `initial` (a key typed while it listened); `card` is notchfolkd's. */
     startTyping(initial = '', card = null, {focus = true} = {}) {
         this._dropEndedCard(card);
         this._phase = 'typing';
@@ -922,7 +922,7 @@ export const VoiceView = GObject.registerClass({
         this._micTarget = level;
     }
 
-    /** isled's phase as last shown, or 'typing'. */
+    /** notchfolkd's phase as last shown, or 'typing'. */
     get phase() {
         return this._phase;
     }
@@ -1077,7 +1077,7 @@ export const VoiceView = GObject.registerClass({
         const dt = Math.min(0.1, Math.max(0, t - this._lastTick));
         this._lastTick = t;
         // The voice, smoothed by time (not by frame): quick to rise with a syllable, slow to fall,
-        // so the 20 updates a second from isled never show as flicker.
+        // so the 20 updates a second from notchfolkd never show as flicker.
         this._micTarget = (this._micTarget ?? 0) * Math.exp(-dt * MIC_FADE);
         const rate = this._micTarget > this._mic ? MIC_ATTACK : MIC_RELEASE;
         this._mic += (this._micTarget - this._mic) * (1 - Math.exp(-dt * rate));
@@ -1123,14 +1123,14 @@ function clip(text) {
 }
 
 // Terminals, the desktop's chosen one first, each with what comes before the command. A CLI's sign-in runs
-// there (a browser, then a code pasted back), so Isle never handles the code.
+// there (a browser, then a code pasted back), so Notchfolk never handles the code.
 const TERMINALS = [
     ['xdg-terminal-exec'], ['gnome-terminal', '--'], ['kgx', '--'], ['ptyxis', '--'], ['konsole', '-e'],
     ['xfce4-terminal', '-x'], ['mate-terminal', '-x'], ['terminator', '-x'], ['kitty'], ['alacritty', '-e'],
     ['ghostty', '-e'], ['wezterm', 'start', '--'], ['foot'], ['x-terminal-emulator', '-e'],
 ];
 
-/** Opens a terminal to sign in to `provider` ("agy", "claude", "codex", "grok", "opencode"), with its CLI where isled
+/** Opens a terminal to sign in to `provider` ("agy", "claude", "codex", "grok", "opencode"), with its CLI where notchfolkd
  * found it (`found`: nvm, Homebrew…); false without a terminal or the CLI. */
 export function openSignIn(provider, found = '') {
     const [name, ...args] = SIGN_IN[provider] ?? SIGN_IN.agy;
@@ -1143,19 +1143,19 @@ export function openSignIn(provider, found = '') {
     return inTerminal(['env', `PATH=${path}`, program, ...args]);
 }
 
-/** Opens a terminal that downloads the speech `model` (isle-setup-voice) and stays open to show how it went. */
+/** Opens a terminal that downloads the speech `model` (notchfolk-setup-voice) and stays open to show how it went. */
 export function openSetUp(model, shortcut = 'Super+I') {
-    const program = GLib.find_program_in_path('isle-setup-voice') ??
-        GLib.build_filenamev([GLib.get_home_dir(), '.local', 'bin', 'isle-setup-voice']);
+    const program = GLib.find_program_in_path('notchfolk-setup-voice') ??
+        GLib.build_filenamev([GLib.get_home_dir(), '.local', 'bin', 'notchfolk-setup-voice']);
     // What to do next, naming the shortcut as set (passed as an argument, never part of the script).
     const next = shortcut ? `Press ${shortcut} and speak.` : 'Press the mic in the island and speak.';
-    return GLib.file_test(program, GLib.FileTest.IS_EXECUTABLE) && inTerminal(['bash', '-c', SET_UP, 'isle', next,
+    return GLib.file_test(program, GLib.FileTest.IS_EXECUTABLE) && inTerminal(['bash', '-c', SET_UP, 'notchfolk', next,
         program, ...model ? [model] : []]);
 }
 
-// Runs isle-setup-voice ($2…), then says what next ($1); a shell stays open afterwards.
-const SET_UP = 'next="$1"; shift; "$@" && printf "\\nIsle: done. %s\\n" "$next" || ' +
-    'printf "\\nIsle: that did not finish; run isle-setup-voice again.\\n"; exec bash';
+// Runs notchfolk-setup-voice ($2…), then says what next ($1); a shell stays open afterwards.
+const SET_UP = 'next="$1"; shift; "$@" && printf "\\nNotchfolk: done. %s\\n" "$next" || ' +
+    'printf "\\nNotchfolk: that did not finish; run notchfolk-setup-voice again.\\n"; exec bash';
 
 /** How each AI CLI signs in, run in a terminal (`agy` and `claude` ask on start). */
 const SIGN_IN = {
@@ -1168,7 +1168,7 @@ export function signInHint(provider) {
     return `Open a terminal, type “${(SIGN_IN[provider] ?? SIGN_IN.agy).join(' ')}” to sign in, then ask again.`;
 }
 
-/** The AI picked in Settings and the model picked for each, as isled reads them. */
+/** The AI picked in Settings and the model picked for each, as notchfolkd reads them. */
 export function aiSettings(settings) {
     return {
         provider: settings.get_string('voice-provider'),
@@ -1194,7 +1194,7 @@ function inTerminal(argv) {
             GLib.spawn_async(null, [terminal, ...before, ...argv], null, GLib.SpawnFlags.DEFAULT, null);
             return true;
         } catch (e) {
-            console.warn(`Isle: could not open ${program}: ${e.message}`);
+            console.warn(`Notchfolk: could not open ${program}: ${e.message}`);
         }
     }
     return false;
@@ -1202,7 +1202,7 @@ function inTerminal(argv) {
 
 // Shows `$1` typed at a bash prompt, run only once Enter is pressed (it can be edited first); a shell stays
 // open afterwards. Passed as an argument, the command is never part of the script itself.
-const TYPED_COMMAND = 'printf "\\033[2mIsle: press Enter to run it, edit it first, or Ctrl+C to cancel.\\033[0m\\n"; ' +
+const TYPED_COMMAND = 'printf "\\033[2mNotchfolk: press Enter to run it, edit it first, or Ctrl+C to cancel.\\033[0m\\n"; ' +
     'read -r -e -i "$1" -p "$ " line && eval "$line"; exec bash';
 
 /** Opens a terminal with `command` typed in, waiting for the user to press Enter. */
@@ -1213,7 +1213,7 @@ function typeInTerminal(command) {
         return failed('not typed: it has hidden characters, or is too long to show whole');
     if (!line)
         return failed('no command to type');
-    return inTerminal(['bash', '-c', TYPED_COMMAND, 'isle', line]) ? 'typed into a terminal' : failed('no terminal app found');
+    return inTerminal(['bash', '-c', TYPED_COMMAND, 'notchfolk', line]) ? 'typed into a terminal' : failed('no terminal app found');
 }
 
 /** The greeting it opens with; it understands any language spoken back. */
@@ -1247,18 +1247,18 @@ function startUnit(argv) {
     });
 }
 
-/** Stops one of Isle's commands (Stop on its card). */
+/** Stops one of Notchfolk's commands (Stop on its card). */
 export function stopUnit(argv) {
     if (!stoppable(argv))
         return;
     try {
         Gio.Subprocess.new(argv, Gio.SubprocessFlags.STDOUT_SILENCE | Gio.SubprocessFlags.STDERR_SILENCE);
     } catch (e) {
-        console.warn(`Isle: could not stop the command: ${e.message}`);
+        console.warn(`Notchfolk: could not stop the command: ${e.message}`);
     }
 }
 
-// What isled passes on to the AI: the apps, the models, the selected text (not from apps kept out of the
+// What notchfolkd passes on to the AI: the apps, the models, the selected text (not from apps kept out of the
 // clipboard history) and, when allowed, the latest of `notifications` (a NotificationCenter).
 export async function voiceContext(settings, notifications, {apps = [], selectedIn = null} = {}) {
     // Asked for first, before anything else can move the selection.
@@ -1360,8 +1360,8 @@ function primarySelection() {
     });
 }
 
-// Each action the AI may answer with (see `Session::prompt` in isled); each returns what it did, for the AI.
-// `isle` holds the daemon, audio, notifications, the window in front (`target`), its `writer` and `closeThen`.
+// Each action the AI may answer with (see `Session::prompt` in notchfolkd); each returns what it did, for the AI.
+// `notchfolk` holds the daemon, audio, notifications, the window in front (`target`), its `writer` and `closeThen`.
 const ACTIONS = {
     open_url: ({url}) => {
         if (!/^(https?|mailto):/i.test(url ?? ''))
@@ -1369,13 +1369,13 @@ const ACTIONS = {
         openUri(url);
         return 'opened in the browser';
     },
-    open_app: async ({app}, isle) => {
+    open_app: async ({app}, notchfolk) => {
         const found = findApp(app ?? '');
         if (!found)
             return failed(`no app called ${app}`);
         // Not running yet: a media command after it waits for its player.
         if (found.get_state() !== Shell.AppState.RUNNING)
-            isle.launched = found;
+            notchfolk.launched = found;
         found.activate();
         // What comes next (placing its window) needs the window there.
         return await windowOf(found, WINDOW_WAIT_MS) ? `${found.get_name()} is open` : `${found.get_name()} is starting`;
@@ -1388,7 +1388,7 @@ const ACTIONS = {
     },
     focus: ({command}, {daemon}) => daemon.call('pomodoro', command === 'stop' ? 'Stop' : 'Start'),
     add_task: ({text}, {daemon}) => text && daemon.call('todo', 'Add', text),
-    // To the calendar the Calendar page adds to (an account's, or Isle's own).
+    // To the calendar the Calendar page adds to (an account's, or Notchfolk's own).
     add_event: ({date, text}, {daemon, eventCalendar}) => date && text && daemon.addEvent(eventCalendar(), date, text),
     done_task: ({id}, {daemon}) => Number.isInteger(id) && daemon.call('todo', 'SetDone', id, true),
     remove_task: ({id}, {daemon}) => Number.isInteger(id) && daemon.call('todo', 'Remove', id),
@@ -1456,10 +1456,10 @@ const ACTIONS = {
     settings: ({panel}) => /^[a-z-]+$/.test(panel ?? '') && spawn(['gnome-control-center', panel]),
     terminal: ({command}) => typeof command === 'string' && typeInTerminal(command),
     // A command the AI wants run: the user says Run or Deny (the card, or an alert while the island is
-    // closed); run, it starts as a systemd unit of its own, which isled follows to its end.
+    // closed); run, it starts as a systemd unit of its own, which notchfolkd follows to its end.
     run: async (action, {decide}) => {
         if (!runnable(action, shellUser()))
-            return failed('Isle refused to start it: it was not the command shown');
+            return failed('Notchfolk refused to start it: it was not the command shown');
         const answer = await decide(action);
         if (answer === 'unanswered')
             return failed('no answer in time');
@@ -1505,7 +1505,7 @@ export function stopPending() {
         entry.stop();
 }
 
-// Runs `run` once `app` (just launched; null for none) is the player isled controls; never if it doesn't show up.
+// Runs `run` once `app` (just launched; null for none) is the player notchfolkd controls; never if it doesn't show up.
 function whenPlayerOf(daemon, app, run) {
     const id = app?.get_id().replace(/\.desktop$/, '').toLowerCase();
     const ready = () => {
@@ -1537,7 +1537,7 @@ function whenPlayerOf(daemon, app, run) {
     });
 }
 
-/** What an isled call did, for the AI: its reply, else failed with isled's own words. */
+/** What an notchfolkd call did, for the AI: its reply, else failed with notchfolkd's own words. */
 async function called(daemon, ...args) {
     const {result, error} = await daemon.attempt(...args);
     return result === null ? failed(error ?? `${args[1]} did not work`) : result;
@@ -1594,7 +1594,7 @@ function arrangeWindows(layout, apps) {
     return placed.length;
 }
 
-// Plays `uri` (a Spotify link isled checked) in Spotify, started first if need be; without one, Spotify
+// Plays `uri` (a Spotify link notchfolkd checked) in Spotify, started first if need be; without one, Spotify
 // opens on a search for `query`, and without Spotify, YouTube Music does.
 function playMusic(query, uri) {
     const spotify = findApp('spotify');
@@ -1616,7 +1616,7 @@ function playMusic(query, uri) {
                 bus.call_finish(result);
             } catch (e) {
                 // Spotify then at least shows it.
-                console.warn(`Isle: Spotify would not play ${uri}: ${e.message}`);
+                console.warn(`Notchfolk: Spotify would not play ${uri}: ${e.message}`);
                 openUri(uri);
             }
         });
@@ -1657,7 +1657,7 @@ function windowTitled(title) {
         windows.find(window => titled(window).includes(wanted)) ?? null;
 }
 
-/** Folders the assistant may open or show files in, as isled's own file tools do. */
+/** Folders the assistant may open or show files in, as notchfolkd's own file tools do. */
 const FILE_ROOTS = ['/media/', '/mnt/', '/run/media/'];
 /** Kinds of file that run something when opened; the assistant never opens those. */
 const RUNS = /x-desktop|java-archive|executable|x-sharedlib|x-msdownload|x-ms-dos|x-msi|x-deb|x-rpm|x-appimage|x-shellscript|x-perl|x-python|x-ruby|x-php/;
@@ -1887,26 +1887,26 @@ function propertySet(name, path, iface, property, value) {
     });
 }
 
-/** What this extension can do: isled offers the AI nothing else. Not the Notifications page while it is left out. */
+/** What this extension can do: notchfolkd offers the AI nothing else. Not the Notifications page while it is left out. */
 export function actionTypes(settings) {
     const notifications = !settings.get_strv('hidden-pages').includes('notifications');
     return Object.keys(ACTIONS).filter(type => type !== 'notifications' || notifications);
 }
 
-/** Runs the AI's actions in order; `isle` is what they act on (see `ACTIONS`). Resolves to what each did,
+/** Runs the AI's actions in order; `notchfolk` is what they act on (see `ACTIONS`). Resolves to what each did,
  * as `{type, ok, detail}`, for the AI to take its next step from. */
-export async function runActions(actions, isle) {
+export async function runActions(actions, notchfolk) {
     const results = [];
     const started = generation;
     for (const action of actions ?? []) {
-        // Isle turned off meanwhile: nothing more runs.
+        // Notchfolk turned off meanwhile: nothing more runs.
         if (generation !== started)
             break;
         let outcome;
         try {
-            outcome = ACTIONS[action.type] ? await ACTIONS[action.type](action, isle) : failed('unknown action');
+            outcome = ACTIONS[action.type] ? await ACTIONS[action.type](action, notchfolk) : failed('unknown action');
         } catch (e) {
-            console.warn(`Isle: voice action ${action.type} failed: ${e.message}`);
+            console.warn(`Notchfolk: voice action ${action.type} failed: ${e.message}`);
             outcome = failed(e.message);
         }
         results.push({type: action.type, ...outcomeOf(outcome)});

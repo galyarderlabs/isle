@@ -57,7 +57,7 @@ class RouterPage extends Page {
     /** `height` is the expanded island's page height. */
     _init(daemon, settings, {height}) {
         super._init(daemon, {
-            style_class: 'isle-page isle-router',
+            style_class: 'notchfolk-page notchfolk-router',
             layout_manager: new Clutter.BinLayout(),
             height,
             reactive: true,
@@ -67,25 +67,25 @@ class RouterPage extends Page {
         this._activityPhase = 0;
         this._activitySamples = [];
 
-        const layout = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-layout',
+        const layout = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-router-layout',
             x_expand: true, y_expand: true});
 
-        const heading = new St.BoxLayout({style_class: 'isle-router-heading'});
-        heading.add_child(new St.Icon({gicon: icon('isle-router'), icon_size: 16}));
-        heading.add_child(label('Router', 'isle-router-title'));
-        const status = new St.BoxLayout({style_class: 'isle-router-status-pill'});
-        this._statusDot = new St.Widget({style_class: 'isle-router-status-dot waiting'});
-        this._statusLine = label('Connecting', 'isle-router-status');
+        const heading = new St.BoxLayout({style_class: 'notchfolk-router-heading'});
+        heading.add_child(new St.Icon({gicon: icon('notchfolk-router'), icon_size: 16}));
+        heading.add_child(label('Router', 'notchfolk-router-title'));
+        const status = new St.BoxLayout({style_class: 'notchfolk-router-status-pill'});
+        this._statusDot = new St.Widget({style_class: 'notchfolk-router-status-dot waiting'});
+        this._statusLine = label('Connecting', 'notchfolk-router-status');
         status.add_child(this._statusDot);
         status.add_child(this._statusLine);
         heading.add_child(status);
         // The period toggle in the header, kept in step with Settings.
-        this._periodToggle = new St.BoxLayout({style_class: 'isle-router-periods'});
+        this._periodToggle = new St.BoxLayout({style_class: 'notchfolk-router-periods'});
         this._periodToggle.x_expand = true;
         this._periodToggle.x_align = Clutter.ActorAlign.END;
         this._periodButtons = {};
         for (const period of PERIODS) {
-            const button = new St.Button({style_class: 'isle-router-period', can_focus: true,
+            const button = new St.Button({style_class: 'notchfolk-router-period', can_focus: true,
                 label: PERIOD_LABELS[period], accessible_name: `Router period ${PERIOD_LABELS[period]}`});
             button.connect('clicked', () => this._setPeriod(period));
             this._periodToggle.add_child(button);
@@ -95,16 +95,16 @@ class RouterPage extends Page {
         layout.add_child(heading);
 
         // Three clear totals stay legible in the notch: requests, token flow, and estimated cost.
-        const metrics = new St.BoxLayout({style_class: 'isle-router-metrics', x_expand: true});
+        const metrics = new St.BoxLayout({style_class: 'notchfolk-router-metrics', x_expand: true});
         this._metricValues = {};
         for (const [key, title] of Object.entries({
             requests: 'Requests',
             tokens: 'Tokens in / out',
             cost: 'Est. cost',
         })) {
-            const card = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-metric', x_expand: true});
-            card.add_child(label(title, 'isle-router-metric-label'));
-            const value = label('—', 'isle-router-metric-value');
+            const card = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-router-metric', x_expand: true});
+            card.add_child(label(title, 'notchfolk-router-metric-label'));
+            const value = label('—', 'notchfolk-router-metric-value');
             card.add_child(value);
             this._metricValues[key] = value;
             metrics.add_child(card);
@@ -112,43 +112,43 @@ class RouterPage extends Page {
         layout.add_child(metrics);
 
         // A live sparkline and the latest requests use the same short row instead of competing for height.
-        const content = new St.BoxLayout({style_class: 'isle-router-content', x_expand: true, y_expand: true});
-        const activity = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-activity', y_expand: true});
-        const activityHeading = new St.BoxLayout({style_class: 'isle-router-section-heading'});
-        activityHeading.add_child(label('Activity', 'isle-router-section-title'));
-        this._activityMeta = label('Waiting', 'isle-router-activity-meta', {x_expand: true,
+        const content = new St.BoxLayout({style_class: 'notchfolk-router-content', x_expand: true, y_expand: true});
+        const activity = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-router-activity', y_expand: true});
+        const activityHeading = new St.BoxLayout({style_class: 'notchfolk-router-section-heading'});
+        activityHeading.add_child(label('Activity', 'notchfolk-router-section-title'));
+        this._activityMeta = label('Waiting', 'notchfolk-router-activity-meta', {x_expand: true,
             x_align: Clutter.ActorAlign.END});
         activityHeading.add_child(this._activityMeta);
         activity.add_child(activityHeading);
-        this._activityGraph = new St.DrawingArea({style_class: 'isle-router-chart', x_expand: true, y_expand: true,
+        this._activityGraph = new St.DrawingArea({style_class: 'notchfolk-router-chart', x_expand: true, y_expand: true,
             accessible_name: 'Token activity for recent requests'});
         this._activityGraph.connect('repaint', area => this._paintActivity(area));
         activity.add_child(this._activityGraph);
-        const topModel = new St.BoxLayout({style_class: 'isle-router-top-model'});
-        topModel.add_child(label('TOP', 'isle-router-top-tag'));
-        this._topModel = label('No model activity', 'isle-router-top-name', {x_expand: true});
+        const topModel = new St.BoxLayout({style_class: 'notchfolk-router-top-model'});
+        topModel.add_child(label('TOP', 'notchfolk-router-top-tag'));
+        this._topModel = label('No model activity', 'notchfolk-router-top-name', {x_expand: true});
         this._topModel.clutter_text.ellipsize = Pango.EllipsizeMode.END;
         topModel.add_child(this._topModel);
         activity.add_child(topModel);
         content.add_child(activity);
 
-        this._recent = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-section isle-router-recent',
+        this._recent = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-router-section notchfolk-router-recent',
             x_expand: true, y_expand: true});
-        const recentHeading = new St.BoxLayout({style_class: 'isle-router-section-heading'});
-        recentHeading.add_child(label('Recent requests', 'isle-router-section-title'));
-        this._recentMeta = label('', 'isle-router-activity-meta', {x_expand: true,
+        const recentHeading = new St.BoxLayout({style_class: 'notchfolk-router-section-heading'});
+        recentHeading.add_child(label('Recent requests', 'notchfolk-router-section-title'));
+        this._recentMeta = label('', 'notchfolk-router-activity-meta', {x_expand: true,
             x_align: Clutter.ActorAlign.END});
         recentHeading.add_child(this._recentMeta);
         this._recent.add_child(recentHeading);
         this._recentScroll = new St.ScrollView({
-            style_class: 'isle-router-recent-scroll',
+            style_class: 'notchfolk-router-recent-scroll',
             accessible_name: 'Recent Router requests',
             hscrollbar_policy: St.PolicyType.NEVER,
             vscrollbar_policy: St.PolicyType.NEVER,
             x_expand: true,
             y_expand: true,
         });
-        this._recentList = new St.BoxLayout({...VERTICAL, style_class: 'isle-router-request-list', x_expand: true});
+        this._recentList = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-router-request-list', x_expand: true});
         this._recentScroll.set_child(this._recentList);
         this._recent.add_child(this._recentScroll);
         content.add_child(this._recent);
@@ -165,7 +165,7 @@ class RouterPage extends Page {
         this._update();
     }
 
-    /** As isled last read it. */
+    /** As notchfolkd last read it. */
     get _router() {
         return this.daemon.state.router;
     }
@@ -175,7 +175,7 @@ class RouterPage extends Page {
         return this._settings.get_boolean('router-enabled');
     }
 
-    /** Has isled poll while the page is on screen. */
+    /** Has notchfolkd poll while the page is on screen. */
     onActivate() {
         this.daemon.attemptQuietly('router', 'SetWatching', true);
         this.daemon.attemptQuietly('router', 'Refresh');
@@ -232,8 +232,8 @@ class RouterPage extends Page {
         const statusClass = connected ? 'connected' : ['unauthorized', 'outdated'].includes(router?.status)
             ? 'error' : ['needs-local-setup', 'needs-credentials', 'needs-configuration', 'keyring-unavailable', 'https-required']
                 .includes(router?.status) ? 'setup' : 'offline';
-        this._statusLine.set_style_class_name(`isle-router-status ${statusClass}`);
-        this._statusDot.set_style_class_name(`isle-router-status-dot ${statusClass}${stats.active ? ' busy' : ''}`);
+        this._statusLine.set_style_class_name(`notchfolk-router-status ${statusClass}`);
+        this._statusDot.set_style_class_name(`notchfolk-router-status-dot ${statusClass}${stats.active ? ' busy' : ''}`);
         this._activitySamples = connected ? (stats.recent ?? []).slice(0, 10).reverse()
             .map(request => Math.max(0, Number(request.prompt_tokens ?? 0) + Number(request.completion_tokens ?? 0))) : [];
         this._activityMeta.text = stats.active ? `${stats.active} live` : this._activitySamples.length
@@ -374,25 +374,25 @@ class RouterPage extends Page {
     _buildRecent(recent) {
         this._recentList.destroy_all_children();
         if (!recent.length) {
-            this._recentList.add_child(label('No requests in this period', 'isle-router-empty'));
+            this._recentList.add_child(label('No requests in this period', 'notchfolk-router-empty'));
             return;
         }
         for (const request of recent.slice(0, RECENT_REQUESTS)) {
-            const row = new St.BoxLayout({style_class: `isle-router-request${request.ok ? '' : ' error'}`,
+            const row = new St.BoxLayout({style_class: `notchfolk-router-request${request.ok ? '' : ' error'}`,
                 x_expand: true});
-            const name = label(displayModel(request.model), 'isle-router-request-model', {x_expand: true,
+            const name = label(displayModel(request.model), 'notchfolk-router-request-model', {x_expand: true,
                 accessible_name: request.model});
             name.clutter_text.ellipsize = Pango.EllipsizeMode.END;
             name.tooltip_text = request.model;
             row.add_child(name);
             const flow = label(`${tokens(request.prompt_tokens)} → ${tokens(request.completion_tokens)}`,
-                'isle-router-request-tokens', {accessible_name: `${tokens(request.prompt_tokens)} input tokens, ${tokens(request.completion_tokens)} output tokens`});
+                'notchfolk-router-request-tokens', {accessible_name: `${tokens(request.prompt_tokens)} input tokens, ${tokens(request.completion_tokens)} output tokens`});
             row.add_child(flow);
-            const result = new St.BoxLayout({style_class: 'isle-router-request-result'});
-            result.add_child(new St.Widget({style_class: `isle-router-result-dot${request.ok ? '' : ' error'}`}));
-            result.add_child(label(request.ok ? 'OK' : 'ERR', 'isle-router-request-state'));
+            const result = new St.BoxLayout({style_class: 'notchfolk-router-request-result'});
+            result.add_child(new St.Widget({style_class: `notchfolk-router-result-dot${request.ok ? '' : ' error'}`}));
+            result.add_child(label(request.ok ? 'OK' : 'ERR', 'notchfolk-router-request-state'));
             row.add_child(result);
-            row.add_child(label(request.at_ms ? ago(request.at_ms) : '—', 'isle-router-request-time'));
+            row.add_child(label(request.at_ms ? ago(request.at_ms) : '—', 'notchfolk-router-request-time'));
             this._recentList.add_child(row);
         }
     }

@@ -1,4 +1,4 @@
-# isle-whisper builds whisper.cpp's ggml, which whisper-rs-sys configures from GGML_* variables.
+# notchfolk-whisper builds whisper.cpp's ggml, which whisper-rs-sys configures from GGML_* variables.
 # Not for this computer's processor alone (GGML_NATIVE), so a release runs on any x86-64 with
 # AVX2 and FMA; set GGML_NATIVE=ON in the environment to tune a build for your own.
 [env]

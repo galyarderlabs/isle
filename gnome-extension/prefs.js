@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// Isle's Settings window: GSettings for the island and the assistant, plus what isled keeps itself
+// Notchfolk's Settings window: GSettings for the island and the assistant, plus what notchfolkd keeps itself
 // (timer lengths, clipboard history, AI models), over D-Bus.
 
 import Adw from 'gi://Adw';
@@ -20,18 +20,18 @@ import {Bot, COLORS, SHAPES, paletteFor} from './src/bot.js';
 import {paintRim} from './src/glow.js';
 import * as WorldClocks from './src/worldClocks.js';
 
-const DAEMON = 'io.github.zickrian.isle.Daemon';
-const DAEMON_PATH = '/io/github/zickrian/isle/Daemon';
-const POMODORO_INTERFACE = 'io.github.zickrian.isle.Pomodoro1';
-const CLIPBOARD_INTERFACE = 'io.github.zickrian.isle.Clipboard1';
-const AGENTS_INTERFACE = 'io.github.zickrian.isle.Agents1';
-const ASSISTANT_INTERFACE = 'io.github.zickrian.isle.Assistant1';
-const ROUTER_INTERFACE = 'io.github.zickrian.isle.Router1';
+const DAEMON = 'io.galyarderlabs.notchfolk.Daemon';
+const DAEMON_PATH = '/io/galyarderlabs/notchfolk/Daemon';
+const POMODORO_INTERFACE = 'io.galyarderlabs.notchfolk.Pomodoro1';
+const CLIPBOARD_INTERFACE = 'io.galyarderlabs.notchfolk.Clipboard1';
+const AGENTS_INTERFACE = 'io.galyarderlabs.notchfolk.Agents1';
+const ASSISTANT_INTERFACE = 'io.galyarderlabs.notchfolk.Assistant1';
+const ROUTER_INTERFACE = 'io.galyarderlabs.notchfolk.Router1';
 /** Edits to the timer are sent once typing pauses for this long. */
 const SAVE_DELAY_MS = 400;
 
 // Runs in a process of its own when Settings opens, never inside GNOME Shell.
-export default class IslePreferences extends ExtensionPreferences {
+export default class NotchfolkPreferences extends ExtensionPreferences {
     // Island, Clipboard, Timer, Assistant, AI Usage and About, in that order.
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
@@ -65,7 +65,7 @@ export default class IslePreferences extends ExtensionPreferences {
     // The version, where to get help, a bug report to paste, and a way back to the defaults.
     _aboutPage(settings, window) {
         const page = new Adw.PreferencesPage({title: 'About', name: 'about', icon_name: 'help-about-symbolic'});
-        const about = new Adw.PreferencesGroup({title: `Isle ${this.metadata['version-name'] ?? ''}`.trim(),
+        const about = new Adw.PreferencesGroup({title: `Notchfolk ${this.metadata['version-name'] ?? ''}`.trim(),
             description: 'A notch-style island for GNOME. © 2026 zickrian, free software under the GPL.'});
         const link = (title, subtitle, url) => {
             const row = new Adw.ActionRow({title, subtitle, activatable: true});
@@ -73,11 +73,11 @@ export default class IslePreferences extends ExtensionPreferences {
             row.connect('activated', () => new Gtk.UriLauncher({uri: url}).launch(window, null, null));
             return row;
         };
-        // Whether a newer Isle is out, as isled last found, and the switch for asking.
+        // Whether a newer Notchfolk is out, as notchfolkd last found, and the switch for asking.
         for (const row of updateRows(settings, window, this.metadata['version-name'] ?? '', this.path))
             about.add(row);
-        about.add(link('Website', 'Features, installing and updating', 'https://github.com/zickrian/isle'));
-        about.add(link('Report a problem', 'On GitHub; paste the report below in it', 'https://github.com/zickrian/isle/issues/new/choose'));
+        about.add(link('Website', 'Features, installing and updating', 'https://github.com/galyarderlabs/notchfolk'));
+        about.add(link('Report a problem', 'On GitHub; paste the report below in it', 'https://github.com/galyarderlabs/notchfolk/issues/new/choose'));
         const report = new Adw.ActionRow({title: 'Copy a bug report', subtitle: 'What’s installed, what works, and recent activity, ready to paste into a report',
             activatable: true});
         report.add_suffix(new Gtk.Image({icon_name: 'edit-copy-symbolic'}));
@@ -86,18 +86,18 @@ export default class IslePreferences extends ExtensionPreferences {
         page.add(about);
 
         const reset = new Adw.PreferencesGroup({title: 'Settings'});
-        const resetRow = new Adw.ActionRow({title: 'Reset all settings', subtitle: 'Back to how Isle came; your data stays',
+        const resetRow = new Adw.ActionRow({title: 'Reset all settings', subtitle: 'Back to how Notchfolk came; your data stays',
             activatable: true});
         resetRow.connect('activated', () => confirm(window, {
-            heading: 'Reset all of Isle’s settings?',
+            heading: 'Reset all of Notchfolk’s settings?',
             body: 'Every option goes back to its default. Your tasks, events, clipboard history and files stay.',
             action: 'Reset',
         }, () => {
-            // Not Isle's state: which update was announced, the page asked for, and a focus session's Do Not Disturb.
+            // Not Notchfolk's state: which update was announced, the page asked for, and a focus session's Do Not Disturb.
             const state = ['update-shown', 'prefs-page', 'focus-dnd-owned', 'focus-dnd-declined'];
             for (const key of settings.settings_schema.list_keys().filter(key => !state.includes(key)))
                 settings.reset(key);
-            // The timer's lengths, kept by isled: an empty config is its defaults.
+            // The timer's lengths, kept by notchfolkd: an empty config is its defaults.
             Gio.DBus.session.call(DAEMON, DAEMON_PATH, POMODORO_INTERFACE, 'SetConfig', new GLib.Variant('(s)', ['{}']),
                 null, Gio.DBusCallFlags.NONE, -1, null, null);
         }));
@@ -150,7 +150,7 @@ export default class IslePreferences extends ExtensionPreferences {
             const agentGroup = new Adw.PreferencesGroup({
                 title: 'AI Agents',
                 description: 'Answer your coding agents from the island when they ask, and know when they are done. ' +
-                    'On by default; off, Isle stops getting that agent\'s alerts.',
+                    'On by default; off, Notchfolk stops getting that agent\'s alerts.',
             });
             for (const {provider, title, subtitle} of agents) {
                 agentGroup.add(switchRow(settings, `agent-alerts-${provider}`, title, subtitle));
@@ -186,7 +186,7 @@ export default class IslePreferences extends ExtensionPreferences {
         base.connect('destroy', () => settings.disconnect(urlChanged));
         group.add(base);
         const auth = choiceRow(settings, 'router-auth', 'Remote mode',
-            'Choose how Isle authenticates to the remote server.', [
+            'Choose how Notchfolk authenticates to the remote server.', [
             ['password', 'Dashboard password'],
             ['proxy', 'Compatible proxy · API key'],
         ]);
@@ -210,7 +210,7 @@ export default class IslePreferences extends ExtensionPreferences {
                         saved.subtitle = exists ? 'Saved in GNOME Keyring on this computer' : 'Not saved';
                         remove.visible = exists;
                     } catch {
-                        saved.subtitle = 'Isle’s background service is unavailable';
+                        saved.subtitle = 'Notchfolk’s background service is unavailable';
                         remove.visible = false;
                     }
                 });
@@ -281,18 +281,18 @@ export default class IslePreferences extends ExtensionPreferences {
                 return 'Connected, but the proxy returned unsupported usage data';
             return 'Off';
         };
-        // isled's Router1 State property, read now and again as the settings that drive it change;
-        // isled itself polls only while the island shows the chip or the page.
+        // notchfolkd's Router1 State property, read now and again as the settings that drive it change;
+        // notchfolkd itself polls only while the island shows the chip or the page.
         const read = () => {
             let reply;
             try {
                 reply = Gio.DBus.session.call_sync(DAEMON, DAEMON_PATH,
                     'org.freedesktop.DBus.Properties', 'Get',
-                    new GLib.Variant('(ss)', ['io.github.zickrian.isle.Router1', 'State']),
+                    new GLib.Variant('(ss)', ['io.galyarderlabs.notchfolk.Router1', 'State']),
                     new GLib.VariantType('(v)'), Gio.DBusCallFlags.NONE, -1, null);
             } catch {
                 status.subtitle = settings.get_boolean('router-enabled')
-                    ? 'Isle background service is unavailable' : 'Off';
+                    ? 'Notchfolk background service is unavailable' : 'Off';
                 return;
             }
             try {
@@ -336,18 +336,18 @@ export default class IslePreferences extends ExtensionPreferences {
         return page;
     }
 
-    // The external MCP server: keys for AI agents outside Isle, and its service.
+    // The external MCP server: keys for AI agents outside Notchfolk, and its service.
     _mcpPage() {
         const page = new Adw.PreferencesPage({title: 'MCP', icon_name: 'application-x-executable-symbolic'});
         const group = new Adw.PreferencesGroup({
             title: 'External AI agents',
-            description: 'Isle\'s optional MCP server lets AI agents outside Isle (Claude Code, Codex, ' +
-                'Antigravity) use Isle\'s data and actions. Each agent gets its own key and scopes. ' +
+            description: 'Notchfolk\'s optional MCP server lets AI agents outside Notchfolk (Claude Code, Codex, ' +
+                'Antigravity) use Notchfolk\'s data and actions. Each agent gets its own key and scopes. ' +
                 'See docs/mcp.md for the endpoint, scopes and write allowlists.',
         });
         page.add(group);
 
-        const clientsPath = () => GLib.build_filenamev([GLib.get_user_config_dir(), 'isle', 'mcp-clients.json']);
+        const clientsPath = () => GLib.build_filenamev([GLib.get_user_config_dir(), 'notchfolk', 'mcp-clients.json']);
         const readClients = () => {
             try {
                 const [, bytes] = GLib.file_get_contents(clientsPath());
@@ -406,14 +406,14 @@ export default class IslePreferences extends ExtensionPreferences {
         const status = new Adw.ActionRow({title: 'Service', subtitle: 'Not checked yet'});
         const statusSync = () => {
             try {
-                const subprocess = Gio.Subprocess.new(['systemctl', '--user', 'is-active', 'isle-mcp.service'],
+                const subprocess = Gio.Subprocess.new(['systemctl', '--user', 'is-active', 'notchfolk-mcp.service'],
                     Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE);
                 subprocess.communicate_utf8_async(null, null, (sub, result) => {
                     const active = sub.get_successful() &&
                         sub.communicate_utf8_finish(result)[1].trim() === 'active';
                     status.subtitle = active
                         ? 'Running on http://127.0.0.1:8765/mcp'
-                        : 'Not running. Turn it on with: systemctl --user enable --now isle-mcp.service';
+                        : 'Not running. Turn it on with: systemctl --user enable --now notchfolk-mcp.service';
                 });
             } catch {
                 status.subtitle = 'Status unknown: systemctl is not available.';
@@ -423,7 +423,7 @@ export default class IslePreferences extends ExtensionPreferences {
         const restart = new Gtk.Button({label: 'Restart', valign: Gtk.Align.CENTER});
         restart.connect('clicked', () => {
             try {
-                Gio.Subprocess.new(['systemctl', '--user', 'restart', 'isle-mcp.service'],
+                Gio.Subprocess.new(['systemctl', '--user', 'restart', 'notchfolk-mcp.service'],
                     Gio.SubprocessFlags.NONE);
             } catch { }
             GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => { statusSync(); return false; });
@@ -465,7 +465,7 @@ export default class IslePreferences extends ExtensionPreferences {
         const name = new Adw.EntryRow({title: 'New client name'});
         const access = new Adw.PreferencesGroup({title: 'Access scopes',
             description: 'Choose what this key can read or request to change.'});
-        const readAccess = new Adw.ExpanderRow({title: 'Read access', subtitle: 'All Isle data, read only', expanded: true});
+        const readAccess = new Adw.ExpanderRow({title: 'Read access', subtitle: 'All Notchfolk data, read only', expanded: true});
         const allRead = new Adw.SwitchRow({title: 'All read-only data'});
         allRead.active = true;
         readAccess.add_row(allRead);
@@ -484,7 +484,7 @@ export default class IslePreferences extends ExtensionPreferences {
             const selectedReads = allRead.active
                 ? readScopes.length : readRows.filter(([, row]) => row.active).length;
             const selectedWrites = writeRows.filter(([, row]) => row.active).length;
-            readAccess.subtitle = allRead.active ? 'All Isle data, read only'
+            readAccess.subtitle = allRead.active ? 'All Notchfolk data, read only'
                 : selectedReads ? `${selectedReads} data ${selectedReads === 1 ? 'area' : 'areas'}` : 'None selected';
             writeAccess.subtitle = selectedWrites
                 ? `${selectedWrites} action ${selectedWrites === 1 ? 'area' : 'areas'}`
@@ -555,7 +555,7 @@ export default class IslePreferences extends ExtensionPreferences {
                 } catch (error) {
                     copy.label = 'Copy failed';
                     copy.set_tooltip_text(error.message);
-                    console.warn(`Isle: could not copy MCP key: ${error.message}`);
+                    console.warn(`Notchfolk: could not copy MCP key: ${error.message}`);
                 }
             });
             shown.add_suffix(copy);
@@ -570,11 +570,11 @@ export default class IslePreferences extends ExtensionPreferences {
         page.add(shownGroup);
 
         const tunnel = new Adw.PreferencesGroup({title: 'Remote access',
-            description: 'Expose Isle through an outbound Cloudflare Tunnel. Use a hostname in your Cloudflare zone; ' +
+            description: 'Expose Notchfolk through an outbound Cloudflare Tunnel. Use a hostname in your Cloudflare zone; ' +
                 'mcp.example.com is recommended, though example.com also works if its DNS name is free. Enter only the ' +
                 'hostname, without https:// or /mcp. Create a client key first; Set up creates the DNS record and starts ' +
-                'the tunnel. ChatGPT uses OAuth and asks for this key on Isle’s sign-in page; other clients can use it as a Bearer key. ' +
-                'For a temporary URL, run \u201cisle-mcp-tunnel run\u201d in a terminal.'});
+                'the tunnel. ChatGPT uses OAuth and asks for this key on Notchfolk’s sign-in page; other clients can use it as a Bearer key. ' +
+                'For a temporary URL, run \u201cnotchfolk-mcp-tunnel run\u201d in a terminal.'});
         const domain = new Adw.EntryRow({title: 'Public hostname (e.g. mcp.example.com)'});
         domain.set_tooltip_text('A hostname in a Cloudflare zone you own. A dedicated subdomain is recommended.');
         const setupStatus = new Adw.ActionRow({title: 'Domain setup',
@@ -592,22 +592,22 @@ export default class IslePreferences extends ExtensionPreferences {
             domain.remove_css_class('error');
             setup.sensitive = false;
             setupStatus.subtitle = `Setting up ${hostname}… (the browser opens once for the Cloudflare login)`;
-            const subprocess = Gio.Subprocess.new(['isle-mcp-tunnel', 'setup', hostname],
+            const subprocess = Gio.Subprocess.new(['notchfolk-mcp-tunnel', 'setup', hostname],
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
             subprocess.communicate_utf8_async(null, null, (sub, result) => {
                 const [, out, err] = sub.communicate_utf8_finish(result);
                 setup.sensitive = true;
                 const text = `${out ?? ''}${err ?? ''}`.trim();
                 setupStatus.subtitle = sub.get_successful()
-                    ? `Running: ChatGPT uses OAuth at https://${hostname}/mcp; enter an Isle key on the sign-in page.`
-                    : `Setup failed: ${text.split('\n').at(-1) ?? 'see journalctl --user -u isle-mcp-tunnel'}`;
+                    ? `Running: ChatGPT uses OAuth at https://${hostname}/mcp; enter an Notchfolk key on the sign-in page.`
+                    : `Setup failed: ${text.split('\n').at(-1) ?? 'see journalctl --user -u notchfolk-mcp-tunnel'}`;
             });
         });
         domain.add_suffix(setup);
         const stopTunnel = new Gtk.Button({label: 'Stop tunnel', valign: Gtk.Align.CENTER});
         stopTunnel.connect('clicked', () => {
             try {
-                Gio.Subprocess.new(['systemctl', '--user', 'disable', '--now', 'isle-mcp-tunnel.service'],
+                Gio.Subprocess.new(['systemctl', '--user', 'disable', '--now', 'notchfolk-mcp-tunnel.service'],
                     Gio.SubprocessFlags.NONE);
                 setupStatus.subtitle = 'Tunnel stopped; the domain no longer reaches this machine.';
             } catch { }
@@ -626,20 +626,20 @@ export default class IslePreferences extends ExtensionPreferences {
         const group = new Adw.PreferencesGroup({
             title: 'Voice Assistant',
             description: 'Press the shortcut (or the ✦ in the open island) and speak. Speech is recognised on this ' +
-                'computer (set up once with isle-setup-voice in a terminal); the request goes to the AI you pick, with your ' +
+                'computer (set up once with notchfolk-setup-voice in a terminal); the request goes to the AI you pick, with your ' +
                 'own sign-in and plan, Hermes local API, OMP’s configured provider, or a compatible endpoint.',
         });
         group.add(switchRow(settings, 'voice-assistant', 'AI Assistant',
-            'The shortcut and the ✦ in the open island. Off: Isle never asks an AI'));
+            'The shortcut and the ✦ in the open island. Off: Notchfolk never asks an AI'));
         const shortcut = shortcutRow(settings, 'voice-shortcut', 'Shortcut', 'Opens the assistant and listens');
         settings.bind('voice-assistant', shortcut, 'sensitive', Gio.SettingsBindFlags.GET);
         group.add(shortcut);
 
-        // Automatic is the first signed in, else the first installed: as isled picks (brain.rs `pick`).
+        // Automatic is the first signed in, else the first installed: as notchfolkd picks (brain.rs `pick`).
         const automatic = installed.find(p => signedIn(p.id)) ?? installed[0];
         // Only the AIs installed here are offered; with none, the assistant says how to get one.
         const provider = choiceRow(settings, 'voice-provider', 'AI', installed.length
-            ? 'Answers with your own sign-in; Isle runs its actions'
+            ? 'Answers with your own sign-in; Notchfolk runs its actions'
             : 'Install an assistant CLI, enable Hermes API, or configure an OpenAI-compatible endpoint', [
             ['auto', automatic ? `Automatic (${automatic.name})` : 'None installed'],
             ...installed.map(({id, name}) => [id, name]),
@@ -670,7 +670,7 @@ export default class IslePreferences extends ExtensionPreferences {
                 syncing = false;
             }
         };
-        // Each AI's plan and the models it allows, as isled last found them (`Assistant1.Models`).
+        // Each AI's plan and the models it allows, as notchfolkd last found them (`Assistant1.Models`).
         const catalog = new ModelCatalog(settings);
         const fillModel = () => {
             const wanted = settings.get_string('voice-provider');
@@ -686,7 +686,7 @@ export default class IslePreferences extends ExtensionPreferences {
             if (customModel && modelId.text !== settings.get_string(modelKey))
                 modelId.text = settings.get_string(modelKey);
             const value = settings.get_string(modelKey);
-            // Only what the plan allows; until isled has asked, just the AI's own default.
+            // Only what the plan allows; until notchfolkd has asked, just the AI's own default.
             const def = entry?.default_name ? `Default (${entry.default_name})` : `${current.name}’s default`;
             const fromCatalog = [['', def], ...(entry?.models ?? []).map(({id, name}) => [id, name])];
             modelChoices = entry ? fromCatalog : current.models?.() ?? fromCatalog;
@@ -781,10 +781,10 @@ export default class IslePreferences extends ExtensionPreferences {
         });
 
         // Hermes usually lives on this computer; these two let it live elsewhere instead
-        // (a VPS on a tailnet): they override the endpoint and key with what ~/.config/isle/ai.env
+        // (a VPS on a tailnet): they override the endpoint and key with what ~/.config/notchfolk/ai.env
         // holds, the same private file the OpenAI-compatible API uses.
         const hermesUrl = new Adw.EntryRow({title: 'Hermes endpoint (empty = http://127.0.0.1:8642/v1)',
-            text: aiEnvValue('ISLE_HERMES_URL')});
+            text: aiEnvValue('NOTCHFOLK_HERMES_URL')});
         // A password row keeps the key off the screen; its eye toggle shows it while held. The peek
         // icon is PasswordEntryRow's own (libadwaita 1.2); on older ones a plain eye button does it.
         const hermesKey = new Adw.PasswordEntryRow({title: 'Hermes API key (only for a Hermes elsewhere)',
@@ -800,7 +800,7 @@ export default class IslePreferences extends ExtensionPreferences {
             });
             hermesKey.add_suffix(eye);
         }
-        for (const [row, name] of [[hermesUrl, 'ISLE_HERMES_URL'], [hermesKey, 'HERMES_API_KEY']]) {
+        for (const [row, name] of [[hermesUrl, 'NOTCHFOLK_HERMES_URL'], [hermesKey, 'HERMES_API_KEY']]) {
             row.visible = false;
             row.connect('changed', () => saveAiEnvValue(name, row.text.trim()));
         }
@@ -857,8 +857,8 @@ export default class IslePreferences extends ExtensionPreferences {
             title: 'About the AIs',
             description: 'Claude Code and Codex answer within your Claude or ChatGPT plan\'s limits; opencode with ' +
                 'the providers you signed in to in opencode. Antigravity\'s terms bar third-party tools from its ' +
-                'service; Isle only runs the official agy app, but use it at your own risk. Each is kept to ' +
-                'answering: commands and file changes go through Isle, which asks you first.',
+                'service; Notchfolk only runs the official agy app, but use it at your own risk. Each is kept to ' +
+                'answering: commands and file changes go through Notchfolk, which asks you first.',
         });
         page.add(notes);
         return page;
@@ -876,7 +876,7 @@ export default class IslePreferences extends ExtensionPreferences {
             'Text, links, images and files you copy. Passwords from password managers are never kept.');
         history.add(keep);
         const superV = choiceRow(settings, 'super-v', 'Super+V', 'GNOME’s calendar shortcut', [
-            ['isle', 'Isle’s clipboard history'],
+            ['notchfolk', 'Notchfolk’s clipboard history'],
             ['gnome', 'GNOME’s calendar and notifications'],
         ]);
         history.add(superV);
@@ -1029,7 +1029,7 @@ export default class IslePreferences extends ExtensionPreferences {
         return page;
     }
 
-    // Lengths live in isled, so this page needs it running; changes are saved as typing pauses.
+    // Lengths live in notchfolkd, so this page needs it running; changes are saved as typing pauses.
     _timerPage(settings, window) {
         const page = new Adw.PreferencesPage({title: 'Timer', icon_name: 'alarm-symbolic'});
         const focus = new Adw.PreferencesGroup({title: 'While Focusing'});
@@ -1049,12 +1049,12 @@ export default class IslePreferences extends ExtensionPreferences {
                 null, DAEMON, DAEMON_PATH, POMODORO_INTERFACE, null);
             config = JSON.parse(proxy.get_cached_property('Config')?.unpack() ?? 'null');
         } catch (e) {
-            console.warn(`Isle: could not read the timer settings: ${e.message}`);
+            console.warn(`Notchfolk: could not read the timer settings: ${e.message}`);
         }
         if (!config) {
             group.add(new Adw.ActionRow({
                 title: 'The timer settings aren’t available right now',
-                subtitle: 'Isle isn’t running in the background. Log out and back in, or install Isle again.',
+                subtitle: 'Notchfolk isn’t running in the background. Log out and back in, or install Notchfolk again.',
             }));
             return page;
         }
@@ -1080,11 +1080,11 @@ export default class IslePreferences extends ExtensionPreferences {
                 proxy.call_sync('SetConfig', new GLib.Variant('(s)', [JSON.stringify(config)]),
                     Gio.DBusCallFlags.NONE, -1, null);
             } catch (e) {
-                console.warn(`Isle: could not save the timer settings: ${e.message}`);
+                console.warn(`Notchfolk: could not save the timer settings: ${e.message}`);
             }
             return false;
         });
-        // Each row, by its key, with the property it shows: set anew when isled's config changes.
+        // Each row, by its key, with the property it shows: set anew when notchfolkd's config changes.
         const rows = [];
         const number = (key, title, min, max) => {
             const row = Adw.SpinRow.new_with_range(min, max, 1);
@@ -1348,7 +1348,7 @@ function lookGroup(settings) {
     return group;
 }
 
-/** The AI agents isled found installed: `{provider, title, subtitle}` each. */
+/** The AI agents notchfolkd found installed: `{provider, title, subtitle}` each. */
 function agentsFound() {
     let agents = {};
     try {
@@ -1356,11 +1356,11 @@ function agentsFound() {
             null, DAEMON, DAEMON_PATH, AGENTS_INTERFACE, null);
         agents = JSON.parse(proxy.get_cached_property('Agents')?.unpack() ?? '{}');
     } catch (e) {
-        console.warn(`Isle: could not ask which AI agents are installed: ${e.message}`);
+        console.warn(`Notchfolk: could not ask which AI agents are installed: ${e.message}`);
     }
     return [
         {provider: 'claude', title: 'Claude Code', subtitle: 'Allow, deny or always allow, and when it is done'},
-        {provider: 'codex', title: 'Codex', subtitle: 'Allow or deny, and when it is done · in Codex, type /hooks once and allow Isle'},
+        {provider: 'codex', title: 'Codex', subtitle: 'Allow or deny, and when it is done · in Codex, type /hooks once and allow Notchfolk'},
     ].filter(({provider}) => agents[provider]?.found);
 }
 
@@ -1533,7 +1533,7 @@ function pagesGroup(settings, window) {
         'Gateway usage; configure the connection on the Router settings page');
     router.add_prefix(new Gtk.Image({icon_name: 'network-transmit-receive-symbolic'}));
     group.add(router);
-    // Not a page but the ✦ beside the tabs: turning it off is how to use Isle without any AI.
+    // Not a page but the ✦ beside the tabs: turning it off is how to use Notchfolk without any AI.
     const assistant = switchRow(settings, 'voice-assistant', 'AI Assistant', 'The ✦ in the open island and its shortcut');
     assistant.add_prefix(new Gtk.Image({icon_name: 'audio-input-microphone-symbolic'}));
     group.add(assistant);
@@ -1634,7 +1634,7 @@ function worldClocksGroup(settings, window) {
     group.add(add);
     settings.bind('world-clocks', add, 'sensitive', Gio.SettingsBindFlags.GET);
     const changed = shell.connect('changed::locations', refresh);
-    // Isle's 12/24-hour setting changed: the times again now, not at the next minute.
+    // Notchfolk's 12/24-hour setting changed: the times again now, not at the next minute.
     const clockChanged = settings.connect('changed::clock-format', () => ticks.forEach(tick => tick()));
     // At each minute's turn by the clock, so a suspend or a changed clock is caught up at the next.
     let timer = 0;
@@ -1697,7 +1697,7 @@ function weatherGroup(settings, window) {
     return group;
 }
 
-/** Whether times show with a 12-hour clock: as Isle's Clock setting says, else as GNOME's clock. */
+/** Whether times show with a 12-hour clock: as Notchfolk's Clock setting says, else as GNOME's clock. */
 function useTwelveHour(settings) {
     const format = settings.get_string('clock-format');
     if (format !== 'system')
@@ -1747,7 +1747,7 @@ function chooseCity(window, onPick, title = 'Add a City') {
     dialog.present(window);
 }
 
-/** The AI CLIs the voice assistant can ask, in the order "Automatic" tries them, signed-in ones first (as isled does). */
+/** The AI CLIs the voice assistant can ask, in the order "Automatic" tries them, signed-in ones first (as notchfolkd does). */
 const AI_PROVIDERS = [
     {id: 'claude', name: 'Claude Code', planName: 'Claude', command: 'claude', modelKey: 'voice-claude-model',
         about: 'what Claude answers with'},
@@ -1757,13 +1757,13 @@ const AI_PROVIDERS = [
         about: 'what Grok answers with, quickly'},
     {id: 'hermes', name: 'Hermes Agent', command: '', modelKey: 'voice-hermes-model',
         available: () => signedIn('hermes'),
-        about: 'Hermes keeps its own personality and memory; Isle adds its desktop instructions. A Hermes elsewhere: its endpoint and key below',
+        about: 'Hermes keeps its own personality and memory; Notchfolk adds its desktop instructions. A Hermes elsewhere: its endpoint and key below',
         models: () => [['', 'Hermes default'], ...apiModels('hermes')]},
     {id: 'openai-compatible', name: 'OpenAI-compatible API', command: '', modelKey: 'voice-openai-model',
-        available: () => signedIn('openai-compatible'), about: 'Store endpoint and API key in ~/.config/isle/ai.env (chmod 600)',
+        available: () => signedIn('openai-compatible'), about: 'Store endpoint and API key in ~/.config/notchfolk/ai.env (chmod 600)',
         models: () => apiModels('openai-compatible')},
     {id: 'oh-my-pi', name: 'Oh My Pi', command: 'omp', modelKey: 'voice-omp-model',
-        about: 'Oh My Pi coding agent, with its own provider settings and Isle desktop actions',
+        about: 'Oh My Pi coding agent, with its own provider settings and Notchfolk desktop actions',
         // OMP discovers a large provider catalog in its own CLI. Fetching that from Settings
         // synchronously can block this window for seconds; use OMP's default or a manual id.
         models: () => [['', 'Oh My Pi default']]},
@@ -1784,12 +1784,12 @@ function apiModels(provider) {
         const [models] = result.deep_unpack();
         return JSON.parse(models).map(id => [id, id]);
     } catch (e) {
-        console.warn(`Isle: could not list ${provider} models: ${e.message}`);
+        console.warn(`Notchfolk: could not list ${provider} models: ${e.message}`);
         return [];
     }
 }
 
-/** isled's `Models`: per AI `{plan, default, default_name, models: [{id, name}]}`, followed while Settings is open. */
+/** notchfolkd's `Models`: per AI `{plan, default, default_name, models: [{id, name}]}`, followed while Settings is open. */
 class ModelCatalog {
     /** Reads the property now and follows its changes. */
     constructor(settings) {
@@ -1809,17 +1809,17 @@ class ModelCatalog {
                 try {
                     this._set(conn.call_finish(result).deepUnpack()[0].deepUnpack());
                 } catch {
-                    // An isled from before 1.4 (or none): Settings offers only each AI's own default.
+                    // An notchfolkd from before 1.4 (or none): Settings offers only each AI's own default.
                     this._set('{}');
                 }
             });
-        // The plan may have changed since: isled asks again, and the list follows. With the assistant
-        // off Isle asks no AI, so only once it is turned on.
+        // The plan may have changed since: notchfolkd asks again, and the list follows. With the assistant
+        // off Notchfolk asks no AI, so only once it is turned on.
         this._assistantChanged = settings.connect('changed::voice-assistant', () => this._refresh());
         this._refresh();
     }
 
-    /** Has isled ask each AI again, only with the assistant on. */
+    /** Has notchfolkd ask each AI again, only with the assistant on. */
     _refresh() {
         if (this._settings.get_boolean('voice-assistant')) {
             Gio.DBus.session.call(DAEMON, DAEMON_PATH, ASSISTANT_INTERFACE, 'RefreshModels', null, null,
@@ -1827,7 +1827,7 @@ class ModelCatalog {
         }
     }
 
-    /** Whether isled answered (or isn't there to): no more waiting for it. */
+    /** Whether notchfolkd answered (or isn't there to): no more waiting for it. */
     get loaded() {
         return this._loaded ?? false;
     }
@@ -1876,7 +1876,7 @@ function grokHome() {
     return GLib.getenv('GROK_HOME') || GLib.build_filenamev([GLib.get_home_dir(), '.grok']);
 }
 
-/** Whether AI `id` has a sign-in, checked as isled does (brain.rs `signed_in`). */
+/** Whether AI `id` has a sign-in, checked as notchfolkd does (brain.rs `signed_in`). */
 function signedIn(id) {
     const exists = (...parts) => GLib.file_test(GLib.build_filenamev(parts), GLib.FileTest.EXISTS);
     const env = name => Boolean(GLib.getenv(name));
@@ -1901,7 +1901,7 @@ function signedIn(id) {
     case 'grok': {
         if (env('XAI_API_KEY'))
             return true;
-        // Match the token and user id isled accepts, rather than treating any auth file as a sign-in.
+        // Match the token and user id notchfolkd accepts, rather than treating any auth file as a sign-in.
         try {
             const [, bytes] = GLib.file_get_contents(GLib.build_filenamev([grokHome(), 'auth.json']));
             const auth = JSON.parse(new TextDecoder().decode(bytes)) ?? {};
@@ -1920,15 +1920,15 @@ function signedIn(id) {
             return false;
         }
     case 'openai-compatible':
-        return (env('ISLE_OPENAI_API_KEY') && env('ISLE_OPENAI_BASE_URL')) ||
-            exists(GLib.get_user_config_dir(), 'isle', 'ai.env');
+        return (env('NOTCHFOLK_OPENAI_API_KEY') && env('NOTCHFOLK_OPENAI_BASE_URL')) ||
+            exists(GLib.get_user_config_dir(), 'notchfolk', 'ai.env');
     case 'agy':
         return exists(GLib.get_home_dir(), '.gemini/antigravity-cli/antigravity-oauth-token') ||
             exists(GLib.get_home_dir(), '.gemini/jetski-standalone-oauth-token');
     case 'oh-my-pi':
         return Boolean(findProgram('omp'));
     case 'opencode': {
-        // As isled counts them: API keys and OAuth sign-ins, never an empty file.
+        // As notchfolkd counts them: API keys and OAuth sign-ins, never an empty file.
         try {
             const [, bytes] = GLib.file_get_contents(GLib.build_filenamev([GLib.get_user_data_dir(), 'opencode', 'auth.json']));
             const auth = JSON.parse(new TextDecoder().decode(bytes)) ?? {};
@@ -1942,8 +1942,8 @@ function signedIn(id) {
     }
 }
 
-/** `command` on the PATH or where installers and Node version managers put it, as isled looks; else null. */
-// The same places isled looks in (brain.rs `install_dirs`), for an AI installed with npm, nvm, Homebrew…
+/** `command` on the PATH or where installers and Node version managers put it, as notchfolkd looks; else null. */
+// The same places notchfolkd looks in (brain.rs `install_dirs`), for an AI installed with npm, nvm, Homebrew…
 function findProgram(command) {
     const home = GLib.get_home_dir();
     const env = (name, fallback) => GLib.getenv(name) || fallback;
@@ -1986,14 +1986,14 @@ function nvmBins(home) {
 }
 
 /** The AI providers signed in here, as rows to switch: Claude Code's sign-in, Codex's (or its logs), and Grok's. */
-// Where isled reads them (usage.rs): Claude Code's config dir, the user's Codex home and Isle's own.
+// Where notchfolkd reads them (usage.rs): Claude Code's config dir, the user's Codex home and Notchfolk's own.
 function usageProviders() {
     const providers = [];
-    // The plan's name is isled's (Settings → Assistant, the Usage page), as the apps name it.
+    // The plan's name is notchfolkd's (Settings → Assistant, the Usage page), as the apps name it.
     if (GLib.file_test(GLib.build_filenamev([claudeConfigDir(), '.credentials.json']), GLib.FileTest.EXISTS))
         providers.push({key: 'usage-claude', title: 'Claude', subtitle: 'Signed in with Claude Code'});
     const signedIn = GLib.file_test(GLib.build_filenamev([codexHome(), 'auth.json']), GLib.FileTest.EXISTS);
-    const sessions = [[codexHome(), 'sessions'], [GLib.get_user_data_dir(), 'isle', 'codex', 'sessions']];
+    const sessions = [[codexHome(), 'sessions'], [GLib.get_user_data_dir(), 'notchfolk', 'codex', 'sessions']];
     if (signedIn || sessions.some(dir => GLib.file_test(GLib.build_filenamev(dir), GLib.FileTest.IS_DIR)))
         providers.push({key: 'usage-codex', title: 'ChatGPT', subtitle: 'Signed in with Codex'});
     if (GLib.file_test(GLib.build_filenamev([grokHome(), 'auth.json']), GLib.FileTest.EXISTS))
@@ -2025,10 +2025,10 @@ function valueItem() {
 }
 
 /** A drop-down for a string key with `choices`: [[value, label], …]. */
-/** The value of `name` in ~/.config/isle/ai.env, the private file isled reads for API endpoints and keys. */
+/** The value of `name` in ~/.config/notchfolk/ai.env, the private file notchfolkd reads for API endpoints and keys. */
 function aiEnvValue(name) {
     try {
-        const [, bytes] = GLib.file_get_contents(GLib.build_filenamev([GLib.get_user_config_dir(), 'isle', 'ai.env']));
+        const [, bytes] = GLib.file_get_contents(GLib.build_filenamev([GLib.get_user_config_dir(), 'notchfolk', 'ai.env']));
         const found = new TextDecoder().decode(bytes)
             .split('\n').find(line => line.trim().startsWith(`${name}=`));
         return found ? found.trim().slice(name.length + 1) : '';
@@ -2037,9 +2037,9 @@ function aiEnvValue(name) {
     }
 }
 
-/** Keeps `name` in ~/.config/isle/ai.env (only this row's value; the rest stays as it is), mode 0600. */
+/** Keeps `name` in ~/.config/notchfolk/ai.env (only this row's value; the rest stays as it is), mode 0600. */
 function saveAiEnvValue(name, value) {
-    const dir = GLib.build_filenamev([GLib.get_user_config_dir(), 'isle']);
+    const dir = GLib.build_filenamev([GLib.get_user_config_dir(), 'notchfolk']);
     const path = GLib.build_filenamev([dir, 'ai.env']);
     const kept = [];
     try {
@@ -2162,24 +2162,24 @@ function confirm(window, {heading, body, action}, onYes) {
 }
 
 /** Where updating is explained, and the command that updates a one-line install. */
-const UPDATE_HELP = 'https://github.com/zickrian/isle/blob/main/docs/install.md#updating';
-const INSTALL_COMMAND = 'curl -fsSL https://raw.githubusercontent.com/zickrian/isle/main/get.sh | bash';
-const RELEASES = 'https://github.com/zickrian/isle/releases/latest';
+const UPDATE_HELP = 'https://github.com/galyarderlabs/notchfolk/blob/main/docs/install.md#updating';
+const INSTALL_COMMAND = 'curl -fsSL https://raw.githubusercontent.com/zickrian/notchfolk/main/get.sh | bash';
+const RELEASES = 'https://github.com/galyarderlabs/notchfolk/releases/latest';
 /** Installs version `$1` with that release's own get.sh (no sudo), appending to the log `$2`: first who runs
- * it ("isle-update-pid <pid> <boot id>"), last "isle-update-done <exit status>". */
+ * it ("notchfolk-update-pid <pid> <boot id>"), last "notchfolk-update-done <exit status>". */
 const UPDATE_SCRIPT = 'exec >>"$2" 2>&1 </dev/null; ' +
-    'echo "isle-update-pid $$ $(cat /proc/sys/kernel/random/boot_id 2>/dev/null)"; set -o pipefail; ' +
-    'curl -fsSL --retry 2 "https://raw.githubusercontent.com/zickrian/isle/v$1/get.sh" | ISLE_VERSION="$1" bash; ' +
-    'echo "isle-update-done $?"';
-/** The update's log; its first line names the version ("isle-update 1.5.0"). */
-const UPDATE_LOG = GLib.build_filenamev([GLib.get_user_cache_dir(), 'isle', 'update.log']);
+    'echo "notchfolk-update-pid $$ $(cat /proc/sys/kernel/random/boot_id 2>/dev/null)"; set -o pipefail; ' +
+    'curl -fsSL --retry 2 "https://raw.githubusercontent.com/zickrian/notchfolk/v$1/get.sh" | NOTCHFOLK_VERSION="$1" bash; ' +
+    'echo "notchfolk-update-done $?"';
+/** The update's log; its first line names the version ("notchfolk-update 1.5.0"). */
+const UPDATE_LOG = GLib.build_filenamev([GLib.get_user_cache_dir(), 'notchfolk', 'update.log']);
 /** Longest a started update may take to say who runs it before it counts as never started. */
 const UPDATE_START_US = 60 * 1000000;
 /** What the installer's output may say about its session; the rest of Settings' own environment is not passed. */
 const UPDATE_ENV = ['PATH', 'HOME', 'LANG', 'DBUS_SESSION_BUS_ADDRESS', 'XDG_RUNTIME_DIR', 'XDG_DATA_DIRS',
     'XDG_SESSION_TYPE', 'XDG_CURRENT_DESKTOP'];
 
-/** Whether version `a` ("1.3.0") is newer than `b`, number by number (as isled's updates.rs). */
+/** Whether version `a` ("1.3.0") is newer than `b`, number by number (as notchfolkd's updates.rs). */
 function isNewer(a, b) {
     const parts = v => v.split('.').map(part => parseInt(part, 10) || 0);
     const [x, y] = [parts(a), parts(b)];
@@ -2190,7 +2190,7 @@ function isNewer(a, b) {
     return false;
 }
 
-/** "today", "yesterday" or the date, for when isled last asked GitHub. */
+/** "today", "yesterday" or the date, for when notchfolkd last asked GitHub. */
 function checkedWhen(ms) {
     const then = GLib.DateTime.new_from_unix_local(Math.floor(ms / 1000));
     const now = GLib.DateTime.new_now_local();
@@ -2211,28 +2211,28 @@ function versionIn(dir) {
     }
 }
 
-/** Why the installer stopped, in plain words: from its own "Isle: …" line or a program's error, a known
+/** Why the installer stopped, in plain words: from its own "Notchfolk: …" line or a program's error, a known
  * reason; anything else is said as a try again (the details stay in the installer's log). */
 function updateFailure(output) {
     const escapes = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, 'g');
-    // Not Isle's markers, nor the steps ("==> Downloading").
+    // Not Notchfolk's markers, nor the steps ("==> Downloading").
     const lines = output.split('\n').map(line => line.replace(escapes, '').trim())
-        .filter(line => line && !/^isle-update(-pid|-done)? /.test(line) && !line.startsWith('==>'));
+        .filter(line => line && !/^notchfolk-update(-pid|-done)? /.test(line) && !line.startsWith('==>'));
     const all = lines.join('\n');
     const reasons = [
         // curl: no such host, refused, timed out, TLS or the connection dropped.
-        [/could not reach GitHub|^curl: \((6|7|28|35|56)\)/m, 'Isle couldn’t reach GitHub; check the internet connection'],
+        [/could not reach GitHub|^curl: \((6|7|28|35|56)\)/m, 'Notchfolk couldn’t reach GitHub; check the internet connection'],
         [/GitHub limits how often/, 'GitHub limits how often it is asked; try again in an hour'],
         [/GitHub answered|^curl: \(22\)/m, 'GitHub had a problem just now; try again in a while'],
         [/no release .*was found/, 'That version isn’t on GitHub yet; try again later'],
         [/damaged|checksum|unexpected layout|download failed/, 'The download didn’t come through whole; try again'],
-        [/made for GNOME Shell (\d+ to \d+)/, 'This version of Isle doesn’t support this GNOME yet; nothing was changed'],
+        [/made for GNOME Shell (\d+ to \d+)/, 'This version of Notchfolk doesn’t support this GNOME yet; nothing was changed'],
         [/No space left on device|Disk quota exceeded/, 'The disk is full; free some space and try again'],
-        [/Permission denied|Read-only file system/, 'Isle couldn’t write its files; try again'],
+        [/Permission denied|Read-only file system/, 'Notchfolk couldn’t write its files; try again'],
         [/please install (\S+) first/, null],
         // Failures another try won't fix as it is: no build for this kind of computer, or one install at a time.
-        [/no ready-built Isle for/, 'There’s no ready-made Isle for this computer; build it from source instead'],
-        [/another install of Isle is running/, 'Another install of Isle is running; wait for it, then try again'],
+        [/no ready-built Notchfolk for/, 'There’s no ready-made Notchfolk for this computer; build it from source instead'],
+        [/another install of Notchfolk is running/, 'Another install of Notchfolk is running; wait for it, then try again'],
         // Settings' own line when the installer couldn't be started at all.
         [/the update didn.t start/, 'The update didn’t start; try again'],
     ];
@@ -2250,18 +2250,18 @@ function readUpdateLog() {
     try {
         const file = Gio.File.new_for_path(UPDATE_LOG);
         const text = new TextDecoder().decode(file.load_contents(null)[1]);
-        const version = /^isle-update (\S+)/.exec(text)?.[1];
+        const version = /^notchfolk-update (\S+)/.exec(text)?.[1];
         if (!version)
             return null;
-        const done = /^isle-update-done (\d+)$/m.exec(text);
-        const [, pid, boot] = /^isle-update-pid (\d+) ?(\S*)$/m.exec(text) ?? [];
+        const done = /^notchfolk-update-done (\d+)$/m.exec(text);
+        const [, pid, boot] = /^notchfolk-update-pid (\d+) ?(\S*)$/m.exec(text) ?? [];
         const at = file.query_info('time::modified', Gio.FileQueryInfoFlags.NONE, null).get_modification_date_time().to_unix_usec();
         let running = false;
         if (!done && pid) {
             const [, thisBoot] = GLib.file_get_contents('/proc/sys/kernel/random/boot_id');
             const cmdline = `/proc/${pid}/cmdline`;
             running = boot === new TextDecoder().decode(thisBoot).trim() && GLib.file_test(cmdline, GLib.FileTest.EXISTS) &&
-                new TextDecoder().decode(GLib.file_get_contents(cmdline)[1]).includes('isle-installer');
+                new TextDecoder().decode(GLib.file_get_contents(cmdline)[1]).includes('notchfolk-installer');
         } else if (!done) {
             running = GLib.get_real_time() - at < UPDATE_START_US;
         }
@@ -2275,14 +2275,14 @@ function readUpdateLog() {
  * so closing Settings doesn't stop it half way; its output goes to UPDATE_LOG. */
 function startUpdate(version) {
     GLib.mkdir_with_parents(GLib.path_get_dirname(UPDATE_LOG), 0o700);
-    GLib.file_set_contents(UPDATE_LOG, `isle-update ${version}\n`);
-    const script = ['bash', '-c', UPDATE_SCRIPT, 'isle-installer', version, UPDATE_LOG];
+    GLib.file_set_contents(UPDATE_LOG, `notchfolk-update ${version}\n`);
+    const script = ['bash', '-c', UPDATE_SCRIPT, 'notchfolk-installer', version, UPDATE_LOG];
     const run = argv => Gio.Subprocess.new(argv, Gio.SubprocessFlags.STDOUT_SILENCE | Gio.SubprocessFlags.STDERR_SILENCE);
     if (GLib.find_program_in_path('systemd-run')) {
         const env = UPDATE_ENV.filter(name => GLib.getenv(name)).map(name => `--setenv=${name}=${GLib.getenv(name)}`);
         // systemd reads "$$" in a command as a "$": written twice, the shell gets its own pid.
         const escaped = script.map(arg => arg.split('$$').join('$$$$'));
-        const unit = run(['systemd-run', '--user', '--collect', '--quiet', `--unit=isle-update-${GLib.get_real_time()}`,
+        const unit = run(['systemd-run', '--user', '--collect', '--quiet', `--unit=notchfolk-update-${GLib.get_real_time()}`,
             ...env, ...escaped]);
         // No user systemd (some containers, other inits): run it directly.
         unit.wait_check_async(null, (proc, result) => {
@@ -2297,7 +2297,7 @@ function startUpdate(version) {
     }
 }
 
-/** Logs out as GNOME's own menu does, asking first; GNOME Shell loads the new Isle at the next login. */
+/** Logs out as GNOME's own menu does, asking first; GNOME Shell loads the new Notchfolk at the next login. */
 function logOut() {
     Gio.DBus.session.call('org.gnome.SessionManager', '/org/gnome/SessionManager', 'org.gnome.SessionManager',
         'Logout', new GLib.Variant('(u)', [0]), null, Gio.DBusCallFlags.NONE, -1, null, (bus, result) => {
@@ -2309,7 +2309,7 @@ function logOut() {
         });
 }
 
-/** The About page's update status and the switch to ask GitHub, following what isled last found (its
+/** The About page's update status and the switch to ask GitHub, following what notchfolkd last found (its
  * updates.json). A one-line install updates in a click; a package says how its kind updates. */
 function updateRows(settings, window, version, dir) {
     const packaged = dir.startsWith('/usr/');
@@ -2341,7 +2341,7 @@ function updateRows(settings, window, version, dir) {
         status.add_suffix(suffix);
     const check = switchRow(settings, 'check-updates', 'Check for new versions', 'Asks GitHub once a day; nothing else is sent');
 
-    const file = Gio.File.new_for_path(GLib.build_filenamev([GLib.get_user_data_dir(), 'isle', 'updates.json']));
+    const file = Gio.File.new_for_path(GLib.build_filenamev([GLib.get_user_data_dir(), 'notchfolk', 'updates.json']));
     let updating = false;
     /** The timer looking at a running update again (see `sync`). */
     let watching = 0;
@@ -2385,7 +2385,7 @@ function updateRows(settings, window, version, dir) {
             });
         }
         if (updating) {
-            show(null, [], `Updating to Isle ${last.version}…`, 'Downloading and installing; Settings can be closed');
+            show(null, [], `Updating to Notchfolk ${last.version}…`, 'Downloading and installing; Settings can be closed');
         } else if (failed) {
             // Before "installed": one that stopped half way may have put part of it in place.
             update.label = 'Try Again';
@@ -2394,26 +2394,26 @@ function updateRows(settings, window, version, dir) {
                 `${why[0].toUpperCase()}${why.slice(1)}. Or paste the command in a terminal`, [copy, update]);
         } else if (installed && isNewer(installed, version)) {
             // Installed, here or from a terminal: the shell runs the old one until the next login.
-            show('object-select-symbolic', ['success'], `Isle ${installed} is installed`,
+            show('object-select-symbolic', ['success'], `Notchfolk ${installed} is installed`,
                 'Log out and back in to finish', [logOutButton]);
         } else if (!on) {
             show('software-update-available-symbolic', ['dim-label'], 'Not checking for new versions',
                 'Turn it on below to hear when one is out');
         } else if (newer && packaged) {
             const arch = GLib.file_test('/etc/arch-release', GLib.FileTest.EXISTS);
-            show('software-update-available-symbolic', ['accent'], `Isle ${checked.latest} is out`, arch
+            show('software-update-available-symbolic', ['accent'], `Notchfolk ${checked.latest} is out`, arch
                 ? 'Update it the way you installed it from the AUR, then log out and back in'
                 : `Download its .${GLib.file_test('/etc/debian_version', GLib.FileTest.EXISTS) ? 'deb' : 'rpm'} and open it to install, then log out and back in`,
             arch ? [how] : [how, download]);
         } else if (newer) {
             update.label = 'Update';
-            show('software-update-available-symbolic', ['accent'], `Isle ${checked.latest} is out`,
+            show('software-update-available-symbolic', ['accent'], `Notchfolk ${checked.latest} is out`,
                 'Your tasks, events and settings stay', [update]);
         } else if (checked?.at_ms && checked.latest) {
             // Only once GitHub answered: a look that failed stamps the time too, with no version.
             show('object-select-symbolic', ['success'], 'You’re up to date', `Checked ${checkedWhen(checked.at_ms)}`);
         } else {
-            show('software-update-available-symbolic', ['dim-label'], 'Not checked yet', 'Isle asks GitHub once a day');
+            show('software-update-available-symbolic', ['dim-label'], 'Not checked yet', 'Notchfolk asks GitHub once a day');
         }
     };
     update.connect('clicked', () => {
@@ -2424,12 +2424,12 @@ function updateRows(settings, window, version, dir) {
         try {
             startUpdate(latest);
         } catch (e) {
-            console.warn(`Isle: could not start the update: ${e.message}`);
-            GLib.file_set_contents(UPDATE_LOG, `isle-update ${latest}\nIsle: the update didn’t start\nisle-update-done 1\n`);
+            console.warn(`Notchfolk: could not start the update: ${e.message}`);
+            GLib.file_set_contents(UPDATE_LOG, `notchfolk-update ${latest}\nNotchfolk: the update didn’t start\nnotchfolk-update-done 1\n`);
         }
         sync();
     });
-    // isled writes updates.json after each look (switched on, or once a day), the installer its log as it
+    // notchfolkd writes updates.json after each look (switched on, or once a day), the installer its log as it
     // goes: the row follows while open.
     const monitors = [file, Gio.File.new_for_path(UPDATE_LOG)].map(watched => {
         const monitor = watched.monitor_file(Gio.FileMonitorFlags.NONE, null);
@@ -2449,21 +2449,21 @@ function updateRows(settings, window, version, dir) {
     return [status, check];
 }
 
-/** Runs `isled --report` and puts what it says on the clipboard, saying so on `row`. */
+/** Runs `notchfolkd --report` and puts what it says on the clipboard, saying so on `row`. */
 function copyReport(window, row) {
-    const isled = findProgram('isled');
-    if (!isled) {
-        row.subtitle = 'Isle isn’t fully installed; install it again, then try this';
+    const notchfolkd = findProgram('notchfolkd');
+    if (!notchfolkd) {
+        row.subtitle = 'Notchfolk isn’t fully installed; install it again, then try this';
         return;
     }
-    const process = Gio.Subprocess.new([isled, '--report'], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_MERGE);
+    const process = Gio.Subprocess.new([notchfolkd, '--report'], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_MERGE);
     process.communicate_utf8_async(null, null, (_process, result) => {
         try {
             const [, output] = process.communicate_utf8_finish(result);
             window.get_display().get_clipboard().set(output);
             row.subtitle = 'Copied: paste it into the report on GitHub';
         } catch (e) {
-            console.warn(`Isle: could not make the report: ${e.message}`);
+            console.warn(`Notchfolk: could not make the report: ${e.message}`);
             row.subtitle = 'Couldn’t make the report; try again';
         }
     });

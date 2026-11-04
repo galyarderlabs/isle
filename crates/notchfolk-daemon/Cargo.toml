@@ -1,0 +1,43 @@
+[package]
+name = "notchfolk-daemon"
+description = "Background service behind the Notchfolk island: media, lyrics, timers and system events over D-Bus"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "notchfolkd"
+path = "src/main.rs"
+
+[dependencies]
+notchfolk-core.workspace = true
+
+anyhow.workspace = true
+chrono.workspace = true
+dirs.workspace = true
+env_logger.workspace = true
+futures-util.workspace = true
+httparse.workspace = true
+image.workspace = true
+inotify.workspace = true
+keyring.workspace = true
+libc.workspace = true
+log.workspace = true
+md5.workspace = true
+qrcode.workspace = true
+serde.workspace = true
+# Keeps the keys of Claude Code's settings.json in their order when its hooks are changed.
+serde_json = { workspace = true, features = ["preserve_order"] }
+sha2.workspace = true
+subtle.workspace = true
+tokio.workspace = true
+toml_edit.workspace = true
+ureq.workspace = true
+zbus.workspace = true
+
+[dev-dependencies]
+# Paused clocks, for phone sharing's idle stop.
+tokio = { workspace = true, features = ["test-util"] }

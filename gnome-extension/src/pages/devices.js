@@ -22,7 +22,7 @@ class DevicesPage extends Page {
     /** `height` is the expanded island's page height. */
     _init(daemon, botGlow, {height}) {
         super._init(daemon, {
-            style_class: 'isle-page isle-devices',
+            style_class: 'notchfolk-page notchfolk-devices',
             layout_manager: new Clutter.BinLayout(),
             height,
             reactive: true,
@@ -30,7 +30,7 @@ class DevicesPage extends Page {
         this.name = 'devices';
         this._botGlow = botGlow;
 
-        this._box = new St.BoxLayout({...VERTICAL, style_class: 'isle-devices-list',
+        this._box = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-devices-list',
             x_expand: true, y_align: Clutter.ActorAlign.CENTER});
         this.add_child(this._box);
 
@@ -95,34 +95,34 @@ class DevicesPage extends Page {
 
     /** One device card: connection details, battery state, and clearly labelled actions. */
     _row(device) {
-        const row = new St.BoxLayout({...VERTICAL, style_class: 'isle-devices-card', x_expand: true});
+        const row = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-devices-card', x_expand: true});
         row.deviceId = device.id;
 
-        const header = new St.BoxLayout({style_class: 'isle-devices-header', x_expand: true});
-        const glyphName = device.kind?.toLowerCase().includes('tablet') ? 'isle-tablet-symbolic' : 'isle-phone-symbolic';
-        const glyph = new St.Bin({style_class: 'isle-devices-icon-well',
+        const header = new St.BoxLayout({style_class: 'notchfolk-devices-header', x_expand: true});
+        const glyphName = device.kind?.toLowerCase().includes('tablet') ? 'notchfolk-tablet-symbolic' : 'notchfolk-phone-symbolic';
+        const glyph = new St.Bin({style_class: 'notchfolk-devices-icon-well',
             child: new St.Icon({gicon: icon(glyphName), icon_size: 20}),
             y_align: Clutter.ActorAlign.CENTER});
-        const identity = new St.BoxLayout({...VERTICAL, style_class: 'isle-devices-identity', x_expand: true,
+        const identity = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-devices-identity', x_expand: true,
             y_align: Clutter.ActorAlign.CENTER});
-        const name = label(device.name, 'isle-devices-name');
-        const connection = label('Connected via GSConnect', 'isle-devices-connection');
+        const name = label(device.name, 'notchfolk-devices-name');
+        const connection = label('Connected via GSConnect', 'notchfolk-devices-connection');
         identity.add_child(name);
         identity.add_child(connection);
         header.add_child(glyph);
         header.add_child(identity);
 
-        const figure = label('', 'isle-devices-figure');
+        const figure = label('', 'notchfolk-devices-figure');
         const battery = new Ring({size: RING_SIZE, lineWidth: 3, child: figure});
         battery.y_align = Clutter.ActorAlign.CENTER;
         row.battery = battery;
         row.figure = figure;
-        row.charge = label('', 'isle-devices-charge');
-        const batteryInfo = new St.BoxLayout({...VERTICAL, style_class: 'isle-devices-battery-info',
+        row.charge = label('', 'notchfolk-devices-charge');
+        const batteryInfo = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-devices-battery-info',
             y_align: Clutter.ActorAlign.CENTER});
-        batteryInfo.add_child(label('Battery', 'isle-devices-battery-caption'));
+        batteryInfo.add_child(label('Battery', 'notchfolk-devices-battery-caption'));
         batteryInfo.add_child(row.charge);
-        const batteryGroup = new St.BoxLayout({style_class: 'isle-devices-battery',
+        const batteryGroup = new St.BoxLayout({style_class: 'notchfolk-devices-battery',
             y_align: Clutter.ActorAlign.CENTER});
         row.batteryGroup = batteryGroup;
         batteryGroup.add_child(batteryInfo);
@@ -130,12 +130,12 @@ class DevicesPage extends Page {
         header.add_child(batteryGroup);
         row.add_child(header);
 
-        row.add_child(new St.Widget({style_class: 'isle-devices-divider', x_expand: true}));
+        row.add_child(new St.Widget({style_class: 'notchfolk-devices-divider', x_expand: true}));
 
-        const actions = new St.BoxLayout({style_class: 'isle-devices-actions', x_expand: true});
-        actions.add_child(this._action('isle-phone', 'Ring phone', `Ring ${device.name}`,
+        const actions = new St.BoxLayout({style_class: 'notchfolk-devices-actions', x_expand: true});
+        actions.add_child(this._action('notchfolk-phone', 'Ring phone', `Ring ${device.name}`,
             () => this.daemon.call('devices', 'Ring', device.id)));
-        actions.add_child(this._action('isle-clipboard', 'Send clipboard',
+        actions.add_child(this._action('notchfolk-clipboard', 'Send clipboard',
             `Send the clipboard to ${device.name}`,
             () => this.daemon.call('devices', 'SendClipboard', device.id)));
         row.add_child(actions);
@@ -143,10 +143,10 @@ class DevicesPage extends Page {
     }
 
     _action(iconName, text, accessibleName, onClick) {
-        const content = new St.BoxLayout({style_class: 'isle-devices-action-content'});
+        const content = new St.BoxLayout({style_class: 'notchfolk-devices-action-content'});
         content.add_child(new St.Icon({gicon: icon(iconName), icon_size: 15}));
-        content.add_child(label(text, 'isle-devices-action-label'));
-        const button = new St.Button({style_class: 'isle-button isle-devices-action', child: content,
+        content.add_child(label(text, 'notchfolk-devices-action-label'));
+        const button = new St.Button({style_class: 'notchfolk-button notchfolk-devices-action', child: content,
             can_focus: true, accessible_name: accessibleName, y_align: Clutter.ActorAlign.CENTER});
         button.connect('clicked', onClick);
         return button;

@@ -23,17 +23,17 @@ const FACE_SIZE = 18;
 const TIME_GAP_MS = 5 * 60000;
 /** A bubble of yours is at most this wide; longer ones wrap. */
 const BUBBLE_MAX = 420;
-/** What a risk badge says, and its icon (see `risksOf` in isled). */
+/** What a risk badge says, and its icon (see `risksOf` in notchfolkd). */
 const RISKS = {
-    removes: ['isle-trash', 'Removes files or apps'],
-    internet: ['isle-link', 'Runs a script from the web'],
-    root: ['isle-lock-symbolic', 'Needs your password'],
+    removes: ['notchfolk-trash', 'Removes files or apps'],
+    internet: ['notchfolk-link', 'Runs a script from the web'],
+    root: ['notchfolk-lock-symbolic', 'Needs your password'],
 };
 const STATUS = {
-    done: ['isle-check-symbolic', 'Done', 'isle-card-done'],
-    failed: ['isle-close-symbolic', 'Failed', 'isle-card-failed'],
-    denied: ['isle-close-symbolic', 'Denied', 'isle-card-denied'],
-    stopped: ['isle-stop-symbolic', 'Stopped', 'isle-card-denied'],
+    done: ['notchfolk-check-symbolic', 'Done', 'notchfolk-card-done'],
+    failed: ['notchfolk-close-symbolic', 'Failed', 'notchfolk-card-failed'],
+    denied: ['notchfolk-close-symbolic', 'Denied', 'notchfolk-card-denied'],
+    stopped: ['notchfolk-stop-symbolic', 'Stopped', 'notchfolk-card-denied'],
 };
 
 // A label in one call.
@@ -96,7 +96,7 @@ function copyable(actor, copied, settled) {
 
 // A command as one press: a click copies all of it, as a terminal's copy button would.
 function copyButton(child, command, copied) {
-    const button = new St.Button({child, style_class: 'isle-copy-button', x_expand: true, can_focus: true,
+    const button = new St.Button({child, style_class: 'notchfolk-copy-button', x_expand: true, can_focus: true,
         accessible_name: 'Copy the command'});
     button.connect('clicked', () => {
         copy(command());
@@ -139,7 +139,7 @@ const Sweep = GObject.registerClass(
 class Sweep extends St.DrawingArea {
     /** Three pixels tall at any scale. */
     _init() {
-        super._init({style_class: 'isle-card-sweep', x_expand: true});
+        super._init({style_class: 'notchfolk-card-sweep', x_expand: true});
         onUiScale(this, scale => (this.height = 3 * scale));
         this._time = 0;
         this.connect('repaint', area => this._paint(area));
@@ -230,20 +230,20 @@ export function shellMarkup(command) {
 
 /** What to know about a command, in its colour: an icon and a few words. */
 function riskRow(risk, iconName, text) {
-    const row = new St.BoxLayout({style_class: `isle-card-risk isle-card-risk-${risk}`});
+    const row = new St.BoxLayout({style_class: `notchfolk-card-risk notchfolk-card-risk-${risk}`});
     row.add_child(new St.Icon({gicon: icon(iconName), icon_size: 11, y_align: Clutter.ActorAlign.CENTER}));
-    row.add_child(label(text, 'isle-card-risk-text', {y_align: Clutter.ActorAlign.CENTER}));
+    row.add_child(label(text, 'notchfolk-card-risk-text', {y_align: Clutter.ActorAlign.CENTER}));
     return row;
 }
 
 /** A label with a key's name in a small box after it: Run ⏎. */
 function keyButton(text, key, styleClass, onClick) {
-    const box = new St.BoxLayout({style_class: 'isle-card-button-box'});
-    const name = label(text, 'isle-card-button-label', {y_align: Clutter.ActorAlign.CENTER});
+    const box = new St.BoxLayout({style_class: 'notchfolk-card-button-box'});
+    const name = label(text, 'notchfolk-card-button-label', {y_align: Clutter.ActorAlign.CENTER});
     box.add_child(name);
-    const cap = label(key ?? '', 'isle-card-key', {y_align: Clutter.ActorAlign.CENTER, visible: Boolean(key)});
+    const cap = label(key ?? '', 'notchfolk-card-key', {y_align: Clutter.ActorAlign.CENTER, visible: Boolean(key)});
     box.add_child(cap);
-    const button = new St.Button({child: box, style_class: `isle-pill isle-pill-small isle-card-button ${styleClass}${key ? '' : ' isle-card-button-plain'}`,
+    const button = new St.Button({child: box, style_class: `notchfolk-pill notchfolk-pill-small notchfolk-card-button ${styleClass}${key ? '' : ' notchfolk-card-button-plain'}`,
         can_focus: true, y_align: Clutter.ActorAlign.CENTER});
     button.connect('clicked', () => onClick());
     button.cap = cap;
@@ -262,16 +262,16 @@ export const CommandCard = GObject.registerClass({
 }, class CommandCard extends St.BoxLayout {
     /** Head, terminal and foot, all made once and shown or hidden per state. */
     _init() {
-        super._init({...VERTICAL, style_class: 'isle-card', x_expand: true});
+        super._init({...VERTICAL, style_class: 'notchfolk-card', x_expand: true});
         this.set_pivot_point(0.5, 0.5);
 
         // The head: what it is for and a line under it; gone once it ended (the answer says it).
-        const head = new St.BoxLayout({style_class: 'isle-card-head'});
+        const head = new St.BoxLayout({style_class: 'notchfolk-card-head'});
         this._head = head;
         const titles = new St.BoxLayout({...VERTICAL, x_expand: true, y_align: Clutter.ActorAlign.CENTER});
-        this._title = label('', 'isle-card-title');
+        this._title = label('', 'notchfolk-card-title');
         this._title.clutter_text.ellipsize = Pango.EllipsizeMode.END;
-        this._subtitle = label('', 'isle-card-subtitle');
+        this._subtitle = label('', 'notchfolk-card-subtitle');
         this._subtitle.clutter_text.ellipsize = Pango.EllipsizeMode.END;
         titles.add_child(this._title);
         titles.add_child(this._subtitle);
@@ -279,21 +279,21 @@ export const CommandCard = GObject.registerClass({
         this.add_child(head);
 
         // The terminal: the command, then what it prints.
-        this._terminal = new St.BoxLayout({...VERTICAL, style_class: 'isle-card-terminal'});
+        this._terminal = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-card-terminal'});
         // Its colours are markup, which the hyphen fix of `wrapLines` would undo at the start. Once ended, how it
         // went sits at the line's end: the card is that one line.
-        const line = new St.BoxLayout({style_class: 'isle-card-line'});
-        this._command = label('', 'isle-card-command', {x_expand: true, y_align: Clutter.ActorAlign.CENTER});
+        const line = new St.BoxLayout({style_class: 'notchfolk-card-line'});
+        this._command = label('', 'notchfolk-card-command', {x_expand: true, y_align: Clutter.ActorAlign.CENTER});
         this._command.clutter_text.set({use_markup: true, line_wrap_mode: Pango.WrapMode.WORD_CHAR});
         line.add_child(copyButton(this._command, () => this._commandText, () => this._flashCopied()));
-        this._status = new St.BoxLayout({style_class: 'isle-card-status', y_align: Clutter.ActorAlign.CENTER});
+        this._status = new St.BoxLayout({style_class: 'notchfolk-card-status', y_align: Clutter.ActorAlign.CENTER});
         this._statusIcon = new St.Icon({icon_size: 11, y_align: Clutter.ActorAlign.CENTER});
-        this._statusText = label('', 'isle-card-status-text', {y_align: Clutter.ActorAlign.CENTER});
+        this._statusText = label('', 'notchfolk-card-status-text', {y_align: Clutter.ActorAlign.CENTER});
         this._status.add_child(this._statusIcon);
         this._status.add_child(this._statusText);
         line.add_child(this._status);
         this._terminal.add_child(line);
-        this._output = label('', 'isle-card-output');
+        this._output = label('', 'notchfolk-card-output');
         this._output.clutter_text.ellipsize = Pango.EllipsizeMode.END;
         this._terminal.add_child(this._output);
         this._sweep = new Sweep();
@@ -301,12 +301,12 @@ export const CommandCard = GObject.registerClass({
         this.add_child(this._terminal);
 
         // The foot: what to know on the left, the buttons on the right.
-        this._foot = new St.BoxLayout({style_class: 'isle-card-foot'});
-        this._risks = new St.BoxLayout({style_class: 'isle-card-risks', x_expand: true, y_align: Clutter.ActorAlign.CENTER});
+        this._foot = new St.BoxLayout({style_class: 'notchfolk-card-foot'});
+        this._risks = new St.BoxLayout({style_class: 'notchfolk-card-risks', x_expand: true, y_align: Clutter.ActorAlign.CENTER});
         this._foot.add_child(this._risks);
-        this._stopButton = keyButton('Stop', null, 'isle-card-ghost', () => this._stop());
-        this._deny = keyButton('Deny', 'esc', 'isle-card-ghost', () => this.decide(false));
-        this._run = keyButton('Run', '↩', 'isle-card-run', () => this.decide(true));
+        this._stopButton = keyButton('Stop', null, 'notchfolk-card-ghost', () => this._stop());
+        this._deny = keyButton('Deny', 'esc', 'notchfolk-card-ghost', () => this.decide(false));
+        this._run = keyButton('Run', '↩', 'notchfolk-card-run', () => this.decide(true));
         for (const button of [this._stopButton, this._deny, this._run])
             this._foot.add_child(button);
         this.add_child(this._foot);
@@ -345,7 +345,7 @@ export const CommandCard = GObject.registerClass({
         if (!running)
             this._disarmStop();
         if (running && this._stopArmed) {
-            this._risks.add_child(riskRow('removes', 'isle-warning-symbolic', 'May leave it half installed'));
+            this._risks.add_child(riskRow('removes', 'notchfolk-warning-symbolic', 'May leave it half installed'));
         } else if (waiting) {
             // One is enough beside the buttons: the most telling (see RISKS), removing before the web before a password.
             const risk = Object.keys(RISKS).find(key => card.risks?.includes(key));
@@ -357,7 +357,7 @@ export const CommandCard = GObject.registerClass({
         const lines = (card.output ?? '').split('\n').map(line => line.trimEnd()).filter(Boolean);
         this._output.text = running ? lines.slice(-2).join('\n') : card.status === 'failed' ? lines.at(-1) ?? '' : '';
         this._output.visible = Boolean(this._output.text);
-        this._output.style_class = card.status === 'failed' ? 'isle-card-output isle-card-output-failed' : 'isle-card-output';
+        this._output.style_class = card.status === 'failed' ? 'notchfolk-card-output notchfolk-card-output-failed' : 'notchfolk-card-output';
         this._sweep.visible = running;
 
         this._head.visible = !ended;
@@ -368,13 +368,13 @@ export const CommandCard = GObject.registerClass({
             // Short, so the command keeps its line: a tick and how long, or the word.
             const done = card.status === 'done' && card.seconds >= 1 ? elapsed(card.seconds) : null;
             this._statusText.text = done ?? text;
-            this._status.style_class = `isle-card-status ${styleClass}`;
+            this._status.style_class = `notchfolk-card-status ${styleClass}`;
         }
         this._foot.visible = waiting || running;
         this._deny.visible = this._run.visible = waiting;
         this._stopButton.visible = running;
         // Ended, it steps back: the answer above is what matters now.
-        this.style_class = ended ? 'isle-card isle-card-ended' : 'isle-card';
+        this.style_class = ended ? 'notchfolk-card notchfolk-card-ended' : 'notchfolk-card';
         this.opacity = card.status === 'denied' || card.status === 'stopped' ? 165 : 255;
         if (ended && previous && previous !== card.status && St.Settings.get().enable_animations) {
             this._statusIcon.set_pivot_point(0.5, 0.5);
@@ -418,7 +418,7 @@ export const CommandCard = GObject.registerClass({
         this._stopButton.label_actor.text = armed ? 'Stop anyway' : 'Stop';
         this._risks.destroy_all_children();
         if (armed)
-            this._risks.add_child(riskRow('removes', 'isle-warning-symbolic', 'May leave it half installed'));
+            this._risks.add_child(riskRow('removes', 'notchfolk-warning-symbolic', 'May leave it half installed'));
     }
 
     // "Copied" for a moment where the card says how it is going: under the title, or at the line's end.
@@ -432,7 +432,7 @@ export const CommandCard = GObject.registerClass({
             this._beforeCopied = {label, shown, wasVisible};
         label.text = 'Copied';
         label.visible = true;
-        label.add_style_class_name('isle-card-copied');
+        label.add_style_class_name('notchfolk-card-copied');
         if (label === this._statusText)
             this._status.visible = true;
         this._copiedTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, COPIED_MS, () => {
@@ -440,7 +440,7 @@ export const CommandCard = GObject.registerClass({
             const before = this._beforeCopied;
             before.label.text = before.shown;
             before.label.visible = before.wasVisible;
-            before.label.remove_style_class_name('isle-card-copied');
+            before.label.remove_style_class_name('notchfolk-card-copied');
             if (before.label === this._statusText)
                 this._status.visible = !['waiting', 'running'].includes(this._state);
             return GLib.SOURCE_REMOVE;
@@ -480,40 +480,40 @@ export const ChatView = GObject.registerClass({
 }, class ChatView extends St.BoxLayout {
     /** Header with New chat, History and Close, then the scrolling list that keeps to its end. */
     _init() {
-        super._init({...VERTICAL, style_class: 'isle-chat', x_expand: true});
-        const header = new St.BoxLayout({style_class: 'isle-chat-header'});
-        this._title = label('Chat', 'isle-chat-title', {x_expand: true, y_align: Clutter.ActorAlign.CENTER});
+        super._init({...VERTICAL, style_class: 'notchfolk-chat', x_expand: true});
+        const header = new St.BoxLayout({style_class: 'notchfolk-chat-header'});
+        this._title = label('Chat', 'notchfolk-chat-title', {x_expand: true, y_align: Clutter.ActorAlign.CENTER});
         header.add_child(this._title);
-        const newContent = new St.BoxLayout({style_class: 'isle-chat-control-content'});
-        newContent.add_child(new St.Icon({gicon: icon('isle-plus-symbolic'), icon_size: 12,
+        const newContent = new St.BoxLayout({style_class: 'notchfolk-chat-control-content'});
+        newContent.add_child(new St.Icon({gicon: icon('notchfolk-plus-symbolic'), icon_size: 12,
             y_align: Clutter.ActorAlign.CENTER}));
-        newContent.add_child(label('New chat', 'isle-chat-control-label'));
-        this._newButton = new St.Button({child: newContent, style_class: 'isle-button isle-chat-control isle-chat-new',
+        newContent.add_child(label('New chat', 'notchfolk-chat-control-label'));
+        this._newButton = new St.Button({child: newContent, style_class: 'notchfolk-button notchfolk-chat-control notchfolk-chat-new',
             can_focus: true, accessible_name: 'New chat'});
         this._newButton.connect('clicked', () => this.emit('new-chat'));
         header.add_child(this._newButton);
-        const historyContent = new St.BoxLayout({style_class: 'isle-chat-control-content'});
-        historyContent.add_child(new St.Icon({gicon: icon('isle-history'), icon_size: 12,
+        const historyContent = new St.BoxLayout({style_class: 'notchfolk-chat-control-content'});
+        historyContent.add_child(new St.Icon({gicon: icon('notchfolk-history'), icon_size: 12,
             y_align: Clutter.ActorAlign.CENTER}));
-        this._historyButtonLabel = label('History', 'isle-chat-control-label');
+        this._historyButtonLabel = label('History', 'notchfolk-chat-control-label');
         historyContent.add_child(this._historyButtonLabel);
         this._historyButton = new St.Button({child: historyContent,
-            style_class: 'isle-button isle-chat-control isle-chat-history', can_focus: true,
+            style_class: 'notchfolk-button notchfolk-chat-control notchfolk-chat-history', can_focus: true,
             accessible_name: 'Chat history'});
         this._historyButton.connect('clicked', () => this.showArchive(!this._showingArchive));
         header.add_child(this._historyButton);
         this._closeButton = new St.Button({
-            child: new St.Icon({gicon: icon('isle-close-symbolic'), icon_size: 12}),
-            style_class: 'isle-button isle-chat-close', can_focus: true,
+            child: new St.Icon({gicon: icon('notchfolk-close-symbolic'), icon_size: 12}),
+            style_class: 'notchfolk-button notchfolk-chat-close', can_focus: true,
             accessible_name: 'Close conversation',
         });
         this._closeButton.connect('clicked', () => this.emit('close'));
         header.add_child(this._closeButton);
         this.add_child(header);
-        this._archive = new St.BoxLayout({...VERTICAL, style_class: 'isle-chat-archive-view', x_expand: true});
-        this._list = new St.BoxLayout({...VERTICAL, style_class: 'isle-chat-list', x_expand: true});
+        this._archive = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-chat-archive-view', x_expand: true});
+        this._list = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-chat-list', x_expand: true});
         this._scroll = new St.ScrollView({
-            style_class: 'isle-chat-scroll',
+            style_class: 'notchfolk-chat-scroll',
             hscrollbar_policy: St.PolicyType.NEVER,
             vscrollbar_policy: St.PolicyType.EXTERNAL,
             x_expand: true,
@@ -521,10 +521,10 @@ export const ChatView = GObject.registerClass({
         });
         this._scroll.set_child(this._list);
         // The archived conversations, when the history button opens them: a row each, the
-        // newest first; a click resumes it (the pill asks isled, the conversation comes back).
-        this._archiveList = new St.BoxLayout({...VERTICAL, style_class: 'isle-chat-archive', x_expand: true});
+        // newest first; a click resumes it (the pill asks notchfolkd, the conversation comes back).
+        this._archiveList = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-chat-archive', x_expand: true});
         this._archiveScroll = new St.ScrollView({
-            style_class: 'isle-chat-scroll',
+            style_class: 'notchfolk-chat-scroll',
             hscrollbar_policy: St.PolicyType.NEVER,
             vscrollbar_policy: St.PolicyType.EXTERNAL,
             x_expand: true,
@@ -572,18 +572,18 @@ export const ChatView = GObject.registerClass({
         this.setItems(this._items);
     }
 
-    /** The archived conversations: [{timestamp, last, items}], newest first (isled's
+    /** The archived conversations: [{timestamp, last, items}], newest first (notchfolkd's
      *  ArchivedChats). Shown by the header's history button; a click resumes one. */
     setArchive(chats) {
         this._archiveCount = chats.length;
         this._archiveList.destroy_all_children();
         for (const chat of chats) {
             const when = new Date(chat.last).toLocaleString(undefined, {weekday: 'short', hour: '2-digit', minute: '2-digit'});
-            const row = new St.Button({style_class: 'isle-chat-archive-row', can_focus: true, x_expand: true,
+            const row = new St.Button({style_class: 'notchfolk-chat-archive-row', can_focus: true, x_expand: true,
                 accessible_name: `Resume the conversation from ${when}`});
             const column = new St.BoxLayout({...VERTICAL, x_expand: true});
-            column.add_child(label(when, 'isle-chat-archive-when'));
-            column.add_child(label(`${chat.items} messages`, 'isle-chat-archive-count'));
+            column.add_child(label(when, 'notchfolk-chat-archive-when'));
+            column.add_child(label(`${chat.items} messages`, 'notchfolk-chat-archive-count'));
             row.set_child(column);
             row.connect('clicked', () => this.emit('resume', chat.timestamp));
             this._archiveList.add_child(row);
@@ -602,9 +602,9 @@ export const ChatView = GObject.registerClass({
         this._historyButtonLabel.text = shown ? 'Conversation' : 'History';
         this._historyButton.accessible_name = shown ? 'Return to conversation' : 'Chat history';
         if (shown)
-            this._historyButton.add_style_class_name('isle-chat-history-active');
+            this._historyButton.add_style_class_name('notchfolk-chat-history-active');
         else
-            this._historyButton.remove_style_class_name('isle-chat-history-active');
+            this._historyButton.remove_style_class_name('notchfolk-chat-history-active');
         this._scroll.visible = !shown;
         this._archive.visible = shown;
         this._syncHistoryButton();
@@ -629,7 +629,7 @@ export const ChatView = GObject.registerClass({
         items.forEach((item, index) => {
             if (item.at && (!last?.at || item.at - last.at > TIME_GAP_MS))
                 this._list.add_child(label(Format.timeOfDay(GLib.DateTime.new_from_unix_local(Math.floor(item.at / 1000))),
-                    'isle-chat-time', {x_align: Clutter.ActorAlign.CENTER}));
+                    'notchfolk-chat-time', {x_align: Clutter.ActorAlign.CENTER}));
             const row = this._row(item, last?.role !== 'assistant');
             this._list.add_child(row);
             if (index >= known && St.Settings.get().enable_animations) {
@@ -651,35 +651,35 @@ export const ChatView = GObject.registerClass({
     /** One message: your bubble, a command line, or an answer with or without the face. */
     _row(item, withFace) {
         if (item.role === 'user') {
-            const bubble = new Bubble({style_class: 'isle-chat-user', x_align: Clutter.ActorAlign.END}, BUBBLE_MAX);
-            const text = label(item.text ?? '', 'isle-chat-user-text', {x_expand: true});
+            const bubble = new Bubble({style_class: 'notchfolk-chat-user', x_align: Clutter.ActorAlign.END}, BUBBLE_MAX);
+            const text = label(item.text ?? '', 'notchfolk-chat-user-text', {x_expand: true});
             copyable(text, () => this._copied(), () => this.emit('settled'));
             wrapLines(text);
             bubble.add_child(text);
             return bubble;
         }
         if (item.role === 'command') {
-            const row = new St.BoxLayout({style_class: 'isle-chat-command'});
-            const [iconName, text, styleClass] = STATUS[item.status] ?? ['isle-terminal-symbolic', '', ''];
+            const row = new St.BoxLayout({style_class: 'notchfolk-chat-command'});
+            const [iconName, text, styleClass] = STATUS[item.status] ?? ['notchfolk-terminal-symbolic', '', ''];
             row.add_child(new St.Widget({width: px(FACE_SIZE)}));
-            const command = label('', 'isle-chat-command-text', {x_expand: true, y_align: Clutter.ActorAlign.CENTER});
+            const command = label('', 'notchfolk-chat-command-text', {x_expand: true, y_align: Clutter.ActorAlign.CENTER});
             command.clutter_text.set_markup(shellMarkup(item.command));
             command.clutter_text.ellipsize = Pango.EllipsizeMode.END;
             row.add_child(copyButton(command, () => item.command, () => this._copied()));
             if (text) {
-                const status = new St.BoxLayout({style_class: `isle-card-status isle-chat-command-status ${styleClass}`});
+                const status = new St.BoxLayout({style_class: `notchfolk-card-status notchfolk-chat-command-status ${styleClass}`});
                 status.add_child(new St.Icon({gicon: icon(iconName), icon_size: 10, y_align: Clutter.ActorAlign.CENTER}));
-                status.add_child(label(text, 'isle-card-status-text', {y_align: Clutter.ActorAlign.CENTER}));
+                status.add_child(label(text, 'notchfolk-card-status-text', {y_align: Clutter.ActorAlign.CENTER}));
                 row.add_child(status);
             }
             return row;
         }
-        const row = new St.BoxLayout({style_class: 'isle-chat-reply-row'});
+        const row = new St.BoxLayout({style_class: 'notchfolk-chat-reply-row'});
         // The face once per run of answers; a space as wide after it, so their text lines up.
         const face = withFace && this._look ? new BotIcon(FACE_SIZE, this._look) : new St.Widget({width: px(FACE_SIZE)});
         face.y_align = Clutter.ActorAlign.START;
         row.add_child(face);
-        const text = label('', 'isle-chat-reply', {x_expand: true});
+        const text = label('', 'notchfolk-chat-reply', {x_expand: true});
         copyable(text, () => this._copied(), () => this.emit('settled'));
         text.clutter_text.set({line_wrap: true, line_wrap_mode: Pango.WrapMode.WORD_CHAR, ellipsize: Pango.EllipsizeMode.NONE});
         text.clutter_text.set_markup(answerMarkup(item.text ?? ''));
@@ -690,13 +690,13 @@ export const ChatView = GObject.registerClass({
     // "Copied", in the title's place for a moment.
     _copied() {
         this._title.text = 'Copied';
-        this._title.add_style_class_name('isle-chat-copied');
+        this._title.add_style_class_name('notchfolk-chat-copied');
         if (this._copiedTimer)
             GLib.source_remove(this._copiedTimer);
         this._copiedTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, COPIED_MS, () => {
             this._copiedTimer = 0;
             this._title.text = 'Conversation';
-            this._title.remove_style_class_name('isle-chat-copied');
+            this._title.remove_style_class_name('notchfolk-chat-copied');
             return GLib.SOURCE_REMOVE;
         });
     }

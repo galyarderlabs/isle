@@ -1,26 +1,26 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2026 zickrian
-# Sets up speech recognition for Isle's voice assistant: downloads the whisper.cpp model, checking its SHA-256.
-# Usage: isle-setup-voice [tiny|base|small|medium] [--remove-old]
+# Sets up speech recognition for Notchfolk's voice assistant: downloads the whisper.cpp model, checking its SHA-256.
+# Usage: notchfolk-setup-voice [tiny|base|small|medium] [--remove-old]
 #   The model given (then also chosen in Settings → Assistant), else the one chosen there, else small.
 #   --remove-old  also deletes what the older Python setup left: its venv and faster-whisper models.
 set -euo pipefail
 
-DATA="${XDG_DATA_HOME:-$HOME/.local/share}/isle"
+DATA="${XDG_DATA_HOME:-$HOME/.local/share}/notchfolk"
 MODELS="$DATA/models"
-SCHEMAS="${XDG_DATA_HOME:-$HOME/.local/share}/gnome-shell/extensions/isle@zickrian.github.io/schemas"
+SCHEMAS="${XDG_DATA_HOME:-$HOME/.local/share}/gnome-shell/extensions/io.galyarderlabs.notchfolk/schemas"
 WHISPER_URL="https://huggingface.co/ggerganov/whisper.cpp/resolve/main"
 VAD_URL="https://huggingface.co/ggml-org/whisper-vad/resolve/main"
-# What an older Isle's faster-whisper setup left.
+# What an older Notchfolk's faster-whisper setup left.
 OLD_VENV="$DATA/voice-venv"
-OLD_HELPER="$DATA/isle-whisper.py"
+OLD_HELPER="$DATA/notchfolk-whisper.py"
 HUB="${HF_HUB_CACHE:-${HF_HOME:-${XDG_CACHE_HOME:-$HOME/.cache}/huggingface}/hub}"
 
 # A step's heading, in bold.
 step() { printf '\033[1m==> %s\033[0m\n' "$*"; }
 # Says what went wrong and stops.
-fail() { printf 'isle-setup-voice: %s\n' "$*" >&2; exit 1; }
+fail() { printf 'notchfolk-setup-voice: %s\n' "$*" >&2; exit 1; }
 
 MODEL=""
 GIVEN=0
@@ -34,19 +34,19 @@ for arg in "$@"; do
     esac
 done
 if [ -z "$MODEL" ]; then
-    # Isle in the home folder, else a system package's (its schema is the system's).
-    MODEL="$({ gsettings --schemadir "$SCHEMAS" get org.gnome.shell.extensions.isle voice-speech-model ||
-        gsettings get org.gnome.shell.extensions.isle voice-speech-model; } 2>/dev/null | tr -d "'" || true)"
+    # Notchfolk in the home folder, else a system package's (its schema is the system's).
+    MODEL="$({ gsettings --schemadir "$SCHEMAS" get org.gnome.shell.extensions.notchfolk voice-speech-model ||
+        gsettings get org.gnome.shell.extensions.notchfolk voice-speech-model; } 2>/dev/null | tr -d "'" || true)"
 fi
 MODEL="${MODEL:-small}"
 
-# The official whisper.cpp files (8-bit), as isle-whisper names them: file, SHA-256, size.
+# The official whisper.cpp files (8-bit), as notchfolk-whisper names them: file, SHA-256, size.
 case "$MODEL" in
     tiny) set -- ggml-tiny-q8_0.bin c2085835d3f50733e2ff6e4b41ae8a2b8d8110461e18821b09a15c40c42d1cca 43537433 ;;
     base) set -- ggml-base-q8_0.bin c577b9a86e7e048a0b7eada054f4dd79a56bbfa911fbdacf900ac5b567cbb7d9 81768585 ;;
     small) set -- ggml-small-q8_0.bin 49c8fb02b65e6049d5fa6c04f81f53b867b5ec9540406812c643f177317f779f 264464607 ;;
     medium) set -- ggml-medium-q8_0.bin 42a1ffcbe4167d224232443396968db4d02d4e8e87e213d3ee2e03095dea6502 823369779 ;;
-    *) fail "Settings name an unknown model '$MODEL'; give one: isle-setup-voice small" ;;
+    *) fail "Settings name an unknown model '$MODEL'; give one: notchfolk-setup-voice small" ;;
 esac
 FILE="$1" SHA="$2" SIZE="$3"
 # Silero, which finds where someone speaks so Whisper hears only that.
@@ -72,7 +72,7 @@ fetch() {
         fail "could not download $url; check the internet connection and try again."
     if ! verified "$file.part" "$sha"; then
         rm -f "$file.part"
-        fail "$2 did not download correctly (its SHA-256 differs); run isle-setup-voice again."
+        fail "$2 did not download correctly (its SHA-256 differs); run notchfolk-setup-voice again."
     fi
     mv -f "$file.part" "$file"
 }
@@ -81,31 +81,31 @@ mkdir -p "$MODELS"
 step "Downloading the '$MODEL' speech model ($((SIZE / 1000000)) MB) to $MODELS"
 fetch "$WHISPER_URL/$FILE" "$FILE" "$SHA"
 fetch "$VAD_URL/$VAD_FILE" "$VAD_FILE" "$VAD_SHA"
-# isled runs the model chosen in Settings, so a model named here becomes that choice.
+# notchfolkd runs the model chosen in Settings, so a model named here becomes that choice.
 if [ "$GIVEN" = 1 ]; then
-    if { gsettings --schemadir "$SCHEMAS" set org.gnome.shell.extensions.isle voice-speech-model "$MODEL" ||
-        gsettings set org.gnome.shell.extensions.isle voice-speech-model "$MODEL"; } 2>/dev/null; then
+    if { gsettings --schemadir "$SCHEMAS" set org.gnome.shell.extensions.notchfolk voice-speech-model "$MODEL" ||
+        gsettings set org.gnome.shell.extensions.notchfolk voice-speech-model "$MODEL"; } 2>/dev/null; then
         echo "Settings → Assistant → Speech recognition is now '$MODEL'."
     else
-        echo "Pick '$MODEL' in Settings → Assistant → Speech recognition so Isle uses it."
+        echo "Pick '$MODEL' in Settings → Assistant → Speech recognition so Notchfolk uses it."
     fi
 fi
 
-# isle-whisper beside this script (both in ~/.local/bin), on the PATH, or built in the source folder.
+# notchfolk-whisper beside this script (both in ~/.local/bin), on the PATH, or built in the source folder.
 HERE="$(dirname "$(readlink -f "$0")")"
 WHISPER=""
-for candidate in "$HERE/isle-whisper" "$(command -v isle-whisper || true)" "$HERE/../target/release/isle-whisper"; do
+for candidate in "$HERE/notchfolk-whisper" "$(command -v notchfolk-whisper || true)" "$HERE/../target/release/notchfolk-whisper"; do
     if [ -n "$candidate" ] && [ -x "$candidate" ]; then
         WHISPER="$candidate"
         break
     fi
 done
 if [ -z "$WHISPER" ]; then
-    echo "isle-whisper, which runs the model, is not installed: install Isle again" \
+    echo "notchfolk-whisper, which runs the model, is not installed: install Notchfolk again" \
         "(from source it needs cmake and a C++ compiler; see the README)."
 fi
 
-# The older setup, which isle-whisper replaces: only offered once isle-whisper is there to take over.
+# The older setup, which notchfolk-whisper replaces: only offered once notchfolk-whisper is there to take over.
 OLD=()
 [ -d "$OLD_VENV" ] && OLD+=("$OLD_VENV")
 [ -f "$OLD_HELPER" ] && OLD+=("$OLD_HELPER")
@@ -133,16 +133,16 @@ if [ -n "$WHISPER" ] && [ "${#OLD[@]}" -gt 0 ]; then
         done
         echo "Deleted."
     else
-        echo "To delete them later: isle-setup-voice --remove-old"
+        echo "To delete them later: notchfolk-setup-voice --remove-old"
     fi
 fi
 
-# What isled itself finds: the speech model, where it runs, and the AI it answers with.
+# What notchfolkd itself finds: the speech model, where it runs, and the AI it answers with.
 step "Checking"
-ISLED="$(command -v isled || echo "$HOME/.local/bin/isled")"
-if [ -x "$ISLED" ]; then
-    "$ISLED" --doctor
+NOTCHFOLKD="$(command -v notchfolkd || echo "$HOME/.local/bin/notchfolkd")"
+if [ -x "$NOTCHFOLKD" ]; then
+    "$NOTCHFOLKD" --doctor
 else
-    echo "isled is not installed yet; install Isle, then run isled --doctor."
+    echo "notchfolkd is not installed yet; install Notchfolk, then run notchfolkd --doctor."
 fi
 echo "Done. Pick the AI in Settings → Assistant if you have more than one, then press Super+I and speak."

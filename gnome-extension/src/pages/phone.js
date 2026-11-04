@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// The Shelf's Phone tab while sharing with a phone: the QR code isled made, what to do with it, the phones
+// The Shelf's Phone tab while sharing with a phone: the QR code notchfolkd made, what to do with it, the phones
 // that ask to connect (Allow or Deny here too) and what to know about the network.
 
 import Clutter from 'gi://Clutter';
@@ -27,7 +27,7 @@ const LEAVING_MS = 3000;
 const FADE_MS = 200;
 const FOLD_MS = 220;
 
-/** What the island says of the network, by isled's `network`. */
+/** What the island says of the network, by notchfolkd's `network`. */
 const NETWORK_NOTES = {
     public: 'This network looks public · use your phone’s hotspot',
     open: 'Open Wi-Fi: others nearby could see the files · try a hotspot',
@@ -41,7 +41,7 @@ export const PhoneCode = GObject.registerClass(
 class PhoneCode extends St.DrawingArea {
     _init() {
         super._init({
-            style_class: 'isle-phone-code',
+            style_class: 'notchfolk-phone-code',
             accessible_name: 'Code to open the Shelf on your phone',
             y_align: Clutter.ActorAlign.START,
         });
@@ -50,7 +50,7 @@ class PhoneCode extends St.DrawingArea {
         onUiScale(this, () => this._resize());
     }
 
-    /** isled's rows of 0s and 1s. */
+    /** notchfolkd's rows of 0s and 1s. */
     set rows(rows) {
         const same = rows.length === this._rows.length && rows.every((row, i) => row === this._rows[i]);
         if (same)
@@ -105,22 +105,22 @@ export const PhoneView = GObject.registerClass({
     _init() {
         super._init({
             ...VERTICAL,
-            style_class: 'isle-phone',
+            style_class: 'notchfolk-phone',
             x_expand: true,
             y_expand: true,
             y_align: Clutter.ActorAlign.FILL,
         });
-        this._title = label('Scan with your phone', 'isle-phone-title', {y_align: Clutter.ActorAlign.START});
+        this._title = label('Scan with your phone', 'notchfolk-phone-title', {y_align: Clutter.ActorAlign.START});
         this.add_child(this._title);
 
         // Not connected yet: three numbered steps.
-        this._steps = new St.BoxLayout({...VERTICAL, style_class: 'isle-phone-steps'});
+        this._steps = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-phone-steps'});
         this._stepTexts = STEPS.map((text, i) => {
-            const step = new St.BoxLayout({style_class: 'isle-phone-step'});
+            const step = new St.BoxLayout({style_class: 'notchfolk-phone-step'});
             // The digit centred in its circle: a label as tall as the circle would sit at its top.
-            step.add_child(new St.Bin({style_class: 'isle-phone-step-number', y_align: Clutter.ActorAlign.START,
-                child: label(String(i + 1), 'isle-phone-step-digit', {x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER})}));
-            const words = label(text, 'isle-phone-step-text', {x_expand: true, y_align: Clutter.ActorAlign.START});
+            step.add_child(new St.Bin({style_class: 'notchfolk-phone-step-number', y_align: Clutter.ActorAlign.START,
+                child: label(String(i + 1), 'notchfolk-phone-step-digit', {x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER})}));
+            const words = label(text, 'notchfolk-phone-step-text', {x_expand: true, y_align: Clutter.ActorAlign.START});
             wrapLines(words);
             step.add_child(words);
             this._steps.add_child(step);
@@ -129,29 +129,29 @@ export const PhoneView = GObject.registerClass({
         this.add_child(this._steps);
 
         // Phones asking, each with its code and its own Deny and Allow; then those let in, each with ×.
-        this._asks = new St.BoxLayout({...VERTICAL, style_class: 'isle-phone-rows'});
+        this._asks = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-phone-rows'});
         this.add_child(this._asks);
-        this._phones = new St.BoxLayout({...VERTICAL, style_class: 'isle-phone-rows'});
+        this._phones = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-phone-rows'});
         this.add_child(this._phones);
         /** Each row by the phone's id and what it shows, kept while that stays (its buttons under the pointer). */
         this._rows = new Map();
-        /** Phones taken off with ×, until isled no longer lists them. */
+        /** Phones taken off with ×, until notchfolkd no longer lists them. */
         this._removing = new Set();
 
-        this._note = new St.BoxLayout({style_class: 'isle-phone-note'});
-        this._note.add_child(new St.Icon({gicon: icon('isle-warning-symbolic'), icon_size: 12, y_align: Clutter.ActorAlign.START,
-            style_class: 'isle-phone-note-icon'}));
-        this._noteText = label('', 'isle-phone-note-text', {x_expand: true});
+        this._note = new St.BoxLayout({style_class: 'notchfolk-phone-note'});
+        this._note.add_child(new St.Icon({gicon: icon('notchfolk-warning-symbolic'), icon_size: 12, y_align: Clutter.ActorAlign.START,
+            style_class: 'notchfolk-phone-note-icon'}));
+        this._noteText = label('', 'notchfolk-phone-note-text', {x_expand: true});
         wrapLines(this._noteText);
         this._note.add_child(this._noteText);
         this.add_child(this._note);
 
         // At the bottom, before a phone is in: the link to send another way, or the firewall's fix.
         this.add_child(new St.Widget({y_expand: true}));
-        this._copyRow = new St.BoxLayout({style_class: 'isle-phone-copy'});
-        this._copyText = label('', 'isle-phone-copy-text', {y_align: Clutter.ActorAlign.CENTER, x_expand: true});
+        this._copyRow = new St.BoxLayout({style_class: 'notchfolk-phone-copy'});
+        this._copyText = label('', 'notchfolk-phone-copy-text', {y_align: Clutter.ActorAlign.CENTER, x_expand: true});
         wrapLines(this._copyText);
-        this._copy = pillButton('', 'isle-pill-small', () => this._copyNow());
+        this._copy = pillButton('', 'notchfolk-pill-small', () => this._copyNow());
         this._copyRow.add_child(this._copyText);
         this._copyRow.add_child(this._copy);
         this.add_child(this._copyRow);
@@ -172,11 +172,11 @@ export const PhoneView = GObject.registerClass({
         this._sync();
     }
 
-    /** Shows isled's sharing state (see Share1.State). */
+    /** Shows notchfolkd's sharing state (see Share1.State). */
     update(state) {
         this._state = state;
-        // A phone taken off with × stays off here, whatever a state from before isled heard of it says;
-        // forgotten once isled lists it no more.
+        // A phone taken off with × stays off here, whatever a state from before notchfolkd heard of it says;
+        // forgotten once notchfolkd lists it no more.
         const listed = state?.phones ?? [];
         for (const id of [...this._removing]) {
             if (!listed.some(phone => phone.id === id))
@@ -220,9 +220,9 @@ export const PhoneView = GObject.registerClass({
         const warn = ['public', 'open'].includes(state?.network);
         this._stepTexts[0].text = warn ? note : STEPS[0];
         if (warn)
-            this._stepTexts[0].add_style_class_name('isle-phone-warning');
+            this._stepTexts[0].add_style_class_name('notchfolk-phone-warning');
         else
-            this._stepTexts[0].remove_style_class_name('isle-phone-warning');
+            this._stepTexts[0].remove_style_class_name('notchfolk-phone-warning');
         // Asked, the rows say it all; with three phones in, the title makes room.
         this._title.visible = asks === 0 && phones < 3;
         this._note.visible = connected && Boolean(note) && asks + phones < 3;
@@ -277,15 +277,15 @@ export const PhoneView = GObject.registerClass({
     /** A phone asking: its code, what it is and where from; Deny and Allow answer this phone, whatever
      * else comes or goes meanwhile. */
     _askRow({id, code, device, address}) {
-        const row = new St.BoxLayout({style_class: 'isle-phone-row isle-phone-ask'});
+        const row = new St.BoxLayout({style_class: 'notchfolk-phone-row notchfolk-phone-ask'});
         const words = new St.BoxLayout({...VERTICAL, x_expand: true, y_align: Clutter.ActorAlign.CENTER});
-        words.add_child(label(`Code ${code}`, 'isle-phone-code-text'));
-        const what = label(`${device} · ${address}`, 'isle-phone-hint');
+        words.add_child(label(`Code ${code}`, 'notchfolk-phone-code-text'));
+        const what = label(`${device} · ${address}`, 'notchfolk-phone-hint');
         wrapLines(what);
         words.add_child(what);
         row.add_child(words);
-        const deny = pillButton('Deny', 'isle-pill-small', () => this.emit('answer', id, false));
-        const allow = pillButton('Allow', 'isle-pill-small isle-pill-white isle-pill-decision', () => this.emit('answer', id, true));
+        const deny = pillButton('Deny', 'notchfolk-pill-small', () => this.emit('answer', id, false));
+        const allow = pillButton('Allow', 'notchfolk-pill-small notchfolk-pill-white notchfolk-pill-decision', () => this.emit('answer', id, true));
         deny.accessible_name = `Deny ${device} with code ${code}`;
         allow.accessible_name = `Allow ${device} with code ${code}`;
         row.add_child(deny);
@@ -296,13 +296,13 @@ export const PhoneView = GObject.registerClass({
     /** A phone let in, with × to take it off; taken off, the row says so in place, then goes. */
     _phoneRow(phone) {
         const {id, device} = phone;
-        const row = new St.BoxLayout({style_class: 'isle-phone-row isle-phone-status'});
-        row._dot = new St.Widget({style_class: 'isle-phone-dot', y_align: Clutter.ActorAlign.CENTER});
+        const row = new St.BoxLayout({style_class: 'notchfolk-phone-row notchfolk-phone-status'});
+        row._dot = new St.Widget({style_class: 'notchfolk-phone-dot', y_align: Clutter.ActorAlign.CENTER});
         row.add_child(row._dot);
-        row._text = label('', 'isle-phone-status-text', {x_expand: true});
+        row._text = label('', 'notchfolk-phone-status-text', {x_expand: true});
         wrapLines(row._text);
         row.add_child(row._text);
-        row._remove = iconButton('isle-close-symbolic', 'isle-phone-remove', () => {
+        row._remove = iconButton('notchfolk-close-symbolic', 'notchfolk-phone-remove', () => {
             this._removing.add(id);
             this.emit('remove', id);
             this._leave(row, `✓ ${row._device} disconnected`);
@@ -320,10 +320,10 @@ export const PhoneView = GObject.registerClass({
         row._text.text = here ? `${device} · ${address}` : `${device} · ${address} · away`;
         if (here) {
             row._dot.add_style_class_name('on');
-            row.remove_style_class_name('isle-phone-away');
+            row.remove_style_class_name('notchfolk-phone-away');
         } else {
             row._dot.remove_style_class_name('on');
-            row.add_style_class_name('isle-phone-away');
+            row.add_style_class_name('notchfolk-phone-away');
         }
     }
 
@@ -334,7 +334,7 @@ export const PhoneView = GObject.registerClass({
             return;
         row._leaving = true;
         row._text.text = text;
-        row.add_style_class_name('isle-phone-leaving');
+        row.add_style_class_name('notchfolk-phone-leaving');
         row._dot.opacity = 0;
         row._remove.opacity = 0;
         row._remove.reactive = row._remove.can_focus = false;

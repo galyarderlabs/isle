@@ -158,7 +158,7 @@ class GlassBackdrop extends St.Widget {
         this._windows = new Map();
         this._watched = new Set();
         this._later = 0;
-        // Going with the island (Isle off, the shell shutting down): its signals and copies go with it; only a
+        // Going with the island (Notchfolk off, the shell shutting down): its signals and copies go with it; only a
         // pending look is taken back, as the shell may already be gone.
         this.connect('destroy', () => {
             this._on = false;

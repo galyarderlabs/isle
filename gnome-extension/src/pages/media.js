@@ -55,7 +55,7 @@ class MediaPage extends Page {
     /** Builds all three layouts up front; only the mode's is shown. */
     _init(daemon, audio, {height}) {
         super._init(daemon, {
-            style_class: 'isle-page isle-media',
+            style_class: 'notchfolk-page notchfolk-media',
             layout_manager: new Clutter.BinLayout(),
             height,
         });
@@ -88,7 +88,7 @@ class MediaPage extends Page {
         // Left out of the island, it follows the songs again once it is back.
         this.connect('availability-changed', () => !this.hidden && this._update());
         this.watch(['players'], () => this._syncPlayers());
-        // isled forgets it when it restarts (and a shell restarted while open left it on): told again.
+        // notchfolkd forgets it when it restarts (and a shell restarted while open left it on): told again.
         this._daemonHandlers.push(daemon.connect('appeared', (_daemon, name) => {
             if (name === 'media')
                 this._syncWatching({again: true});
@@ -138,7 +138,7 @@ class MediaPage extends Page {
 
         const badgeIcon = new St.Icon({icon_size: Math.min(22, Math.round(size * 0.3))});
         const badge = new St.Bin({
-            style_class: 'isle-app-badge',
+            style_class: 'notchfolk-app-badge',
             child: badgeIcon,
             x_expand: true,
             y_expand: true,
@@ -165,7 +165,7 @@ class MediaPage extends Page {
 
     /** Title over artist, each cut short with an ellipsis. */
     _texts(titleClass, artistClass) {
-        const box = new St.BoxLayout({...VERTICAL, x_expand: true, y_align: Clutter.ActorAlign.CENTER, style_class: 'isle-player-texts'});
+        const box = new St.BoxLayout({...VERTICAL, x_expand: true, y_align: Clutter.ActorAlign.CENTER, style_class: 'notchfolk-player-texts'});
         const title = label('', titleClass);
         const artist = label('', artistClass);
         for (const text of [title, artist]) {
@@ -179,9 +179,9 @@ class MediaPage extends Page {
 
     /** Elapsed time, scrubber and time left; letting go of the scrubber seeks. */
     _progress() {
-        const row = new St.BoxLayout({style_class: 'isle-player-progress'});
-        const elapsed = label('0:00', 'isle-time');
-        const remaining = label('\u22120:00', 'isle-time isle-time-end');
+        const row = new St.BoxLayout({style_class: 'notchfolk-player-progress'});
+        const elapsed = label('0:00', 'notchfolk-time');
+        const remaining = label('\u22120:00', 'notchfolk-time notchfolk-time-end');
         const scrubber = new Slider();
         scrubber.connect('released', (_slider, fraction) => {
             const length = this.daemon.state.nowPlaying?.length_us ?? 0;
@@ -199,12 +199,12 @@ class MediaPage extends Page {
 
     /** Previous, play or pause, and next. */
     _transport() {
-        const row = new St.BoxLayout({style_class: 'isle-transport', y_align: Clutter.ActorAlign.CENTER});
-        const play = iconButton('isle-play-symbolic', 'isle-button-flat isle-play',
+        const row = new St.BoxLayout({style_class: 'notchfolk-transport', y_align: Clutter.ActorAlign.CENTER});
+        const play = iconButton('notchfolk-play-symbolic', 'notchfolk-button-flat notchfolk-play',
             () => this.daemon.call('media', 'PlayPause'), {size: 22, accessibleName: 'Play or pause'});
-        const previous = iconButton('isle-backward-symbolic', 'isle-button-flat',
+        const previous = iconButton('notchfolk-backward-symbolic', 'notchfolk-button-flat',
             () => this.daemon.call('media', 'Previous'), {size: 18, accessibleName: 'Previous'});
-        const next = iconButton('isle-forward-symbolic', 'isle-button-flat',
+        const next = iconButton('notchfolk-forward-symbolic', 'notchfolk-button-flat',
             () => this.daemon.call('media', 'Next'), {size: 18, accessibleName: 'Next'});
         for (const button of [previous, play, next])
             row.add_child(button);
@@ -215,7 +215,7 @@ class MediaPage extends Page {
 
     /** A button switching to `mode` and back; while its mode is shown it is lit and its icon fills in. */
     _modeButton(mode, iconName, accessibleName, on) {
-        return iconButton(on ? `${iconName}-fill` : iconName, `isle-button-flat isle-mode-toggle${on ? ' on' : ''}`,
+        return iconButton(on ? `${iconName}-fill` : iconName, `notchfolk-button-flat notchfolk-mode-toggle${on ? ' on' : ''}`,
             () => this._toggleMode(mode), {size: 18, accessibleName});
     }
 
@@ -223,29 +223,29 @@ class MediaPage extends Page {
 
     /** The standard view: cover beside title, mode buttons, progress and controls. */
     _buildPlayer() {
-        const player = new St.BoxLayout({style_class: 'isle-player', x_expand: true, y_expand: true});
+        const player = new St.BoxLayout({style_class: 'notchfolk-player', x_expand: true, y_expand: true});
         player.add_child(this._art(ART_SIZE, 16));
 
-        const column = new St.BoxLayout({...VERTICAL, x_expand: true, y_align: Clutter.ActorAlign.CENTER, style_class: 'isle-player-column'});
+        const column = new St.BoxLayout({...VERTICAL, x_expand: true, y_align: Clutter.ActorAlign.CENTER, style_class: 'notchfolk-player-column'});
         // Title and artist, with lyrics and output as small buttons at the right.
-        const head = new St.BoxLayout({style_class: 'isle-player-head'});
-        const texts = this._texts('isle-track-title', 'isle-track-subtitle');
+        const head = new St.BoxLayout({style_class: 'notchfolk-player-head'});
+        const texts = this._texts('notchfolk-track-title', 'notchfolk-track-subtitle');
         texts.y_align = Clutter.ActorAlign.START;
         head.add_child(texts);
-        const modes = new St.BoxLayout({style_class: 'isle-player-modes', y_align: Clutter.ActorAlign.START});
+        const modes = new St.BoxLayout({style_class: 'notchfolk-player-modes', y_align: Clutter.ActorAlign.START});
         // With more than one player running: switch to the next, shown by its app's icon.
         this._playerIcon = new St.Icon({icon_size: 16});
-        this._playerSwitch = new St.Button({style_class: 'isle-button isle-button-flat isle-player-switch', child: this._playerIcon,
+        this._playerSwitch = new St.Button({style_class: 'notchfolk-button notchfolk-button-flat notchfolk-player-switch', child: this._playerIcon,
             can_focus: true, visible: false});
         this._playerSwitch.connect('clicked', () => {
             if (this._nextPlayer)
                 this.daemon.call('media', 'Choose', this._nextPlayer.name);
         });
         modes.add_child(this._playerSwitch);
-        modes.add_child(this._modeButton('lyrics', 'isle-lyrics', 'Show lyrics', false));
-        modes.add_child(this._modeButton('audio', 'isle-output', 'Volume and output', false));
+        modes.add_child(this._modeButton('lyrics', 'notchfolk-lyrics', 'Show lyrics', false));
+        modes.add_child(this._modeButton('audio', 'notchfolk-output', 'Volume and output', false));
         // While paused: put this player away until it plays again (a tab's video that is over).
-        this._dismiss = iconButton('isle-close-symbolic', 'isle-button-flat isle-player-dismiss',
+        this._dismiss = iconButton('notchfolk-close-symbolic', 'notchfolk-button-flat notchfolk-player-dismiss',
             () => this.daemon.call('media', 'Dismiss'), {size: 14, accessibleName: 'Hide until it plays again'});
         this._dismiss.visible = false;
         modes.add_child(this._dismiss);
@@ -263,26 +263,26 @@ class MediaPage extends Page {
 
     /** The player in a column beside the lyrics. */
     _buildLyricsLayout() {
-        const layout = new St.BoxLayout({style_class: 'isle-lyrics-layout', x_expand: true, y_expand: true});
+        const layout = new St.BoxLayout({style_class: 'notchfolk-lyrics-layout', x_expand: true, y_expand: true});
 
-        const side = new St.BoxLayout({...VERTICAL, style_class: 'isle-lyrics-side', y_align: Clutter.ActorAlign.CENTER});
-        const top = new St.BoxLayout({style_class: 'isle-player-top'});
+        const side = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-lyrics-side', y_align: Clutter.ActorAlign.CENTER});
+        const top = new St.BoxLayout({style_class: 'notchfolk-player-top'});
         top.add_child(this._art(64, 12));
-        const texts = this._texts('isle-side-title', 'isle-side-artist');
+        const texts = this._texts('notchfolk-side-title', 'notchfolk-side-artist');
         this._lyricsBars = new Bars({height: 11});
         this._lyricsBars.x_align = Clutter.ActorAlign.START;
-        this._lyricsBars.add_style_class_name('isle-side-bars');
+        this._lyricsBars.add_style_class_name('notchfolk-side-bars');
         texts.add_child(this._lyricsBars);
         top.add_child(texts);
         side.add_child(top);
         side.add_child(this._progress());
 
-        const controls = new St.BoxLayout({style_class: 'isle-lyrics-controls'});
-        controls.add_child(this._modeButton('lyrics', 'isle-lyrics', 'Hide lyrics', true));
+        const controls = new St.BoxLayout({style_class: 'notchfolk-lyrics-controls'});
+        controls.add_child(this._modeButton('lyrics', 'notchfolk-lyrics', 'Hide lyrics', true));
         const transport = this._transport();
         transport.set({x_expand: true, x_align: Clutter.ActorAlign.CENTER});
         controls.add_child(transport);
-        controls.add_child(this._modeButton('audio', 'isle-output', 'Volume and output', false));
+        controls.add_child(this._modeButton('audio', 'notchfolk-output', 'Volume and output', false));
         side.add_child(controls);
 
         this._lyricsPane = new LyricsPane(this);
@@ -295,10 +295,10 @@ class MediaPage extends Page {
 
     /** Volume, then the outputs to choose from. */
     _buildAudioLayout() {
-        const layout = new St.BoxLayout({...VERTICAL, style_class: 'isle-audio-layout', x_expand: true, y_expand: true, visible: false});
+        const layout = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-audio-layout', x_expand: true, y_expand: true, visible: false});
 
-        const volume = new St.BoxLayout({style_class: 'isle-volume-row'});
-        this._muteButton = iconButton('audio-volume-high-symbolic', 'isle-button-flat',
+        const volume = new St.BoxLayout({style_class: 'notchfolk-volume-row'});
+        this._muteButton = iconButton('audio-volume-high-symbolic', 'notchfolk-button-flat',
             () => this._audio.toggleMuted(), {size: 18, accessibleName: 'Mute'});
         this._volumeSlider = new Slider({scrollStep: 0.05});
         this._volumeSlider.connect('value-changed', (_slider, value) => {
@@ -307,14 +307,14 @@ class MediaPage extends Page {
                 return;
             this._audio.volume = value;
         });
-        this._volumeText = label('', 'isle-volume-text');
+        this._volumeText = label('', 'notchfolk-volume-text');
         volume.add_child(this._muteButton);
         volume.add_child(this._volumeSlider);
         volume.add_child(this._volumeText);
-        volume.add_child(this._modeButton('audio', 'isle-output', 'Back to the player', true));
+        volume.add_child(this._modeButton('audio', 'notchfolk-output', 'Back to the player', true));
         layout.add_child(volume);
 
-        this._outputList = new St.BoxLayout({...VERTICAL, style_class: 'isle-output-list'});
+        this._outputList = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-output-list'});
         const scroll = new St.ScrollView({
             hscrollbar_policy: St.PolicyType.NEVER,
             // Scrolls with the wheel or touchpad; no scrollbar over the rows.
@@ -331,13 +331,13 @@ class MediaPage extends Page {
     _buildEmpty() {
         const box = new St.BoxLayout({
             ...VERTICAL,
-            style_class: 'isle-empty',
+            style_class: 'notchfolk-empty',
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
         });
-        box.add_child(new St.Icon({gicon: icon('isle-music'), icon_size: 28, style_class: 'isle-empty-icon'}));
-        box.add_child(label('Nothing playing', 'isle-empty-title', {x_align: Clutter.ActorAlign.CENTER}));
-        box.add_child(label('Play something in Spotify or on YouTube', 'isle-empty-hint', {x_align: Clutter.ActorAlign.CENTER}));
+        box.add_child(new St.Icon({gicon: icon('notchfolk-music'), icon_size: 28, style_class: 'notchfolk-empty-icon'}));
+        box.add_child(label('Nothing playing', 'notchfolk-empty-title', {x_align: Clutter.ActorAlign.CENTER}));
+        box.add_child(label('Play something in Spotify or on YouTube', 'notchfolk-empty-hint', {x_align: Clutter.ActorAlign.CENTER}));
         return box;
     }
 
@@ -403,7 +403,7 @@ class MediaPage extends Page {
             art.setPath(nowPlaying.art_path);
         this._updateTint(nowPlaying.art_path);
 
-        const playIcon = nowPlaying.status === 'Playing' ? 'isle-pause-symbolic' : 'isle-play-symbolic';
+        const playIcon = nowPlaying.status === 'Playing' ? 'notchfolk-pause-symbolic' : 'notchfolk-play-symbolic';
         this._dismiss.visible = nowPlaying.status !== 'Playing';
         for (const button of this._playButtons)
             setButtonIcon(button, playIcon);
@@ -431,7 +431,7 @@ class MediaPage extends Page {
         this._playerSwitch.visible = Boolean(this._nextPlayer);
         if (!this._nextPlayer)
             return;
-        this._playerIcon.gicon = Playback.playerApp(this._nextPlayer)?.get_icon() ?? icon('isle-music');
+        this._playerIcon.gicon = Playback.playerApp(this._nextPlayer)?.get_icon() ?? icon('notchfolk-music');
         this._playerSwitch.accessible_name = `Switch to ${this._nextPlayer.identity}`;
     }
 
@@ -464,19 +464,19 @@ class MediaPage extends Page {
         this._outputsKey = key;
         this._outputList.destroy_all_children();
         for (const output of outputs) {
-            const row = new St.BoxLayout({style_class: 'isle-output-row', x_expand: true, x_align: Clutter.ActorAlign.FILL});
+            const row = new St.BoxLayout({style_class: 'notchfolk-output-row', x_expand: true, x_align: Clutter.ActorAlign.FILL});
             row.add_child(new St.Icon({gicon: output.gicon ? ownIcon(output.gicon) : icon('audio-speakers-symbolic'), fallback_icon_name: 'audio-speakers-symbolic', icon_size: 18, y_align: Clutter.ActorAlign.CENTER}));
             const texts = new St.BoxLayout({...VERTICAL, x_expand: true, y_align: Clutter.ActorAlign.CENTER});
-            texts.add_child(label(output.name, 'isle-output-name'));
+            texts.add_child(label(output.name, 'notchfolk-output-name'));
             if (output.detail)
-                texts.add_child(label(output.detail, 'isle-output-detail'));
+                texts.add_child(label(output.detail, 'notchfolk-output-detail'));
             row.add_child(texts);
             // The current output is marked with a check.
-            const check = new St.Icon({gicon: icon('isle-check-symbolic'), icon_size: 14, opacity: output.active ? 255 : 0, y_align: Clutter.ActorAlign.CENTER});
+            const check = new St.Icon({gicon: icon('notchfolk-check-symbolic'), icon_size: 14, opacity: output.active ? 255 : 0, y_align: Clutter.ActorAlign.CENTER});
             row.add_child(check);
 
             const button = new St.Button({
-                style_class: `isle-output-button${output.active ? ' active' : ''}`,
+                style_class: `notchfolk-output-button${output.active ? ' active' : ''}`,
                 child: row,
                 x_expand: true,
                 x_align: Clutter.ActorAlign.FILL,
@@ -551,18 +551,18 @@ class MediaPage extends Page {
         this._syncWatching();
     }
 
-    /** Has isled read the player every second while the position shows (see Media1.SetWatching); never
-     * while closed, so a closed island costs nothing. `again` tells isled even if unchanged. */
+    /** Has notchfolkd read the player every second while the position shows (see Media1.SetWatching); never
+     * while closed, so a closed island costs nothing. `again` tells notchfolkd even if unchanged. */
     _syncWatching({again = false} = {}) {
         const watching = this.active && this._mode !== 'audio' && !this._destroyed;
         if (watching === Boolean(this._watching) && !again)
             return;
         this._watching = watching;
-        // An isled from before SetWatching only keeps the old timing.
+        // An notchfolkd from before SetWatching only keeps the old timing.
         this.daemon.attemptQuietly('media', 'SetWatching', watching);
     }
 
-    /** Stops listening to the audio outputs, and isled reading the player. */
+    /** Stops listening to the audio outputs, and notchfolkd reading the player. */
     _onDestroy() {
         this._audioIds.forEach(id => this._audio.disconnect(id));
         if (this._watching)

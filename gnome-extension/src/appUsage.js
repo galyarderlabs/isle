@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// App usage: times the application in front and sends its stretches to isled, which keeps the days.
+// App usage: times the application in front and sends its stretches to notchfolkd, which keeps the days.
 // Event driven: focus changes, the five-minute idle pause and its wake, and the Apps page asking move
 // the session; stretches wait in the extension and go at most once a minute. See docs/product-spec.md.
 
@@ -14,12 +14,12 @@ import {AppUsageSession} from './appUsageSession.js';
 
 /** A focused app counts until five minutes without input, unless the session is held awake (a video). */
 const IDLE_MS = 5 * 60 * 1000;
-/** How often buffered stretches go to isled; the page asks too when it opens. */
+/** How often buffered stretches go to notchfolkd; the page asks too when it opens. */
 const REPORT_MS = 60 * 1000;
 /** The session manager's "idle" inhibit flag: a player holding the session awake. */
 const INHIBIT_IDLE = 8;
 
-/** Times the focused app, while `enabled`; isled stores and sums it. */
+/** Times the focused app, while `enabled`; notchfolkd stores and sums it. */
 export class AppUsage {
     constructor(daemon) {
         this._daemon = daemon;
@@ -216,7 +216,7 @@ export class AppUsage {
         await this._flush();
     }
 
-    /** Sends the buffered stretches in one call, if isled is there to take them. */
+    /** Sends the buffered stretches in one call, if notchfolkd is there to take them. */
     _flush() {
         if (!this._daemon.running || this._reports.size === 0)
             return Promise.resolve();
@@ -226,15 +226,15 @@ export class AppUsage {
         return (this._pending = this._daemon.attemptQuietly('appUsage', 'Report', stretches).then(({result, error,
             unknownMethod}) => {
             if (!result && error)
-                console.warn(`Isle: app usage report refused: ${error}`);
-            // isled went away mid-call, or one from before App usage runs until the next login: kept for the
-            // isled that takes them, unless cleared meanwhile.
+                console.warn(`Notchfolk: app usage report refused: ${error}`);
+            // notchfolkd went away mid-call, or one from before App usage runs until the next login: kept for the
+            // notchfolkd that takes them, unless cleared meanwhile.
             if (!result && (unknownMethod || !this._daemon.running) && generation === this._generation)
                 this._reports.restore(taken);
         }));
     }
 
-    /** Forgets what is recorded, then goes on timing the app in front; whether isled forgot it. */
+    /** Forgets what is recorded, then goes on timing the app in front; whether notchfolkd forgot it. */
     async clear() {
         this._generation++;
         this._session.end();

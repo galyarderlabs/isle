@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2026 zickrian
-# Installs the latest ready-built Isle release into the user's home folder, usually piped from curl.
-# ISLE_VERSION=1.0.5 picks a release, ISLE_PACKAGE=<tarball> installs a downloaded one, ISLE_FORCE=1 any GNOME.
+# Installs the latest ready-built Notchfolk release into the user's home folder, usually piped from curl.
+# NOTCHFOLK_VERSION=1.0.5 picks a release, NOTCHFOLK_PACKAGE=<tarball> installs a downloaded one, NOTCHFOLK_FORCE=1 any GNOME.
 set -euo pipefail
 
 REPO="galyarderlabs/notchfolk"
@@ -14,40 +14,40 @@ RETRY_WAIT=20
 # A step's heading, in bold.
 say() { printf '\033[1m==> %s\033[0m\n' "$*"; }
 # Says what went wrong and stops.
-fail() { printf 'Isle: %s\n' "$*" >&2; exit 1; }
+fail() { printf 'Notchfolk: %s\n' "$*" >&2; exit 1; }
 
-# Turns away root, missing tools and a GNOME Shell outside 46 to 51 (unless ISLE_FORCE=1).
+# Turns away root, missing tools and a GNOME Shell outside 46 to 51 (unless NOTCHFOLK_FORCE=1).
 check() {
     # Everything goes to your own home folder: sudo would put it in root's, where your desktop never looks.
-    [ "$(id -u)" -ne 0 ] || fail "run this as yourself, without sudo; Isle installs to your own home folder."
+    [ "$(id -u)" -ne 0 ] || fail "run this as yourself, without sudo; Notchfolk installs to your own home folder."
     local tool
     for tool in curl tar sha256sum gsettings glib-compile-schemas; do
         command -v "$tool" >/dev/null || fail "please install $tool first."
     done
-    command -v gnome-shell >/dev/null || fail "GNOME Shell was not found; Isle is a GNOME Shell extension."
+    command -v gnome-shell >/dev/null || fail "GNOME Shell was not found; Notchfolk is a GNOME Shell extension."
     case "${XDG_CURRENT_DESKTOP:-}" in
         *GNOME*) ;;
-        *) echo "Note: this session's desktop is '${XDG_CURRENT_DESKTOP:-unknown}', not GNOME; Isle shows up once you log in to GNOME." ;;
+        *) echo "Note: this session's desktop is '${XDG_CURRENT_DESKTOP:-unknown}', not GNOME; Notchfolk shows up once you log in to GNOME." ;;
     esac
     local version
     version="$(gnome-shell --version 2>/dev/null | grep -oE '[0-9]+' | head -n1 || true)"
     if [ -z "$version" ] || [ "$version" -lt 46 ] || [ "$version" -gt 51 ]; then
-        [ "${ISLE_FORCE:-}" = 1 ] ||
-            fail "Isle is made for GNOME Shell 46 to 51, and this is GNOME Shell ${version:-unknown}. Nothing was changed. (ISLE_FORCE=1 installs anyway.)"
-        echo "Note: GNOME Shell ${version:-unknown} is not one Isle was made for; installing anyway."
+        [ "${NOTCHFOLK_FORCE:-}" = 1 ] ||
+            fail "Notchfolk is made for GNOME Shell 46 to 51, and this is GNOME Shell ${version:-unknown}. Nothing was changed. (NOTCHFOLK_FORCE=1 installs anyway.)"
+        echo "Note: GNOME Shell ${version:-unknown} is not one Notchfolk was made for; installing anyway."
     fi
 }
 
 # The download found without GitHub's API, which answers an address 60 times an hour: the latest
 # release's tag from where its page leads, and the file by its name.
 web_package() {
-    local tag="v${ISLE_VERSION:-}" url
-    if [ -z "${ISLE_VERSION:-}" ]; then
+    local tag="v${NOTCHFOLK_VERSION:-}" url
+    if [ -z "${NOTCHFOLK_VERSION:-}" ]; then
         tag="$(curl -fsLI -o /dev/null -w '%{url_effective}' "https://github.com/$REPO/releases/latest")" || return 1
         tag="${tag##*/}"
     fi
     [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || return 1
-    url="https://github.com/$REPO/releases/download/$tag/isle-${tag#v}-$ARCH-linux.tar.gz"
+    url="https://github.com/$REPO/releases/download/$tag/notchfolk-${tag#v}-$ARCH-linux.tar.gz"
     curl -fsLI -o /dev/null "$url" || return 1
     printf '%s\n' "$url"
 }
@@ -55,8 +55,8 @@ web_package() {
 # The release's download for this computer, waiting a little for one just published.
 find_package() {
     local api reply url attempt
-    if [ -n "${ISLE_VERSION:-}" ]; then
-        api="https://api.github.com/repos/$REPO/releases/tags/v$ISLE_VERSION"
+    if [ -n "${NOTCHFOLK_VERSION:-}" ]; then
+        api="https://api.github.com/repos/$REPO/releases/tags/v$NOTCHFOLK_VERSION"
     else
         api="https://api.github.com/repos/$REPO/releases/latest"
     fi
@@ -70,7 +70,7 @@ find_package() {
                 url="$(web_package)" || fail "GitHub limits how often it is asked; try again in an hour."
                 printf '%s\n' "$url"
                 return ;;
-            404) fail "no release ${ISLE_VERSION:+v$ISLE_VERSION }was found at github.com/$REPO/releases." ;;
+            404) fail "no release ${NOTCHFOLK_VERSION:+v$NOTCHFOLK_VERSION }was found at github.com/$REPO/releases." ;;
             *) fail "GitHub answered ${reply##*$'\n'}; try again later." ;;
         esac
         url="$(printf '%s' "$reply" |
@@ -87,44 +87,44 @@ find_package() {
         echo "The release is still being published; trying again in $RETRY_WAIT s." >&2
         sleep "$RETRY_WAIT"
     done
-    fail "no ready-built Isle for $ARCH; build it from source instead (see github.com/$REPO#other-ways-to-install)."
+    fail "no ready-built Notchfolk for $ARCH; build it from source instead (see github.com/$REPO#other-ways-to-install)."
 }
 
-# Downloads and checks the package (or takes ISLE_PACKAGE), then runs its installer.
+# Downloads and checks the package (or takes NOTCHFOLK_PACKAGE), then runs its installer.
 main() {
     check
     WORK="$(mktemp -d)"
     trap 'rm -rf "$WORK"' EXIT
 
-    if [ -n "${ISLE_PACKAGE:-}" ]; then
-        cp "$ISLE_PACKAGE" "$WORK/isle.tar.gz"
+    if [ -n "${NOTCHFOLK_PACKAGE:-}" ]; then
+        cp "$NOTCHFOLK_PACKAGE" "$WORK/notchfolk.tar.gz"
     else
         say "Finding the release"
         local url expected actual
         url="$(find_package)"
         say "Downloading $(basename "$url")"
-        curl -fsSL "$url" -o "$WORK/isle.tar.gz" || fail "the download failed; please try again."
-        curl -fsSL "$url.sha256" -o "$WORK/isle.tar.gz.sha256" || fail "the download failed; please try again."
-        expected="$(cut -d' ' -f1 "$WORK/isle.tar.gz.sha256")"
-        actual="$(sha256sum "$WORK/isle.tar.gz" | cut -d' ' -f1)"
+        curl -fsSL "$url" -o "$WORK/notchfolk.tar.gz" || fail "the download failed; please try again."
+        curl -fsSL "$url.sha256" -o "$WORK/notchfolk.tar.gz.sha256" || fail "the download failed; please try again."
+        expected="$(cut -d' ' -f1 "$WORK/notchfolk.tar.gz.sha256")"
+        actual="$(sha256sum "$WORK/notchfolk.tar.gz" | cut -d' ' -f1)"
         [ "$expected" = "$actual" ] || fail "the download is damaged (checksum mismatch); please try again."
     fi
 
-    tar -C "$WORK" -xzf "$WORK/isle.tar.gz"
+    tar -C "$WORK" -xzf "$WORK/notchfolk.tar.gz"
     local package
-    package="$(find "$WORK" -mindepth 1 -maxdepth 1 -type d -name 'isle-*' | head -n1)"
+    package="$(find "$WORK" -mindepth 1 -maxdepth 1 -type d -name 'notchfolk-*' | head -n1)"
     [ -n "$package" ] || fail "the package has an unexpected layout."
     # Through bash: a /tmp mounted noexec runs no file in it directly.
     bash "$package/install.sh"
 
     # The package's uninstaller stays around as a command.
-    install -Dm755 "$package/uninstall.sh" "$HOME/.local/bin/isle-uninstall"
+    install -Dm755 "$package/uninstall.sh" "$HOME/.local/bin/notchfolk-uninstall"
     echo
     # Not when a speech model is there already (an update, or a voice setup it moved over).
-    if ! compgen -G "${XDG_DATA_HOME:-$HOME/.local/share}/isle/models/ggml-*-q8_0.bin" >/dev/null; then
-        echo "Voice assistant (optional): press Super+I and Set up, or run ~/.local/bin/isle-setup-voice once."
+    if ! compgen -G "${XDG_DATA_HOME:-$HOME/.local/share}/notchfolk/models/ggml-*-q8_0.bin" >/dev/null; then
+        echo "Voice assistant (optional): press Super+I and Set up, or run ~/.local/bin/notchfolk-setup-voice once."
     fi
-    echo "To check it, run ~/.local/bin/isled --doctor; to remove Isle, run ~/.local/bin/isle-uninstall."
+    echo "To check it, run ~/.local/bin/notchfolkd --doctor; to remove Notchfolk, run ~/.local/bin/notchfolk-uninstall."
 }
 
 # All read before anything runs: a download cut short never runs half a script.

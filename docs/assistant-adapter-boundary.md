@@ -8,8 +8,8 @@ the set of six operations every arm must honor. The enum dispatch in
 says so by doing nothing for it, never by faking it.
 
 This describes the current source architecture. The target for the assistant
-inside Isle is Hermes and Oh My Pi (OMP); the other adapters listed here are
-existing code outside this target. Agents outside Isle connect to the separate
+inside Notchfolk is Hermes and Oh My Pi (OMP); the other adapters listed here are
+existing code outside this target. Agents outside Notchfolk connect to the separate
 MCP server through their own client settings.
 
 ## The six operations
@@ -25,12 +25,12 @@ the provider and keeps it up for the next turns until dropped.
 - Oh My Pi spawns `omp --mode rpc-ui --approval-mode always-ask` with its
   native tools, extensions, skills, and rules enabled, then opens its session
   (`open_session`). A session-only overlay changes explicit `bash: allow` to
-  `prompt` and preserves `deny` rules. Native tool approvals use Isle's agent
+  `prompt` and preserves `deny` rules. Native tool approvals use Notchfolk's agent
   alert; other interactive extension dialogs are cancelled.
 - Hermes and OpenAI-compatible endpoints build an API client instead of
   a process, and load their per-provider conversation history from the
   private data directory. Hermes uses its local API server; the gateway is
-  started and permissioned by Hermes, outside Isle's child-process control.
+  started and permissioned by Hermes, outside Notchfolk's child-process control.
 
 ### warm
 
@@ -43,21 +43,21 @@ the provider and keeps it up for the next turns until dropped.
 ### prompt
 
 `Brain::ask(prompt, activity, draft)` runs one turn and returns an
-`Answer` (what to say, the actions Isle runs, whether it listens again).
+`Answer` (what to say, the actions Notchfolk runs, whether it listens again).
 
 - `activity` hears progress steps ("Searching the web for …").
 - `draft` hears the running text as it is written, so the island shows
   the answer forming. Antigravity is the exception: it reports activity
   only and sends no draft.
-- The answer is always Isle's action JSON (see `answer.rs`): every
-  provider returns it, and Isle runs or asks approval for those Isle actions.
+- The answer is always Notchfolk's action JSON (see `answer.rs`): every
+  provider returns it, and Notchfolk runs or asks approval for those Notchfolk actions.
   This describes the current answer/action path; Hermes and OMP can also keep
   their own native tools. The external MCP server is a separate interface for
   outside agents. Hermes connects with full access: it keeps its own tools,
-  answers as Isle's agent, and Isle runs the desktop actions it asks for.
+  answers as Notchfolk's agent, and Notchfolk runs the desktop actions it asks for.
   Native Hermes tool calls and their approvals stay inside the Hermes API
   server; the current adapter does not surface those approval requests in the
-  Isle alert UI.
+  Notchfolk alert UI.
 
 ### stream
 
@@ -100,7 +100,7 @@ legitimately long answers.
 
 - Claude, Codex, and Antigravity resume by conversation id
   (`Brain::conversation`, `Brain::forget`).
-- Oh My Pi resumes by session directory under Isle's private data
+- Oh My Pi resumes by session directory under Notchfolk's private data
   directory (`omp-<pid>-<n>`), guarded to stay inside it.
 - Hermes and OpenAI-compatible endpoints report no conversation id:
   their provider-side state is the history file, loaded when the client
@@ -110,29 +110,29 @@ legitimately long answers.
 ## What is not the boundary
 
 - The external MCP server is not a provider: today it exposes a selected set
-  of Isle tools to external agents and does not answer as the assistant. It is
+  of Notchfolk tools to external agents and does not answer as the assistant. It is
   separate from the in-app assistant's answer/action path. External agents
   connect to it through their own MCP settings.
 - Model discovery is not part of a turn: `ListModels` (Hermes and
   OpenAI-compatible endpoints via `/models`, Oh My Pi via RPC
   `get_available_models`) feeds the settings picker only.
 - Current personality settings are one `voice-custom-instructions` value,
-  added to supported non-Hermes prompts. The target's Isle-managed
+  added to supported non-Hermes prompts. The target's Notchfolk-managed
   `SOUL.md`, `USER.md`, and `MEMORY.md` files do not exist yet. Hermes keeps
-  its own personality and memory files, and Isle only adds its desktop
+  its own personality and memory files, and Notchfolk only adds its desktop
   instructions.
 
 ## Target product boundary
 
-The in-app assistant target is Hermes and OMP. Both use Isle's in-app
-answer/action path for Isle-owned actions; Isle applies its own permission and
+The in-app assistant target is Hermes and OMP. Both use Notchfolk's in-app
+answer/action path for Notchfolk-owned actions; Notchfolk applies its own permission and
 approval checks there. OMP keeps its native coding-agent tools and runtime
 behavior. The target does not require Hermes or OMP to call MCP.
 
-The external MCP server has a different purpose: expose all Isle data and
-actions as tools to agents running outside Isle. The external agent stores the
+The external MCP server has a different purpose: expose all Notchfolk data and
+actions as tools to agents running outside Notchfolk. The external agent stores the
 connection in its own MCP settings. The server's tool surface is not a provider
-inside `Brain`, and its MCP setup does not belong in Isle's assistant provider
-settings. Underlying Isle service code may be reused, but the two clients and
+inside `Brain`, and its MCP setup does not belong in Notchfolk's assistant provider
+settings. Underlying Notchfolk service code may be reused, but the two clients and
 interfaces stay distinct. See
 [assistant-platform-plan.md](assistant-platform-plan.md).

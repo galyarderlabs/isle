@@ -1,13 +1,13 @@
-# Isle × GSConnect: Device Integration Plan
+# Notchfolk × GSConnect: Device Integration Plan
 
-This document describes how Isle integrates with GSConnect, the KDE Connect
+This document describes how Notchfolk integrates with GSConnect, the KDE Connect
 implementation for GNOME Shell, so the phone in the user's pocket shows in the
 island the way the laptop's own battery, network and calls already do. The
 remaining work is tracked in [gsconnect-tasks.md](gsconnect-tasks.md).
 
 GSConnect is not required. Every part of this integration degrades to nothing
 when GSConnect is missing, disabled, or has no paired device; no page keeps a
-tab, no status stays, no alert is lost. Isle discovers and follows GSConnect
+tab, no status stays, no alert is lost. Notchfolk discovers and follows GSConnect
 over D-Bus, never by polling, and never by reading GSConnect's files.
 
 ## 1. Why
@@ -16,7 +16,7 @@ The island's job is "know when something changes, at a glance" (see
 product-spec.md, section 1). The phone is the largest source of those changes:
 messages, calls, and its own battery. Today a phone notification reaches the
 island only as a generic GNOME notification, without the sender, the app, or a
-way to answer it. GSConnect already holds that structure, so Isle reads it
+way to answer it. GSConnect already holds that structure, so Notchfolk reads it
 there instead of building its own device stack.
 
 ## 2. D-Bus surface
@@ -33,7 +33,7 @@ GSConnect exports, on the session bus:
   chat messages) and the means to reply to them (telephony `reply`,
   notification `reply`).
 
-Isle's daemon (`isled`) watches these the same way it watches UPower,
+Notchfolk's daemon (`notchfolkd`) watches these the same way it watches UPower,
 NetworkManager and BlueZ (see `system/mod.rs`): a watcher that comes up when
 the name appears on the bus, follows it if the service restarts, and goes away
 cleanly when it does. The extension subscribes to the daemon, never to

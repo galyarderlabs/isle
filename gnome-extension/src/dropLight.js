@@ -26,7 +26,7 @@ const LOOK = {
 };
 /** The flare stays this long before it sinks (the island's 'aura' fade-out follows). */
 const FLARE_MS = 450;
-/** A drop let go over the shelf waits this long for the file to show up in isled's list. */
+/** A drop let go over the shelf waits this long for the file to show up in notchfolkd's list. */
 const LANDING_MS = 1500;
 /** Once its colour is gone, the light keeps moving this long while it fades. */
 const FADE_MS = 700;

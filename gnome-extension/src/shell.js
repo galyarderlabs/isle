@@ -14,19 +14,19 @@ import {clutterBackend, uiScale} from './compat.js';
 import {normalized, restyle} from './panelStyle.js';
 
 // The bar's colour (glass 0% to black 100%) is a declaration in its inline style, which other extensions write
-// too: Isle edits only its own (panelStyle.js) and puts it back if another extension takes it out.
+// too: Notchfolk edits only its own (panelStyle.js) and puts it back if another extension takes it out.
 /** More changes of the bar's style than this in a second are a fight with another extension. */
 const MAX_RESTYLES_PER_SECOND = 5;
 /** Below this opacity (%) the bar's text needs its shadow to read on the wallpaper. */
 const SHADOW_BELOW = 50;
 /** Style class keeping the bar's text white in GNOME's light style too. */
-const BAR_CLASS = 'isle-panel';
+const BAR_CLASS = 'notchfolk-panel';
 /** Style class giving the glass bar's text a shadow to read on any wallpaper. */
-const GLASS_BAR_CLASS = 'isle-glass-bar';
+const GLASS_BAR_CLASS = 'notchfolk-glass-bar';
 /** Style class making the top bar slimmer; see stylesheet.css. */
-const COMPACT_BAR_CLASS = 'isle-compact-bar';
+const COMPACT_BAR_CLASS = 'notchfolk-compact-bar';
 /** Style class making the top bar as tall as the closed island. */
-const NOTCH_BAR_CLASS = 'isle-notch-bar';
+const NOTCH_BAR_CLASS = 'notchfolk-notch-bar';
 /** The space left below the island inside the bar (Settings): the island is this much shorter, the bar
  * keeps its height, so its other buttons stay centred (#14). */
 const GAP_PX = 4;
@@ -40,11 +40,11 @@ const WINDOW_SETTLE_MS = 400;
 // Restyles the top bar around the island (black or glass) and hides the clock and its calendar menu.
 // Signals: `height-changed`, `style-changed` (`blendsIn` may have changed), `calendar-requested` (Super+V).
 export class TopBar extends Signals.EventEmitter {
-    /** Hides the clock at once; Super+V comes to Isle unless Settings leaves it to GNOME. */
+    /** Hides the clock at once; Super+V comes to Notchfolk unless Settings leaves it to GNOME. */
     constructor(settings) {
         super();
         this._settings = settings;
-        /** Every declaration Isle has put in the bar's style, normalized: to tell them from another's. */
+        /** Every declaration Notchfolk has put in the bar's style, normalized: to tell them from another's. */
         this._own = new Set();
         this._toggle = () => this.emit('calendar-requested');
         this._dateMenu = Main.panel.statusArea.dateMenu;
@@ -91,7 +91,7 @@ export class TopBar extends Signals.EventEmitter {
         this._pagesChanged = settings.connect('changed::hidden-pages', () => this._syncCalendar());
         this._syncCalendar();
         this._menuChanged = this._dateMenu.menu.connect('open-state-changed', (menu, open) => {
-            if (open && !this._clockShown && this._superVIsIsle)
+            if (open && !this._clockShown && this._superVIsNotchfolk)
                 menu.close();
         });
     }
@@ -106,23 +106,23 @@ export class TopBar extends Signals.EventEmitter {
         return this._gap * uiScale();
     }
 
-    /** Super+V opens Isle's clipboard, unless left to GNOME or the Shelf page is left out. */
-    get _superVIsIsle() {
-        return this._settings.get_string('super-v') === 'isle' && !this._settings.get_strv('hidden-pages').includes('shelf');
+    /** Super+V opens Notchfolk's clipboard, unless left to GNOME or the Shelf page is left out. */
+    get _superVIsNotchfolk() {
+        return this._settings.get_string('super-v') === 'notchfolk' && !this._settings.get_strv('hidden-pages').includes('shelf');
     }
 
     /** Takes the calendar shortcut over, or gives it back, as the settings now say. */
     _syncCalendar() {
-        if (!this._superVIsIsle) {
+        if (!this._superVIsNotchfolk) {
             this._restoreToggle();
         } else if (Main.panel.toggleCalendar !== this._toggle) {
-            // Another extension's own, put back when Isle stops (GNOME's is the prototype's).
+            // Another extension's own, put back when Notchfolk stops (GNOME's is the prototype's).
             this._priorToggle = Object.hasOwn(Main.panel, 'toggleCalendar') ? Main.panel.toggleCalendar : null;
             Main.panel.toggleCalendar = this._toggle;
         }
     }
 
-    /** Undoes Isle's toggleCalendar, unless another extension has set its own since. */
+    /** Undoes Notchfolk's toggleCalendar, unless another extension has set its own since. */
     _restoreToggle() {
         if (Main.panel.toggleCalendar !== this._toggle)
             return;
@@ -213,7 +213,7 @@ export class TopBar extends Signals.EventEmitter {
         this._dateMenu.reactive = shown;
         if (shown)
             this._dateMenu.set_width(-1);
-        else if (this._superVIsIsle)
+        else if (this._superVIsNotchfolk)
             this._dateMenu.menu.close();
     }
 
@@ -232,10 +232,10 @@ export class TopBar extends Signals.EventEmitter {
         });
     }
 
-    // Another extension that sets the bar's style too would undo Isle's rule each time Isle set it, in a
-    // loop that keeps the shell busy: past a few times a second, Isle gives way until the setting changes.
+    // Another extension that sets the bar's style too would undo Notchfolk's rule each time Notchfolk set it, in a
+    // loop that keeps the shell busy: past a few times a second, Notchfolk gives way until the setting changes.
     _onPanelStyle() {
-        // Isle's own write, or one that kept Isle's colour (however spelt or ordered): no fight.
+        // Notchfolk's own write, or one that kept Notchfolk's colour (however spelt or ordered): no fight.
         if (this._yielded || this._writing || this._wantedStyle() === Main.panel.get_style())
             return;
         const now = GLib.get_monotonic_time();
@@ -243,7 +243,7 @@ export class TopBar extends Signals.EventEmitter {
         this._restyles.push(now);
         if (this._restyles.length > MAX_RESTYLES_PER_SECOND) {
             this._yielded = true;
-            console.warn('Isle: another extension keeps changing the top bar\'s style; Isle stops setting its colour');
+            console.warn('Notchfolk: another extension keeps changing the top bar\'s style; Notchfolk stops setting its colour');
             return;
         }
         this._syncColor();
@@ -258,8 +258,8 @@ export class TopBar extends Signals.EventEmitter {
         return opacity >= 100 ? 'background-color: #000000' : `background-color: rgba(0, 0, 0, ${opacity / 100})`;
     }
 
-    /** The bar's style with Isle's colour at `opacity`, the rest of it left alone: the current one itself when
-     * Isle's colour is already in effect there. */
+    /** The bar's style with Notchfolk's colour at `opacity`, the rest of it left alone: the current one itself when
+     * Notchfolk's colour is already in effect there. */
     _wantedStyle(opacity = this._shownOpacity) {
         const rule = this._barRule(opacity);
         if (rule)
@@ -267,7 +267,7 @@ export class TopBar extends Signals.EventEmitter {
         return restyle(Main.panel.get_style(), rule ? [rule] : [], text => this._own.has(text));
     }
 
-    /** Sets Isle's colour, leaving the rest of the style alone; writes nothing when it is in effect already. */
+    /** Sets Notchfolk's colour, leaving the rest of the style alone; writes nothing when it is in effect already. */
     _syncColor(opacity = this._shownOpacity) {
         const wanted = this._wantedStyle(opacity);
         if (wanted === Main.panel.get_style())
@@ -296,7 +296,7 @@ export class TopBar extends Signals.EventEmitter {
         this._settings.disconnect(this._pagesChanged);
         this._restoreToggle();
 
-        // No colour of Isle's: the theme's again.
+        // No colour of Notchfolk's: the theme's again.
         this._syncColor(null);
         setStyleClasses(Main.panel, {
             [BAR_CLASS]: false, [COMPACT_BAR_CLASS]: false, [NOTCH_BAR_CLASS]: false, [GLASS_BAR_CLASS]: false,
@@ -362,14 +362,14 @@ export class OsdHook {
             };
         this._hooks = Object.entries(adapters).map(([name, handled]) => {
             const original = manager[name];
-            // Left in place under another extension's wrapper once Isle stops: then it only passes through.
+            // Left in place under another extension's wrapper once Notchfolk stops: then it only passes through.
             const hook = function (...args) {
-                // Isle failing must not take GNOME's own OSD with it.
+                // Notchfolk failing must not take GNOME's own OSD with it.
                 try {
                     if (!self._destroyed && handled(...args))
                         return;
                 } catch (e) {
-                    console.warn(`Isle: could not show the OSD: ${e.message}`);
+                    console.warn(`Notchfolk: could not show the OSD: ${e.message}`);
                 }
                 original.apply(this, args);
             };

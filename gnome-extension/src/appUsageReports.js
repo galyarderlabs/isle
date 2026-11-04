@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// The stretches waiting to go to isled, apart from GNOME: merge those of one app that touch, and drop
+// The stretches waiting to go to notchfolkd, apart from GNOME: merge those of one app that touch, and drop
 // flicks too short to be a row. `node --test` checks it; appUsage.js sends them once a minute.
 
-/** One merged stretch stays under an hour, and the buffer under what isled takes in one report, so a long
- * wait for isled never builds a report it refuses. */
+/** One merged stretch stays under an hour, and the buffer under what notchfolkd takes in one report, so a long
+ * wait for notchfolkd never builds a report it refuses. */
 const MAX_MERGED_MS = 60 * 60 * 1000;
 const MAX_STRETCHES = 500;
 

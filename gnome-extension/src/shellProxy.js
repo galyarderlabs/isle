@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// isled answers only GNOME Shell for app usage and the clipboard's full texts (see
-// crates/isle-daemon/src/caller.rs), and the MCP server is a program of its own. This exports
+// notchfolkd answers only GNOME Shell for app usage and the clipboard's full texts (see
+// crates/notchfolk-daemon/src/caller.rs), and the MCP server is a program of its own. This exports
 // the three of those the MCP tools need on Shell's own bus name: the call below comes from
-// Shell, isled lets it through, and the MCP scopes on the server still decide who may ask.
+// Shell, notchfolkd lets it through, and the MCP scopes on the server still decide who may ask.
 
 import Gio from 'gi://Gio';
 
-const NAME = 'io.github.zickrian.isle.Shell1';
-const PATH = '/io/github/zickrian/isle/Shell';
+const NAME = 'io.galyarderlabs.notchfolk.Shell1';
+const PATH = '/io/galyarderlabs/notchfolk/Shell';
 
 const XML = `<node><interface name="${NAME}">
     <method name="GetAppStats"><arg type="s" direction="out"/></method>
@@ -26,12 +26,12 @@ export class ShellProxy {
         this._connection = connection;
     }
 
-    /** Takes Shell's name off the bus again; isled's rules need no change of their own. */
+    /** Takes Shell's name off the bus again; notchfolkd's rules need no change of their own. */
     destroy() {
         this._exported.unexport(this._connection);
     }
 
-    /** App usage as isled's JSON, most used first. */
+    /** App usage as notchfolkd's JSON, most used first. */
     async GetAppStats() {
         return (await this._read('appUsage', 'GetStats'))[0];
     }
@@ -46,13 +46,13 @@ export class ShellProxy {
         return (await this._read('clipboard', 'GetText', id))[0];
     }
 
-    /** Asks isled in Shell's name, with its refusal or silence as the caller's answer. */
+    /** Asks notchfolkd in Shell's name, with its refusal or silence as the caller's answer. */
     async _read(name, method, ...args) {
         const {result, error, unknownMethod} = await this._daemon.attempt(name, method, ...args);
         if (error)
             throw new Error(error);
         if (!result)
-            throw new Error(unknownMethod ? `isled has no ${method}` : 'isled did not answer');
+            throw new Error(unknownMethod ? `notchfolkd has no ${method}` : 'notchfolkd did not answer');
         return result;
     }
 }

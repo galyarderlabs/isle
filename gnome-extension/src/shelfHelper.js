@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// Drives `isle-shelf`, the GTK window over the Files tab that does drag and drop
+// Drives `notchfolk-shelf`, the GTK window over the Files tab that does drag and drop
 // (shell actors cannot); started as a drag begins, shown once the island covers it.
 
 import Clutter from 'gi://Clutter';
@@ -14,10 +14,10 @@ import * as Signals from 'resource:///org/gnome/shell/misc/signals.js';
 
 import {px, uiScale} from './compat.js';
 
-const BUS_NAME = 'io.github.zickrian.isle.ShelfWindow';
-const OBJECT_PATH = '/io/github/zickrian/isle/ShelfWindow';
+const BUS_NAME = 'io.galyarderlabs.notchfolk.ShelfWindow';
+const OBJECT_PATH = '/io/galyarderlabs/notchfolk/ShelfWindow';
 const ShelfWindowProxy = Gio.DBusProxy.makeProxyWrapper(`
-<node><interface name="io.github.zickrian.isle.ShelfWindow1">
+<node><interface name="io.galyarderlabs.notchfolk.ShelfWindow1">
   <method name="Show">
     <arg name="x" type="i" direction="in"/><arg name="y" type="i" direction="in"/>
     <arg name="width" type="i" direction="in"/><arg name="height" type="i" direction="in"/>
@@ -75,7 +75,7 @@ const NOT_FILES = /tab|x-moz-place/;
 const MAX_CRASHES = 3;
 const CRASH_WINDOW_US = 10 * 60 * 1000 * 1000;
 /** The helper's window, by its title or its program's name (in WM_CLASS). */
-const WINDOW_NAMES = ['Isle shelf', 'isle-shelf'];
+const WINDOW_NAMES = ['Notchfolk shelf', 'notchfolk-shelf'];
 /** A window this much off the size asked for is drawn at another scale than the island's. */
 const SCALE_SLACK = 0.1;
 const MAX_CORRECTIONS = 2;
@@ -164,7 +164,7 @@ export class ShelfHelper extends Signals.EventEmitter {
                     connection.call_finish(result);
                 } catch (e) {
                     if (!e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
-                        console.warn(`Isle: could not start the shelf helper: ${e.message}`);
+                        console.warn(`Notchfolk: could not start the shelf helper: ${e.message}`);
                 }
             });
     }
@@ -257,7 +257,7 @@ export class ShelfHelper extends Signals.EventEmitter {
                 this._checkScale();
                 return;
             }
-            console.warn(`Isle: shelf helper failed to show: ${error.message}`);
+            console.warn(`Notchfolk: shelf helper failed to show: ${error.message}`);
             // A helper that cannot start (broken install) or hangs (no display) is not
             // retried; the page keeps its own tiles until next login.
             if (error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.TIMED_OUT)) {
@@ -454,7 +454,7 @@ export class ShelfHelper extends Signals.EventEmitter {
             const whole = Math.round(wanted);
             if (whole < 1 || whole > 4 || Math.abs(wanted - whole) > SCALE_SLACK * whole) {
                 // An older helper, or a scale GTK can't draw at: the window at least goes where it belongs.
-                console.warn(`Isle: the shelf helper's window is ${across} stage pixels to its one; placing it by that`);
+                console.warn(`Notchfolk: the shelf helper's window is ${across} stage pixels to its one; placing it by that`);
                 this._unit = across;
                 done();
                 return;
@@ -561,7 +561,7 @@ export class ShelfHelper extends Signals.EventEmitter {
         const now = GLib.get_monotonic_time();
         this._crashes = [...(this._crashes ?? []).filter(at => now - at < CRASH_WINDOW_US), now];
         if (this._crashes.length >= MAX_CRASHES) {
-            console.warn('Isle: the shelf helper keeps quitting; dropping files is off until next login');
+            console.warn('Notchfolk: the shelf helper keeps quitting; dropping files is off until next login');
             this._proxy = null;
             this.emit('available-changed');
             return;

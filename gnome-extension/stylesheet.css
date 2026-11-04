@@ -1,47 +1,47 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /* Copyright (C) 2026 zickrian */
 
-/* Isle. island.js draws the island black; this styles what sits on it (see docs/product-spec.md).
+/* Notchfolk. island.js draws the island black; this styles what sits on it (see docs/product-spec.md).
  * A dark palette: surfaces #1c1c1e #2c2c2e #3a3a3c; accents #30d158 #ff453a #0a84ff #ff9f0a #5e5ce6. */
 
 /* ── Shared ───────────────────────────────────────────── */
 
-/* Inter, installed with Isle. St takes a single quoted family only: a list stops it reading the
+/* Inter, installed with Notchfolk. St takes a single quoted family only: a list stops it reading the
  * rules that follow. */
-#isleIsland {
+#notchfolkIsland {
   color: #ffffff;
   font-family: "Inter Variable";
 }
 
 /* Tabular figures for numbers that change or line up, so they hold still; prose keeps proportional
- * ones ("11:10" and "isle-0.9.1" would space out). */
-.isle-compact-clock, .isle-header-time, .isle-recording-time,
-.isle-timer-time, .isle-stepper-value, .isle-time, .isle-volume-text, .isle-peek-value,
-.isle-call-duration, .isle-cal-event-time, .isle-cal-day, .isle-usage-percent,
-.isle-calorie-total, .isle-calorie-kcal, .isle-prayer-card-time,
-.isle-calorie-ring-val, .isle-prayer-card-countdown {
+ * ones ("11:10" and "notchfolk-0.9.1" would space out). */
+.notchfolk-compact-clock, .notchfolk-header-time, .notchfolk-recording-time,
+.notchfolk-timer-time, .notchfolk-stepper-value, .notchfolk-time, .notchfolk-volume-text, .notchfolk-peek-value,
+.notchfolk-call-duration, .notchfolk-cal-event-time, .notchfolk-cal-day, .notchfolk-usage-percent,
+.notchfolk-calorie-total, .notchfolk-calorie-kcal, .notchfolk-prayer-card-time,
+.notchfolk-calorie-ring-val, .notchfolk-prayer-card-countdown {
   font-feature-settings: "tnum";
 }
 
-.isle-button {
+.notchfolk-button {
   color: #ffffff;
   border-radius: 999px;
   padding: 6px;
   transition-duration: 120ms;
 }
 
-.isle-button:hover { background-color: rgba(255, 255, 255, 0.12); }
-.isle-button:active { background-color: rgba(255, 255, 255, 0.2); }
-.isle-button:focus { color: #ffffff; }
+.notchfolk-button:hover { background-color: rgba(255, 255, 255, 0.12); }
+.notchfolk-button:active { background-color: rgba(255, 255, 255, 0.2); }
+.notchfolk-button:focus { color: #ffffff; }
 
-.isle-button-flat { background-color: transparent; }
+.notchfolk-button-flat { background-color: transparent; }
 
-.isle-button-round { background-color: #2c2c2e; padding: 8px; }
-.isle-button-round:hover { background-color: #3a3a3c; }
-.isle-button-small { padding: 6px; }
+.notchfolk-button-round { background-color: #2c2c2e; padding: 8px; }
+.notchfolk-button-round:hover { background-color: #3a3a3c; }
+.notchfolk-button-small { padding: 6px; }
 
 /* Pill button with text (alert actions). */
-.isle-pill {
+.notchfolk-pill {
   font-weight: 600;
   border-radius: 999px;
   transition-duration: 120ms;
@@ -49,41 +49,41 @@
 
 /* Buttons: grey (solid, so an alert's glow never tints it), white text, lighter under the pointer.
  * 25 px tall wherever they are: an alert's, a card's, Clear. */
-.isle-pill-small {
+.notchfolk-pill-small {
   font-size: 12px;
   padding: 5px 14px;
   color: #ffffff;
   background-color: #2c2c2e;
 }
 
-.isle-pill-small:hover { background-color: #3a3a3c; }
-.isle-pill-small:active { background-color: #48484a; }
+.notchfolk-pill-small:hover { background-color: #3a3a3c; }
+.notchfolk-pill-small:active { background-color: #48484a; }
 
 /* An alert's one thing to do now (Join), in the accent colour. */
-.isle-pill-accent { background-color: #0a84ff; }
-.isle-pill-accent:hover { background-color: #2b95ff; }
-.isle-pill-accent:active { background-color: #0071e3; }
+.notchfolk-pill-accent { background-color: #0a84ff; }
+.notchfolk-pill-accent:hover { background-color: #2b95ff; }
+.notchfolk-pill-accent:active { background-color: #0071e3; }
 
-.isle-art { background-color: #2c2c2e; }
-.isle-art-placeholder { color: rgba(255, 255, 255, 0.4); }
+.notchfolk-art { background-color: #2c2c2e; }
+.notchfolk-art-placeholder { color: rgba(255, 255, 255, 0.4); }
 
-.isle-level {
+.notchfolk-level {
   height: 5px;
   border-radius: 3px;
   background-color: rgba(255, 255, 255, 0.18);
 }
 
-.isle-level-fill { border-radius: 3px; background-color: #ffffff; }
+.notchfolk-level-fill { border-radius: 3px; background-color: #ffffff; }
 
-.isle-bars { spacing: 2px; }
-.isle-bar { width: 3px; border-radius: 2px; background-color: #ffffff; }
+.notchfolk-bars { spacing: 2px; }
+.notchfolk-bar { width: 3px; border-radius: 2px; background-color: #ffffff; }
 
-.isle-empty { spacing: 4px; }
-.isle-empty-icon { color: rgba(255, 255, 255, 0.35); padding-bottom: 4px; }
-.isle-empty-title { font-size: 15px; font-weight: 600; letter-spacing: -0.1px; }
-.isle-empty-hint { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
+.notchfolk-empty { spacing: 4px; }
+.notchfolk-empty-icon { color: rgba(255, 255, 255, 0.35); padding-bottom: 4px; }
+.notchfolk-empty-title { font-size: 15px; font-weight: 600; letter-spacing: -0.1px; }
+.notchfolk-empty-hint { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
 
-.isle-entry {
+.notchfolk-entry {
   color: #ffffff;
   font-size: 13px;
   border-radius: 999px;
@@ -95,23 +95,23 @@
   selected-color: #ffffff;
 }
 
-.isle-entry:focus { background-color: #2c2c2e; }
-.isle-entry StLabel.hint-text { color: rgba(255, 255, 255, 0.45); }
+.notchfolk-entry:focus { background-color: #2c2c2e; }
+.notchfolk-entry StLabel.hint-text { color: rgba(255, 255, 255, 0.45); }
 
 /* Blur my Shell restyles every entry in the shell from an ancestor, with
  * !important (light entries on a black island); the island's keep theirs. */
-#isleIsland .isle-entry { color: #ffffff !important; background-color: #1c1c1e !important; }
-#isleIsland .isle-entry:focus {
+#notchfolkIsland .notchfolk-entry { color: #ffffff !important; background-color: #1c1c1e !important; }
+#notchfolkIsland .notchfolk-entry:focus {
   background-color: #2c2c2e !important;
   box-shadow: none !important;
 }
-#isleIsland .isle-entry StLabel.hint-text { color: rgba(255, 255, 255, 0.45) !important; }
+#notchfolkIsland .notchfolk-entry StLabel.hint-text { color: rgba(255, 255, 255, 0.45) !important; }
 
 /* ── Top bar ──────────────────────────────────────────── */
 
 /* Compact top bar: slimmer than GNOME's 2.2em, so it reads as a thin bezel
  * around the island. Status icons and the tray stay where they are. */
-#panel.isle-compact-bar {
+#panel.notchfolk-compact-bar {
   height: 26px;
   font-size: 13px;
   font-family: "Inter Variable";
@@ -120,38 +120,38 @@
 
 /* Closed island inside the top bar, like a notch: maximised windows start below the bar, the island as tall
  * or, with space below it (Settings), a little shorter. Comes after the compact bar's height so it wins. */
-#panel.isle-notch-bar { height: 32px; }
+#panel.notchfolk-notch-bar { height: 32px; }
 
-/* Isle's bar is black or see-through in light and dark style alike: its text and icons stay white,
+/* Notchfolk's bar is black or see-through in light and dark style alike: its text and icons stay white,
  * as GNOME's light style has them over the overview (it makes them near-black otherwise). */
-#panel.isle-panel .panel-button { color: #ffffff; }
-#panel.isle-panel .panel-button:focus, #panel.isle-panel .panel-button:hover { box-shadow: inset 0 0 0 100px rgba(255, 255, 255, 0.17); }
-#panel.isle-panel .panel-button:active, #panel.isle-panel .panel-button:checked { box-shadow: inset 0 0 0 100px rgba(255, 255, 255, 0.28); }
-#panel.isle-panel .panel-button:active:hover, #panel.isle-panel .panel-button:checked:hover { box-shadow: inset 0 0 0 100px rgba(255, 255, 255, 0.32); }
-#panel.isle-panel .panel-button#panelActivities .workspace-dot { background-color: #ffffff; }
+#panel.notchfolk-panel .panel-button { color: #ffffff; }
+#panel.notchfolk-panel .panel-button:focus, #panel.notchfolk-panel .panel-button:hover { box-shadow: inset 0 0 0 100px rgba(255, 255, 255, 0.17); }
+#panel.notchfolk-panel .panel-button:active, #panel.notchfolk-panel .panel-button:checked { box-shadow: inset 0 0 0 100px rgba(255, 255, 255, 0.28); }
+#panel.notchfolk-panel .panel-button:active:hover, #panel.notchfolk-panel .panel-button:checked:hover { box-shadow: inset 0 0 0 100px rgba(255, 255, 255, 0.32); }
+#panel.notchfolk-panel .panel-button#panelActivities .workspace-dot { background-color: #ffffff; }
 /* Screen recording and sharing keep GNOME's own red and orange (its dark style's, as the bar is). */
-#panel.isle-panel .panel-button.screen-recording-indicator:focus,
-#panel.isle-panel .panel-button.screen-recording-indicator:hover { box-shadow: inset 0 0 0 100px #d61f2d; }
-#panel.isle-panel .panel-button.screen-recording-indicator:active,
-#panel.isle-panel .panel-button.screen-recording-indicator:checked { box-shadow: inset 0 0 0 100px #e02a37; }
-#panel.isle-panel .panel-button.screen-recording-indicator:active:hover,
-#panel.isle-panel .panel-button.screen-recording-indicator:checked:hover { box-shadow: inset 0 0 0 100px #e13340; }
-#panel.isle-panel .panel-button.screen-sharing-indicator:focus,
-#panel.isle-panel .panel-button.screen-sharing-indicator:hover { box-shadow: inset 0 0 0 100px #ff861a; }
-#panel.isle-panel .panel-button.screen-sharing-indicator:active,
-#panel.isle-panel .panel-button.screen-sharing-indicator:checked { box-shadow: inset 0 0 0 100px #ff902e; }
-#panel.isle-panel .panel-button.screen-sharing-indicator:active:hover,
-#panel.isle-panel .panel-button.screen-sharing-indicator:checked:hover { box-shadow: inset 0 0 0 100px #ff9638; }
+#panel.notchfolk-panel .panel-button.screen-recording-indicator:focus,
+#panel.notchfolk-panel .panel-button.screen-recording-indicator:hover { box-shadow: inset 0 0 0 100px #d61f2d; }
+#panel.notchfolk-panel .panel-button.screen-recording-indicator:active,
+#panel.notchfolk-panel .panel-button.screen-recording-indicator:checked { box-shadow: inset 0 0 0 100px #e02a37; }
+#panel.notchfolk-panel .panel-button.screen-recording-indicator:active:hover,
+#panel.notchfolk-panel .panel-button.screen-recording-indicator:checked:hover { box-shadow: inset 0 0 0 100px #e13340; }
+#panel.notchfolk-panel .panel-button.screen-sharing-indicator:focus,
+#panel.notchfolk-panel .panel-button.screen-sharing-indicator:hover { box-shadow: inset 0 0 0 100px #ff861a; }
+#panel.notchfolk-panel .panel-button.screen-sharing-indicator:active,
+#panel.notchfolk-panel .panel-button.screen-sharing-indicator:checked { box-shadow: inset 0 0 0 100px #ff902e; }
+#panel.notchfolk-panel .panel-button.screen-sharing-indicator:active:hover,
+#panel.notchfolk-panel .panel-button.screen-sharing-indicator:checked:hover { box-shadow: inset 0 0 0 100px #ff9638; }
 
 /* The glass bar has no colour, so its text and icons carry a soft shadow to
  * stay readable on a light wallpaper. */
-#panel.isle-glass-bar .panel-button {
+#panel.notchfolk-glass-bar .panel-button {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
   icon-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
 }
 
 /* Medium weight, calmer than the theme's bold. */
-#panel.isle-compact-bar .panel-button {
+#panel.notchfolk-compact-bar .panel-button {
   font-weight: 500;
   border-width: 2px;
   -natural-hpadding: 10px;
@@ -160,48 +160,48 @@
 
 /* ── Compact ──────────────────────────────────────────── */
 
-.isle-compact-row { padding: 0 16px; spacing: 12px; }
-.isle-compact-clock-side { spacing: 12px; }
+.notchfolk-compact-row { padding: 0 16px; spacing: 12px; }
+.notchfolk-compact-clock-side { spacing: 12px; }
 
-.isle-compact-clock { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; }
-.isle-compact-clock-box { spacing: 8px; }
-.isle-compact-status { spacing: 12px; }
-.isle-compact-status-item { spacing: 8px; }
-.isle-compact-rest-date { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, 0.9); letter-spacing: -0.1px; }
-.isle-compact-status-time { font-size: 13px; font-weight: 600; font-feature-settings: "tnum"; }
-.isle-compact-recording-time { color: #ff453a; }
-.isle-compact-notification-count { color: #ff453a; font-size: 11px; font-weight: 700; }
-.isle-compact-assistant-button { width: 34px; height: 34px; padding: 2px; border-radius: 999px; background-color: transparent; }
-.isle-compact-assistant-button:hover,
-.isle-compact-assistant-button:focus { background-color: rgba(255, 255, 255, 0.08); }
+.notchfolk-compact-clock { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; }
+.notchfolk-compact-clock-box { spacing: 8px; }
+.notchfolk-compact-status { spacing: 12px; }
+.notchfolk-compact-status-item { spacing: 8px; }
+.notchfolk-compact-rest-date { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, 0.9); letter-spacing: -0.1px; }
+.notchfolk-compact-status-time { font-size: 13px; font-weight: 600; font-feature-settings: "tnum"; }
+.notchfolk-compact-recording-time { color: #ff453a; }
+.notchfolk-compact-notification-count { color: #ff453a; font-size: 11px; font-weight: 700; }
+.notchfolk-compact-assistant-button { width: 34px; height: 34px; padding: 2px; border-radius: 999px; background-color: transparent; }
+.notchfolk-compact-assistant-button:hover,
+.notchfolk-compact-assistant-button:focus { background-color: rgba(255, 255, 255, 0.08); }
 
 /* Inside the top bar everything is sized like the bar's own text. */
-.isle-compact-in-bar .isle-compact-row { padding: 0 14px; spacing: 12px; }
-.isle-compact-in-bar .isle-compact-clock-side { spacing: 10px; }
-.isle-compact-in-bar .isle-compact-status { spacing: 10px; }
-.isle-compact-in-bar .isle-compact-clock { font-size: 14px; letter-spacing: -0.1px; }
-.isle-compact-in-bar .isle-compact-rest-date { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, 0.9); letter-spacing: -0.1px; }
-.isle-compact-in-bar .isle-compact-status-time { font-size: 12px; }
-.isle-compact-in-bar .isle-compact-assistant-button { width: 30px; height: 30px; padding: 1px; }
+.notchfolk-compact-in-bar .notchfolk-compact-row { padding: 0 14px; spacing: 12px; }
+.notchfolk-compact-in-bar .notchfolk-compact-clock-side { spacing: 10px; }
+.notchfolk-compact-in-bar .notchfolk-compact-status { spacing: 10px; }
+.notchfolk-compact-in-bar .notchfolk-compact-clock { font-size: 14px; letter-spacing: -0.1px; }
+.notchfolk-compact-in-bar .notchfolk-compact-rest-date { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, 0.9); letter-spacing: -0.1px; }
+.notchfolk-compact-in-bar .notchfolk-compact-status-time { font-size: 12px; }
+.notchfolk-compact-in-bar .notchfolk-compact-assistant-button { width: 30px; height: 30px; padding: 1px; }
 
 /* Live activities: privacy dots and screen recording */
 
-.isle-privacy-dots { spacing: 6px; padding-left: 6px; }
-.isle-privacy-dots-in-slot { padding-left: 0; }
+.notchfolk-privacy-dots { spacing: 6px; padding-left: 6px; }
+.notchfolk-privacy-dots-in-slot { padding-left: 0; }
 
-.isle-privacy-dot {
+.notchfolk-privacy-dot {
   width: 7px;
   height: 7px;
   border-radius: 4px;
 }
 
-.isle-privacy-dot.camera { background-color: #34c759; }
-.isle-privacy-dot.microphone { background-color: #ff9f0a; }
-.isle-privacy-dot.screenShare { background-color: #0a84ff; }
+.notchfolk-privacy-dot.camera { background-color: #34c759; }
+.notchfolk-privacy-dot.microphone { background-color: #ff9f0a; }
+.notchfolk-privacy-dot.screenShare { background-color: #0a84ff; }
 /* Sharing the Shelf with a phone: violet, the bot's glow; no other dot is. */
-.isle-privacy-dot.phone { background-color: #bf5af2; }
+.notchfolk-privacy-dot.phone { background-color: #bf5af2; }
 
-.isle-recording-dot {
+.notchfolk-recording-dot {
   width: 10px;
   height: 10px;
   border-radius: 5px;
@@ -209,28 +209,28 @@
 }
 
 /* A call, in green; a red microphone while muted. */
-.isle-call-icon { color: #30d158; }
-.isle-call-muted { color: #ff453a; }
-.isle-compact-call-time { color: #30d158; }
-.isle-compact-call-status { color: #30d158; }
+.notchfolk-call-icon { color: #30d158; }
+.notchfolk-call-muted { color: #ff453a; }
+.notchfolk-compact-call-time { color: #30d158; }
+.notchfolk-compact-call-status { color: #30d158; }
 /* The closed island's right side: its sign, then the privacy dots. */
-.isle-compact-trail { spacing: 6px; }
+.notchfolk-compact-trail { spacing: 6px; }
 /* As large as the clock and on its line: the two times read as one row. */
-.isle-compact-second-time { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
-.isle-compact-in-bar .isle-compact-second-time { font-size: 15px; letter-spacing: -0.1px; }
+.notchfolk-compact-second-time { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
+.notchfolk-compact-in-bar .notchfolk-compact-second-time { font-size: 15px; letter-spacing: -0.1px; }
 
 /* ── Alerts (peek) ────────────────────────────────────── */
 
 /* As much room at the sides as above and below the badge (PADDING in peek.js). */
-.isle-peek-row { padding: 0 12px; spacing: 10px; }
+.notchfolk-peek-row { padding: 0 12px; spacing: 10px; }
 /* At the top, as its texts and the assistant beside them are (peek.js); the room below is in its height. */
-.isle-peek-row-asks { padding: 12px 12px 0 12px; spacing: 12px; }
+.notchfolk-peek-row-asks { padding: 12px 12px 0 12px; spacing: 12px; }
 /* Lit along its edges: more room, so the buttons stay clear of the light (GLOW_PADDING in peek.js). */
-.isle-peek-row-glow { padding: 16px 16px 0 16px; }
+.notchfolk-peek-row-glow { padding: 16px 16px 0 16px; }
 
 /* The badge's colour comes from the alert (peek.js); a hairline on top
  * gives it depth. */
-.isle-peek-icon {
+.notchfolk-peek-icon {
   width: 32px;
   height: 32px;
   border-radius: 16px;
@@ -238,22 +238,22 @@
 }
 
 /* Inside a level ring: a smaller badge, lit like the others (peek.js). */
-.isle-peek-ring-badge {
+.notchfolk-peek-ring-badge {
   width: 22px;
   height: 22px;
   border-radius: 11px;
 }
 
 /* A short state on the right, e.g. Caps Lock "On", in the alert's colour. */
-.isle-peek-status {
+.notchfolk-peek-status {
   font-size: 12px;
   font-weight: 600;
   padding: 3px 10px;
   border-radius: 999px;
 }
-.isle-peek-title { font-size: 14px; font-weight: 600; }
-.isle-peek-subtitle { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
-.isle-peek-code {
+.notchfolk-peek-title { font-size: 14px; font-weight: 600; }
+.notchfolk-peek-subtitle { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
+.notchfolk-peek-code {
     font-family: monospace;
     font-size: 12px;
     color: rgba(255, 255, 255, 0.9);
@@ -263,9 +263,9 @@
     background-color: rgba(255, 255, 255, 0.08);
 }
 /* Its buttons; the space between them is ACTIONS_SPACING in peek.js. */
-.isle-peek-actions { padding-top: 10px; }
+.notchfolk-peek-actions { padding-top: 10px; }
 /* The × on an alert's icon under the pointer (widgets.js `cornerClose`). */
-.isle-corner-close {
+.notchfolk-corner-close {
   padding: 0;
   width: 18px;
   height: 18px;
@@ -273,39 +273,39 @@
   background-color: #3a3a3c;
   border: 1px solid rgba(255, 255, 255, 0.14);
 }
-.isle-corner-close:hover { color: #ffffff; background-color: #4a4a4e; }
-.isle-corner-close:active { background-color: #5a5a5e; }
-.isle-peek-answered { spacing: 6px; padding-top: 9px; }
-.isle-peek-answered-text { font-size: 12px; font-weight: 600; }
-.isle-peek-allowed { color: #30d158; }
-.isle-peek-denied { color: #ff453a; }
-.isle-peek-value { font-size: 20px; font-weight: 600; letter-spacing: -0.5px; }
-.isle-peek-level-box { spacing: 8px; }
-.isle-peek-level-text { font-size: 12px; font-weight: 600; min-width: 30px; text-align: right; }
+.notchfolk-corner-close:hover { color: #ffffff; background-color: #4a4a4e; }
+.notchfolk-corner-close:active { background-color: #5a5a5e; }
+.notchfolk-peek-answered { spacing: 6px; padding-top: 9px; }
+.notchfolk-peek-answered-text { font-size: 12px; font-weight: 600; }
+.notchfolk-peek-allowed { color: #30d158; }
+.notchfolk-peek-denied { color: #ff453a; }
+.notchfolk-peek-value { font-size: 20px; font-weight: 600; letter-spacing: -0.5px; }
+.notchfolk-peek-level-box { spacing: 8px; }
+.notchfolk-peek-level-text { font-size: 12px; font-weight: 600; min-width: 30px; text-align: right; }
 
 /* ── Voice assistant ──────────────────────────────────── */
 
 /* The orb on the left, then what was heard above the answer (voice.js sizes them to match). */
-.isle-voice-row { padding: 14px 16px 20px 16px; spacing: 12px; }
-.isle-voice-orb { border-radius: 999px; }
-.isle-voice-heard { font-size: 12px; color: rgba(255, 255, 255, 0.5); padding-bottom: 2px; }
-.isle-voice-text { font-size: 15px; font-weight: 500; letter-spacing: -0.1px; }
-.isle-voice-text-dim { color: rgba(255, 255, 255, 0.6); }
-.isle-voice-text-long { font-size: 14px; font-weight: 400; color: rgba(255, 255, 255, 0.92); }
-.isle-voice-hint { font-size: 12px; color: rgba(255, 255, 255, 0.5); padding-top: 4px; }
-.isle-voice-steps { spacing: 3px; padding-top: 5px; }
-.isle-voice-step { spacing: 6px; }
-.isle-voice-step-tick { color: rgba(255, 255, 255, 0.45); }
-.isle-voice-step-text { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
-.isle-voice-sign-in { margin-top: 10px; }
-.isle-voice-heard-row { spacing: 4px; }
-.isle-voice-heard-button { padding: 0; border-radius: 6px; }
-.isle-voice-heard-button:hover .isle-voice-heard { color: rgba(255, 255, 255, 0.75); }
-.isle-voice-earlier { color: rgba(255, 255, 255, 0.5); }
-.isle-voice-still { font-size: 12px; color: rgba(255, 255, 255, 0.46); padding-top: 4px; }
-.isle-voice-undo { spacing: 8px; padding-bottom: 6px; }
-.isle-voice-ideas { spacing: 6px; padding-top: 8px; }
-.isle-voice-idea {
+.notchfolk-voice-row { padding: 14px 16px 20px 16px; spacing: 12px; }
+.notchfolk-voice-orb { border-radius: 999px; }
+.notchfolk-voice-heard { font-size: 12px; color: rgba(255, 255, 255, 0.5); padding-bottom: 2px; }
+.notchfolk-voice-text { font-size: 15px; font-weight: 500; letter-spacing: -0.1px; }
+.notchfolk-voice-text-dim { color: rgba(255, 255, 255, 0.6); }
+.notchfolk-voice-text-long { font-size: 14px; font-weight: 400; color: rgba(255, 255, 255, 0.92); }
+.notchfolk-voice-hint { font-size: 12px; color: rgba(255, 255, 255, 0.5); padding-top: 4px; }
+.notchfolk-voice-steps { spacing: 3px; padding-top: 5px; }
+.notchfolk-voice-step { spacing: 6px; }
+.notchfolk-voice-step-tick { color: rgba(255, 255, 255, 0.45); }
+.notchfolk-voice-step-text { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
+.notchfolk-voice-sign-in { margin-top: 10px; }
+.notchfolk-voice-heard-row { spacing: 4px; }
+.notchfolk-voice-heard-button { padding: 0; border-radius: 6px; }
+.notchfolk-voice-heard-button:hover .notchfolk-voice-heard { color: rgba(255, 255, 255, 0.75); }
+.notchfolk-voice-earlier { color: rgba(255, 255, 255, 0.5); }
+.notchfolk-voice-still { font-size: 12px; color: rgba(255, 255, 255, 0.46); padding-top: 4px; }
+.notchfolk-voice-undo { spacing: 8px; padding-bottom: 6px; }
+.notchfolk-voice-ideas { spacing: 6px; padding-top: 8px; }
+.notchfolk-voice-idea {
     font-size: 12px;
     font-weight: 600;
     padding: 4px 11px;
@@ -314,94 +314,94 @@
     background-color: rgba(255, 255, 255, 0.09);
     border: 1px solid transparent;
 }
-.isle-voice-idea:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.13); }
-.isle-voice-undo-text { font-size: 12px; color: rgba(255, 255, 255, 0.6); }
-.isle-voice-undo-button { font-size: 12px; padding: 3px 10px; }
+.notchfolk-voice-idea:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.13); }
+.notchfolk-voice-undo-text { font-size: 12px; color: rgba(255, 255, 255, 0.6); }
+.notchfolk-voice-undo-button { font-size: 12px; padding: 3px 10px; }
 
 /* The command card, set straight on the pill (no box of its own): what it is for, the command coloured as a
    shell would, then what to know on the left and Deny or Run on the right. */
-.isle-card { margin-top: 8px; spacing: 8px; }
-.isle-card-ended { spacing: 5px; }
-.isle-card-head { spacing: 8px; }
-.isle-card-title { font-size: 13px; font-weight: 600; }
-.isle-card-subtitle { font-size: 12px; color: rgba(255, 255, 255, 0.5); font-feature-settings: "tnum"; }
-.isle-card-terminal { padding: 8px 11px; spacing: 4px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.07); }
-.isle-card-ended .isle-card-terminal { padding: 5px 10px; background-color: rgba(255, 255, 255, 0.05); }
-.isle-card-line { spacing: 10px; }
-.isle-copy-button { padding: 0; border-radius: 4px; }
-.isle-copy-button:hover .isle-card-command, .isle-copy-button:hover .isle-chat-command-text { color: #ffffff; }
-.isle-card-command { font-family: monospace; font-size: 12px; }
-.isle-card-output { font-family: monospace; font-size: 11px; color: rgba(255, 255, 255, 0.46); }
-.isle-card-output-failed { color: #ff6961; }
-.isle-card-sweep { margin-top: 2px; }
-.isle-card-foot { spacing: 8px; }
-.isle-card-risks { spacing: 6px; }
-.isle-card-risk { spacing: 6px; color: #ffb340; }
-.isle-card-risk-removes { color: #ff6961; }
-.isle-card-risk-text { font-size: 12px; font-weight: 500; }
-.isle-card-button { padding: 5px 8px 5px 14px; }
-.isle-card-button-plain { padding: 5px 14px; }
-.isle-card-button-box { spacing: 8px; }
-.isle-card-button-label { font-size: 12px; font-weight: 600; }
-.isle-card-key { font-size: 11px; font-weight: 500; padding: 0 1px; }
-.isle-card-ghost { color: #ffffff; }
-.isle-card-ghost .isle-card-key { color: rgba(255, 255, 255, 0.46); }
-.isle-card-run, .isle-pill-white { color: #000000; background-color: #ffffff; }
-.isle-card-run:hover, .isle-pill-white:hover { background-color: rgba(255, 255, 255, 0.86); }
-.isle-card-run:active, .isle-pill-white:active { background-color: rgba(255, 255, 255, 0.72); }
-.isle-card-run .isle-card-key { color: rgba(0, 0, 0, 0.45); }
-.isle-card-status { spacing: 5px; }
-.isle-card-status-text { font-size: 11px; font-weight: 600; font-feature-settings: "tnum"; }
-.isle-card-done { color: #30d158; }
-.isle-card-failed { color: #ff453a; }
-.isle-card-denied { color: rgba(255, 255, 255, 0.5); }
+.notchfolk-card { margin-top: 8px; spacing: 8px; }
+.notchfolk-card-ended { spacing: 5px; }
+.notchfolk-card-head { spacing: 8px; }
+.notchfolk-card-title { font-size: 13px; font-weight: 600; }
+.notchfolk-card-subtitle { font-size: 12px; color: rgba(255, 255, 255, 0.5); font-feature-settings: "tnum"; }
+.notchfolk-card-terminal { padding: 8px 11px; spacing: 4px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.07); }
+.notchfolk-card-ended .notchfolk-card-terminal { padding: 5px 10px; background-color: rgba(255, 255, 255, 0.05); }
+.notchfolk-card-line { spacing: 10px; }
+.notchfolk-copy-button { padding: 0; border-radius: 4px; }
+.notchfolk-copy-button:hover .notchfolk-card-command, .notchfolk-copy-button:hover .notchfolk-chat-command-text { color: #ffffff; }
+.notchfolk-card-command { font-family: monospace; font-size: 12px; }
+.notchfolk-card-output { font-family: monospace; font-size: 11px; color: rgba(255, 255, 255, 0.46); }
+.notchfolk-card-output-failed { color: #ff6961; }
+.notchfolk-card-sweep { margin-top: 2px; }
+.notchfolk-card-foot { spacing: 8px; }
+.notchfolk-card-risks { spacing: 6px; }
+.notchfolk-card-risk { spacing: 6px; color: #ffb340; }
+.notchfolk-card-risk-removes { color: #ff6961; }
+.notchfolk-card-risk-text { font-size: 12px; font-weight: 500; }
+.notchfolk-card-button { padding: 5px 8px 5px 14px; }
+.notchfolk-card-button-plain { padding: 5px 14px; }
+.notchfolk-card-button-box { spacing: 8px; }
+.notchfolk-card-button-label { font-size: 12px; font-weight: 600; }
+.notchfolk-card-key { font-size: 11px; font-weight: 500; padding: 0 1px; }
+.notchfolk-card-ghost { color: #ffffff; }
+.notchfolk-card-ghost .notchfolk-card-key { color: rgba(255, 255, 255, 0.46); }
+.notchfolk-card-run, .notchfolk-pill-white { color: #000000; background-color: #ffffff; }
+.notchfolk-card-run:hover, .notchfolk-pill-white:hover { background-color: rgba(255, 255, 255, 0.86); }
+.notchfolk-card-run:active, .notchfolk-pill-white:active { background-color: rgba(255, 255, 255, 0.72); }
+.notchfolk-card-run .notchfolk-card-key { color: rgba(0, 0, 0, 0.45); }
+.notchfolk-card-status { spacing: 5px; }
+.notchfolk-card-status-text { font-size: 11px; font-weight: 600; font-feature-settings: "tnum"; }
+.notchfolk-card-done { color: #30d158; }
+.notchfolk-card-failed { color: #ff453a; }
+.notchfolk-card-denied { color: rgba(255, 255, 255, 0.5); }
 
 /* The conversation, above the pill. */
-.isle-chat { padding: 10px 16px 0 16px; spacing: 8px; }
-.isle-chat-header { spacing: 6px; }
-.isle-chat-title { font-size: 12px; font-weight: 600; color: rgba(255, 255, 255, 0.46); }
-.isle-chat-copied, .isle-card-copied { color: #30d158; }
-.isle-chat-control-content { spacing: 6px; }
-.isle-chat-control {
+.notchfolk-chat { padding: 10px 16px 0 16px; spacing: 8px; }
+.notchfolk-chat-header { spacing: 6px; }
+.notchfolk-chat-title { font-size: 12px; font-weight: 600; color: rgba(255, 255, 255, 0.46); }
+.notchfolk-chat-copied, .notchfolk-card-copied { color: #30d158; }
+.notchfolk-chat-control-content { spacing: 6px; }
+.notchfolk-chat-control {
   padding: 6px 10px;
   color: rgba(255, 255, 255, 0.82);
   background-color: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
-.isle-chat-control:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.15); }
-.isle-chat-control:active { background-color: rgba(255, 255, 255, 0.21); }
-.isle-chat-control-label { font-size: 11px; font-weight: 600; }
-.isle-chat-history-active { color: #ffffff; background-color: rgba(48, 209, 88, 0.18); border-color: rgba(48, 209, 88, 0.22); }
-.isle-chat-history-active:hover { background-color: rgba(48, 209, 88, 0.25); }
-.isle-chat-close { padding: 6px; color: rgba(255, 255, 255, 0.68); background-color: rgba(255, 255, 255, 0.06); border-radius: 999px; }
-.isle-chat-close:hover { color: #ffffff; background-color: rgba(255, 69, 58, 0.2); }
-.isle-chat-list { spacing: 10px; padding-top: 6px; padding-bottom: 4px; }
-.isle-chat-scroll { -st-vfade-offset: 28px; }
-.isle-chat-user { padding: 6px 12px; spacing: 5px; border-radius: 15px; background-color: rgba(255, 255, 255, 0.12); }
-.isle-chat-user-text { font-size: 13px; }
-.isle-chat-reply { font-size: 13px; color: rgba(255, 255, 255, 0.9); }
-.isle-chat-reply-row { spacing: 8px; }
-.isle-chat-time { font-size: 11px; font-weight: 600; color: rgba(255, 255, 255, 0.46); font-feature-settings: "tnum"; }
-.isle-chat-command { spacing: 8px; }
-.isle-chat-command-text { font-family: monospace; font-size: 11px; padding: 5px 9px; border-radius: 8px; background-color: rgba(255, 255, 255, 0.06); }
+.notchfolk-chat-control:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.15); }
+.notchfolk-chat-control:active { background-color: rgba(255, 255, 255, 0.21); }
+.notchfolk-chat-control-label { font-size: 11px; font-weight: 600; }
+.notchfolk-chat-history-active { color: #ffffff; background-color: rgba(48, 209, 88, 0.18); border-color: rgba(48, 209, 88, 0.22); }
+.notchfolk-chat-history-active:hover { background-color: rgba(48, 209, 88, 0.25); }
+.notchfolk-chat-close { padding: 6px; color: rgba(255, 255, 255, 0.68); background-color: rgba(255, 255, 255, 0.06); border-radius: 999px; }
+.notchfolk-chat-close:hover { color: #ffffff; background-color: rgba(255, 69, 58, 0.2); }
+.notchfolk-chat-list { spacing: 10px; padding-top: 6px; padding-bottom: 4px; }
+.notchfolk-chat-scroll { -st-vfade-offset: 28px; }
+.notchfolk-chat-user { padding: 6px 12px; spacing: 5px; border-radius: 15px; background-color: rgba(255, 255, 255, 0.12); }
+.notchfolk-chat-user-text { font-size: 13px; }
+.notchfolk-chat-reply { font-size: 13px; color: rgba(255, 255, 255, 0.9); }
+.notchfolk-chat-reply-row { spacing: 8px; }
+.notchfolk-chat-time { font-size: 11px; font-weight: 600; color: rgba(255, 255, 255, 0.46); font-feature-settings: "tnum"; }
+.notchfolk-chat-command { spacing: 8px; }
+.notchfolk-chat-command-text { font-family: monospace; font-size: 11px; padding: 5px 9px; border-radius: 8px; background-color: rgba(255, 255, 255, 0.06); }
 /* As wide whatever it says, so the command beside it keeps its width. */
-.isle-chat-command-status { min-width: 56px; }
-.isle-chat-command-status .isle-card-status-text { font-size: 11px; }
+.notchfolk-chat-command-status { min-width: 56px; }
+.notchfolk-chat-command-status .notchfolk-card-status-text { font-size: 11px; }
 
 /* The round button at the row's end: 32 px with any of its icons (see ACTION_SIZE in voice.js). */
-.isle-voice-action { padding: 8px; color: rgba(255, 255, 255, 0.7); background-color: rgba(255, 255, 255, 0.08); }
-.isle-voice-action:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.15); }
-.isle-voice-action:active { background-color: rgba(255, 255, 255, 0.22); }
-.isle-voice-stop { padding: 10px; color: #ffffff; background-color: rgba(255, 255, 255, 0.14); }
-.isle-voice-send { padding: 7px; border-radius: 999px; color: #000000; background-color: #ffffff; transition-duration: 150ms; }
-.isle-voice-send-mic { color: #ffffff; background-color: rgba(255, 255, 255, 0.14); }
-.isle-voice-send-mic:hover { background-color: rgba(255, 255, 255, 0.24); }
+.notchfolk-voice-action { padding: 8px; color: rgba(255, 255, 255, 0.7); background-color: rgba(255, 255, 255, 0.08); }
+.notchfolk-voice-action:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.15); }
+.notchfolk-voice-action:active { background-color: rgba(255, 255, 255, 0.22); }
+.notchfolk-voice-stop { padding: 10px; color: #ffffff; background-color: rgba(255, 255, 255, 0.14); }
+.notchfolk-voice-send { padding: 7px; border-radius: 999px; color: #000000; background-color: #ffffff; transition-duration: 150ms; }
+.notchfolk-voice-send-mic { color: #ffffff; background-color: rgba(255, 255, 255, 0.14); }
+.notchfolk-voice-send-mic:hover { background-color: rgba(255, 255, 255, 0.24); }
 
 /* The typed request: a quiet field, no accent ring (GNOME's and Blur my Shell's, with !important). */
-#isleIsland .isle-voice-entry,
-#isleIsland .isle-voice-entry:hover,
-#isleIsland .isle-voice-entry:focus,
-#isleIsland .isle-voice-entry:focus:hover {
+#notchfolkIsland .notchfolk-voice-entry,
+#notchfolkIsland .notchfolk-voice-entry:hover,
+#notchfolkIsland .notchfolk-voice-entry:focus,
+#notchfolkIsland .notchfolk-voice-entry:focus:hover {
   font-size: 14px;
   font-weight: 500;
   min-height: 0;
@@ -415,23 +415,23 @@
   selection-background-color: rgba(255, 255, 255, 0.28);
   selected-color: #ffffff;
 }
-#isleIsland .isle-voice-entry:focus,
-#isleIsland .isle-voice-entry:focus:hover { border: 1px solid rgba(255, 255, 255, 0.16) !important; }
-#isleIsland .isle-voice-entry StLabel.hint-text { color: rgba(255, 255, 255, 0.45) !important; }
-.isle-compact-warning { color: #ff453a; }
-.isle-header-mic { padding: 4px; color: rgba(255, 255, 255, 0.6); }
-.isle-header-mic:hover { color: #ffffff; }
+#notchfolkIsland .notchfolk-voice-entry:focus,
+#notchfolkIsland .notchfolk-voice-entry:focus:hover { border: 1px solid rgba(255, 255, 255, 0.16) !important; }
+#notchfolkIsland .notchfolk-voice-entry StLabel.hint-text { color: rgba(255, 255, 255, 0.45) !important; }
+.notchfolk-compact-warning { color: #ff453a; }
+.notchfolk-header-mic { padding: 4px; color: rgba(255, 255, 255, 0.6); }
+.notchfolk-header-mic:hover { color: #ffffff; }
 
 /* ── Expanded: frame ──────────────────────────────────── */
 
 /* What shows lines up with the pages' 20px edges: the open tab's pill on the left, the settings icon on the right. */
-.isle-header { padding: 0 16px 0 20px; }
-.isle-header-clock { spacing: 8px; }
+.notchfolk-header { padding: 0 16px 0 20px; }
+.notchfolk-header-clock { spacing: 8px; }
 
 /* Tabs to the pages: icons, with the open page's name in a lit pill. */
-.isle-tabs { spacing: 2px; }
+.notchfolk-tabs { spacing: 2px; }
 
-.isle-tab {
+.notchfolk-tab {
   padding: 4px 10px;
   border-radius: 999px;
   color: #ffffff;
@@ -439,123 +439,123 @@
 }
 
 /* The open tab sits on a dark grey pill; no outlines. */
-.isle-tab:hover,
-.isle-tab:focus { background-color: rgba(255, 255, 255, 0.05); color: #ffffff; }
-.isle-tab:checked { background-color: rgba(255, 255, 255, 0.09); }
-.isle-tab-box { spacing: 0; min-height: 18px; }
+.notchfolk-tab:hover,
+.notchfolk-tab:focus { background-color: rgba(255, 255, 255, 0.05); color: #ffffff; }
+.notchfolk-tab:checked { background-color: rgba(255, 255, 255, 0.09); }
+.notchfolk-tab-box { spacing: 0; min-height: 18px; }
 /* The gap from the icon is the name's own margin, so a closed name takes no room (expanded.js). Its 17 px
  * line plus 1: every tab an even 26 px, centred to the pixel in the bar, the name on the clock's line. */
-.isle-tab-label { font-size: 13px; font-weight: 600; margin-left: 6px; padding-bottom: 1px; }
+.notchfolk-tab-label { font-size: 13px; font-weight: 600; margin-left: 6px; padding-bottom: 1px; }
 
 /* A dot on a tab whose page has news. */
-.isle-tab-badge {
+.notchfolk-tab-badge {
   width: 6px;
   height: 6px;
   border-radius: 3px;
   background-color: #ff453a;
 }
-.isle-header-date { font-size: 13px; color: rgba(255, 255, 255, 0.9); }
-.isle-header-time { font-size: 13px; font-weight: 600; }
-.isle-header-time-box { spacing: 3px; }
-.isle-header-meridiem { font-size: 10.4px; font-weight: 600; color: rgba(255, 255, 255, 0.72); }
-.isle-compact-meridiem { font-size: 11px; font-weight: 600; color: rgba(255, 255, 255, 0.72); }
-.isle-header-settings { padding: 4px; color: rgba(255, 255, 255, 0.6); }
-.isle-header-settings:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.1); }
-.isle-header-status { spacing: 10px; }
+.notchfolk-header-date { font-size: 13px; color: rgba(255, 255, 255, 0.9); }
+.notchfolk-header-time { font-size: 13px; font-weight: 600; }
+.notchfolk-header-time-box { spacing: 3px; }
+.notchfolk-header-meridiem { font-size: 10.4px; font-weight: 600; color: rgba(255, 255, 255, 0.72); }
+.notchfolk-compact-meridiem { font-size: 11px; font-weight: 600; color: rgba(255, 255, 255, 0.72); }
+.notchfolk-header-settings { padding: 4px; color: rgba(255, 255, 255, 0.6); }
+.notchfolk-header-settings:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.1); }
+.notchfolk-header-status { spacing: 10px; }
 
-.isle-recording-pill {
+.notchfolk-recording-pill {
   padding: 2px 9px;
   border-radius: 999px;
   background-color: rgba(255, 69, 58, 0.18);
 }
 
-.isle-recording-pill:hover { background-color: rgba(255, 69, 58, 0.32); }
-.isle-recording-pill-box { spacing: 6px; }
-.isle-recording-time { font-size: 12px; font-weight: 700; color: #ff6961; }
+.notchfolk-recording-pill:hover { background-color: rgba(255, 69, 58, 0.32); }
+.notchfolk-recording-pill-box { spacing: 6px; }
+.notchfolk-recording-time { font-size: 12px; font-weight: 700; color: #ff6961; }
 
 /* Pages line up with the header's edges, as far in as the room below them (BOTTOM_PADDING in expanded.js). */
-.isle-page { padding: 6px 20px 0 20px; }
+.notchfolk-page { padding: 6px 20px 0 20px; }
 
 /* ── Music ────────────────────────────────────────────── */
 
-.isle-player { spacing: 20px; }
-.isle-player-column { spacing: 4px; }
-.isle-player-head { spacing: 8px; }
-.isle-player-modes { spacing: 2px; }
-.isle-player-modes .isle-button { padding: 5px; color: rgba(255, 255, 255, 0.75); }
-.isle-player-top { spacing: 14px; }
-.isle-player-texts { spacing: 1px; }
-.isle-track-title { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
-.isle-track-subtitle { font-size: 13px; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-player { spacing: 20px; }
+.notchfolk-player-column { spacing: 4px; }
+.notchfolk-player-head { spacing: 8px; }
+.notchfolk-player-modes { spacing: 2px; }
+.notchfolk-player-modes .notchfolk-button { padding: 5px; color: rgba(255, 255, 255, 0.75); }
+.notchfolk-player-top { spacing: 14px; }
+.notchfolk-player-texts { spacing: 1px; }
+.notchfolk-track-title { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
+.notchfolk-track-subtitle { font-size: 13px; color: rgba(255, 255, 255, 0.55); }
 /* The playing app's icon on the cover's corner, ringed in black. */
-.isle-app-badge {
+.notchfolk-app-badge {
   padding: 2px;
   border-radius: 999px;
   background-color: #000000;
 }
 
-.isle-player-progress { spacing: 10px; padding-top: 6px; }
+.notchfolk-player-progress { spacing: 10px; padding-top: 6px; }
 
-.isle-time {
+.notchfolk-time {
   font-size: 12px;
   font-weight: 500;
   min-width: 34px;
   color: rgba(255, 255, 255, 0.6);
 }
 
-.isle-time-end { text-align: right; }
+.notchfolk-time-end { text-align: right; }
 
-.isle-slider { height: 16px; }
-.isle-slider-track { border-radius: 2px; background-color: rgba(255, 255, 255, 0.2); }
-.isle-slider-fill { border-radius: 2px; background-color: #ffffff; }
-.isle-slider-knob { border-radius: 6px; background-color: #ffffff; }
+.notchfolk-slider { height: 16px; }
+.notchfolk-slider-track { border-radius: 2px; background-color: rgba(255, 255, 255, 0.2); }
+.notchfolk-slider-fill { border-radius: 2px; background-color: #ffffff; }
+.notchfolk-slider-knob { border-radius: 6px; background-color: #ffffff; }
 
-.isle-transport { spacing: 20px; }
-.isle-play { padding: 6px; }
-.isle-mode-toggle.on { background-color: rgba(255, 255, 255, 0.16); }
+.notchfolk-transport { spacing: 20px; }
+.notchfolk-play { padding: 6px; }
+.notchfolk-mode-toggle.on { background-color: rgba(255, 255, 255, 0.16); }
 
 /* Volume and outputs */
 
-.isle-audio-layout { spacing: 8px; padding-top: 2px; }
-/* Its speaker over the outputs' icons, the slider from where their names start (.isle-output-button). */
-.isle-volume-row { spacing: 6px; padding-left: 6px; }
-.isle-volume-text { font-size: 12px; font-weight: 600; min-width: 46px; text-align: right; color: rgba(255, 255, 255, 0.85); }
-.isle-output-list { spacing: 4px; }
+.notchfolk-audio-layout { spacing: 8px; padding-top: 2px; }
+/* Its speaker over the outputs' icons, the slider from where their names start (.notchfolk-output-button). */
+.notchfolk-volume-row { spacing: 6px; padding-left: 6px; }
+.notchfolk-volume-text { font-size: 12px; font-weight: 600; min-width: 46px; text-align: right; color: rgba(255, 255, 255, 0.85); }
+.notchfolk-output-list { spacing: 4px; }
 
-.isle-output-button {
+.notchfolk-output-button {
   border-radius: 12px;
   padding: 6px 12px;
   color: #ffffff;
   transition-duration: 120ms;
 }
 
-.isle-output-button:hover { background-color: #1c1c1e; }
-.isle-output-button.active { background-color: #1c1c1e; }
-.isle-output-row { spacing: 12px; }
-.isle-output-name { font-size: 13px; font-weight: 600; }
-.isle-output-detail { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
+.notchfolk-output-button:hover { background-color: #1c1c1e; }
+.notchfolk-output-button.active { background-color: #1c1c1e; }
+.notchfolk-output-row { spacing: 12px; }
+.notchfolk-output-name { font-size: 13px; font-weight: 600; }
+.notchfolk-output-detail { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
 
 /* Lyrics: the player in a column beside the words. */
 
-.isle-lyrics-layout { spacing: 26px; }
-.isle-lyrics-side { width: 232px; spacing: 8px; }
-.isle-lyrics-side .isle-player-top { spacing: 12px; }
-.isle-lyrics-side .isle-player-progress { padding-top: 2px; }
-.isle-lyrics-controls { spacing: 4px; }
-.isle-lyrics-controls .isle-transport { spacing: 14px; }
-.isle-lyrics-controls .isle-mode-toggle { color: rgba(255, 255, 255, 0.75); }
-.isle-side-title { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; }
-.isle-side-artist { font-size: 12px; color: rgba(255, 255, 255, 0.6); }
-.isle-side-bars { padding-top: 5px; }
+.notchfolk-lyrics-layout { spacing: 26px; }
+.notchfolk-lyrics-side { width: 232px; spacing: 8px; }
+.notchfolk-lyrics-side .notchfolk-player-top { spacing: 12px; }
+.notchfolk-lyrics-side .notchfolk-player-progress { padding-top: 2px; }
+.notchfolk-lyrics-controls { spacing: 4px; }
+.notchfolk-lyrics-controls .notchfolk-transport { spacing: 14px; }
+.notchfolk-lyrics-controls .notchfolk-mode-toggle { color: rgba(255, 255, 255, 0.75); }
+.notchfolk-side-title { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; }
+.notchfolk-side-artist { font-size: 12px; color: rgba(255, 255, 255, 0.6); }
+.notchfolk-side-bars { padding-top: 5px; }
 
 /* Lines fade at the edges as they scroll; room below lets the last ones
  * reach the reading line. */
-.isle-lyrics-scroll { -st-vfade-offset: 26px; }
-.isle-lyrics-column, .isle-lyrics-block { spacing: 2px; }
-.isle-lyrics-end { height: 72px; }
+.notchfolk-lyrics-scroll { -st-vfade-offset: 26px; }
+.notchfolk-lyrics-column, .notchfolk-lyrics-block { spacing: 2px; }
+.notchfolk-lyrics-end { height: 72px; }
 
 /* Size, brightness and scale per line are set in lyrics.js. */
-.isle-lyric-line {
+.notchfolk-lyric-line {
   font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.3px;
@@ -563,7 +563,7 @@
   color: #ffffff;
 }
 
-.isle-lyric-line.plain {
+.notchfolk-lyric-line.plain {
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0;
@@ -571,46 +571,46 @@
 }
 
 /* A pause in the singing. */
-.isle-lyric-dots { spacing: 6px; padding: 9px 2px; }
-.isle-lyric-dot { width: 7px; height: 7px; border-radius: 4px; background-color: #ffffff; }
+.notchfolk-lyric-dots { spacing: 6px; padding: 9px 2px; }
+.notchfolk-lyric-dot { width: 7px; height: 7px; border-radius: 4px; background-color: #ffffff; }
 
 /* No lines: loading, not found, instrumental, or the service unreachable. */
-.isle-lyrics-state { spacing: 3px; }
-.isle-lyrics-state-icon { color: rgba(255, 255, 255, 0.4); padding-bottom: 5px; }
-.isle-lyrics-state-dots { padding: 4px 0 8px 0; }
-.isle-lyrics-state-dots .isle-lyric-dot { background-color: rgba(255, 255, 255, 0.6); }
-.isle-lyrics-state-title { font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, 0.85); }
-.isle-lyrics-state-hint { font-size: 12px; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-lyrics-state { spacing: 3px; }
+.notchfolk-lyrics-state-icon { color: rgba(255, 255, 255, 0.4); padding-bottom: 5px; }
+.notchfolk-lyrics-state-dots { padding: 4px 0 8px 0; }
+.notchfolk-lyrics-state-dots .notchfolk-lyric-dot { background-color: rgba(255, 255, 255, 0.6); }
+.notchfolk-lyrics-state-title { font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, 0.85); }
+.notchfolk-lyrics-state-hint { font-size: 12px; color: rgba(255, 255, 255, 0.55); }
 
 /* ── Call ─────────────────────────────────────────────── */
 
 /* The call's window; call.js rounds its corners and draws a hairline edge. */
-.isle-call-preview { background-color: #1c1c1e; border-radius: 14px; }
-.isle-call-preview-button { border-radius: 14px; }
-.isle-call-preview-button:focus { color: #ffffff; }
-.isle-call-placeholder { spacing: 8px; }
-.isle-call-hint { font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.5); }
+.notchfolk-call-preview { background-color: #1c1c1e; border-radius: 14px; }
+.notchfolk-call-preview-button { border-radius: 14px; }
+.notchfolk-call-preview-button:focus { color: #ffffff; }
+.notchfolk-call-placeholder { spacing: 8px; }
+.notchfolk-call-hint { font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.5); }
 
 /* Over the preview under the pointer: where a click goes. */
-.isle-call-preview-hover {
+.notchfolk-call-preview-hover {
   padding: 9px;
   border-radius: 999px;
   color: #ffffff;
   background-color: rgba(0, 0, 0, 0.55);
 }
 
-.isle-call-side { spacing: 2px; }
-.isle-call-head { spacing: 8px; }
-.isle-call-name { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
-.isle-call-status { spacing: 5px; padding-left: 1px; }
-.isle-call-kind { font-size: 13px; color: rgba(255, 255, 255, 0.55); }
-.isle-call-duration { font-size: 13px; font-weight: 600; color: #30d158; }
+.notchfolk-call-side { spacing: 2px; }
+.notchfolk-call-head { spacing: 8px; }
+.notchfolk-call-name { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
+.notchfolk-call-status { spacing: 5px; padding-left: 1px; }
+.notchfolk-call-kind { font-size: 13px; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-call-duration { font-size: 13px; font-weight: 600; color: #30d158; }
 
 /* Round buttons with captions; mute turns white while on. */
-.isle-call-controls { spacing: 18px; padding-top: 14px; }
-.isle-call-control-box { spacing: 5px; }
+.notchfolk-call-controls { spacing: 18px; padding-top: 14px; }
+.notchfolk-call-control-box { spacing: 5px; }
 
-.isle-call-control {
+.notchfolk-call-control {
   width: 40px;
   height: 40px;
   border-radius: 20px;
@@ -619,37 +619,37 @@
   transition-duration: 120ms;
 }
 
-.isle-call-control:hover { background-color: #3a3a3c; }
-.isle-call-control:focus { color: #ffffff; }
-.isle-call-control:checked { color: #000000; background-color: #ffffff; }
-.isle-call-control:checked:hover { background-color: #e6e6e6; }
-.isle-call-control-label { font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.6); }
+.notchfolk-call-control:hover { background-color: #3a3a3c; }
+.notchfolk-call-control:focus { color: #ffffff; }
+.notchfolk-call-control:checked { color: #000000; background-color: #ffffff; }
+.notchfolk-call-control:checked:hover { background-color: #e6e6e6; }
+.notchfolk-call-control-label { font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.6); }
 
 /* The Call tab's phone is green, like the call itself. */
-.isle-tab-call StIcon { color: #30d158; }
+.notchfolk-tab-call StIcon { color: #30d158; }
 
 /* ── Focus ────────────────────────────────────────────── */
 
 /* The Focus page (timer.js): a coloured progress ring, a prominent countdown and compact controls. */
-.isle-timer { spacing: 16px; }
-.isle-timer-glyph { color: rgba(255, 255, 255, 0.92); }
-.isle-timer-main { spacing: 3px; }
-.isle-timer-time { font-size: 38px; font-weight: 700; letter-spacing: -1px; }
-.isle-timer-phase { font-size: 12px; font-weight: 500; color: rgba(255, 255, 255, 0.55); margin-bottom: 3px; }
+.notchfolk-timer { spacing: 16px; }
+.notchfolk-timer-glyph { color: rgba(255, 255, 255, 0.92); }
+.notchfolk-timer-main { spacing: 3px; }
+.notchfolk-timer-time { font-size: 38px; font-weight: 700; letter-spacing: -1px; }
+.notchfolk-timer-phase { font-size: 12px; font-weight: 500; color: rgba(255, 255, 255, 0.55); margin-bottom: 3px; }
 
 /* "Work  25  −  +", as a pill. */
-.isle-steppers { spacing: 8px; }
-.isle-stepper { padding: 3px 4px 3px 8px; spacing: 4px; border-radius: 999px; background-color: #1c1c1e; }
-.isle-stepper-name { font-size: 12px; font-weight: 500; color: rgba(255, 255, 255, 0.55); width: 34px; }
-.isle-stepper-value { font-size: 15px; font-weight: 600; letter-spacing: -0.1px; width: 22px; text-align: right; padding-right: 4px; }
-.isle-stepper-button { padding: 4px; border-radius: 999px; color: rgba(255, 255, 255, 0.8); }
-.isle-stepper-button:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.1); }
+.notchfolk-steppers { spacing: 8px; }
+.notchfolk-stepper { padding: 3px 4px 3px 8px; spacing: 4px; border-radius: 999px; background-color: #1c1c1e; }
+.notchfolk-stepper-name { font-size: 12px; font-weight: 500; color: rgba(255, 255, 255, 0.55); width: 34px; }
+.notchfolk-stepper-value { font-size: 15px; font-weight: 600; letter-spacing: -0.1px; width: 22px; text-align: right; padding-right: 4px; }
+.notchfolk-stepper-button { padding: 4px; border-radius: 999px; color: rgba(255, 255, 255, 0.8); }
+.notchfolk-stepper-button:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.1); }
 
 /* The length is a field as well: quiet until the pointer is on it or it is being typed in. */
-#isleIsland .isle-stepper-entry,
-#isleIsland .isle-stepper-entry:hover,
-#isleIsland .isle-stepper-entry:focus,
-#isleIsland .isle-stepper-entry:focus:hover {
+#notchfolkIsland .notchfolk-stepper-entry,
+#notchfolkIsland .notchfolk-stepper-entry:hover,
+#notchfolkIsland .notchfolk-stepper-entry:focus,
+#notchfolkIsland .notchfolk-stepper-entry:focus:hover {
   /* Room for three digits ("180"), in step with the text's size: a field scrolls what it can't fit. */
   width: 2.4em;
   min-height: 0;
@@ -663,64 +663,64 @@
   selection-background-color: rgba(255, 255, 255, 0.28);
   selected-color: #ffffff;
 }
-#isleIsland .isle-stepper-entry:hover { background-color: rgba(255, 255, 255, 0.08) !important; }
-#isleIsland .isle-stepper-entry:focus,
-#isleIsland .isle-stepper-entry:focus:hover { background-color: rgba(255, 255, 255, 0.16) !important; }
-.isle-stepper-button { padding: 6px; border-radius: 999px; color: rgba(255, 255, 255, 0.8); }
-.isle-stepper-button:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.1); }
+#notchfolkIsland .notchfolk-stepper-entry:hover { background-color: rgba(255, 255, 255, 0.08) !important; }
+#notchfolkIsland .notchfolk-stepper-entry:focus,
+#notchfolkIsland .notchfolk-stepper-entry:focus:hover { background-color: rgba(255, 255, 255, 0.16) !important; }
+.notchfolk-stepper-button { padding: 6px; border-radius: 999px; color: rgba(255, 255, 255, 0.8); }
+.notchfolk-stepper-button:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.1); }
 /* While a session runs the lengths are locked (timer.js): each reads on in grey, its − / + faint. */
-#isleIsland .isle-stepper-locked .isle-stepper-entry { color: rgba(255, 255, 255, 0.6) !important; }
+#notchfolkIsland .notchfolk-stepper-locked .notchfolk-stepper-entry { color: rgba(255, 255, 255, 0.6) !important; }
 
 /* Reset as tall as Start beside it. */
-.isle-timer-controls { spacing: 8px; }
-.isle-timer-controls .isle-button-round { padding: 10px; }
-.isle-start-pill { padding: 8px 18px; border-radius: 999px; color: #ffffff; background-color: #2c2c2e; }
-.isle-start-pill:hover { background-color: #3a3a3c; }
-.isle-start-pill.isle-phase-focus { background-color: #ff453a; }
-.isle-start-pill.isle-phase-focus:hover { background-color: #ff6259; }
-.isle-start-pill.isle-phase-break { color: #07140a; background-color: #30d158; }
-.isle-start-pill.isle-phase-break:hover { background-color: #4de271; }
-.isle-start-pill-box { spacing: 7px; }
-.isle-start-pill-label { font-size: 14px; font-weight: 600; }
+.notchfolk-timer-controls { spacing: 8px; }
+.notchfolk-timer-controls .notchfolk-button-round { padding: 10px; }
+.notchfolk-start-pill { padding: 8px 18px; border-radius: 999px; color: #ffffff; background-color: #2c2c2e; }
+.notchfolk-start-pill:hover { background-color: #3a3a3c; }
+.notchfolk-start-pill.notchfolk-phase-focus { background-color: #ff453a; }
+.notchfolk-start-pill.notchfolk-phase-focus:hover { background-color: #ff6259; }
+.notchfolk-start-pill.notchfolk-phase-break { color: #07140a; background-color: #30d158; }
+.notchfolk-start-pill.notchfolk-phase-break:hover { background-color: #4de271; }
+.notchfolk-start-pill-box { spacing: 7px; }
+.notchfolk-start-pill-label { font-size: 14px; font-weight: 600; }
 
 /* ── Lists (notifications, calendar) ──────────────────── */
 
 /* Lists fade out at an edge that scrolls on, instead of being cut. */
-.isle-task-scroll { padding: 6px 0; -st-vfade-offset: 18px; }
-.isle-task-add-icon { color: rgba(255, 255, 255, 0.5); padding-right: 4px; }
-.isle-task-remove { padding: 3px; color: rgba(255, 255, 255, 0.7); }
+.notchfolk-task-scroll { padding: 6px 0; -st-vfade-offset: 18px; }
+.notchfolk-task-add-icon { color: rgba(255, 255, 255, 0.5); padding-right: 4px; }
+.notchfolk-task-remove { padding: 3px; color: rgba(255, 255, 255, 0.7); }
 
 /* ── Reminders ────────────────────────────────────────── */
 
 /* Reminders: a clear white title, progress summary and compact rows. */
-.isle-reminders-layout { spacing: 16px; }
-.isle-reminders-summary { width: 188px; spacing: 3px; padding-right: 8px; }
-.isle-reminders-title { font-size: 16px; font-weight: 700; color: #ffffff; letter-spacing: -0.3px; }
-.isle-reminders-progress { font-size: 42px; font-weight: 700; letter-spacing: -1.4px; }
-.isle-reminders-progress-summary { font-size: 12px; color: rgba(255, 255, 255, 0.55); }
-.isle-reminders-actions { spacing: 6px; margin-top: 6px; }
-.isle-reminders-action {
+.notchfolk-reminders-layout { spacing: 16px; }
+.notchfolk-reminders-summary { width: 188px; spacing: 3px; padding-right: 8px; }
+.notchfolk-reminders-title { font-size: 16px; font-weight: 700; color: #ffffff; letter-spacing: -0.3px; }
+.notchfolk-reminders-progress { font-size: 42px; font-weight: 700; letter-spacing: -1.4px; }
+.notchfolk-reminders-progress-summary { font-size: 12px; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-reminders-actions { spacing: 6px; margin-top: 6px; }
+.notchfolk-reminders-action {
   padding: 6px 9px;
   border-radius: 999px;
   background-color: #2c2c2e;
   transition-duration: 120ms;
 }
-.isle-reminders-action:hover { background-color: #3a3a3c; }
-.isle-reminders-action:focus { background-color: #48484a; }
-.isle-reminders-action-contents { spacing: 5px; }
-.isle-reminders-action-label { font-size: 11px; font-weight: 600; }
-.isle-reminders-add-action { background-color: #ff453a; }
-.isle-reminders-add-action:hover { background-color: #ff6259; }
-.isle-reminders-edit-action:checked { background-color: #48484a; }
-.isle-reminders-content { spacing: 4px; }
-.isle-reminder-list { spacing: 5px; padding: 4px 0; }
-.isle-reminders-scroll-content { spacing: 6px; }
-.isle-reminders-scheduled { spacing: 7px; padding: 8px 0 4px; }
-.isle-reminders-scheduled-heading { spacing: 8px; padding: 0 4px; }
-.isle-reminders-scheduled-title { font-size: 10px; font-weight: 700; color: rgba(255, 255, 255, 0.48); letter-spacing: 0.7px; text-transform: uppercase; }
-.isle-reminders-scheduled-count { font-size: 10px; color: rgba(255, 255, 255, 0.38); }
-.isle-reminders-scheduled-list { spacing: 5px; }
-.isle-reminder-scheduled-row {
+.notchfolk-reminders-action:hover { background-color: #3a3a3c; }
+.notchfolk-reminders-action:focus { background-color: #48484a; }
+.notchfolk-reminders-action-contents { spacing: 5px; }
+.notchfolk-reminders-action-label { font-size: 11px; font-weight: 600; }
+.notchfolk-reminders-add-action { background-color: #ff453a; }
+.notchfolk-reminders-add-action:hover { background-color: #ff6259; }
+.notchfolk-reminders-edit-action:checked { background-color: #48484a; }
+.notchfolk-reminders-content { spacing: 4px; }
+.notchfolk-reminder-list { spacing: 5px; padding: 4px 0; }
+.notchfolk-reminders-scroll-content { spacing: 6px; }
+.notchfolk-reminders-scheduled { spacing: 7px; padding: 8px 0 4px; }
+.notchfolk-reminders-scheduled-heading { spacing: 8px; padding: 0 4px; }
+.notchfolk-reminders-scheduled-title { font-size: 10px; font-weight: 700; color: rgba(255, 255, 255, 0.48); letter-spacing: 0.7px; text-transform: uppercase; }
+.notchfolk-reminders-scheduled-count { font-size: 10px; color: rgba(255, 255, 255, 0.38); }
+.notchfolk-reminders-scheduled-list { spacing: 5px; }
+.notchfolk-reminder-scheduled-row {
   min-height: 34px;
   spacing: 9px;
   padding: 6px 9px;
@@ -728,17 +728,17 @@
   background-color: rgba(255, 255, 255, 0.055);
   transition-duration: 120ms;
 }
-.isle-reminder-scheduled-row:hover { background-color: rgba(255, 255, 255, 0.09); }
-.isle-reminder-scheduled-marker { width: 6px; height: 6px; border-radius: 99px; background-color: #ff6259; }
-.isle-reminder-scheduled-details { spacing: 2px; }
-.isle-reminder-scheduled-text { font-size: 12.5px; font-weight: 600; color: #ffffff; }
-.isle-reminder-scheduled-time { font-size: 10.5px; color: rgba(255, 255, 255, 0.52); }
-.isle-reminder-scheduled-dismiss { padding: 4px; border-radius: 99px; color: rgba(255, 255, 255, 0.42); }
-.isle-reminder-scheduled-dismiss:hover { color: #ff6259; background-color: rgba(255, 69, 58, 0.15); }
+.notchfolk-reminder-scheduled-row:hover { background-color: rgba(255, 255, 255, 0.09); }
+.notchfolk-reminder-scheduled-marker { width: 6px; height: 6px; border-radius: 99px; background-color: #ff6259; }
+.notchfolk-reminder-scheduled-details { spacing: 2px; }
+.notchfolk-reminder-scheduled-text { font-size: 12.5px; font-weight: 600; color: #ffffff; }
+.notchfolk-reminder-scheduled-time { font-size: 10.5px; color: rgba(255, 255, 255, 0.52); }
+.notchfolk-reminder-scheduled-dismiss { padding: 4px; border-radius: 99px; color: rgba(255, 255, 255, 0.42); }
+.notchfolk-reminder-scheduled-dismiss:hover { color: #ff6259; background-color: rgba(255, 69, 58, 0.15); }
 
 /* Lists fade out at an edge that scrolls on, instead of being cut. */
-.isle-reminder-scroll { -st-vfade-offset: 14px; }
-.isle-reminder {
+.notchfolk-reminder-scroll { -st-vfade-offset: 14px; }
+.notchfolk-reminder {
   min-height: 30px;
   spacing: 10px;
   padding: 4px 8px;
@@ -746,16 +746,16 @@
   background-color: rgba(255, 255, 255, 0.06);
   transition-duration: 120ms;
 }
-.isle-reminder:hover { background-color: rgba(255, 255, 255, 0.1); }
-.isle-reminder-done { background-color: rgba(48, 209, 88, 0.18); }
-.isle-reminder-done:hover { background-color: rgba(48, 209, 88, 0.25); }
+.notchfolk-reminder:hover { background-color: rgba(255, 255, 255, 0.1); }
+.notchfolk-reminder-done { background-color: rgba(48, 209, 88, 0.18); }
+.notchfolk-reminder-done:hover { background-color: rgba(48, 209, 88, 0.25); }
 /* The ring by the first line; a wrapped title gets a little air above and below. */
-.isle-reminder .isle-reminder-check { margin-top: 3px; }
-.isle-reminder-new .isle-reminder-check { margin-top: 0; }
-.isle-reminder-title-box { padding: 3px 0; }
+.notchfolk-reminder .notchfolk-reminder-check { margin-top: 3px; }
+.notchfolk-reminder-new .notchfolk-reminder-check { margin-top: 0; }
+.notchfolk-reminder-title-box { padding: 3px 0; }
 
 /* An 18 px ring; ticked, it fills green around the checkmark. */
-.isle-reminder-check {
+.notchfolk-reminder-check {
   width: 10px;
   height: 10px;
   padding: 2.5px;
@@ -764,22 +764,22 @@
   transition-duration: 160ms;
 }
 
-.isle-reminder-check:hover { border-color: rgba(255, 255, 255, 0.65); }
-.isle-reminder-check:checked { border-color: #30d158; background-color: #30d158; }
-.isle-reminder-check.faint { border-color: rgba(255, 255, 255, 0.14); }
+.notchfolk-reminder-check:hover { border-color: rgba(255, 255, 255, 0.65); }
+.notchfolk-reminder-check:checked { border-color: #30d158; background-color: #30d158; }
+.notchfolk-reminder-check.faint { border-color: rgba(255, 255, 255, 0.14); }
 
-.isle-reminder-content { spacing: 6px; padding-right: 2px; }
-.isle-reminder-title { font-size: 13.5px; color: #ffffff; transition-duration: 200ms; }
-.isle-reminder-title.done { color: rgba(255, 255, 255, 0.62); }
-.isle-reminder-strike { height: 1.5px; background-color: rgba(255, 255, 255, 0.45); }
-.isle-reminder-remove { padding: 3px; border-radius: 99px; color: rgba(255, 255, 255, 0.4); }
-.isle-reminder-remove:hover { color: #ff453a; background-color: rgba(255, 69, 58, 0.15); }
+.notchfolk-reminder-content { spacing: 6px; padding-right: 2px; }
+.notchfolk-reminder-title { font-size: 13.5px; color: #ffffff; transition-duration: 200ms; }
+.notchfolk-reminder-title.done { color: rgba(255, 255, 255, 0.62); }
+.notchfolk-reminder-strike { height: 1.5px; background-color: rgba(255, 255, 255, 0.45); }
+.notchfolk-reminder-remove { padding: 3px; border-radius: 99px; color: rgba(255, 255, 255, 0.4); }
+.notchfolk-reminder-remove:hover { color: #ff453a; background-color: rgba(255, 69, 58, 0.15); }
 
-.isle-reminders-empty { font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, 0.45); padding-top: 22px; }
+.notchfolk-reminders-empty { font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, 0.45); padding-top: 22px; }
 
 /* Plain text fields, inside the row (Blur my Shell restyles entries with !important). */
-#isleIsland .isle-reminder-field,
-#isleIsland .isle-reminder-field:focus {
+#notchfolkIsland .notchfolk-reminder-field,
+#notchfolkIsland .notchfolk-reminder-field:focus {
   font-size: 13.5px;
   padding: 0;
   border: none;
@@ -794,32 +794,32 @@
 
 /* GNOME indents the placeholder (more since 49); here it lines up with the titles above. In the other
  * fields it starts just past the cursor, which would cross its first letter. */
-#isleIsland .isle-reminder-field StLabel.hint-text { color: rgba(255, 255, 255, 0.45); margin-left: 0; padding-left: 0; }
-#isleIsland .isle-entry StLabel.hint-text, #isleIsland .isle-voice-entry StLabel.hint-text { margin-left: 6px; padding-left: 0; }
+#notchfolkIsland .notchfolk-reminder-field StLabel.hint-text { color: rgba(255, 255, 255, 0.45); margin-left: 0; padding-left: 0; }
+#notchfolkIsland .notchfolk-entry StLabel.hint-text, #notchfolkIsland .notchfolk-voice-entry StLabel.hint-text { margin-left: 6px; padding-left: 0; }
 /* The Calendar's on the events' titles below it, as the Reminders' field is. */
-#isleIsland .isle-cal-add StLabel.hint-text { margin-left: 0; }
+#notchfolkIsland .notchfolk-cal-add StLabel.hint-text { margin-left: 0; }
 
 /* ── Calories ─────────────────────────────────────────── */
 
-.isle-calories { padding: 0 4px; }
-.isle-calorie-layout { spacing: 14px; }
+.notchfolk-calories { padding: 0 4px; }
+.notchfolk-calorie-layout { spacing: 14px; }
 
 /* Left Ring Column */
-.isle-calorie-left { width: 130px; spacing: 4px; }
-.isle-calorie-flame-icon { color: #ff453a; margin-bottom: 1px; }
-.isle-calorie-ring-val { font-size: 24px; font-weight: 700; color: #ffffff; letter-spacing: -0.6px; }
-.isle-calorie-ring-unit { font-size: 10px; font-weight: 600; color: rgba(255, 255, 255, 0.45); text-transform: uppercase; letter-spacing: 0.5px; }
-.isle-calorie-goal-sub { font-size: 10.5px; font-weight: 600; color: rgba(255, 255, 255, 0.75); }
-.isle-calorie-remaining { font-size: 10px; font-weight: 500; color: rgba(255, 255, 255, 0.42); }
+.notchfolk-calorie-left { width: 130px; spacing: 4px; }
+.notchfolk-calorie-flame-icon { color: #ff453a; margin-bottom: 1px; }
+.notchfolk-calorie-ring-val { font-size: 24px; font-weight: 700; color: #ffffff; letter-spacing: -0.6px; }
+.notchfolk-calorie-ring-unit { font-size: 10px; font-weight: 600; color: rgba(255, 255, 255, 0.45); text-transform: uppercase; letter-spacing: 0.5px; }
+.notchfolk-calorie-goal-sub { font-size: 10.5px; font-weight: 600; color: rgba(255, 255, 255, 0.75); }
+.notchfolk-calorie-remaining { font-size: 10px; font-weight: 500; color: rgba(255, 255, 255, 0.42); }
 
 /* Vertical Divider */
-.isle-calorie-divider { width: 1px; height: 128px; background-color: rgba(255, 255, 255, 0.08); margin: 6px 0; }
+.notchfolk-calorie-divider { width: 1px; height: 128px; background-color: rgba(255, 255, 255, 0.08); margin: 6px 0; }
 
 /* Right Column */
-.isle-calorie-right { spacing: 6px; }
-.isle-calorie-header { height: 22px; padding: 0; spacing: 8px; }
-.isle-calorie-title { font-size: 13px; font-weight: 700; color: #ffffff; letter-spacing: -0.2px; }
-.isle-calorie-badge {
+.notchfolk-calorie-right { spacing: 6px; }
+.notchfolk-calorie-header { height: 22px; padding: 0; spacing: 8px; }
+.notchfolk-calorie-title { font-size: 13px; font-weight: 700; color: #ffffff; letter-spacing: -0.2px; }
+.notchfolk-calorie-badge {
   font-size: 11px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.7);
@@ -829,9 +829,9 @@
   padding: 1px 8px;
 }
 
-.isle-calorie-scroll { -st-vfade-offset: 14px; }
-.isle-calorie-list { spacing: 4px; }
-.isle-calorie-row {
+.notchfolk-calorie-scroll { -st-vfade-offset: 14px; }
+.notchfolk-calorie-list { spacing: 4px; }
+.notchfolk-calorie-row {
   min-height: 25px;
   padding: 3px 8px;
   spacing: 8px;
@@ -840,12 +840,12 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
   transition-duration: 120ms;
 }
-.isle-calorie-row:hover {
+.notchfolk-calorie-row:hover {
   background-color: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.12);
 }
-.isle-calorie-food { font-size: 12.5px; font-weight: 500; color: #ffffff; }
-.isle-calorie-kcal {
+.notchfolk-calorie-food { font-size: 12.5px; font-weight: 500; color: #ffffff; }
+.notchfolk-calorie-kcal {
   font-size: 11.5px;
   font-weight: 700;
   color: #ff453a;
@@ -853,24 +853,24 @@
   border-radius: 5px;
   padding: 1px 6px;
 }
-.isle-calorie-remove {
+.notchfolk-calorie-remove {
   padding: 3px;
   border-radius: 999px;
   color: rgba(255, 255, 255, 0.35);
   transition-duration: 120ms;
 }
-.isle-calorie-remove:hover {
+.notchfolk-calorie-remove:hover {
   color: #ff453a;
   background-color: rgba(255, 69, 58, 0.15);
 }
-.isle-calorie-empty {
+.notchfolk-calorie-empty {
   font-size: 12px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.38);
 }
 
 /* Glass Form Pill */
-.isle-calorie-form {
+.notchfolk-calorie-form {
   height: 28px;
   padding: 2px 4px 2px 10px;
   spacing: 8px;
@@ -879,13 +879,13 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition-duration: 120ms;
 }
-.isle-calorie-form:focus-within {
+.notchfolk-calorie-form:focus-within {
   background-color: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.22);
 }
-.isle-calorie-field-sep { width: 1px; height: 16px; background-color: rgba(255, 255, 255, 0.12); }
-#isleIsland .isle-calorie-field,
-#isleIsland .isle-calorie-field:focus {
+.notchfolk-calorie-field-sep { width: 1px; height: 16px; background-color: rgba(255, 255, 255, 0.12); }
+#notchfolkIsland .notchfolk-calorie-field,
+#notchfolkIsland .notchfolk-calorie-field:focus {
   font-size: 12px;
   padding: 0;
   border: none;
@@ -896,12 +896,12 @@
   selection-background-color: rgba(255, 255, 255, 0.28);
   selected-color: #ffffff;
 }
-#isleIsland .isle-calorie-field StLabel.hint-text {
+#notchfolkIsland .notchfolk-calorie-field StLabel.hint-text {
   color: rgba(255, 255, 255, 0.35);
   margin-left: 0;
   padding-left: 0;
 }
-.isle-calorie-add-btn {
+.notchfolk-calorie-add-btn {
   width: 22px;
   height: 22px;
   padding: 0;
@@ -910,20 +910,20 @@
   background-color: #ff453a;
   transition-duration: 120ms;
 }
-.isle-calorie-add-btn:hover {
+.notchfolk-calorie-add-btn:hover {
   background-color: #ff5f55;
 }
 
 /* ── Prayer Times ─────────────────────────────────────── */
 
-.isle-prayer { padding: 5px 26px 1px; }
-.isle-prayer-column { spacing: 1px; }
-.isle-prayer-heading { height: 22px; spacing: 7px; }
-.isle-prayer-heading-icon { opacity: 0.82; color: #f4c869; }
-.isle-prayer-title { font-size: 14px; font-weight: 700; letter-spacing: -0.1px; }
-.isle-prayer-date { font-size: 10px; color: rgba(255, 255, 255, 0.48); }
-.isle-prayer-row { spacing: 18px; padding: 0; }
-.isle-prayer-hero {
+.notchfolk-prayer { padding: 5px 26px 1px; }
+.notchfolk-prayer-column { spacing: 1px; }
+.notchfolk-prayer-heading { height: 22px; spacing: 7px; }
+.notchfolk-prayer-heading-icon { opacity: 0.82; color: #f4c869; }
+.notchfolk-prayer-title { font-size: 14px; font-weight: 700; letter-spacing: -0.1px; }
+.notchfolk-prayer-date { font-size: 10px; color: rgba(255, 255, 255, 0.48); }
+.notchfolk-prayer-row { spacing: 18px; padding: 0; }
+.notchfolk-prayer-hero {
   width: 218px;
   spacing: 4px;
   padding: 8px 13px;
@@ -931,33 +931,33 @@
   background-color: rgba(21, 25, 38, 0.9);
   border: 1px solid rgba(108, 134, 202, 0.28);
 }
-.isle-prayer-hero-top { spacing: 5px; }
-.isle-prayer-eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 0.9px; color: #7ecaff; }
-.isle-prayer-next-name { font-size: 25px; font-weight: 700; letter-spacing: -0.7px; color: #ffffff; }
-.isle-prayer-next-details { spacing: 10px; }
-.isle-prayer-next-time { font-size: 18px; font-weight: 700; letter-spacing: -0.2px; color: #ffd36b; }
-.isle-prayer-next-countdown { font-size: 10px; font-weight: 600; color: #9dd9ff; }
-.isle-prayer-progress-track { height: 3px; border-radius: 2px; background-color: rgba(255, 255, 255, 0.12); }
-.isle-prayer-progress-fill {
+.notchfolk-prayer-hero-top { spacing: 5px; }
+.notchfolk-prayer-eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 0.9px; color: #7ecaff; }
+.notchfolk-prayer-next-name { font-size: 25px; font-weight: 700; letter-spacing: -0.7px; color: #ffffff; }
+.notchfolk-prayer-next-details { spacing: 10px; }
+.notchfolk-prayer-next-time { font-size: 18px; font-weight: 700; letter-spacing: -0.2px; color: #ffd36b; }
+.notchfolk-prayer-next-countdown { font-size: 10px; font-weight: 600; color: #9dd9ff; }
+.notchfolk-prayer-progress-track { height: 3px; border-radius: 2px; background-color: rgba(255, 255, 255, 0.12); }
+.notchfolk-prayer-progress-fill {
   height: 3px;
   border-radius: 2px;
   background-gradient-direction: horizontal;
   background-gradient-start: #20c7f7;
   background-gradient-end: #7657ff;
 }
-.isle-prayer-timeline { spacing: 0; }
-.isle-prayer-arc { height: 76px; }
-.isle-prayer-labels { height: 30px; spacing: 0; }
-.isle-prayer-mark { spacing: 1px; }
-.isle-prayer-mark-name { font-size: 9px; font-weight: 600; color: rgba(255, 255, 255, 0.55); }
-.isle-prayer-mark-time { font-size: 10px; font-weight: 600; color: rgba(255, 255, 255, 0.43); }
-.isle-prayer-mark.past .isle-prayer-mark-name,
-.isle-prayer-mark.past .isle-prayer-mark-time { color: rgba(255, 255, 255, 0.3); }
-.isle-prayer-mark.next .isle-prayer-mark-name { font-size: 10px; font-weight: 700; color: #ffffff; }
-.isle-prayer-mark.next .isle-prayer-mark-time { color: #ffd36b; font-weight: 700; }
-.isle-prayer-footer { margin-top: 0; }
-.isle-prayer-source { font-size: 8px; font-weight: 500; color: rgba(255, 255, 255, 0.3); }
-.isle-prayer-empty {
+.notchfolk-prayer-timeline { spacing: 0; }
+.notchfolk-prayer-arc { height: 76px; }
+.notchfolk-prayer-labels { height: 30px; spacing: 0; }
+.notchfolk-prayer-mark { spacing: 1px; }
+.notchfolk-prayer-mark-name { font-size: 9px; font-weight: 600; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-prayer-mark-time { font-size: 10px; font-weight: 600; color: rgba(255, 255, 255, 0.43); }
+.notchfolk-prayer-mark.past .notchfolk-prayer-mark-name,
+.notchfolk-prayer-mark.past .notchfolk-prayer-mark-time { color: rgba(255, 255, 255, 0.3); }
+.notchfolk-prayer-mark.next .notchfolk-prayer-mark-name { font-size: 10px; font-weight: 700; color: #ffffff; }
+.notchfolk-prayer-mark.next .notchfolk-prayer-mark-time { color: #ffd36b; font-weight: 700; }
+.notchfolk-prayer-footer { margin-top: 0; }
+.notchfolk-prayer-source { font-size: 8px; font-weight: 500; color: rgba(255, 255, 255, 0.3); }
+.notchfolk-prayer-empty {
   font-size: 12.5px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.4);
@@ -965,53 +965,53 @@
 
 /* ── Water Tracker ────────────────────────────────────── */
 
-.isle-water-layout { spacing: 18px; }
-.isle-water-summary { width: 238px; spacing: 5px; }
-.isle-water-heading { spacing: 7px; }
-.isle-water-title { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; }
-.isle-water-amount { spacing: 5px; }
-.isle-water-total { font-size: 34px; font-weight: 700; letter-spacing: -1px; }
-.isle-water-goal { font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, 0.48); margin-bottom: 4px; }
-.isle-water-status { font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.56); }
-.isle-water-progress-track { height: 6px; border-radius: 999px; background-color: rgba(255, 255, 255, 0.12); }
-.isle-water-progress-fill { height: 6px; border-radius: 999px; background-color: #0a84ff; }
-.isle-water-actions { spacing: 8px; margin-top: 2px; }
-.isle-water-button { padding: 7px 11px; border-radius: 999px; transition-duration: 120ms; }
-.isle-water-button-contents { spacing: 6px; }
-.isle-water-button-label { font-size: 12px; font-weight: 600; }
-.isle-water-drink { background-color: #0a84ff; }
-.isle-water-drink:hover { background-color: #329bff; }
-.isle-water-settings { background-color: #2c2c2e; }
-.isle-water-settings:hover { background-color: #3a3a3c; }
-.isle-water-chart { height: 112px; }
+.notchfolk-water-layout { spacing: 18px; }
+.notchfolk-water-summary { width: 238px; spacing: 5px; }
+.notchfolk-water-heading { spacing: 7px; }
+.notchfolk-water-title { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; }
+.notchfolk-water-amount { spacing: 5px; }
+.notchfolk-water-total { font-size: 34px; font-weight: 700; letter-spacing: -1px; }
+.notchfolk-water-goal { font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, 0.48); margin-bottom: 4px; }
+.notchfolk-water-status { font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.56); }
+.notchfolk-water-progress-track { height: 6px; border-radius: 999px; background-color: rgba(255, 255, 255, 0.12); }
+.notchfolk-water-progress-fill { height: 6px; border-radius: 999px; background-color: #0a84ff; }
+.notchfolk-water-actions { spacing: 8px; margin-top: 2px; }
+.notchfolk-water-button { padding: 7px 11px; border-radius: 999px; transition-duration: 120ms; }
+.notchfolk-water-button-contents { spacing: 6px; }
+.notchfolk-water-button-label { font-size: 12px; font-weight: 600; }
+.notchfolk-water-drink { background-color: #0a84ff; }
+.notchfolk-water-drink:hover { background-color: #329bff; }
+.notchfolk-water-settings { background-color: #2c2c2e; }
+.notchfolk-water-settings:hover { background-color: #3a3a3c; }
+.notchfolk-water-chart { height: 112px; }
 
 /* ── Calendar ─────────────────────────────────────────── */
 
 /* The month, as a calendar widget shows it. */
-.isle-cal-month { width: 196px; spacing: 2px; }
-.isle-cal-month-header { spacing: 0; padding-bottom: 2px; }
-.isle-cal-month-title { padding: 1px 4px; border-radius: 6px; }
-.isle-cal-month-title:hover { background-color: rgba(255, 255, 255, 0.06); }
-.isle-cal-month-title-box { spacing: 5px; }
+.notchfolk-cal-month { width: 196px; spacing: 2px; }
+.notchfolk-cal-month-header { spacing: 0; padding-bottom: 2px; }
+.notchfolk-cal-month-title { padding: 1px 4px; border-radius: 6px; }
+.notchfolk-cal-month-title:hover { background-color: rgba(255, 255, 255, 0.06); }
+.notchfolk-cal-month-title-box { spacing: 5px; }
 /* No letter-spacing: St rounds it to whole pixels (none at 100%, 1px at 200%), and Pango then cut the
  * name at the width St measured for it ("OCTOB…"). */
-.isle-cal-month-name { font-size: 12px; font-weight: 700; color: #ff453a; }
-.isle-cal-year { font-size: 12px; font-weight: 600; color: rgba(255, 255, 255, 0.5); }
-.isle-cal-arrow { padding: 4px; color: rgba(255, 255, 255, 0.75); }
+.notchfolk-cal-month-name { font-size: 12px; font-weight: 700; color: #ff453a; }
+.notchfolk-cal-year { font-size: 12px; font-weight: 600; color: rgba(255, 255, 255, 0.5); }
+.notchfolk-cal-arrow { padding: 4px; color: rgba(255, 255, 255, 0.75); }
 
-.isle-cal-weekdays { padding-bottom: 1px; }
-.isle-cal-weekday {
+.notchfolk-cal-weekdays { padding-bottom: 1px; }
+.notchfolk-cal-weekday {
   width: 28px;
   font-size: 10px;
   font-weight: 600;
   text-align: center;
   color: rgba(255, 255, 255, 0.55);
 }
-.isle-cal-weekday.weekend { color: rgba(255, 255, 255, 0.5); }
+.notchfolk-cal-weekday.weekend { color: rgba(255, 255, 255, 0.5); }
 
-.isle-cal-cell { width: 28px; }
+.notchfolk-cal-cell { width: 28px; }
 
-.isle-cal-day {
+.notchfolk-cal-day {
   width: 19px;
   height: 19px;
   border-radius: 10px;
@@ -1021,31 +1021,31 @@
   transition-duration: 120ms;
 }
 
-.isle-cal-day:hover { background-color: rgba(255, 255, 255, 0.12); }
-.isle-cal-day:focus { background-color: rgba(255, 255, 255, 0.1); color: #ffffff; }
-.isle-cal-day.weekend { color: rgba(255, 255, 255, 0.55); }
-.isle-cal-day.selected { background-color: rgba(255, 255, 255, 0.22); }
-.isle-cal-day.today { background-color: #ff453a; font-weight: 700; }
-.isle-cal-day.today:hover { background-color: #ff5f55; }
+.notchfolk-cal-day:hover { background-color: rgba(255, 255, 255, 0.12); }
+.notchfolk-cal-day:focus { background-color: rgba(255, 255, 255, 0.1); color: #ffffff; }
+.notchfolk-cal-day.weekend { color: rgba(255, 255, 255, 0.55); }
+.notchfolk-cal-day.selected { background-color: rgba(255, 255, 255, 0.22); }
+.notchfolk-cal-day.today { background-color: #ff453a; font-weight: 700; }
+.notchfolk-cal-day.today:hover { background-color: #ff5f55; }
 /* Six weeks in a month have 17 px rows: smaller days, still round. */
-.isle-cal-six-weeks .isle-cal-day { width: 17px; height: 17px; border-radius: 9px; }
+.notchfolk-cal-six-weeks .notchfolk-cal-day { width: 17px; height: 17px; border-radius: 9px; }
 
 /* A day with events: a dot just under its number. */
-.isle-cal-dot {
+.notchfolk-cal-dot {
   width: 3px;
   height: 3px;
   margin-bottom: 1px;
   border-radius: 2px;
   background-color: rgba(255, 255, 255, 0.55);
 }
-.isle-cal-dot.on-today { background-color: #ffffff; }
+.notchfolk-cal-dot.on-today { background-color: #ffffff; }
 
 /* The day's events. */
-.isle-cal-agenda { spacing: 5px; }
-.isle-cal-day-header { spacing: 8px; }
-.isle-cal-day-name { font-size: 14px; font-weight: 600; letter-spacing: -0.1px; }
+.notchfolk-cal-agenda { spacing: 5px; }
+.notchfolk-cal-day-header { spacing: 8px; }
+.notchfolk-cal-day-name { font-size: 14px; font-weight: 600; letter-spacing: -0.1px; }
 
-.isle-cal-today {
+.notchfolk-cal-today {
   font-size: 11px;
   font-weight: 600;
   padding: 2px 9px;
@@ -1054,31 +1054,31 @@
   background-color: #2c2c2e;
 }
 
-.isle-cal-today:hover { background-color: #3a3a3c; }
-/* Its + over the rows' dots and icons, its text where their titles start (.isle-cal-event-dot). */
-.isle-cal-add { padding: 6px 12px 6px 11px; font-size: 13px; }
+.notchfolk-cal-today:hover { background-color: #3a3a3c; }
+/* Its + over the rows' dots and icons, its text where their titles start (.notchfolk-cal-event-dot). */
+.notchfolk-cal-add { padding: 6px 12px 6px 11px; font-size: 13px; }
 /* Where a new event goes, inside the field: the calendar's colour, its name and a chevron. */
 /* The end of the add field: when the line takes place, then the calendar chip. */
-.isle-cal-field-end { spacing: 8px; }
-.isle-cal-preview { font-size: 12px; font-weight: 500; color: rgba(255, 255, 255, 0.55); font-feature-settings: "tnum"; }
-.isle-cal-target { spacing: 5px; padding: 2px 7px 2px 6px; border-radius: 999px; background-color: rgba(255, 255, 255, 0.08); }
-.isle-cal-target:hover, .isle-cal-target:checked { background-color: rgba(255, 255, 255, 0.16); }
-.isle-cal-target-dot { width: 7px; height: 7px; border-radius: 4px; }
-.isle-cal-target-name { font-size: 11px; font-weight: 600; color: rgba(255, 255, 255, 0.8); max-width: 96px; }
-.isle-cal-target-arrow { color: rgba(255, 255, 255, 0.55); }
+.notchfolk-cal-field-end { spacing: 8px; }
+.notchfolk-cal-preview { font-size: 12px; font-weight: 500; color: rgba(255, 255, 255, 0.55); font-feature-settings: "tnum"; }
+.notchfolk-cal-target { spacing: 5px; padding: 2px 7px 2px 6px; border-radius: 999px; background-color: rgba(255, 255, 255, 0.08); }
+.notchfolk-cal-target:hover, .notchfolk-cal-target:checked { background-color: rgba(255, 255, 255, 0.16); }
+.notchfolk-cal-target-dot { width: 7px; height: 7px; border-radius: 4px; }
+.notchfolk-cal-target-name { font-size: 11px; font-weight: 600; color: rgba(255, 255, 255, 0.8); max-width: 96px; }
+.notchfolk-cal-target-arrow { color: rgba(255, 255, 255, 0.55); }
 /* The calendars to pick from, a row each: colour, name, its account in grey, a tick. */
-.isle-cal-target-row { border-radius: 8px; padding: 5px 10px; }
-.isle-cal-target-row:hover { background-color: rgba(255, 255, 255, 0.06); }
-.isle-cal-target-row-box { spacing: 8px; }
-.isle-cal-target-row-name { font-size: 13px; font-weight: 600; }
-.isle-cal-target-row-account { font-size: 12px; color: rgba(255, 255, 255, 0.46); max-width: 190px; }
-.isle-cal-target-tick { color: #ffffff; }
-.isle-cal-scroll { -st-vfade-offset: 14px; }
-.isle-cal-events { spacing: 3px; padding-bottom: 2px; }
+.notchfolk-cal-target-row { border-radius: 8px; padding: 5px 10px; }
+.notchfolk-cal-target-row:hover { background-color: rgba(255, 255, 255, 0.06); }
+.notchfolk-cal-target-row-box { spacing: 8px; }
+.notchfolk-cal-target-row-name { font-size: 13px; font-weight: 600; }
+.notchfolk-cal-target-row-account { font-size: 12px; color: rgba(255, 255, 255, 0.46); max-width: 190px; }
+.notchfolk-cal-target-tick { color: #ffffff; }
+.notchfolk-cal-scroll { -st-vfade-offset: 14px; }
+.notchfolk-cal-events { spacing: 3px; padding-bottom: 2px; }
 
 /* An event: its calendar's colour as a dot (set in
  * calendar.js), on a row like the world clocks'. */
-.isle-cal-event {
+.notchfolk-cal-event {
   spacing: 8px;
   padding: 0 8px 0 10px;
   min-height: 26px;
@@ -1087,101 +1087,101 @@
 }
 
 /* In a 16 px slot, as the world clocks' icons, so every row's title starts at the same place. */
-.isle-cal-event-dot, .isle-cal-target-row .isle-cal-target-dot { width: 7px; height: 7px; border-radius: 4px; margin: 0 5px 0 4px; }
-/* Kept in Isle until its calendar is in reach: a ring of that one's colour. */
-.isle-cal-event-dot.waiting { width: 4px; height: 4px; border: 1.5px solid transparent; background-color: transparent; }
-.isle-cal-event-title { font-size: 13px; font-weight: 600; }
-.isle-cal-event-time { font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.65); }
+.notchfolk-cal-event-dot, .notchfolk-cal-target-row .notchfolk-cal-target-dot { width: 7px; height: 7px; border-radius: 4px; margin: 0 5px 0 4px; }
+/* Kept in Notchfolk until its calendar is in reach: a ring of that one's colour. */
+.notchfolk-cal-event-dot.waiting { width: 4px; height: 4px; border: 1.5px solid transparent; background-color: transparent; }
+.notchfolk-cal-event-title { font-size: 13px; font-weight: 600; }
+.notchfolk-cal-event-time { font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.65); }
 /* World clocks, in place of the events: as their rows, untinted. */
-.isle-cal-world-toggle { padding: 4px; border-radius: 999px; transition-duration: 120ms; }
-.isle-cal-world-toggle:hover { background-color: rgba(255, 255, 255, 0.1); }
-.isle-cal-world-toggle:checked { background-color: rgba(255, 255, 255, 0.18); }
-.isle-cal-world-row {
+.notchfolk-cal-world-toggle { padding: 4px; border-radius: 999px; transition-duration: 120ms; }
+.notchfolk-cal-world-toggle:hover { background-color: rgba(255, 255, 255, 0.1); }
+.notchfolk-cal-world-toggle:checked { background-color: rgba(255, 255, 255, 0.18); }
+.notchfolk-cal-world-row {
   spacing: 8px;
   padding: 0 10px;
   min-height: 26px;
   border-radius: 7px;
   background-color: rgba(255, 255, 255, 0.07);
 }
-.isle-cal-world-icon { icon-size: 16px; color: rgba(255, 255, 255, 0.9); }
-.isle-cal-world-city { font-size: 13px; font-weight: 600; }
-.isle-cal-world-meta { font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.55); }
-.isle-cal-world-time { font-size: 13px; font-weight: 600; font-feature-settings: "tnum"; }
-.isle-cal-world-strip {
+.notchfolk-cal-world-icon { icon-size: 16px; color: rgba(255, 255, 255, 0.9); }
+.notchfolk-cal-world-city { font-size: 13px; font-weight: 600; }
+.notchfolk-cal-world-meta { font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-cal-world-time { font-size: 13px; font-weight: 600; font-feature-settings: "tnum"; }
+.notchfolk-cal-world-strip {
   padding: 3px 2px 0 2px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   transition-duration: 120ms;
 }
-.isle-cal-world-strip:hover .isle-cal-world-chip-city { color: rgba(255, 255, 255, 0.8); }
-.isle-cal-world-strip-box { spacing: 14px; }
-.isle-cal-world-chip { spacing: 5px; }
-.isle-cal-world-chip-city { font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.55); }
-.isle-cal-world-chip-time { font-size: 11px; font-weight: 600; font-feature-settings: "tnum"; }
-.isle-cal-empty { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, 0.55); }
-.isle-cal-accounts { font-size: 12px; color: rgba(10, 132, 255, 1); padding: 4px 8px; border-radius: 8px; }
-.isle-cal-accounts:hover { background-color: rgba(255, 255, 255, 0.08); }
-.isle-cal-accounts:focus { color: #ffffff; }
+.notchfolk-cal-world-strip:hover .notchfolk-cal-world-chip-city { color: rgba(255, 255, 255, 0.8); }
+.notchfolk-cal-world-strip-box { spacing: 14px; }
+.notchfolk-cal-world-chip { spacing: 5px; }
+.notchfolk-cal-world-chip-city { font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-cal-world-chip-time { font-size: 11px; font-weight: 600; font-feature-settings: "tnum"; }
+.notchfolk-cal-empty { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-cal-accounts { font-size: 12px; color: rgba(10, 132, 255, 1); padding: 4px 8px; border-radius: 8px; }
+.notchfolk-cal-accounts:hover { background-color: rgba(255, 255, 255, 0.08); }
+.notchfolk-cal-accounts:focus { color: #ffffff; }
 
 /* ── Notifications ────────────────────────────────────── */
 
 /* As the rows' insides: the heading over their icons, Clear over their times. */
-.isle-notifications-bar { spacing: 6px; padding: 0 10px 6px 10px; }
-.isle-notifications-heading { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, 0.6); }
-.isle-notifications-clear { font-size: 12px; font-weight: 600; padding: 5px 12px; }
-.isle-dnd-toggle:checked { color: #ffffff; background-color: #5e5ce6; }
-.isle-dnd-toggle:checked:hover { background-color: #6e6cf0; }
-.isle-notifications-dnd-note { spacing: 6px; padding: 0 10px 8px 10px; }
-.isle-notifications-dnd-text { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
-.isle-notification-list { spacing: 6px; padding-bottom: 8px; }
+.notchfolk-notifications-bar { spacing: 6px; padding: 0 10px 6px 10px; }
+.notchfolk-notifications-heading { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, 0.6); }
+.notchfolk-notifications-clear { font-size: 12px; font-weight: 600; padding: 5px 12px; }
+.notchfolk-dnd-toggle:checked { color: #ffffff; background-color: #5e5ce6; }
+.notchfolk-dnd-toggle:checked:hover { background-color: #6e6cf0; }
+.notchfolk-notifications-dnd-note { spacing: 6px; padding: 0 10px 8px 10px; }
+.notchfolk-notifications-dnd-text { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
+.notchfolk-notification-list { spacing: 6px; padding-bottom: 8px; }
 
 /* A card each, apart from the next: the app's icon, who in white and what in grey under it, then when;
  * its buttons under them. */
-.isle-notification-row {
+.notchfolk-notification-row {
   border-radius: 12px;
   background-color: rgba(255, 255, 255, 0.05);
   transition-duration: 120ms;
 }
 
-.isle-notification-row:hover { background-color: rgba(255, 255, 255, 0.09); }
-.isle-notification { spacing: 10px; padding: 8px 10px; }
-.isle-notification-texts { spacing: 2px; }
-.isle-notification-title { font-size: 13px; font-weight: 600; }
-.isle-notification-body { font-size: 13px; color: rgba(255, 255, 255, 0.55); }
-.isle-notification-tools { spacing: 6px; }
+.notchfolk-notification-row:hover { background-color: rgba(255, 255, 255, 0.09); }
+.notchfolk-notification { spacing: 10px; padding: 8px 10px; }
+.notchfolk-notification-texts { spacing: 2px; }
+.notchfolk-notification-title { font-size: 13px; font-weight: 600; }
+.notchfolk-notification-body { font-size: 13px; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-notification-tools { spacing: 6px; }
 /* A notification's buttons, under its line, from where the title starts. */
-.isle-notification-actions { padding-top: 6px; }
-.isle-notification-action { font-size: 11px; padding: 3px 10px; }
-.isle-notification-dismiss { padding: 4px; border-radius: 999px; color: rgba(255, 255, 255, 0.7); background-color: #3a3a3c; }
+.notchfolk-notification-actions { padding-top: 6px; }
+.notchfolk-notification-action { font-size: 11px; padding: 3px 10px; }
+.notchfolk-notification-dismiss { padding: 4px; border-radius: 999px; color: rgba(255, 255, 255, 0.7); background-color: #3a3a3c; }
 
 /* A system notification's symbolic icon, on a tile the size of an app icon. */
-.isle-notification-glyph {
+.notchfolk-notification-glyph {
   width: 20px;
   height: 20px;
   border-radius: 6px;
   background-color: #2c2c2e;
   color: #ffffff;
 }
-.isle-notification-time { font-size: 12px; color: rgba(255, 255, 255, 0.46); padding-left: 8px; }
+.notchfolk-notification-time { font-size: 12px; color: rgba(255, 255, 255, 0.46); padding-left: 8px; }
 
-.isle-dnd-moon { color: rgba(255, 255, 255, 0.85); }
+.notchfolk-dnd-moon { color: rgba(255, 255, 255, 0.85); }
 
 /* ── Shelf ────────────────────────────────────────────── */
 
 /* Shelf: tabs, filters and search in one bar, cards below */
 
-.isle-shelf-bar { spacing: 8px; }
-.isle-shelf-controls { spacing: 8px; }
+.notchfolk-shelf-bar { spacing: 8px; }
+.notchfolk-shelf-controls { spacing: 8px; }
 
 /* A segmented control: the chosen segment is a raised pill,
  * lit from above with a soft shadow beneath (no outline). */
-.isle-segmented {
+.notchfolk-segmented {
   padding: 3px;
   spacing: 2px;
   border-radius: 999px;
   background-color: #1c1c1e;
 }
 
-.isle-segment {
+.notchfolk-segment {
   font-size: 12px;
   font-weight: 600;
   padding: 3px 10px;
@@ -1190,27 +1190,27 @@
   transition-duration: 120ms;
 }
 
-.isle-segment:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.05); }
-.isle-segment:checked {
+.notchfolk-segment:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.05); }
+.notchfolk-segment:checked {
   color: #ffffff;
   background-gradient-direction: vertical;
   background-gradient-start: #4a4a4d;
   background-gradient-end: #3a3a3c;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
 }
-.isle-segmented-icons .isle-segment { padding: 3px 6px; }
+.notchfolk-segmented-icons .notchfolk-segment { padding: 3px 6px; }
 
-.isle-shelf-field { padding: 5px 12px; font-size: 12px; }
-.isle-shelf-field-icon { padding-right: 6px; }
-.isle-shelf-confirm { padding: 5px 12px; }
-.isle-shelf-hint { font-size: 12px; color: rgba(255, 255, 255, 0.55); transition-duration: 180ms; }
+.notchfolk-shelf-field { padding: 5px 12px; font-size: 12px; }
+.notchfolk-shelf-field-icon { padding-right: 6px; }
+.notchfolk-shelf-confirm { padding: 5px 12px; }
+.notchfolk-shelf-hint { font-size: 12px; color: rgba(255, 255, 255, 0.55); transition-duration: 180ms; }
 /* While a file is on its way in. */
-.isle-shelf-hint.active { color: #ffffff; font-weight: 600; }
+.notchfolk-shelf-hint.active { color: #ffffff; font-weight: 600; }
 
-.isle-clips-scroll { -st-hfade-offset: 18px; }
-.isle-clips { spacing: 8px; }
+.notchfolk-clips-scroll { -st-hfade-offset: 18px; }
+.notchfolk-clips { spacing: 8px; }
 
-.isle-clip {
+.notchfolk-clip {
   width: 136px;
   height: 96px;
   border-radius: 12px;
@@ -1219,134 +1219,134 @@
   color: #ffffff;
 }
 
-.isle-clip:hover { background-color: #242426; }
+.notchfolk-clip:hover { background-color: #242426; }
 /* The keyboard's choice, for Enter to paste. */
-.isle-clip:selected { border-color: #ffffff; }
+.notchfolk-clip:selected { border-color: #ffffff; }
 
-.isle-clip-header { padding: 7px 9px; spacing: 5px; }
-.isle-clip-age { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
-.isle-clip-body { padding: 28px 10px 8px 10px; spacing: 2px; }
-.isle-clip-text { font-size: 12px; }
-.isle-clip-code { font-family: monospace; font-size: 12px; }
-.isle-clip-host { font-size: 13px; font-weight: 700; }
-.isle-clip-url { font-size: 12px; color: rgba(255, 255, 255, 0.55); }
-.isle-clip-file-name { font-size: 12px; font-weight: 600; padding-top: 4px; }
-.isle-clip-subtle { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
+.notchfolk-clip-header { padding: 7px 9px; spacing: 5px; }
+.notchfolk-clip-age { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
+.notchfolk-clip-body { padding: 28px 10px 8px 10px; spacing: 2px; }
+.notchfolk-clip-text { font-size: 12px; }
+.notchfolk-clip-code { font-family: monospace; font-size: 12px; }
+.notchfolk-clip-host { font-size: 13px; font-weight: 700; }
+.notchfolk-clip-url { font-size: 12px; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-clip-file-name { font-size: 12px; font-weight: 600; padding-top: 4px; }
+.notchfolk-clip-subtle { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
 
 /* Images fill the card; header and size sit on dark pills over them. */
-.isle-clip-thumb { border-radius: 12px; background-size: cover; background-color: #2c2c2e; }
-.isle-clip-image .isle-clip-header {
+.notchfolk-clip-thumb { border-radius: 12px; background-size: cover; background-color: #2c2c2e; }
+.notchfolk-clip-image .notchfolk-clip-header {
   margin: 5px;
   padding: 3px 7px;
   border-radius: 999px;
   background-color: rgba(0, 0, 0, 0.6);
 }
 
-.isle-clip-badge { margin: 5px; padding: 2px 6px; border-radius: 999px; background-color: rgba(0, 0, 0, 0.6); }
-.isle-clip-badge-label { font-size: 11px; font-weight: 600; }
+.notchfolk-clip-badge { margin: 5px; padding: 2px 6px; border-radius: 999px; background-color: rgba(0, 0, 0, 0.6); }
+.notchfolk-clip-badge-label { font-size: 11px; font-weight: 600; }
 
-.isle-clip-actions { padding: 5px; spacing: 4px; }
-.isle-clip-action { padding: 4px; background-color: #3a3a3c; }
-.isle-clip-action:hover { background-color: #4a4a4c; }
+.notchfolk-clip-actions { padding: 5px; spacing: 4px; }
+.notchfolk-clip-action { padding: 4px; background-color: #3a3a3c; }
+.notchfolk-clip-action:hover { background-color: #4a4a4c; }
 
-.isle-clip-feedback { border-radius: 12px; background-color: rgba(28, 28, 30, 0.95); }
-.isle-clip-feedback-label { font-size: 12px; font-weight: 700; padding-top: 4px; }
+.notchfolk-clip-feedback { border-radius: 12px; background-color: rgba(28, 28, 30, 0.95); }
+.notchfolk-clip-feedback-label { font-size: 12px; font-weight: 700; padding-top: 4px; }
 
 /* Files tab. The shelf helper's window draws this tab when installed; its
  * style.css mirrors these sizes and colours so the two look the same. */
 
 /* While a file is on its way, a dashed outline (drawn in files.js) marks it as one rounded area. */
-.isle-shelf-files { border-radius: 16px; }
+.notchfolk-shelf-files { border-radius: 16px; }
 
-.isle-shelf-tiles { spacing: 6px; }
+.notchfolk-shelf-tiles { spacing: 6px; }
 
-.isle-shelf-tile {
+.notchfolk-shelf-tile {
   padding: 6px 0;
   border-radius: 14px;
   color: #ffffff;
   transition-duration: 120ms;
 }
 
-.isle-shelf-tile:hover { background-color: #1c1c1e; }
-.isle-shelf-tile:focus { background-color: rgba(255, 255, 255, 0.1); }
-.isle-shelf-tile-box { spacing: 4px; }
-/* Two lines high, a shorter name in the middle, as the drag-and-drop helper's (crates/isle-shelf). */
-.isle-shelf-name { font-size: 12px; text-align: center; }
-.isle-shelf-name-lines { font-size: 12px; height: 2.5em; }
+.notchfolk-shelf-tile:hover { background-color: #1c1c1e; }
+.notchfolk-shelf-tile:focus { background-color: rgba(255, 255, 255, 0.1); }
+.notchfolk-shelf-tile-box { spacing: 4px; }
+/* Two lines high, a shorter name in the middle, as the drag-and-drop helper's (crates/notchfolk-shelf). */
+.notchfolk-shelf-name { font-size: 12px; text-align: center; }
+.notchfolk-shelf-name-lines { font-size: 12px; height: 2.5em; }
 
-.isle-shelf-preview { border-radius: 12px; }
-.isle-shelf-preview.thumbnail { background-color: #2c2c2e; background-size: cover; }
+.notchfolk-shelf-preview { border-radius: 12px; }
+.notchfolk-shelf-preview.thumbnail { background-color: #2c2c2e; background-size: cover; }
 /* A document's page, whole on a clear square, as in Files. */
-.isle-shelf-preview.thumbnail.whole { background-color: transparent; border-radius: 0; }
+.notchfolk-shelf-preview.thumbnail.whole { background-color: transparent; border-radius: 0; }
 
-.isle-shelf-copied { border-radius: 12px; background-color: rgba(0, 0, 0, 0.6); }
+.notchfolk-shelf-copied { border-radius: 12px; background-color: rgba(0, 0, 0, 0.6); }
 
 /* Always there, so a file can always be taken off the shelf. */
-.isle-shelf-remove {
+.notchfolk-shelf-remove {
   padding: 0;
   border-radius: 9px;
   color: #ffffff;
   background-color: #3a3a3c;
 }
 
-.isle-shelf-remove:hover { background-color: #5a5a5e; }
+.notchfolk-shelf-remove:hover { background-color: #5a5a5e; }
 
 /* ── Shelf: sharing with a phone ─────────────────────── */
 
-.isle-shelf-column { spacing: 8px; }
-.isle-shelf-phone { padding: 5px 12px 5px 10px; }
-.isle-shelf-phone-box { spacing: 5px; }
+.notchfolk-shelf-column { spacing: 8px; }
+.notchfolk-shelf-phone { padding: 5px 12px 5px 10px; }
+.notchfolk-shelf-phone-box { spacing: 5px; }
 /* The Phone tab: one column from the top, every block 6 px under the one before (its own bottom padding). */
-.isle-phone { spacing: 0; }
-.isle-phone-title { font-size: 15px; font-weight: 600; letter-spacing: -0.1px; padding-bottom: 6px; }
-.isle-phone-steps { spacing: 2px; padding-bottom: 6px; }
-.isle-phone-step { spacing: 8px; }
-.isle-phone-step-number { width: 16px; height: 16px; border-radius: 8px; background-color: rgba(255, 255, 255, 0.14); }
+.notchfolk-phone { spacing: 0; }
+.notchfolk-phone-title { font-size: 15px; font-weight: 600; letter-spacing: -0.1px; padding-bottom: 6px; }
+.notchfolk-phone-steps { spacing: 2px; padding-bottom: 6px; }
+.notchfolk-phone-step { spacing: 8px; }
+.notchfolk-phone-step-number { width: 16px; height: 16px; border-radius: 8px; background-color: rgba(255, 255, 255, 0.14); }
 /* A pixel over the digit: the font's line keeps room below it that digits never use. */
-.isle-phone-step-digit { font-size: 10px; font-weight: 700; font-feature-settings: "tnum"; padding-top: 1px; }
-.isle-phone-step-text { font-size: 12px; color: rgba(255, 255, 255, 0.82); }
-.isle-phone-warning { color: #ff9f0a; }
-.isle-phone-hint,
-.isle-phone-copy-text { font-size: 12px; color: rgba(255, 255, 255, 0.55); }
-.isle-phone-rows { spacing: 0; }
-.isle-phone-row { padding-bottom: 6px; }
-.isle-phone-status { spacing: 8px; }
-.isle-phone-dot { width: 7px; height: 7px; border-radius: 4px; background-color: rgba(255, 255, 255, 0.35); }
-.isle-phone-dot.on { background-color: #30d158; }
-.isle-phone-status-text { font-size: 12px; font-weight: 600; }
-.isle-phone-leaving .isle-phone-status-text,
-.isle-phone-away .isle-phone-status-text { font-weight: 400; color: rgba(255, 255, 255, 0.55); }
-.isle-phone-ask { spacing: 8px; }
-.isle-phone-note { spacing: 6px; color: #ff9f0a; padding-bottom: 6px; }
-.isle-phone-note-icon { padding-top: 1px; }
-.isle-phone-note-text { font-size: 12px; color: #ff9f0a; }
-.isle-phone-copy { spacing: 8px; }
-.isle-phone-code-text { font-size: 13px; font-weight: 700; font-feature-settings: "tnum"; }
-.isle-phone-remove { padding: 4px; border-radius: 999px; background-color: #2c2c2e; }
-.isle-phone-remove:hover { background-color: #3a3a3c; }
-#isleIsland.isle-translucent .isle-phone-remove { background-color: rgba(255, 255, 255, 0.14); }
-#isleIsland.isle-translucent .isle-phone-remove:hover { background-color: rgba(255, 255, 255, 0.22); }
-#isleIsland.isle-translucent .isle-phone-hint,
-#isleIsland.isle-translucent .isle-phone-copy-text,
-#isleIsland.isle-translucent .isle-phone-leaving .isle-phone-status-text,
-#isleIsland.isle-translucent .isle-phone-away .isle-phone-status-text { color: rgba(255, 255, 255, 0.7); }
-#isleIsland.isle-translucent .isle-phone-step-text { color: rgba(255, 255, 255, 0.9); }
-#isleIsland.isle-translucent .isle-phone-step-number { background-color: rgba(255, 255, 255, 0.2); }
+.notchfolk-phone-step-digit { font-size: 10px; font-weight: 700; font-feature-settings: "tnum"; padding-top: 1px; }
+.notchfolk-phone-step-text { font-size: 12px; color: rgba(255, 255, 255, 0.82); }
+.notchfolk-phone-warning { color: #ff9f0a; }
+.notchfolk-phone-hint,
+.notchfolk-phone-copy-text { font-size: 12px; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-phone-rows { spacing: 0; }
+.notchfolk-phone-row { padding-bottom: 6px; }
+.notchfolk-phone-status { spacing: 8px; }
+.notchfolk-phone-dot { width: 7px; height: 7px; border-radius: 4px; background-color: rgba(255, 255, 255, 0.35); }
+.notchfolk-phone-dot.on { background-color: #30d158; }
+.notchfolk-phone-status-text { font-size: 12px; font-weight: 600; }
+.notchfolk-phone-leaving .notchfolk-phone-status-text,
+.notchfolk-phone-away .notchfolk-phone-status-text { font-weight: 400; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-phone-ask { spacing: 8px; }
+.notchfolk-phone-note { spacing: 6px; color: #ff9f0a; padding-bottom: 6px; }
+.notchfolk-phone-note-icon { padding-top: 1px; }
+.notchfolk-phone-note-text { font-size: 12px; color: #ff9f0a; }
+.notchfolk-phone-copy { spacing: 8px; }
+.notchfolk-phone-code-text { font-size: 13px; font-weight: 700; font-feature-settings: "tnum"; }
+.notchfolk-phone-remove { padding: 4px; border-radius: 999px; background-color: #2c2c2e; }
+.notchfolk-phone-remove:hover { background-color: #3a3a3c; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-phone-remove { background-color: rgba(255, 255, 255, 0.14); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-phone-remove:hover { background-color: rgba(255, 255, 255, 0.22); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-phone-hint,
+#notchfolkIsland.notchfolk-translucent .notchfolk-phone-copy-text,
+#notchfolkIsland.notchfolk-translucent .notchfolk-phone-leaving .notchfolk-phone-status-text,
+#notchfolkIsland.notchfolk-translucent .notchfolk-phone-away .notchfolk-phone-status-text { color: rgba(255, 255, 255, 0.7); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-phone-step-text { color: rgba(255, 255, 255, 0.9); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-phone-step-number { background-color: rgba(255, 255, 255, 0.2); }
 /* Signal colours a quarter towards white on glass. */
-#isleIsland.isle-translucent .isle-phone-dot.on { background-color: rgb(100, 220, 130); }
-#isleIsland.isle-translucent .isle-phone-note,
-#isleIsland.isle-translucent .isle-phone-note-text,
-#isleIsland.isle-translucent .isle-phone-warning { color: rgb(255, 183, 71); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-phone-dot.on { background-color: rgb(100, 220, 130); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-phone-note,
+#notchfolkIsland.notchfolk-translucent .notchfolk-phone-note-text,
+#notchfolkIsland.notchfolk-translucent .notchfolk-phone-warning { color: rgb(255, 183, 71); }
 
 /* ── Usage ────────────────────────────────────────────── */
 
 /* One provider at a time (usage.js): its mark, name and plan, then a line and a bar per limit;
  * dots on the right move between providers, as in a widget stack. */
-.isle-usage-content { spacing: 14px; padding: 0 0 4px 0; }
-.isle-usage-head { spacing: 8px; }
-.isle-usage-mark { width: 10px; height: 10px; border-radius: 5px; }
-.isle-usage-name { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; }
-.isle-usage-plan {
+.notchfolk-usage-content { spacing: 14px; padding: 0 0 4px 0; }
+.notchfolk-usage-head { spacing: 8px; }
+.notchfolk-usage-mark { width: 10px; height: 10px; border-radius: 5px; }
+.notchfolk-usage-name { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; }
+.notchfolk-usage-plan {
   font-size: 11px;
   font-weight: 600;
   padding: 1px 7px;
@@ -1354,43 +1354,43 @@
   color: rgba(255, 255, 255, 0.7);
   background-color: rgba(255, 255, 255, 0.1);
 }
-.isle-usage-stamp { font-size: 11px; color: rgba(255, 255, 255, 0.55); }
-.isle-usage-stamp.warning { color: rgba(255, 255, 255, 0.8); }
-.isle-usage-limits { spacing: 11px; }
-.isle-usage-limit { spacing: 5px; }
-.isle-usage-line { spacing: 10px; }
-.isle-usage-window { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, 0.9); }
-.isle-usage-reset { font-size: 11px; color: rgba(255, 255, 255, 0.55); }
-.isle-usage-percent { font-size: 13px; font-weight: 700; min-width: 40px; text-align: right; }
-.isle-usage-percent.critical { color: #ff453a; }
-.isle-usage-track { height: 5px; border-radius: 3px; background-color: rgba(255, 255, 255, 0.1); }
-.isle-usage-fill { height: 5px; border-radius: 3px; }
-.isle-usage-fill.critical { background-color: #ff453a; }
-.isle-usage-empty { font-size: 12px; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-usage-stamp { font-size: 11px; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-usage-stamp.warning { color: rgba(255, 255, 255, 0.8); }
+.notchfolk-usage-limits { spacing: 11px; }
+.notchfolk-usage-limit { spacing: 5px; }
+.notchfolk-usage-line { spacing: 10px; }
+.notchfolk-usage-window { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, 0.9); }
+.notchfolk-usage-reset { font-size: 11px; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-usage-percent { font-size: 13px; font-weight: 700; min-width: 40px; text-align: right; }
+.notchfolk-usage-percent.critical { color: #ff453a; }
+.notchfolk-usage-track { height: 5px; border-radius: 3px; background-color: rgba(255, 255, 255, 0.1); }
+.notchfolk-usage-fill { height: 5px; border-radius: 3px; }
+.notchfolk-usage-fill.critical { background-color: #ff453a; }
+.notchfolk-usage-empty { font-size: 12px; color: rgba(255, 255, 255, 0.55); }
 
-.isle-usage-dots { spacing: 6px; padding-left: 14px; }
-.isle-usage-dot { width: 6px; height: 6px; border-radius: 3px; background-color: rgba(255, 255, 255, 0.22); transition-duration: 200ms; }
-.isle-usage-dot:hover { background-color: rgba(255, 255, 255, 0.45); }
-.isle-usage-dot.shown { height: 16px; background-color: #ffffff; }
+.notchfolk-usage-dots { spacing: 6px; padding-left: 14px; }
+.notchfolk-usage-dot { width: 6px; height: 6px; border-radius: 3px; background-color: rgba(255, 255, 255, 0.22); transition-duration: 200ms; }
+.notchfolk-usage-dot:hover { background-color: rgba(255, 255, 255, 0.45); }
+.notchfolk-usage-dot.shown { height: 16px; background-color: #ffffff; }
 
 /* Apps: time in each application, today or over the last seven days */
 
 /* On the page's edges, as the rows below: the heading over their icons, the periods over their times. */
-.isle-apps-bar { spacing: 10px; padding: 0 0 6px 0; }
-.isle-apps-heading { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, 0.6); }
-.isle-apps-total { font-size: 11px; color: rgba(255, 255, 255, 0.46); }
-.isle-apps-scroll { padding: 2px 0 6px 0; -st-vfade-offset: 16px; }
-.isle-apps-list { spacing: 8px; }
-.isle-apps-row { spacing: 10px; }
-.isle-apps-name { font-size: 13px; color: rgba(255, 255, 255, 0.92); }
-.isle-apps-track { width: 120px; height: 4px; border-radius: 2px; background-color: rgba(255, 255, 255, 0.1); }
-.isle-apps-fill { height: 4px; border-radius: 2px; background-color: rgba(255, 255, 255, 0.8); }
-.isle-apps-time { font-size: 12px; color: rgba(255, 255, 255, 0.6); min-width: 44px; text-align: right; }
+.notchfolk-apps-bar { spacing: 10px; padding: 0 0 6px 0; }
+.notchfolk-apps-heading { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, 0.6); }
+.notchfolk-apps-total { font-size: 11px; color: rgba(255, 255, 255, 0.46); }
+.notchfolk-apps-scroll { padding: 2px 0 6px 0; -st-vfade-offset: 16px; }
+.notchfolk-apps-list { spacing: 8px; }
+.notchfolk-apps-row { spacing: 10px; }
+.notchfolk-apps-name { font-size: 13px; color: rgba(255, 255, 255, 0.92); }
+.notchfolk-apps-track { width: 120px; height: 4px; border-radius: 2px; background-color: rgba(255, 255, 255, 0.1); }
+.notchfolk-apps-fill { height: 4px; border-radius: 2px; background-color: rgba(255, 255, 255, 0.8); }
+.notchfolk-apps-time { font-size: 12px; color: rgba(255, 255, 255, 0.6); min-width: 44px; text-align: right; }
 
 /* Focused (from the keyboard), a button lights up: no ring around it. */
-.isle-pill:focus, .isle-pill-small:focus, .isle-notification-row:focus, .isle-output-button:focus,
-.isle-cal-today:focus, .isle-cal-month-title:focus, .isle-segment:focus, .isle-usage-dot:focus,
-.isle-recording-pill:focus {
+.notchfolk-pill:focus, .notchfolk-pill-small:focus, .notchfolk-notification-row:focus, .notchfolk-output-button:focus,
+.notchfolk-cal-today:focus, .notchfolk-cal-month-title:focus, .notchfolk-segment:focus, .notchfolk-usage-dot:focus,
+.notchfolk-recording-pill:focus {
   color: #ffffff;
 }
 
@@ -1400,468 +1400,468 @@
  * a + 33% of the rest; rows 8% with a lit rim; buttons 14% lit along the top; wells 20% black; on is the accent. */
 
 /* Text, generated from the rules above (each grey, and the states of the same elements, in their order). */
-#isleIsland.isle-translucent .isle-button:focus { color: #ffffff; }
-#isleIsland.isle-translucent .isle-art-placeholder { color: rgba(255, 255, 255, 0.6); }
-#isleIsland.isle-translucent .isle-empty-icon { color: rgba(255, 255, 255, 0.56); }
-#isleIsland.isle-translucent .isle-empty-hint,
-#isleIsland.isle-translucent .isle-peek-subtitle,
-#isleIsland.isle-translucent .isle-voice-heard { color: rgba(255, 255, 255, 0.67); }
-#isleIsland.isle-translucent .isle-voice-text-dim { color: rgba(255, 255, 255, 0.73); }
-#isleIsland.isle-translucent .isle-voice-hint { color: rgba(255, 255, 255, 0.67); }
-#isleIsland.isle-translucent .isle-voice-step-tick { color: rgba(255, 255, 255, 0.63); }
-#isleIsland.isle-translucent .isle-voice-step-text { color: rgba(255, 255, 255, 0.67); }
-#isleIsland.isle-translucent .isle-voice-heard-button:hover .isle-voice-heard { color: rgba(255, 255, 255, 0.83); }
-#isleIsland.isle-translucent .isle-voice-earlier { color: rgba(255, 255, 255, 0.67); }
-#isleIsland.isle-translucent .isle-voice-still { color: rgba(255, 255, 255, 0.64); }
-#isleIsland.isle-translucent .isle-voice-undo-text { color: rgba(255, 255, 255, 0.73); }
-#isleIsland.isle-translucent .isle-card-subtitle { color: rgba(255, 255, 255, 0.67); }
-#isleIsland.isle-translucent .isle-card-output,
-#isleIsland.isle-translucent .isle-card-ghost .isle-card-key { color: rgba(255, 255, 255, 0.64); }
-#isleIsland.isle-translucent .isle-card-denied { color: rgba(255, 255, 255, 0.67); }
-#isleIsland.isle-translucent .isle-chat-title { color: rgba(255, 255, 255, 0.64); }
-#isleIsland.isle-translucent .isle-chat-new { color: rgba(255, 255, 255, 0.83); }
-#isleIsland.isle-translucent .isle-chat-new:hover { color: #ffffff; }
-#isleIsland.isle-translucent .isle-chat-time { color: rgba(255, 255, 255, 0.64); }
-#isleIsland.isle-translucent .isle-voice-action { color: rgba(255, 255, 255, 0.8); }
-#isleIsland.isle-translucent .isle-voice-action:hover { color: #ffffff; }
-#isleIsland.isle-translucent .isle-header-mic { color: rgba(255, 255, 255, 0.73); }
-#isleIsland.isle-translucent .isle-header-mic:hover { color: #ffffff; }
-#isleIsland.isle-translucent .isle-header-settings { color: rgba(255, 255, 255, 0.73); }
-#isleIsland.isle-translucent .isle-header-settings:hover { color: #ffffff; }
-#isleIsland.isle-translucent .isle-player-modes .isle-button { color: rgba(255, 255, 255, 0.83); }
-#isleIsland.isle-translucent .isle-track-subtitle { color: rgba(255, 255, 255, 0.7); }
-#isleIsland.isle-translucent .isle-time { color: rgba(255, 255, 255, 0.73); }
-#isleIsland.isle-translucent .isle-output-detail { color: rgba(255, 255, 255, 0.67); }
-#isleIsland.isle-translucent .isle-lyrics-controls .isle-mode-toggle { color: rgba(255, 255, 255, 0.83); }
-#isleIsland.isle-translucent .isle-side-artist { color: rgba(255, 255, 255, 0.73); }
-#isleIsland.isle-translucent .isle-lyrics-state-icon { color: rgba(255, 255, 255, 0.6); }
-#isleIsland.isle-translucent .isle-lyrics-state-hint { color: rgba(255, 255, 255, 0.7); }
-#isleIsland.isle-translucent .isle-call-hint { color: rgba(255, 255, 255, 0.67); }
-#isleIsland.isle-translucent .isle-call-kind { color: rgba(255, 255, 255, 0.7); }
-#isleIsland.isle-translucent .isle-call-control-label { color: rgba(255, 255, 255, 0.73); }
-#isleIsland.isle-translucent .isle-timer-phase,
-#isleIsland.isle-translucent .isle-stepper-name { color: rgba(255, 255, 255, 0.7); }
-#isleIsland.isle-translucent .isle-task-add-icon { color: rgba(255, 255, 255, 0.67); }
-#isleIsland.isle-translucent .isle-task-remove { color: rgba(255, 255, 255, 0.8); }
-#isleIsland.isle-translucent .isle-reminder-title.done { color: rgba(255, 255, 255, 0.58); }
-#isleIsland.isle-translucent .isle-reminder-remove { color: rgba(255, 255, 255, 0.67); }
-#isleIsland.isle-translucent .isle-reminder-remove:hover { color: #ffffff; }
-#isleIsland.isle-translucent .isle-reminders-empty { color: rgba(255, 255, 255, 0.7); }
-#isleIsland.isle-translucent .isle-cal-year { color: rgba(255, 255, 255, 0.67); }
-#isleIsland.isle-translucent .isle-cal-arrow { color: rgba(255, 255, 255, 0.83); }
-#isleIsland.isle-translucent .isle-cal-weekday { color: rgba(255, 255, 255, 0.7); }
-#isleIsland.isle-translucent .isle-cal-weekday.weekend { color: rgba(255, 255, 255, 0.67); }
-#isleIsland.isle-translucent .isle-cal-day.weekend,
-#isleIsland.isle-translucent .isle-cal-preview,
-#isleIsland.isle-translucent .isle-cal-target-arrow { color: rgba(255, 255, 255, 0.7); }
-#isleIsland.isle-translucent .isle-cal-target-row-account { color: rgba(255, 255, 255, 0.64); }
-#isleIsland.isle-translucent .isle-cal-event-time { color: rgba(255, 255, 255, 0.77); }
-#isleIsland.isle-translucent .isle-cal-world-meta,
-#isleIsland.isle-translucent .isle-cal-world-chip-city,
-#isleIsland.isle-translucent .isle-cal-empty { color: rgba(255, 255, 255, 0.7); }
-#isleIsland.isle-translucent .isle-notifications-heading { color: rgba(255, 255, 255, 0.73); }
-#isleIsland.isle-translucent .isle-notifications-dnd-text { color: rgba(255, 255, 255, 0.67); }
-#isleIsland.isle-translucent .isle-notification-body { color: rgba(255, 255, 255, 0.7); }
-#isleIsland.isle-translucent .isle-notification-dismiss { color: rgba(255, 255, 255, 0.8); }
-#isleIsland.isle-translucent .isle-notification-time { color: rgba(255, 255, 255, 0.64); }
-#isleIsland.isle-translucent .isle-segment { color: rgba(255, 255, 255, 0.73); }
-#isleIsland.isle-translucent .isle-segment:hover,
-#isleIsland.isle-translucent .isle-segment:checked { color: #ffffff; }
-#isleIsland.isle-translucent .isle-shelf-hint { color: rgba(255, 255, 255, 0.7); }
-#isleIsland.isle-translucent .isle-shelf-hint.active { color: #ffffff; }
-#isleIsland.isle-translucent .isle-clip-age { color: rgba(255, 255, 255, 0.67); }
-#isleIsland.isle-translucent .isle-clip-url { color: rgba(255, 255, 255, 0.7); }
-#isleIsland.isle-translucent .isle-clip-subtle { color: rgba(255, 255, 255, 0.67); }
-#isleIsland.isle-translucent .isle-usage-plan { color: rgba(255, 255, 255, 0.8); }
-#isleIsland.isle-translucent .isle-usage-stamp { color: rgba(255, 255, 255, 0.7); }
-#isleIsland.isle-translucent .isle-usage-stamp.warning { color: rgba(255, 255, 255, 0.8); }
-#isleIsland.isle-translucent .isle-usage-reset,
-#isleIsland.isle-translucent .isle-usage-empty { color: rgba(255, 255, 255, 0.7); }
-#isleIsland.isle-translucent .isle-apps-heading { color: rgba(255, 255, 255, 0.73); }
-#isleIsland.isle-translucent .isle-apps-total { color: rgba(255, 255, 255, 0.64); }
-#isleIsland.isle-translucent .isle-apps-time { color: rgba(255, 255, 255, 0.73); }
-#isleIsland.isle-translucent .isle-segment:focus { color: #ffffff; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-button:focus { color: #ffffff; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-art-placeholder { color: rgba(255, 255, 255, 0.6); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-empty-icon { color: rgba(255, 255, 255, 0.56); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-empty-hint,
+#notchfolkIsland.notchfolk-translucent .notchfolk-peek-subtitle,
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-heard { color: rgba(255, 255, 255, 0.67); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-text-dim { color: rgba(255, 255, 255, 0.73); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-hint { color: rgba(255, 255, 255, 0.67); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-step-tick { color: rgba(255, 255, 255, 0.63); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-step-text { color: rgba(255, 255, 255, 0.67); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-heard-button:hover .notchfolk-voice-heard { color: rgba(255, 255, 255, 0.83); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-earlier { color: rgba(255, 255, 255, 0.67); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-still { color: rgba(255, 255, 255, 0.64); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-undo-text { color: rgba(255, 255, 255, 0.73); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-card-subtitle { color: rgba(255, 255, 255, 0.67); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-card-output,
+#notchfolkIsland.notchfolk-translucent .notchfolk-card-ghost .notchfolk-card-key { color: rgba(255, 255, 255, 0.64); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-card-denied { color: rgba(255, 255, 255, 0.67); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-chat-title { color: rgba(255, 255, 255, 0.64); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-chat-new { color: rgba(255, 255, 255, 0.83); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-chat-new:hover { color: #ffffff; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-chat-time { color: rgba(255, 255, 255, 0.64); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-action { color: rgba(255, 255, 255, 0.8); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-action:hover { color: #ffffff; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-header-mic { color: rgba(255, 255, 255, 0.73); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-header-mic:hover { color: #ffffff; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-header-settings { color: rgba(255, 255, 255, 0.73); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-header-settings:hover { color: #ffffff; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-player-modes .notchfolk-button { color: rgba(255, 255, 255, 0.83); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-track-subtitle { color: rgba(255, 255, 255, 0.7); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-time { color: rgba(255, 255, 255, 0.73); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-output-detail { color: rgba(255, 255, 255, 0.67); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-lyrics-controls .notchfolk-mode-toggle { color: rgba(255, 255, 255, 0.83); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-side-artist { color: rgba(255, 255, 255, 0.73); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-lyrics-state-icon { color: rgba(255, 255, 255, 0.6); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-lyrics-state-hint { color: rgba(255, 255, 255, 0.7); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-call-hint { color: rgba(255, 255, 255, 0.67); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-call-kind { color: rgba(255, 255, 255, 0.7); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-call-control-label { color: rgba(255, 255, 255, 0.73); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-timer-phase,
+#notchfolkIsland.notchfolk-translucent .notchfolk-stepper-name { color: rgba(255, 255, 255, 0.7); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-task-add-icon { color: rgba(255, 255, 255, 0.67); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-task-remove { color: rgba(255, 255, 255, 0.8); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-reminder-title.done { color: rgba(255, 255, 255, 0.58); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-reminder-remove { color: rgba(255, 255, 255, 0.67); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-reminder-remove:hover { color: #ffffff; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-reminders-empty { color: rgba(255, 255, 255, 0.7); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-year { color: rgba(255, 255, 255, 0.67); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-arrow { color: rgba(255, 255, 255, 0.83); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-weekday { color: rgba(255, 255, 255, 0.7); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-weekday.weekend { color: rgba(255, 255, 255, 0.67); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-day.weekend,
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-preview,
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-target-arrow { color: rgba(255, 255, 255, 0.7); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-target-row-account { color: rgba(255, 255, 255, 0.64); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-event-time { color: rgba(255, 255, 255, 0.77); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-world-meta,
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-world-chip-city,
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-empty { color: rgba(255, 255, 255, 0.7); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-notifications-heading { color: rgba(255, 255, 255, 0.73); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-notifications-dnd-text { color: rgba(255, 255, 255, 0.67); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-notification-body { color: rgba(255, 255, 255, 0.7); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-notification-dismiss { color: rgba(255, 255, 255, 0.8); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-notification-time { color: rgba(255, 255, 255, 0.64); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-segment { color: rgba(255, 255, 255, 0.73); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-segment:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-segment:checked { color: #ffffff; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-shelf-hint { color: rgba(255, 255, 255, 0.7); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-shelf-hint.active { color: #ffffff; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-clip-age { color: rgba(255, 255, 255, 0.67); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-clip-url { color: rgba(255, 255, 255, 0.7); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-clip-subtle { color: rgba(255, 255, 255, 0.67); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-usage-plan { color: rgba(255, 255, 255, 0.8); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-usage-stamp { color: rgba(255, 255, 255, 0.7); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-usage-stamp.warning { color: rgba(255, 255, 255, 0.8); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-usage-reset,
+#notchfolkIsland.notchfolk-translucent .notchfolk-usage-empty { color: rgba(255, 255, 255, 0.7); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-apps-heading { color: rgba(255, 255, 255, 0.73); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-apps-total { color: rgba(255, 255, 255, 0.64); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-apps-time { color: rgba(255, 255, 255, 0.73); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-segment:focus { color: #ffffff; }
 
 /* Icon buttons: no fill until the pointer is on them (first: the buttons below have their own). */
-#isleIsland.isle-translucent .isle-button:hover,
-#isleIsland.isle-translucent .isle-header-settings:hover,
-#isleIsland.isle-translucent .isle-stepper-button:hover,
-#isleIsland.isle-translucent .isle-reminder-remove:hover,
-#isleIsland.isle-translucent .isle-cal-world-toggle:hover { background-color: rgba(255, 255, 255, 0.16); }
-#isleIsland.isle-translucent .isle-button:active { background-color: rgba(255, 255, 255, 0.24); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-button:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-header-settings:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-stepper-button:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-reminder-remove:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-world-toggle:hover { background-color: rgba(255, 255, 255, 0.16); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-button:active { background-color: rgba(255, 255, 255, 0.24); }
 
 /* Buttons: frosted, lit along the top. */
-#isleIsland.isle-translucent .isle-button-round,
-#isleIsland.isle-translucent .isle-pill-small,
-#isleIsland.isle-translucent .isle-call-control,
-#isleIsland.isle-translucent .isle-start-pill,
-#isleIsland.isle-translucent .isle-cal-today,
-#isleIsland.isle-translucent .isle-chat-new,
-#isleIsland.isle-translucent .isle-voice-action {
+#notchfolkIsland.notchfolk-translucent .notchfolk-button-round,
+#notchfolkIsland.notchfolk-translucent .notchfolk-pill-small,
+#notchfolkIsland.notchfolk-translucent .notchfolk-call-control,
+#notchfolkIsland.notchfolk-translucent .notchfolk-start-pill,
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-today,
+#notchfolkIsland.notchfolk-translucent .notchfolk-chat-new,
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-action {
   background-color: rgba(255, 255, 255, 0.14);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
-#isleIsland.isle-translucent .isle-button-round:hover,
-#isleIsland.isle-translucent .isle-pill-small:hover,
-#isleIsland.isle-translucent .isle-call-control:hover,
-#isleIsland.isle-translucent .isle-start-pill:hover,
-#isleIsland.isle-translucent .isle-cal-today:hover,
-#isleIsland.isle-translucent .isle-chat-new:hover,
-#isleIsland.isle-translucent .isle-voice-action:hover { background-color: rgba(255, 255, 255, 0.2); }
-#isleIsland.isle-translucent .isle-button-round:active,
-#isleIsland.isle-translucent .isle-pill-small:active,
-#isleIsland.isle-translucent .isle-call-control:active,
-#isleIsland.isle-translucent .isle-start-pill:active,
-#isleIsland.isle-translucent .isle-voice-action:active { background-color: rgba(255, 255, 255, 0.26); }
-#isleIsland.isle-translucent .isle-voice-stop { background-color: rgba(255, 255, 255, 0.2); }
-#isleIsland.isle-translucent .isle-voice-send-mic { background-color: rgba(255, 255, 255, 0.16); }
-#isleIsland.isle-translucent .isle-voice-send-mic:hover { background-color: rgba(255, 255, 255, 0.24); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-button-round:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-pill-small:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-call-control:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-start-pill:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-today:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-chat-new:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-action:hover { background-color: rgba(255, 255, 255, 0.2); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-button-round:active,
+#notchfolkIsland.notchfolk-translucent .notchfolk-pill-small:active,
+#notchfolkIsland.notchfolk-translucent .notchfolk-call-control:active,
+#notchfolkIsland.notchfolk-translucent .notchfolk-start-pill:active,
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-action:active { background-color: rgba(255, 255, 255, 0.26); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-stop { background-color: rgba(255, 255, 255, 0.2); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-send-mic { background-color: rgba(255, 255, 255, 0.16); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-send-mic:hover { background-color: rgba(255, 255, 255, 0.24); }
 /* Small round buttons over a row or a picture, a step brighter so they stand off it. */
-#isleIsland.isle-translucent .isle-notification-dismiss,
-#isleIsland.isle-translucent .isle-clip-action,
-#isleIsland.isle-translucent .isle-corner-close { background-color: rgba(255, 255, 255, 0.2); }
-#isleIsland.isle-translucent .isle-notification-dismiss:hover,
-#isleIsland.isle-translucent .isle-clip-action:hover,
-#isleIsland.isle-translucent .isle-corner-close:hover { background-color: rgba(255, 255, 255, 0.28); }
-#isleIsland.isle-translucent .isle-corner-close:active { background-color: rgba(255, 255, 255, 0.34); }
-#isleIsland.isle-translucent .isle-shelf-remove { background-color: rgba(70, 72, 80, 0.92); }
-#isleIsland.isle-translucent .isle-shelf-remove:hover { background-color: rgba(98, 100, 110, 0.95); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-notification-dismiss,
+#notchfolkIsland.notchfolk-translucent .notchfolk-clip-action,
+#notchfolkIsland.notchfolk-translucent .notchfolk-corner-close { background-color: rgba(255, 255, 255, 0.2); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-notification-dismiss:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-clip-action:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-corner-close:hover { background-color: rgba(255, 255, 255, 0.28); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-corner-close:active { background-color: rgba(255, 255, 255, 0.34); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-shelf-remove { background-color: rgba(70, 72, 80, 0.92); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-shelf-remove:hover { background-color: rgba(98, 100, 110, 0.95); }
 
 /* Rows and cards: a pane of the same glass, a fill alone (a rim would read as a box drawn round it). */
-#isleIsland.isle-translucent .isle-notification-row,
-#isleIsland.isle-translucent .isle-cal-event,
-#isleIsland.isle-translucent .isle-cal-world-row,
-#isleIsland.isle-translucent .isle-clip,
-#isleIsland.isle-translucent .isle-output-button.active {
+#notchfolkIsland.notchfolk-translucent .notchfolk-notification-row,
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-event,
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-world-row,
+#notchfolkIsland.notchfolk-translucent .notchfolk-clip,
+#notchfolkIsland.notchfolk-translucent .notchfolk-output-button.active {
   background-color: rgba(255, 255, 255, 0.08);
 }
-#isleIsland.isle-translucent .isle-notification-row:hover,
-#isleIsland.isle-translucent .isle-clip:hover { background-color: rgba(255, 255, 255, 0.12); }
-#isleIsland.isle-translucent .isle-output-button:hover,
-#isleIsland.isle-translucent .isle-shelf-tile:hover,
-#isleIsland.isle-translucent .isle-cal-target-row:hover,
-#isleIsland.isle-translucent .isle-cal-month-title:hover { background-color: rgba(255, 255, 255, 0.1); }
-#isleIsland.isle-translucent .isle-output-button.active:hover { background-color: rgba(255, 255, 255, 0.12); }
-#isleIsland.isle-translucent .isle-shelf-tile:focus { background-color: rgba(255, 255, 255, 0.14); }
-#isleIsland.isle-translucent .isle-chat-user { background-color: rgba(255, 255, 255, 0.15); }
-#isleIsland.isle-translucent .isle-voice-idea {
+#notchfolkIsland.notchfolk-translucent .notchfolk-notification-row:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-clip:hover { background-color: rgba(255, 255, 255, 0.12); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-output-button:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-shelf-tile:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-target-row:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-month-title:hover { background-color: rgba(255, 255, 255, 0.1); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-output-button.active:hover { background-color: rgba(255, 255, 255, 0.12); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-shelf-tile:focus { background-color: rgba(255, 255, 255, 0.14); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-chat-user { background-color: rgba(255, 255, 255, 0.15); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-idea {
   color: rgba(255, 255, 255, 0.86);
   background-color: rgba(255, 255, 255, 0.1);
   border-color: transparent;
 }
-#isleIsland.isle-translucent .isle-voice-idea:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.16); }
-#isleIsland.isle-translucent .isle-cal-target { background-color: rgba(255, 255, 255, 0.12); }
-#isleIsland.isle-translucent .isle-cal-target:hover,
-#isleIsland.isle-translucent .isle-cal-target:checked { background-color: rgba(255, 255, 255, 0.18); }
-#isleIsland.isle-translucent .isle-cal-accounts:hover { background-color: rgba(255, 255, 255, 0.12); }
-#isleIsland.isle-translucent .isle-usage-plan { background-color: rgba(255, 255, 255, 0.14); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-idea:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.16); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-target { background-color: rgba(255, 255, 255, 0.12); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-target:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-target:checked { background-color: rgba(255, 255, 255, 0.18); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-accounts:hover { background-color: rgba(255, 255, 255, 0.12); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-usage-plan { background-color: rgba(255, 255, 255, 0.14); }
 
 /* Pictures and tiles that wait for a picture: frosted. */
-#isleIsland.isle-translucent .isle-art,
-#isleIsland.isle-translucent .isle-clip-thumb,
-#isleIsland.isle-translucent .isle-shelf-preview.thumbnail { background-color: rgba(255, 255, 255, 0.1); }
-#isleIsland.isle-translucent .isle-shelf-preview.thumbnail.whole { background-color: transparent; }
-#isleIsland.isle-translucent .isle-notification-glyph { background-color: rgba(255, 255, 255, 0.14); }
-#isleIsland.isle-translucent .isle-app-badge { background-color: #16171c; }
-#isleIsland.isle-translucent .isle-clip-feedback { background-color: rgba(20, 20, 26, 0.9); }
-#isleIsland.isle-translucent .isle-call-preview { background-color: rgba(0, 0, 0, 0.3); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-art,
+#notchfolkIsland.notchfolk-translucent .notchfolk-clip-thumb,
+#notchfolkIsland.notchfolk-translucent .notchfolk-shelf-preview.thumbnail { background-color: rgba(255, 255, 255, 0.1); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-shelf-preview.thumbnail.whole { background-color: transparent; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-notification-glyph { background-color: rgba(255, 255, 255, 0.14); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-app-badge { background-color: #16171c; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-clip-feedback { background-color: rgba(20, 20, 26, 0.9); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-call-preview { background-color: rgba(0, 0, 0, 0.3); }
 
 /* Wells: a command or code sunk into the glass. */
-#isleIsland.isle-translucent .isle-card-terminal,
-#isleIsland.isle-translucent .isle-peek-code,
-#isleIsland.isle-translucent .isle-chat-command-text {
+#notchfolkIsland.notchfolk-translucent .notchfolk-card-terminal,
+#notchfolkIsland.notchfolk-translucent .notchfolk-peek-code,
+#notchfolkIsland.notchfolk-translucent .notchfolk-chat-command-text {
   background-color: rgba(0, 0, 0, 0.2);
 }
-#isleIsland.isle-translucent .isle-card-ended .isle-card-terminal { background-color: rgba(0, 0, 0, 0.14); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-card-ended .notchfolk-card-terminal { background-color: rgba(0, 0, 0, 0.14); }
 
 /* Tabs: the open one a frosted pill. */
-#isleIsland.isle-translucent .isle-tab:hover,
-#isleIsland.isle-translucent .isle-tab:focus { background-color: rgba(255, 255, 255, 0.08); }
-#isleIsland.isle-translucent .isle-tab:checked {
+#notchfolkIsland.notchfolk-translucent .notchfolk-tab:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-tab:focus { background-color: rgba(255, 255, 255, 0.08); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-tab:checked {
   background-color: rgba(255, 255, 255, 0.16);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 /* A segmented control and a stepper: a frosted channel, the choice raised in it. */
-#isleIsland.isle-translucent .isle-segmented,
-#isleIsland.isle-translucent .isle-stepper { background-color: rgba(255, 255, 255, 0.08); }
-#isleIsland.isle-translucent .isle-segment:hover { background-color: rgba(255, 255, 255, 0.08); }
-#isleIsland.isle-translucent .isle-segment:checked {
+#notchfolkIsland.notchfolk-translucent .notchfolk-segmented,
+#notchfolkIsland.notchfolk-translucent .notchfolk-stepper { background-color: rgba(255, 255, 255, 0.08); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-segment:hover { background-color: rgba(255, 255, 255, 0.08); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-segment:checked {
   background-gradient-direction: none;
   background-color: rgba(255, 255, 255, 0.24);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* Fields: a pane, no rim; focused, the accent's ring. */
-#isleIsland.isle-translucent .isle-entry { background-color: rgba(255, 255, 255, 0.1) !important; }
-#isleIsland.isle-translucent .isle-entry:focus {
+#notchfolkIsland.notchfolk-translucent .notchfolk-entry { background-color: rgba(255, 255, 255, 0.1) !important; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-entry:focus {
   background-color: rgba(255, 255, 255, 0.14) !important;
   box-shadow: inset 0 0 0 2px rgba(53, 132, 228, 0.7) !important;
 }
-#isleIsland.isle-translucent .isle-voice-entry,
-#isleIsland.isle-translucent .isle-voice-entry:hover {
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-entry,
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-entry:hover {
   background-color: rgba(255, 255, 255, 0.1) !important;
   border: 1px solid transparent !important;
 }
-#isleIsland.isle-translucent .isle-voice-entry:focus,
-#isleIsland.isle-translucent .isle-voice-entry:focus:hover {
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-entry:focus,
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-entry:focus:hover {
   background-color: rgba(255, 255, 255, 0.12) !important;
   border: 1px solid rgba(255, 255, 255, 0.22) !important;
 }
 /* The timer's typed lengths: quiet, a step brighter under the pointer and while typed in, the accent's caret. */
-#isleIsland.isle-translucent .isle-stepper-entry:hover { background-color: rgba(255, 255, 255, 0.12) !important; }
-#isleIsland.isle-translucent .isle-stepper-entry:focus,
-#isleIsland.isle-translucent .isle-stepper-entry:focus:hover { background-color: rgba(255, 255, 255, 0.2) !important; }
-#isleIsland.isle-translucent .isle-entry StLabel.hint-text,
-#isleIsland.isle-translucent .isle-voice-entry StLabel.hint-text,
-#isleIsland.isle-translucent .isle-reminder-field StLabel.hint-text { color: rgba(255, 255, 255, 0.72) !important; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-stepper-entry:hover { background-color: rgba(255, 255, 255, 0.12) !important; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-stepper-entry:focus,
+#notchfolkIsland.notchfolk-translucent .notchfolk-stepper-entry:focus:hover { background-color: rgba(255, 255, 255, 0.2) !important; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-entry StLabel.hint-text,
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-entry StLabel.hint-text,
+#notchfolkIsland.notchfolk-translucent .notchfolk-reminder-field StLabel.hint-text { color: rgba(255, 255, 255, 0.72) !important; }
 
 /* Lines, tracks and rings a step brighter, to hold on lighter glass. */
-#isleIsland.isle-translucent .isle-reminder-line { background-color: rgba(255, 255, 255, 0.16); }
-#isleIsland.isle-translucent .isle-cal-world-strip { border-top-color: rgba(255, 255, 255, 0.16); }
-#isleIsland.isle-translucent .isle-reminder-strike { background-color: rgba(255, 255, 255, 0.6); }
-#isleIsland.isle-translucent .isle-reminder-check { border-color: rgba(255, 255, 255, 0.46); }
-#isleIsland.isle-translucent .isle-reminder-check:hover { border-color: rgba(255, 255, 255, 0.7); }
-#isleIsland.isle-translucent .isle-reminder-check:checked { border-color: #ff9f0a; }
-#isleIsland.isle-translucent .isle-reminder-check.faint { border-color: rgba(255, 255, 255, 0.22); }
-#isleIsland.isle-translucent .isle-level { background-color: rgba(255, 255, 255, 0.22); }
-#isleIsland.isle-translucent .isle-slider-track { background-color: rgba(255, 255, 255, 0.24); }
-#isleIsland.isle-translucent .isle-usage-track,
-#isleIsland.isle-translucent .isle-apps-track { background-color: rgba(255, 255, 255, 0.16); }
-#isleIsland.isle-translucent .isle-usage-dot { background-color: rgba(255, 255, 255, 0.3); }
-#isleIsland.isle-translucent .isle-usage-dot:hover { background-color: rgba(255, 255, 255, 0.55); }
-#isleIsland.isle-translucent .isle-usage-dot.shown { background-color: #ffffff; }
-#isleIsland.isle-translucent .isle-cal-dot { background-color: rgba(255, 255, 255, 0.68); }
-#isleIsland.isle-translucent .isle-cal-dot.on-today { background-color: #ffffff; }
-#isleIsland.isle-translucent .isle-cal-day:hover { background-color: rgba(255, 255, 255, 0.16); }
-#isleIsland.isle-translucent .isle-cal-day.selected { background-color: rgba(255, 255, 255, 0.26); }
-#isleIsland.isle-translucent .isle-cal-day.today { background-color: #ff453a; }
-#isleIsland.isle-translucent .isle-cal-day.today:hover { background-color: #ff5f55; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-reminder-line { background-color: rgba(255, 255, 255, 0.16); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-world-strip { border-top-color: rgba(255, 255, 255, 0.16); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-reminder-strike { background-color: rgba(255, 255, 255, 0.6); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-reminder-check { border-color: rgba(255, 255, 255, 0.46); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-reminder-check:hover { border-color: rgba(255, 255, 255, 0.7); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-reminder-check:checked { border-color: #ff9f0a; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-reminder-check.faint { border-color: rgba(255, 255, 255, 0.22); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-level { background-color: rgba(255, 255, 255, 0.22); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-slider-track { background-color: rgba(255, 255, 255, 0.24); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-usage-track,
+#notchfolkIsland.notchfolk-translucent .notchfolk-apps-track { background-color: rgba(255, 255, 255, 0.16); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-usage-dot { background-color: rgba(255, 255, 255, 0.3); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-usage-dot:hover { background-color: rgba(255, 255, 255, 0.55); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-usage-dot.shown { background-color: #ffffff; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-dot { background-color: rgba(255, 255, 255, 0.68); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-dot.on-today { background-color: #ffffff; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-day:hover { background-color: rgba(255, 255, 255, 0.16); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-day.selected { background-color: rgba(255, 255, 255, 0.26); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-day.today { background-color: #ff453a; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-day.today:hover { background-color: #ff5f55; }
 
 /* Signal colours lifted for the lighter grey, so they read without glaring: red, green, orange text and icons, links. */
-#isleIsland.isle-translucent .isle-recording-time,
-#isleIsland.isle-translucent .isle-peek-denied,
-#isleIsland.isle-translucent .isle-card-output-failed,
-#isleIsland.isle-translucent .isle-card-risk-removes,
-#isleIsland.isle-translucent .isle-card-failed,
-#isleIsland.isle-translucent .isle-call-muted,
-#isleIsland.isle-translucent .isle-compact-warning,
-#isleIsland.isle-translucent .isle-cal-month-name,
-#isleIsland.isle-translucent .isle-usage-percent.critical { color: #ff968d; }
-#isleIsland.isle-translucent .isle-call-icon,
-#isleIsland.isle-translucent .isle-call-duration,
-#isleIsland.isle-translucent .isle-tab-call StIcon,
-#isleIsland.isle-translucent .isle-peek-allowed,
-#isleIsland.isle-translucent .isle-card-done,
-#isleIsland.isle-translucent .isle-chat-copied,
-#isleIsland.isle-translucent .isle-card-copied { color: #64dc82; }
-#isleIsland.isle-translucent .isle-cal-accounts { color: #8cc4ff; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-recording-time,
+#notchfolkIsland.notchfolk-translucent .notchfolk-peek-denied,
+#notchfolkIsland.notchfolk-translucent .notchfolk-card-output-failed,
+#notchfolkIsland.notchfolk-translucent .notchfolk-card-risk-removes,
+#notchfolkIsland.notchfolk-translucent .notchfolk-card-failed,
+#notchfolkIsland.notchfolk-translucent .notchfolk-call-muted,
+#notchfolkIsland.notchfolk-translucent .notchfolk-compact-warning,
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-month-name,
+#notchfolkIsland.notchfolk-translucent .notchfolk-usage-percent.critical { color: #ff968d; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-call-icon,
+#notchfolkIsland.notchfolk-translucent .notchfolk-call-duration,
+#notchfolkIsland.notchfolk-translucent .notchfolk-tab-call StIcon,
+#notchfolkIsland.notchfolk-translucent .notchfolk-peek-allowed,
+#notchfolkIsland.notchfolk-translucent .notchfolk-card-done,
+#notchfolkIsland.notchfolk-translucent .notchfolk-chat-copied,
+#notchfolkIsland.notchfolk-translucent .notchfolk-card-copied { color: #64dc82; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-accounts { color: #8cc4ff; }
 /* The closed island's dots, lifted a quarter towards white as the alerts' signs (Theme.semantic). */
-#isleIsland.isle-translucent .isle-recording-dot { background-color: #ff7369; }
-#isleIsland.isle-translucent .isle-privacy-dot.camera { background-color: #67d582; }
-#isleIsland.isle-translucent .isle-privacy-dot.microphone { background-color: #ffb748; }
-#isleIsland.isle-translucent .isle-privacy-dot.screenShare { background-color: #47a3ff; }
-#isleIsland.isle-translucent .isle-privacy-dot.phone { background-color: #cf83f5; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-recording-dot { background-color: #ff7369; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-privacy-dot.camera { background-color: #67d582; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-privacy-dot.microphone { background-color: #ffb748; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-privacy-dot.screenShare { background-color: #47a3ff; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-privacy-dot.phone { background-color: #cf83f5; }
 /* A locked length a step brighter than on black, as all the greys here. */
-#isleIsland.isle-translucent .isle-stepper-locked .isle-stepper-entry { color: rgba(255, 255, 255, 0.72) !important; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-stepper-locked .notchfolk-stepper-entry { color: rgba(255, 255, 255, 0.72) !important; }
 /* Text picked in a field: the accent, as in GNOME's own fields. */
-#isleIsland.isle-translucent .isle-voice-entry,
-#isleIsland.isle-translucent .isle-voice-entry:focus:hover,
-#isleIsland.isle-translucent .isle-reminder-field { selection-background-color: rgba(53, 132, 228, 0.6); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-entry,
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-entry:focus:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-reminder-field { selection-background-color: rgba(53, 132, 228, 0.6); }
 
 /* Darker tints (controller.js adds the class by Settings' tint): the controls settle into GNOME Shell's own dark
  * menus — flat, in its lighter greys — so on the dark glass nothing looks pasted on. Middle tint first, then dark. */
-#isleIsland.isle-glass-mid .isle-button-round,
-#isleIsland.isle-glass-mid .isle-pill-small,
-#isleIsland.isle-glass-mid .isle-call-control,
-#isleIsland.isle-glass-mid .isle-start-pill,
-#isleIsland.isle-glass-mid .isle-cal-today,
-#isleIsland.isle-glass-mid .isle-chat-new,
-#isleIsland.isle-glass-mid .isle-voice-action {
+#notchfolkIsland.notchfolk-glass-mid .notchfolk-button-round,
+#notchfolkIsland.notchfolk-glass-mid .notchfolk-pill-small,
+#notchfolkIsland.notchfolk-glass-mid .notchfolk-call-control,
+#notchfolkIsland.notchfolk-glass-mid .notchfolk-start-pill,
+#notchfolkIsland.notchfolk-glass-mid .notchfolk-cal-today,
+#notchfolkIsland.notchfolk-glass-mid .notchfolk-chat-new,
+#notchfolkIsland.notchfolk-glass-mid .notchfolk-voice-action {
   background-color: rgba(255, 255, 255, 0.115);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
-#isleIsland.isle-glass-mid .isle-button-round:hover,
-#isleIsland.isle-glass-mid .isle-pill-small:hover,
-#isleIsland.isle-glass-mid .isle-call-control:hover,
-#isleIsland.isle-glass-mid .isle-start-pill:hover,
-#isleIsland.isle-glass-mid .isle-cal-today:hover,
-#isleIsland.isle-glass-mid .isle-chat-new:hover,
-#isleIsland.isle-glass-mid .isle-voice-action:hover { background-color: rgba(255, 255, 255, 0.17); }
-#isleIsland.isle-glass-mid .isle-tab:checked {
+#notchfolkIsland.notchfolk-glass-mid .notchfolk-button-round:hover,
+#notchfolkIsland.notchfolk-glass-mid .notchfolk-pill-small:hover,
+#notchfolkIsland.notchfolk-glass-mid .notchfolk-call-control:hover,
+#notchfolkIsland.notchfolk-glass-mid .notchfolk-start-pill:hover,
+#notchfolkIsland.notchfolk-glass-mid .notchfolk-cal-today:hover,
+#notchfolkIsland.notchfolk-glass-mid .notchfolk-chat-new:hover,
+#notchfolkIsland.notchfolk-glass-mid .notchfolk-voice-action:hover { background-color: rgba(255, 255, 255, 0.17); }
+#notchfolkIsland.notchfolk-glass-mid .notchfolk-tab:checked {
   background-color: rgba(255, 255, 255, 0.13);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
-#isleIsland.isle-glass-mid .isle-segment:checked { background-color: rgba(255, 255, 255, 0.19); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
+#notchfolkIsland.notchfolk-glass-mid .notchfolk-segment:checked { background-color: rgba(255, 255, 255, 0.19); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
 
-#isleIsland.isle-glass-dark .isle-button:hover { background-color: rgba(255, 255, 255, 0.1); }
-#isleIsland.isle-glass-dark .isle-button-round,
-#isleIsland.isle-glass-dark .isle-pill-small,
-#isleIsland.isle-glass-dark .isle-call-control,
-#isleIsland.isle-glass-dark .isle-start-pill,
-#isleIsland.isle-glass-dark .isle-cal-today,
-#isleIsland.isle-glass-dark .isle-chat-new,
-#isleIsland.isle-glass-dark .isle-voice-action {
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-button:hover { background-color: rgba(255, 255, 255, 0.1); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-button-round,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-pill-small,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-call-control,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-start-pill,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-cal-today,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-chat-new,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-voice-action {
   background-color: rgba(255, 255, 255, 0.1);
   box-shadow: none;
 }
-#isleIsland.isle-glass-dark .isle-button-round:hover,
-#isleIsland.isle-glass-dark .isle-pill-small:hover,
-#isleIsland.isle-glass-dark .isle-call-control:hover,
-#isleIsland.isle-glass-dark .isle-start-pill:hover,
-#isleIsland.isle-glass-dark .isle-cal-today:hover,
-#isleIsland.isle-glass-dark .isle-chat-new:hover,
-#isleIsland.isle-glass-dark .isle-voice-action:hover { background-color: rgba(255, 255, 255, 0.15); }
-#isleIsland.isle-glass-dark .isle-button-round:active,
-#isleIsland.isle-glass-dark .isle-pill-small:active,
-#isleIsland.isle-glass-dark .isle-call-control:active,
-#isleIsland.isle-glass-dark .isle-start-pill:active,
-#isleIsland.isle-glass-dark .isle-voice-action:active { background-color: rgba(255, 255, 255, 0.2); }
-#isleIsland.isle-glass-dark .isle-notification-dismiss,
-#isleIsland.isle-glass-dark .isle-clip-action,
-#isleIsland.isle-glass-dark .isle-corner-close { background-color: rgba(255, 255, 255, 0.14); }
-#isleIsland.isle-glass-dark .isle-notification-dismiss:hover,
-#isleIsland.isle-glass-dark .isle-clip-action:hover,
-#isleIsland.isle-glass-dark .isle-corner-close:hover { background-color: rgba(255, 255, 255, 0.2); }
-#isleIsland.isle-glass-dark .isle-notification-row,
-#isleIsland.isle-glass-dark .isle-cal-event,
-#isleIsland.isle-glass-dark .isle-cal-world-row,
-#isleIsland.isle-glass-dark .isle-clip,
-#isleIsland.isle-glass-dark .isle-output-button.active { background-color: rgba(255, 255, 255, 0.1); }
-#isleIsland.isle-glass-dark .isle-notification-row:hover,
-#isleIsland.isle-glass-dark .isle-clip:hover { background-color: rgba(255, 255, 255, 0.15); }
-#isleIsland.isle-glass-dark .isle-chat-user,
-#isleIsland.isle-glass-dark .isle-usage-plan { background-color: rgba(255, 255, 255, 0.1); }
-#isleIsland.isle-glass-dark .isle-voice-idea,
-#isleIsland.isle-glass-dark .isle-cal-target,
-#isleIsland.isle-glass-dark .isle-art,
-#isleIsland.isle-glass-dark .isle-clip-thumb,
-#isleIsland.isle-glass-dark .isle-shelf-preview.thumbnail,
-#isleIsland.isle-glass-dark .isle-notification-glyph { background-color: rgba(255, 255, 255, 0.08); }
-#isleIsland.isle-glass-dark .isle-shelf-preview.thumbnail.whole { background-color: transparent; }
-#isleIsland.isle-glass-dark .isle-tab:hover,
-#isleIsland.isle-glass-dark .isle-tab:focus { background-color: rgba(255, 255, 255, 0.06); }
-#isleIsland.isle-glass-dark .isle-tab:checked { background-color: rgba(255, 255, 255, 0.1); box-shadow: none; }
-#isleIsland.isle-glass-dark .isle-segmented,
-#isleIsland.isle-glass-dark .isle-stepper { background-color: rgba(255, 255, 255, 0.07); }
-#isleIsland.isle-glass-dark .isle-segment:hover { background-color: rgba(255, 255, 255, 0.06); }
-#isleIsland.isle-glass-dark .isle-segment:checked { background-color: rgba(255, 255, 255, 0.16); box-shadow: none; }
-#isleIsland.isle-glass-dark .isle-entry { background-color: rgba(255, 255, 255, 0.08) !important; }
-#isleIsland.isle-glass-dark .isle-entry:focus { background-color: rgba(255, 255, 255, 0.12) !important; }
-#isleIsland.isle-glass-dark .isle-voice-entry,
-#isleIsland.isle-glass-dark .isle-voice-entry:hover { background-color: rgba(255, 255, 255, 0.08) !important; }
-#isleIsland.isle-glass-dark .isle-voice-entry:focus,
-#isleIsland.isle-glass-dark .isle-voice-entry:focus:hover { background-color: rgba(255, 255, 255, 0.12) !important; }
-#isleIsland.isle-glass-dark .isle-slider-track { background-color: rgba(255, 255, 255, 0.18); }
-#isleIsland.isle-glass-dark .isle-level { background-color: rgba(255, 255, 255, 0.16); }
-#isleIsland.isle-glass-dark .isle-usage-track,
-#isleIsland.isle-glass-dark .isle-apps-track { background-color: rgba(255, 255, 255, 0.12); }
-#isleIsland.isle-glass-dark .isle-reminder-line { background-color: rgba(255, 255, 255, 0.12); }
-#isleIsland.isle-glass-dark .isle-cal-world-strip { border-top-color: rgba(255, 255, 255, 0.12); }
-#isleIsland.isle-glass-dark .isle-shelf-remove { background-color: rgba(80, 80, 86, 0.95); }
-#isleIsland.isle-glass-dark .isle-shelf-remove:hover { background-color: rgba(100, 100, 108, 0.97); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-button-round:hover,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-pill-small:hover,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-call-control:hover,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-start-pill:hover,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-cal-today:hover,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-chat-new:hover,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-voice-action:hover { background-color: rgba(255, 255, 255, 0.15); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-button-round:active,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-pill-small:active,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-call-control:active,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-start-pill:active,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-voice-action:active { background-color: rgba(255, 255, 255, 0.2); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-notification-dismiss,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-clip-action,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-corner-close { background-color: rgba(255, 255, 255, 0.14); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-notification-dismiss:hover,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-clip-action:hover,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-corner-close:hover { background-color: rgba(255, 255, 255, 0.2); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-notification-row,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-cal-event,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-cal-world-row,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-clip,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-output-button.active { background-color: rgba(255, 255, 255, 0.1); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-notification-row:hover,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-clip:hover { background-color: rgba(255, 255, 255, 0.15); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-chat-user,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-usage-plan { background-color: rgba(255, 255, 255, 0.1); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-voice-idea,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-cal-target,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-art,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-clip-thumb,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-shelf-preview.thumbnail,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-notification-glyph { background-color: rgba(255, 255, 255, 0.08); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-shelf-preview.thumbnail.whole { background-color: transparent; }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-tab:hover,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-tab:focus { background-color: rgba(255, 255, 255, 0.06); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-tab:checked { background-color: rgba(255, 255, 255, 0.1); box-shadow: none; }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-segmented,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-stepper { background-color: rgba(255, 255, 255, 0.07); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-segment:hover { background-color: rgba(255, 255, 255, 0.06); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-segment:checked { background-color: rgba(255, 255, 255, 0.16); box-shadow: none; }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-entry { background-color: rgba(255, 255, 255, 0.08) !important; }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-entry:focus { background-color: rgba(255, 255, 255, 0.12) !important; }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-voice-entry,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-voice-entry:hover { background-color: rgba(255, 255, 255, 0.08) !important; }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-voice-entry:focus,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-voice-entry:focus:hover { background-color: rgba(255, 255, 255, 0.12) !important; }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-slider-track { background-color: rgba(255, 255, 255, 0.18); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-level { background-color: rgba(255, 255, 255, 0.16); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-usage-track,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-apps-track { background-color: rgba(255, 255, 255, 0.12); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-reminder-line { background-color: rgba(255, 255, 255, 0.12); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-cal-world-strip { border-top-color: rgba(255, 255, 255, 0.12); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-shelf-remove { background-color: rgba(80, 80, 86, 0.95); }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-shelf-remove:hover { background-color: rgba(100, 100, 108, 0.97); }
 
 /* An OK stays the white pill it is on black, its text black. */
-#isleIsland.isle-translucent .isle-pill-white { background-color: #ffffff; box-shadow: none; }
-#isleIsland.isle-translucent .isle-pill-white:hover { background-color: rgba(255, 255, 255, 0.86); }
-#isleIsland.isle-translucent .isle-pill-white:active { background-color: rgba(255, 255, 255, 0.72); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-pill-white { background-color: #ffffff; box-shadow: none; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-pill-white:hover { background-color: rgba(255, 255, 255, 0.86); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-pill-white:active { background-color: rgba(255, 255, 255, 0.72); }
 
 /* GNOME's accent: an answer (Allow, Run, Join), a toggle that is on, the scrubber, the caret; an OK stays white. */
-#isleIsland.isle-translucent .isle-pill-accent,
-#isleIsland.isle-translucent .isle-card-run,
-#isleIsland.isle-translucent .isle-pill-decision,
-#isleIsland.isle-translucent .isle-voice-send,
-#isleIsland.isle-translucent .isle-call-control:checked,
-#isleIsland.isle-translucent .isle-mode-toggle.on,
-#isleIsland.isle-translucent .isle-cal-world-toggle:checked,
-#isleIsland.isle-translucent .isle-dnd-toggle:checked {
+#notchfolkIsland.notchfolk-translucent .notchfolk-pill-accent,
+#notchfolkIsland.notchfolk-translucent .notchfolk-card-run,
+#notchfolkIsland.notchfolk-translucent .notchfolk-pill-decision,
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-send,
+#notchfolkIsland.notchfolk-translucent .notchfolk-call-control:checked,
+#notchfolkIsland.notchfolk-translucent .notchfolk-mode-toggle.on,
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-world-toggle:checked,
+#notchfolkIsland.notchfolk-translucent .notchfolk-dnd-toggle:checked {
   color: #ffffff;
   background-color: #3584e4;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
-#isleIsland.isle-translucent .isle-pill-accent:hover,
-#isleIsland.isle-translucent .isle-card-run:hover,
-#isleIsland.isle-translucent .isle-pill-decision:hover,
-#isleIsland.isle-translucent .isle-voice-send:hover,
-#isleIsland.isle-translucent .isle-call-control:checked:hover,
-#isleIsland.isle-translucent .isle-mode-toggle.on:hover,
-#isleIsland.isle-translucent .isle-cal-world-toggle:checked:hover,
-#isleIsland.isle-translucent .isle-dnd-toggle:checked:hover { background-color: #4a90e8; }
-#isleIsland.isle-translucent .isle-pill-accent:active,
-#isleIsland.isle-translucent .isle-card-run:active,
-#isleIsland.isle-translucent .isle-pill-decision:active,
-#isleIsland.isle-translucent .isle-mode-toggle.on:active { background-color: #2a76d3; }
-#isleIsland.isle-translucent .isle-card-run .isle-card-key { color: rgba(255, 255, 255, 0.7); }
-#isleIsland.isle-translucent .isle-slider-fill { background-color: #3584e4; }
-#isleIsland.isle-translucent .isle-entry,
-#isleIsland.isle-translucent .isle-stepper-entry { caret-color: #3584e4; selection-background-color: #3584e4; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-pill-accent:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-card-run:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-pill-decision:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-voice-send:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-call-control:checked:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-mode-toggle.on:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-cal-world-toggle:checked:hover,
+#notchfolkIsland.notchfolk-translucent .notchfolk-dnd-toggle:checked:hover { background-color: #4a90e8; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-pill-accent:active,
+#notchfolkIsland.notchfolk-translucent .notchfolk-card-run:active,
+#notchfolkIsland.notchfolk-translucent .notchfolk-pill-decision:active,
+#notchfolkIsland.notchfolk-translucent .notchfolk-mode-toggle.on:active { background-color: #2a76d3; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-card-run .notchfolk-card-key { color: rgba(255, 255, 255, 0.7); }
+#notchfolkIsland.notchfolk-translucent .notchfolk-slider-fill { background-color: #3584e4; }
+#notchfolkIsland.notchfolk-translucent .notchfolk-entry,
+#notchfolkIsland.notchfolk-translucent .notchfolk-stepper-entry { caret-color: #3584e4; selection-background-color: #3584e4; }
 
 /* GNOME 47 and later: the accent the user picked in Settings → Appearance (controller.js adds the class). */
-#isleIsland.isle-accent-system .isle-pill-accent,
-#isleIsland.isle-accent-system .isle-card-run,
-#isleIsland.isle-accent-system .isle-pill-decision,
-#isleIsland.isle-accent-system .isle-voice-send,
-#isleIsland.isle-accent-system .isle-call-control:checked,
-#isleIsland.isle-accent-system .isle-mode-toggle.on,
-#isleIsland.isle-accent-system .isle-cal-world-toggle:checked,
-#isleIsland.isle-accent-system .isle-dnd-toggle:checked,
-#isleIsland.isle-accent-system .isle-slider-fill { color: -st-accent-fg-color; background-color: -st-accent-color; }
-#isleIsland.isle-accent-system .isle-pill-accent:hover,
-#isleIsland.isle-accent-system .isle-card-run:hover,
-#isleIsland.isle-accent-system .isle-pill-decision:hover,
-#isleIsland.isle-accent-system .isle-voice-send:hover,
-#isleIsland.isle-accent-system .isle-call-control:checked:hover,
-#isleIsland.isle-accent-system .isle-mode-toggle.on:hover,
-#isleIsland.isle-accent-system .isle-cal-world-toggle:checked:hover,
-#isleIsland.isle-accent-system .isle-dnd-toggle:checked:hover { background-color: st-lighten(-st-accent-color, 5%); }
-#isleIsland.isle-accent-system .isle-pill-accent:active,
-#isleIsland.isle-accent-system .isle-card-run:active,
-#isleIsland.isle-accent-system .isle-pill-decision:active { background-color: st-darken(-st-accent-color, 5%); }
-#isleIsland.isle-accent-system .isle-entry { caret-color: -st-accent-color; selection-background-color: -st-accent-color; }
-#isleIsland.isle-accent-system .isle-entry:focus { box-shadow: inset 0 0 0 2px st-transparentize(-st-accent-color, 0.4) !important; }
+#notchfolkIsland.notchfolk-accent-system .notchfolk-pill-accent,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-card-run,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-pill-decision,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-voice-send,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-call-control:checked,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-mode-toggle.on,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-cal-world-toggle:checked,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-dnd-toggle:checked,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-slider-fill { color: -st-accent-fg-color; background-color: -st-accent-color; }
+#notchfolkIsland.notchfolk-accent-system .notchfolk-pill-accent:hover,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-card-run:hover,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-pill-decision:hover,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-voice-send:hover,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-call-control:checked:hover,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-mode-toggle.on:hover,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-cal-world-toggle:checked:hover,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-dnd-toggle:checked:hover { background-color: st-lighten(-st-accent-color, 5%); }
+#notchfolkIsland.notchfolk-accent-system .notchfolk-pill-accent:active,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-card-run:active,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-pill-decision:active { background-color: st-darken(-st-accent-color, 5%); }
+#notchfolkIsland.notchfolk-accent-system .notchfolk-entry { caret-color: -st-accent-color; selection-background-color: -st-accent-color; }
+#notchfolkIsland.notchfolk-accent-system .notchfolk-entry:focus { box-shadow: inset 0 0 0 2px st-transparentize(-st-accent-color, 0.4) !important; }
 
 /* Devices page: a compact device card with its status and actions grouped together. */
-.isle-devices-list { spacing: 12px; }
-.isle-devices-card {
+.notchfolk-devices-list { spacing: 12px; }
+.notchfolk-devices-card {
   spacing: 12px;
   padding: 14px 16px;
   border-radius: 18px;
   background-color: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
-.isle-devices-header { spacing: 14px; min-height: 42px; }
-.isle-devices-icon-well {
+.notchfolk-devices-header { spacing: 14px; min-height: 42px; }
+.notchfolk-devices-icon-well {
   width: 42px;
   height: 42px;
   border-radius: 13px;
   background-color: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.92);
 }
-.isle-devices-identity { spacing: 3px; }
-.isle-devices-name { font-size: 16px; font-weight: 700; }
-.isle-devices-connection { font-size: 11px; color: rgba(255, 255, 255, 0.58); }
-.isle-devices-battery { spacing: 10px; }
-.isle-devices-battery-info { spacing: 2px; }
-.isle-devices-battery-caption { font-size: 10px; color: rgba(255, 255, 255, 0.55); }
-.isle-devices-charge { font-size: 12px; font-weight: 600; }
-.isle-devices-figure { font-size: 10px; font-weight: 700; font-feature-settings: "tnum"; }
-.isle-devices-divider { height: 1px; background-color: rgba(255, 255, 255, 0.1); }
-.isle-devices-actions { spacing: 8px; }
-.isle-devices-action {
+.notchfolk-devices-identity { spacing: 3px; }
+.notchfolk-devices-name { font-size: 16px; font-weight: 700; }
+.notchfolk-devices-connection { font-size: 11px; color: rgba(255, 255, 255, 0.58); }
+.notchfolk-devices-battery { spacing: 10px; }
+.notchfolk-devices-battery-info { spacing: 2px; }
+.notchfolk-devices-battery-caption { font-size: 10px; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-devices-charge { font-size: 12px; font-weight: 600; }
+.notchfolk-devices-figure { font-size: 10px; font-weight: 700; font-feature-settings: "tnum"; }
+.notchfolk-devices-divider { height: 1px; background-color: rgba(255, 255, 255, 0.1); }
+.notchfolk-devices-actions { spacing: 8px; }
+.notchfolk-devices-action {
   padding: 9px 12px;
   border-radius: 999px;
   background-color: rgba(255, 255, 255, 0.09);
 }
-.isle-devices-action:hover { background-color: rgba(255, 255, 255, 0.16); }
-.isle-devices-action:active { background-color: rgba(255, 255, 255, 0.22); }
-.isle-devices-action-content { spacing: 8px; }
-.isle-devices-action-label { font-size: 12px; font-weight: 600; }
+.notchfolk-devices-action:hover { background-color: rgba(255, 255, 255, 0.16); }
+.notchfolk-devices-action:active { background-color: rgba(255, 255, 255, 0.22); }
+.notchfolk-devices-action-content { spacing: 8px; }
+.notchfolk-devices-action-label { font-size: 12px; font-weight: 600; }
 
 /* History and Close share one aligned toolbar beside the composer. */
-.isle-voice-toolbar { spacing: 6px; }
-.isle-voice-chat-content { spacing: 6px; }
-.isle-voice-chat-label { font-size: 11px; font-weight: 600; }
-.isle-voice-chat-button {
+.notchfolk-voice-toolbar { spacing: 6px; }
+.notchfolk-voice-chat-content { spacing: 6px; }
+.notchfolk-voice-chat-label { font-size: 11px; font-weight: 600; }
+.notchfolk-voice-chat-button {
   padding: 0 10px;
   height: 32px;
   border-radius: 999px;
@@ -1869,101 +1869,101 @@
   background-color: rgba(255, 255, 255, 0.09);
   border: 1px solid rgba(255, 255, 255, 0.09);
 }
-.isle-voice-chat-button:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.17); }
-.isle-voice-chat-button:active { color: #ffffff; background-color: rgba(255, 255, 255, 0.23); }
-.isle-voice-close { color: rgba(255, 255, 255, 0.88); }
-.isle-voice-close:hover { color: #ffffff; background-color: rgba(255, 69, 58, 0.24); }
-#isleIsland.isle-accent-system .isle-pill-decision:active,
-#isleIsland.isle-accent-system .isle-mode-toggle.on:active { background-color: st-darken(-st-accent-color, 5%); }
-#isleIsland.isle-accent-system .isle-entry,
-#isleIsland.isle-accent-system .isle-stepper-entry { caret-color: -st-accent-color; selection-background-color: -st-accent-color; }
-#isleIsland.isle-accent-system .isle-entry:focus { box-shadow: inset 0 0 0 2px st-transparentize(-st-accent-color, 0.3) !important; }
-#isleIsland.isle-accent-system .isle-voice-entry,
-#isleIsland.isle-accent-system .isle-voice-entry:focus:hover,
-#isleIsland.isle-accent-system .isle-reminder-field { selection-background-color: st-transparentize(-st-accent-color, 0.4); }
-#isleIsland.isle-accent-system .isle-cal-accounts { color: st-lighten(-st-accent-color, 25%); }
+.notchfolk-voice-chat-button:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.17); }
+.notchfolk-voice-chat-button:active { color: #ffffff; background-color: rgba(255, 255, 255, 0.23); }
+.notchfolk-voice-close { color: rgba(255, 255, 255, 0.88); }
+.notchfolk-voice-close:hover { color: #ffffff; background-color: rgba(255, 69, 58, 0.24); }
+#notchfolkIsland.notchfolk-accent-system .notchfolk-pill-decision:active,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-mode-toggle.on:active { background-color: st-darken(-st-accent-color, 5%); }
+#notchfolkIsland.notchfolk-accent-system .notchfolk-entry,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-stepper-entry { caret-color: -st-accent-color; selection-background-color: -st-accent-color; }
+#notchfolkIsland.notchfolk-accent-system .notchfolk-entry:focus { box-shadow: inset 0 0 0 2px st-transparentize(-st-accent-color, 0.3) !important; }
+#notchfolkIsland.notchfolk-accent-system .notchfolk-voice-entry,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-voice-entry:focus:hover,
+#notchfolkIsland.notchfolk-accent-system .notchfolk-reminder-field { selection-background-color: st-transparentize(-st-accent-color, 0.4); }
+#notchfolkIsland.notchfolk-accent-system .notchfolk-cal-accounts { color: st-lighten(-st-accent-color, 25%); }
 
 /* Dark tint: the accent flat, as GNOME's own toggles. */
-#isleIsland.isle-glass-dark .isle-pill-accent,
-#isleIsland.isle-glass-dark .isle-card-run,
-#isleIsland.isle-glass-dark .isle-pill-decision,
-#isleIsland.isle-glass-dark .isle-voice-send,
-#isleIsland.isle-glass-dark .isle-call-control:checked,
-#isleIsland.isle-glass-dark .isle-mode-toggle.on,
-#isleIsland.isle-glass-dark .isle-cal-world-toggle:checked,
-#isleIsland.isle-glass-dark .isle-dnd-toggle:checked { box-shadow: none; }
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-pill-accent,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-card-run,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-pill-decision,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-voice-send,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-call-control:checked,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-mode-toggle.on,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-cal-world-toggle:checked,
+#notchfolkIsland.notchfolk-glass-dark .notchfolk-dnd-toggle:checked { box-shadow: none; }
 
 /* The archived conversations, as the history button shows them. */
-.isle-chat-archive { spacing: 6px; padding: 8px 0; }
-.isle-chat-archive-row { padding: 10px 12px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.05); }
-.isle-chat-archive-row:hover { background-color: rgba(255, 255, 255, 0.1); }
-.isle-chat-archive-row:active { background-color: rgba(255, 255, 255, 0.16); }
-.isle-chat-archive-when { font-size: 13px; font-weight: 600; }
-.isle-chat-archive-count { font-size: 11px; color: rgba(255, 255, 255, 0.55); }
+.notchfolk-chat-archive { spacing: 6px; padding: 8px 0; }
+.notchfolk-chat-archive-row { padding: 10px 12px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.05); }
+.notchfolk-chat-archive-row:hover { background-color: rgba(255, 255, 255, 0.1); }
+.notchfolk-chat-archive-row:active { background-color: rgba(255, 255, 255, 0.16); }
+.notchfolk-chat-archive-when { font-size: 13px; font-weight: 600; }
+.notchfolk-chat-archive-count { font-size: 11px; color: rgba(255, 255, 255, 0.55); }
 
 /* Router: a small live analytics surface sized for the island, not a page-sized dashboard. */
-.isle-router-layout { spacing: 6px; }
-.isle-router-heading { spacing: 8px; min-height: 22px; }
-.isle-router-title { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; }
-.isle-router-status-pill { spacing: 5px; padding: 3px 8px; border-radius: 999px;
+.notchfolk-router-layout { spacing: 6px; }
+.notchfolk-router-heading { spacing: 8px; min-height: 22px; }
+.notchfolk-router-title { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; }
+.notchfolk-router-status-pill { spacing: 5px; padding: 3px 8px; border-radius: 999px;
   background-color: rgba(255, 255, 255, 0.06); }
-.isle-router-status-dot { width: 6px; height: 6px; border-radius: 3px; background-color: rgba(255, 255, 255, 0.34); }
-.isle-router-status-dot.connected { background-color: #30d158; }
-.isle-router-status-dot.error { background-color: #ff6961; }
-.isle-router-status-dot.setup { background-color: #ffb340; }
-.isle-router-status-dot.busy { animation: isle-router-status-pulse 1.3s ease-in-out infinite; }
-.isle-router-status { font-size: 9px; font-weight: 650; color: rgba(255, 255, 255, 0.62); }
-.isle-router-status.connected { color: #8aefae; }
-.isle-router-status.error { color: #ff938d; }
-.isle-router-status.setup { color: #ffd17a; }
-.isle-router-periods { spacing: 2px; padding: 2px; border-radius: 9px;
+.notchfolk-router-status-dot { width: 6px; height: 6px; border-radius: 3px; background-color: rgba(255, 255, 255, 0.34); }
+.notchfolk-router-status-dot.connected { background-color: #30d158; }
+.notchfolk-router-status-dot.error { background-color: #ff6961; }
+.notchfolk-router-status-dot.setup { background-color: #ffb340; }
+.notchfolk-router-status-dot.busy { animation: notchfolk-router-status-pulse 1.3s ease-in-out infinite; }
+.notchfolk-router-status { font-size: 9px; font-weight: 650; color: rgba(255, 255, 255, 0.62); }
+.notchfolk-router-status.connected { color: #8aefae; }
+.notchfolk-router-status.error { color: #ff938d; }
+.notchfolk-router-status.setup { color: #ffd17a; }
+.notchfolk-router-periods { spacing: 2px; padding: 2px; border-radius: 9px;
   background-color: rgba(255, 255, 255, 0.055); }
-.isle-router-period { padding: 2px 7px; border-radius: 7px; font-size: 10px; font-weight: 600;
+.notchfolk-router-period { padding: 2px 7px; border-radius: 7px; font-size: 10px; font-weight: 600;
   color: rgba(255, 255, 255, 0.52); }
-.isle-router-period:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.08); }
-.isle-router-period.picked { color: #ffffff; background-color: rgba(48, 209, 88, 0.22); }
-.isle-router-metrics { spacing: 6px; }
-.isle-router-metric { padding: 3px 9px; spacing: 1px; border-radius: 9px;
+.notchfolk-router-period:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.08); }
+.notchfolk-router-period.picked { color: #ffffff; background-color: rgba(48, 209, 88, 0.22); }
+.notchfolk-router-metrics { spacing: 6px; }
+.notchfolk-router-metric { padding: 3px 9px; spacing: 1px; border-radius: 9px;
   background-color: rgba(255, 255, 255, 0.045); border: 1px solid rgba(255, 255, 255, 0.065); }
-.isle-router-metric-label { font-size: 9px; font-weight: 500; color: rgba(255, 255, 255, 0.48); }
-.isle-router-metric-value { font-size: 14px; font-weight: 700; font-feature-settings: "tnum"; }
-.isle-router-content { spacing: 12px; min-height: 0; }
-.isle-router-activity { width: 190px; spacing: 4px; }
-.isle-router-section { spacing: 4px; min-width: 0; }
-.isle-router-section-heading { spacing: 6px; min-height: 13px; }
-.isle-router-section-title { font-size: 10px; font-weight: 700; color: rgba(255, 255, 255, 0.66); }
-.isle-router-activity-meta { font-size: 9px; font-weight: 500; color: rgba(255, 255, 255, 0.43); }
-.isle-router-chart { min-height: 40px; border-radius: 8px; background-color: rgba(255, 255, 255, 0.035); }
-.isle-router-top-model { spacing: 5px; min-height: 11px; }
-.isle-router-top-tag { font-size: 8px; font-weight: 700; color: #79e6a0; letter-spacing: 0.4px; }
-.isle-router-top-name { font-size: 9px; color: rgba(255, 255, 255, 0.54); }
-.isle-router-recent-scroll { -st-vfade-offset: 8px; }
-.isle-router-request-list { spacing: 1px; }
-.isle-router-request { spacing: 6px; padding: 1px 4px; border-radius: 5px; min-height: 16px; }
-.isle-router-request:hover { background-color: rgba(255, 255, 255, 0.045); }
-.isle-router-request-model { font-size: 10px; color: rgba(255, 255, 255, 0.82); }
-.isle-router-request-tokens { font-size: 9px; font-feature-settings: "tnum"; color: rgba(255, 255, 255, 0.55);
+.notchfolk-router-metric-label { font-size: 9px; font-weight: 500; color: rgba(255, 255, 255, 0.48); }
+.notchfolk-router-metric-value { font-size: 14px; font-weight: 700; font-feature-settings: "tnum"; }
+.notchfolk-router-content { spacing: 12px; min-height: 0; }
+.notchfolk-router-activity { width: 190px; spacing: 4px; }
+.notchfolk-router-section { spacing: 4px; min-width: 0; }
+.notchfolk-router-section-heading { spacing: 6px; min-height: 13px; }
+.notchfolk-router-section-title { font-size: 10px; font-weight: 700; color: rgba(255, 255, 255, 0.66); }
+.notchfolk-router-activity-meta { font-size: 9px; font-weight: 500; color: rgba(255, 255, 255, 0.43); }
+.notchfolk-router-chart { min-height: 40px; border-radius: 8px; background-color: rgba(255, 255, 255, 0.035); }
+.notchfolk-router-top-model { spacing: 5px; min-height: 11px; }
+.notchfolk-router-top-tag { font-size: 8px; font-weight: 700; color: #79e6a0; letter-spacing: 0.4px; }
+.notchfolk-router-top-name { font-size: 9px; color: rgba(255, 255, 255, 0.54); }
+.notchfolk-router-recent-scroll { -st-vfade-offset: 8px; }
+.notchfolk-router-request-list { spacing: 1px; }
+.notchfolk-router-request { spacing: 6px; padding: 1px 4px; border-radius: 5px; min-height: 16px; }
+.notchfolk-router-request:hover { background-color: rgba(255, 255, 255, 0.045); }
+.notchfolk-router-request-model { font-size: 10px; color: rgba(255, 255, 255, 0.82); }
+.notchfolk-router-request-tokens { font-size: 9px; font-feature-settings: "tnum"; color: rgba(255, 255, 255, 0.55);
   min-width: 54px; text-align: right; }
-.isle-router-request-result { spacing: 4px; min-width: 30px; }
-.isle-router-result-dot { width: 5px; height: 5px; border-radius: 3px; background-color: #30d158; }
-.isle-router-result-dot.error { background-color: #ff6961; }
-.isle-router-request-state { font-size: 9px; font-weight: 700; color: #8aefae; }
-.isle-router-request.error .isle-router-request-state { color: #ff938d; }
-.isle-router-request-time { min-width: 34px; font-size: 9px; color: rgba(255, 255, 255, 0.43); text-align: right; }
-.isle-router-empty { font-size: 10px; color: rgba(255, 255, 255, 0.42); padding-top: 3px; }
-@keyframes isle-router-status-pulse {
+.notchfolk-router-request-result { spacing: 4px; min-width: 30px; }
+.notchfolk-router-result-dot { width: 5px; height: 5px; border-radius: 3px; background-color: #30d158; }
+.notchfolk-router-result-dot.error { background-color: #ff6961; }
+.notchfolk-router-request-state { font-size: 9px; font-weight: 700; color: #8aefae; }
+.notchfolk-router-request.error .notchfolk-router-request-state { color: #ff938d; }
+.notchfolk-router-request-time { min-width: 34px; font-size: 9px; color: rgba(255, 255, 255, 0.43); text-align: right; }
+.notchfolk-router-empty { font-size: 10px; color: rgba(255, 255, 255, 0.42); padding-top: 3px; }
+@keyframes notchfolk-router-status-pulse {
   0%, 100% { opacity: 1.0; }
   50% { opacity: 0.42; }
 }
 
 /* The chip's health dot in the closed island: green connected, grey offline, red unauthorized;
    a slow pulse while the gateway reports requests running. */
-.isle-router-dot { width: 8px; height: 8px; border-radius: 4px; background-color: rgba(255, 255, 255, 0.3); }
-.isle-router-dot.connected { background-color: #30d158; }
-.isle-router-dot.offline { background-color: rgba(255, 255, 255, 0.3); }
-.isle-router-dot.unauthorized { background-color: #ff453a; }
-.isle-router-dot.busy { animation: isle-router-pulse 1.6s ease-in-out infinite; }
-@keyframes isle-router-pulse {
+.notchfolk-router-dot { width: 8px; height: 8px; border-radius: 4px; background-color: rgba(255, 255, 255, 0.3); }
+.notchfolk-router-dot.connected { background-color: #30d158; }
+.notchfolk-router-dot.offline { background-color: rgba(255, 255, 255, 0.3); }
+.notchfolk-router-dot.unauthorized { background-color: #ff453a; }
+.notchfolk-router-dot.busy { animation: notchfolk-router-pulse 1.6s ease-in-out infinite; }
+@keyframes notchfolk-router-pulse {
   0% { opacity: 1.0; }
   50% { opacity: 0.35; }
   100% { opacity: 1.0; }

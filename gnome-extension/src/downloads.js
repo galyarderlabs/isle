@@ -18,10 +18,10 @@ export function downloadsDir() {
     return Gio.File.new_for_path(dir && dir !== GLib.get_home_dir() ? dir : GLib.build_filenamev([GLib.get_home_dir(), 'Downloads']));
 }
 
-/** Whether `uri` is a copy the Shelf keeps itself, in isled's shelf folder: those can be saved. */
+/** Whether `uri` is a copy the Shelf keeps itself, in notchfolkd's shelf folder: those can be saved. */
 export function isShelfCopy(uri) {
     const file = Gio.File.new_for_uri(uri);
-    const own = Gio.File.new_for_path(GLib.build_filenamev([GLib.get_user_data_dir(), 'isle', 'shelf']));
+    const own = Gio.File.new_for_path(GLib.build_filenamev([GLib.get_user_data_dir(), 'notchfolk', 'shelf']));
     return Boolean(file.get_parent()?.equal(own));
 }
 

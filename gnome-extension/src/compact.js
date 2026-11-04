@@ -48,7 +48,7 @@ export const CompactView = GObject.registerClass({
     /** `privacy` and `call` are the shell's recording and call watchers. */
     _init(daemon, settings, privacy, call) {
         super._init({
-            style_class: 'isle-compact',
+            style_class: 'notchfolk-compact',
             layout_manager: new Clutter.BinLayout(),
         });
         this._daemon = daemon;
@@ -62,7 +62,7 @@ export const CompactView = GObject.registerClass({
         this._assistantPointerTimeline = 0;
         this._widthChangedIdle = 0;
 
-        const row = new St.BoxLayout({style_class: 'isle-compact-row', x_expand: true, y_expand: true});
+        const row = new St.BoxLayout({style_class: 'notchfolk-compact-row', x_expand: true, y_expand: true});
         this._row = row;
         this.add_child(row);
         // Two pads that hold the sides apart around the assistant: whatever the sides weigh, the pads'
@@ -71,74 +71,74 @@ export const CompactView = GObject.registerClass({
         this._rowPad = new St.Widget({x_expand: false});
         this._rowEndPad = new St.Widget({x_expand: false});
 
-        this._left = new St.BoxLayout({style_class: 'isle-compact-side isle-compact-clock-side', x_expand: false,
+        this._left = new St.BoxLayout({style_class: 'notchfolk-compact-side notchfolk-compact-clock-side', x_expand: false,
             y_align: Clutter.ActorAlign.CENTER});
-        this._clock = label('', 'isle-compact-clock');
-        this._moon = new St.Icon({gicon: icon('isle-moon'), icon_size: 14, style_class: 'isle-dnd-moon', y_align: Clutter.ActorAlign.CENTER, visible: false});
-        this._clockBox = new St.BoxLayout({style_class: 'isle-compact-clock-box', x_align: Clutter.ActorAlign.START, y_align: Clutter.ActorAlign.CENTER});
+        this._clock = label('', 'notchfolk-compact-clock');
+        this._moon = new St.Icon({gicon: icon('notchfolk-moon'), icon_size: 14, style_class: 'notchfolk-dnd-moon', y_align: Clutter.ActorAlign.CENTER, visible: false});
+        this._clockBox = new St.BoxLayout({style_class: 'notchfolk-compact-clock-box', x_align: Clutter.ActorAlign.START, y_align: Clutter.ActorAlign.CENTER});
         this._clockBox.add_child(this._moon);
         this._clockBox.add_child(this._clock);
 
-        this._restDate = label('', 'isle-compact-rest-date', {y_align: Clutter.ActorAlign.CENTER});
+        this._restDate = label('', 'notchfolk-compact-rest-date', {y_align: Clutter.ActorAlign.CENTER});
 
-        this._timerIcon = new St.Icon({gicon: icon('isle-timer'), icon_size: 10, y_align: Clutter.ActorAlign.CENTER});
+        this._timerIcon = new St.Icon({gicon: icon('notchfolk-timer'), icon_size: 10, y_align: Clutter.ActorAlign.CENTER});
         this._ring = new Ring({size: 20, lineWidth: 3, child: this._timerIcon});
         this._recordingDot = new RecordingDot();
-        this._recordingTime = label('', 'isle-compact-status-time isle-compact-recording-time');
-        this._callIcon = new St.Icon({gicon: icon('isle-phone-symbolic'), icon_size: 15, style_class: 'isle-call-icon', y_align: Clutter.ActorAlign.CENTER});
-        this._callTime = label('', 'isle-compact-status-time isle-compact-call-time');
-        this._micOff = new St.Icon({gicon: icon('isle-mic-off-symbolic'), icon_size: 15, style_class: 'isle-call-muted', y_align: Clutter.ActorAlign.CENTER});
-        this._timerTime = label('', 'isle-compact-status-time');
-        this._serviceDown = new St.Icon({gicon: icon('dialog-warning-symbolic'), icon_size: 15, style_class: 'isle-compact-warning', y_align: Clutter.ActorAlign.CENTER});
-        this._notificationIcon = new St.Icon({gicon: icon('isle-bell'), icon_size: 15, y_align: Clutter.ActorAlign.CENTER});
-        this._notificationCount = label('', 'isle-compact-notification-count');
+        this._recordingTime = label('', 'notchfolk-compact-status-time notchfolk-compact-recording-time');
+        this._callIcon = new St.Icon({gicon: icon('notchfolk-phone-symbolic'), icon_size: 15, style_class: 'notchfolk-call-icon', y_align: Clutter.ActorAlign.CENTER});
+        this._callTime = label('', 'notchfolk-compact-status-time notchfolk-compact-call-time');
+        this._micOff = new St.Icon({gicon: icon('notchfolk-mic-off-symbolic'), icon_size: 15, style_class: 'notchfolk-call-muted', y_align: Clutter.ActorAlign.CENTER});
+        this._timerTime = label('', 'notchfolk-compact-status-time');
+        this._serviceDown = new St.Icon({gicon: icon('dialog-warning-symbolic'), icon_size: 15, style_class: 'notchfolk-compact-warning', y_align: Clutter.ActorAlign.CENTER});
+        this._notificationIcon = new St.Icon({gicon: icon('notchfolk-bell'), icon_size: 15, y_align: Clutter.ActorAlign.CENTER});
+        this._notificationCount = label('', 'notchfolk-compact-notification-count');
         this._bars = new Bars({height: 16});
 
-        this._recordingStatus = new St.BoxLayout({style_class: 'isle-compact-status-item', y_align: Clutter.ActorAlign.CENTER});
+        this._recordingStatus = new St.BoxLayout({style_class: 'notchfolk-compact-status-item', y_align: Clutter.ActorAlign.CENTER});
         this._recordingStatus.add_child(this._recordingDot);
         this._recordingStatus.add_child(this._recordingTime);
-        this._callStatus = new St.BoxLayout({style_class: 'isle-compact-status-item isle-compact-call-status', y_align: Clutter.ActorAlign.CENTER});
+        this._callStatus = new St.BoxLayout({style_class: 'notchfolk-compact-status-item notchfolk-compact-call-status', y_align: Clutter.ActorAlign.CENTER});
         this._callStatus.add_child(this._callIcon);
         this._callStatus.add_child(this._callTime);
         this._callStatus.add_child(this._micOff);
-        this._timerStatus = new St.BoxLayout({style_class: 'isle-compact-status-item', y_align: Clutter.ActorAlign.CENTER});
+        this._timerStatus = new St.BoxLayout({style_class: 'notchfolk-compact-status-item', y_align: Clutter.ActorAlign.CENTER});
         this._timerStatus.add_child(this._ring);
         this._timerStatus.add_child(this._timerTime);
         this._musicArt = new Art({size: SIZES.hanging.music, radius: 4});
         // The song's two signs live in opposite corners, as the island's own music page splits them:
         // the cover at the notch's left edge, the dancing bars at its right edge.
-        this._musicStatus = new St.BoxLayout({style_class: 'isle-compact-status-item', y_align: Clutter.ActorAlign.CENTER});
+        this._musicStatus = new St.BoxLayout({style_class: 'notchfolk-compact-status-item', y_align: Clutter.ActorAlign.CENTER});
         this._musicStatus.add_child(this._bars);
-        this._notificationStatus = new St.BoxLayout({style_class: 'isle-compact-status-item', y_align: Clutter.ActorAlign.CENTER});
+        this._notificationStatus = new St.BoxLayout({style_class: 'notchfolk-compact-status-item', y_align: Clutter.ActorAlign.CENTER});
         this._notificationStatus.add_child(this._notificationIcon);
         this._notificationStatus.add_child(this._notificationCount);
         this._weatherIcon = new St.Icon({icon_name: 'weather-clear-symbolic', icon_size: 16,
             y_align: Clutter.ActorAlign.CENTER});
-        this._weatherTemperature = label('', 'isle-compact-status-time');
-        this._weatherStatus = new St.BoxLayout({style_class: 'isle-compact-status-item', y_align: Clutter.ActorAlign.CENTER,
+        this._weatherTemperature = label('', 'notchfolk-compact-status-time');
+        this._weatherStatus = new St.BoxLayout({style_class: 'notchfolk-compact-status-item', y_align: Clutter.ActorAlign.CENTER,
             visible: false});
         this._weatherStatus.add_child(this._weatherIcon);
         this._weatherStatus.add_child(this._weatherTemperature);
         // The first connected GSConnect device's battery, as a phone chip beside the weather.
-        this._phoneIcon = new St.Icon({gicon: icon('isle-phone-symbolic'), icon_size: 16,
+        this._phoneIcon = new St.Icon({gicon: icon('notchfolk-phone-symbolic'), icon_size: 16,
             y_align: Clutter.ActorAlign.CENTER});
-        this._phoneBattery = label('', 'isle-compact-status-time');
-        this._phoneStatus = new St.BoxLayout({style_class: 'isle-compact-status-item', y_align: Clutter.ActorAlign.CENTER,
+        this._phoneBattery = label('', 'notchfolk-compact-status-time');
+        this._phoneStatus = new St.BoxLayout({style_class: 'notchfolk-compact-status-item', y_align: Clutter.ActorAlign.CENTER,
             visible: false});
         this._phoneStatus.add_child(this._phoneIcon);
         this._phoneStatus.add_child(this._phoneBattery);
         // The Router chip: the gateway's requests in the period, its cost estimate and the busiest
         // model, with a dot for its health (green connected, grey offline, red unauthorized).
-        this._routerDot = new St.Widget({style_class: 'isle-router-dot', y_align: Clutter.ActorAlign.CENTER});
-        this._routerText = label('', 'isle-compact-status-time');
-        this._routerStatus = new St.BoxLayout({style_class: 'isle-compact-status-item', y_align: Clutter.ActorAlign.CENTER,
+        this._routerDot = new St.Widget({style_class: 'notchfolk-router-dot', y_align: Clutter.ActorAlign.CENTER});
+        this._routerText = label('', 'notchfolk-compact-status-time');
+        this._routerStatus = new St.BoxLayout({style_class: 'notchfolk-compact-status-item', y_align: Clutter.ActorAlign.CENTER,
             visible: false});
         this._routerStatus.add_child(this._routerDot);
         this._routerStatus.add_child(this._routerText);
 
         this._assistant = new BotIcon(ASSISTANT_SIZE, this._botLook());
         this._assistant.y_align = Clutter.ActorAlign.CENTER;
-        this._assistantButton = new St.Button({style_class: 'isle-compact-assistant-button', child: this._assistant,
+        this._assistantButton = new St.Button({style_class: 'notchfolk-compact-assistant-button', child: this._assistant,
             can_focus: true, track_hover: true, accessible_name: 'AI assistant', y_align: Clutter.ActorAlign.CENTER});
         this._assistantButton.connect('clicked', () => {
             this._cancel('assistant-hover');
@@ -164,9 +164,9 @@ export const CompactView = GObject.registerClass({
         this._statusItems = [this._serviceDown, this._timerStatus, this._recordingStatus,
             this._callStatus, this._notificationStatus, this._weatherStatus, this._phoneStatus,
             this._routerStatus];
-        this._leftStatuses = new St.BoxLayout({style_class: 'isle-compact-status',
+        this._leftStatuses = new St.BoxLayout({style_class: 'notchfolk-compact-status',
             y_align: Clutter.ActorAlign.CENTER});
-        this._rightStatuses = new St.BoxLayout({style_class: 'isle-compact-status',
+        this._rightStatuses = new St.BoxLayout({style_class: 'notchfolk-compact-status',
             y_align: Clutter.ActorAlign.CENTER});
         for (const item of this._statusItems)
             this._leftStatuses.add_child(item);
@@ -176,7 +176,7 @@ export const CompactView = GObject.registerClass({
         this._left.add_child(this._leftStatuses);
         this._left.add_child(this._clockBox);
         this._privacyDots = new PrivacyDots();
-        this._right = new St.BoxLayout({style_class: 'isle-compact-side isle-compact-status', x_expand: false, y_align: Clutter.ActorAlign.CENTER});
+        this._right = new St.BoxLayout({style_class: 'notchfolk-compact-side notchfolk-compact-status', x_expand: false, y_align: Clutter.ActorAlign.CENTER});
         this._right.add_child(this._restDate);
         this._right.add_child(this._rightStatuses);
         this._right.add_child(this._privacyDots);
@@ -236,7 +236,7 @@ export const CompactView = GObject.registerClass({
      * and no dead stretch opens inside either side. */
     get preferredWidth() {
         const size = SIZES[this._inBar ? 'inBar' : 'hanging'];
-        // Gaps match `.isle-compact-clock-side` and `.isle-compact-status`.
+        // Gaps match `.notchfolk-compact-clock-side` and `.notchfolk-compact-status`.
         const gap = px(this._inBar ? 10 : 12);
         // The side's own spacing lays its children out: one gap between each pair of them, so a side
         // measures as the sum of what is on plus a gap per pair.
@@ -270,7 +270,7 @@ export const CompactView = GObject.registerClass({
      * whatever is active.
      */
     _spreadStatuses(statuses) {
-        // Gaps match `.isle-compact-status` (see `preferredWidth`).
+        // Gaps match `.notchfolk-compact-status` (see `preferredWidth`).
         const gap = px(this._inBar ? 10 : 12);
         const widths = statuses.map(item => item.get_preferred_width(-1)[1] + gap);
         // The signature covers which statuses are on; the widths cover their sizes changing without
@@ -405,7 +405,7 @@ export const CompactView = GObject.registerClass({
         }
         const dot = ['unauthorized', 'needs-credentials'].includes(router?.status) ? 'unauthorized'
             : connected ? 'connected' : 'offline';
-        const style = `isle-router-dot ${dot}${connected && (stats?.active ?? 0) > 0 ? ' busy' : ''}`;
+        const style = `notchfolk-router-dot ${dot}${connected && (stats?.active ?? 0) > 0 ? ' busy' : ''}`;
         if (this._routerDot.style_class !== style)
             this._routerDot.set_style_class_name(style);
         return on;
@@ -428,7 +428,7 @@ export const CompactView = GObject.registerClass({
         this._refresh();
     }
 
-    /** Shows that isled is not running, on the right before anything else. */
+    /** Shows that notchfolkd is not running, on the right before anything else. */
     get serviceDown() {
         return Boolean(this._isServiceDown);
     }
@@ -488,9 +488,9 @@ export const CompactView = GObject.registerClass({
         this._pillHeight = 0;
         this._sizeSigns();
         if (inBar)
-            this.add_style_class_name('isle-compact-in-bar');
+            this.add_style_class_name('notchfolk-compact-in-bar');
         else
-            this.remove_style_class_name('isle-compact-in-bar');
+            this.remove_style_class_name('notchfolk-compact-in-bar');
         this._refresh();
     }
 

@@ -24,7 +24,7 @@ test('a focus phase waiting for Start after a break is no session yet', () => {
     assert.equal(focusSession(focus()), null);
 });
 
-test('an isled that names no start still tells a session from one waiting', () => {
+test('an notchfolkd that names no start still tells a session from one waiting', () => {
     const older = state => {
         const pomodoro = focus(state);
         delete pomodoro.started_at_ms;
@@ -52,13 +52,13 @@ test('Do Not Disturb the user had on is theirs: left on, and on after the sessio
 });
 
 test('turned off during a session, it stays off for the rest of it, and the next turns it on', () => {
-    // Paused, resumed, or Isle built again after unlocking: the same session.
+    // Paused, resumed, or Notchfolk built again after unlocking: the same session.
     assert.deepEqual(focusStep({session: 1000, dnd: false, owned: false, declined: 1000}),
         {dnd: null, owned: false, declined: 1000});
     // A break between: forgotten.
     assert.deepEqual(focusStep({session: null, dnd: false, owned: false, declined: 1000}),
         {dnd: null, owned: false, declined: NONE});
-    // Another session began while Isle wasn't running (the screen locked).
+    // Another session began while Notchfolk wasn't running (the screen locked).
     assert.deepEqual(focusStep({session: 9000, dnd: false, owned: false, declined: 1000}),
         {dnd: true, owned: true, declined: NONE});
 });

@@ -50,7 +50,7 @@ export class TextWriter {
             if (!text || this._destroyed || !this._isFront(target))
                 return;
             if (isTerminal(target)) {
-                console.warn('Isle: not writing into a terminal, where a newline could run a command');
+                console.warn('Notchfolk: not writing into a terminal, where a newline could run a command');
                 return;
             }
             if (canType(text))
@@ -58,7 +58,7 @@ export class TextWriter {
             else
                 this._paste(text.replace(/\r\n?/g, '\n'), target);
         } catch (e) {
-            console.warn(`Isle: could not write the text: ${e.message}`);
+            console.warn(`Notchfolk: could not write the text: ${e.message}`);
         }
     }
 
@@ -123,7 +123,7 @@ export class TextWriter {
         try {
             callback();
         } catch (e) {
-            console.warn(`Isle: could not write the text: ${e.message}`);
+            console.warn(`Notchfolk: could not write the text: ${e.message}`);
         }
     }
 

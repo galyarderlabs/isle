@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2026 zickrian
-# Run as root in a throwaway container: installs an Isle package (tarball, .deb, .rpm or Arch) and a headless
-# GNOME Shell as "tester", failing on any "JS ERROR", the extension not loading, or isled never on the bus.
+# Run as root in a throwaway container: installs an Notchfolk package (tarball, .deb, .rpm or Arch) and a headless
+# GNOME Shell as "tester", failing on any "JS ERROR", the extension not loading, or notchfolkd never on the bus.
 set -euo pipefail
 
-UUID="isle@zickrian.github.io"
-DAEMON="io.github.zickrian.isle.Daemon"
-# Seconds to wait for isled, then to keep the shell running and watch its log.
+UUID="io.galyarderlabs.notchfolk"
+DAEMON="io.galyarderlabs.notchfolk.Daemon"
+# Seconds to wait for notchfolkd, then to keep the shell running and watch its log.
 WAIT=60
 SETTLE=10
 
@@ -39,7 +39,7 @@ install_shell() {
 # As root: the system around the shell, then the session as "tester".
 main() {
     local package="${1:-}"
-    [ -f "$package" ] || fail "usage: $0 <isle-….tar.gz | isle_….deb | isle-….rpm | isle-bin-….pkg.tar.zst>"
+    [ -f "$package" ] || fail "usage: $0 <notchfolk-….tar.gz | notchfolk_….deb | notchfolk-….rpm | notchfolk-bin-….pkg.tar.zst>"
     [ "$(id -u)" -eq 0 ] || fail "run this as root, in a throwaway container."
     package="$(readlink -f "$package")"
 
@@ -77,10 +77,10 @@ main() {
     local script
     script="$(readlink -f "$0")"
     # A copy the user can read, wherever the package is.
-    install -D -m 644 "$package" "/tmp/isle-smoke/$(basename "$package")"
+    install -D -m 644 "$package" "/tmp/notchfolk-smoke/$(basename "$package")"
     runuser -u tester -- env -i HOME="/home/tester" USER=tester PATH="/home/tester/.local/bin:$PATH" \
         XDG_RUNTIME_DIR="/run/user/$uid" GSETTINGS_BACKEND=keyfile LANG=C.UTF-8 \
-        dbus-run-session -- bash "$script" --session "/tmp/isle-smoke/$(basename "$package")" "$(dirname "$script")/../.."
+        dbus-run-session -- bash "$script" --session "/tmp/notchfolk-smoke/$(basename "$package")" "$(dirname "$script")/../.."
 }
 
 # As "tester", on a fresh session bus: install for the user if a tarball, then run the shell.
@@ -89,7 +89,7 @@ session() {
     cd "$HOME"
     if [[ "$package" == *.tar.gz ]]; then
         say "Installing $(basename "$package") with get.sh"
-        ISLE_PACKAGE="$package" ISLE_FORCE=1 bash "$repo/get.sh"
+        NOTCHFOLK_PACKAGE="$package" NOTCHFOLK_FORCE=1 bash "$repo/get.sh"
     else
         gsettings set org.gnome.shell enabled-extensions "['$UUID']"
     fi
@@ -102,34 +102,34 @@ session() {
         kill -0 "$shell" 2>/dev/null || { cat "$log"; fail "GNOME Shell exited."; }
         if [ "$waited" -ge "$WAIT" ]; then
             cat "$log"
-            fail "isled never appeared on the session bus ($DAEMON) in $WAIT s."
+            fail "notchfolkd never appeared on the session bus ($DAEMON) in $WAIT s."
         fi
         sleep 1
         waited=$((waited + 1))
     done
-    say "isled is on the session bus after ${waited} s"
+    say "notchfolkd is on the session bus after ${waited} s"
     sleep "$SETTLE"
 
     local info state
     info="$(gdbus call --session --dest org.gnome.Shell --object-path /org/gnome/Shell \
         --method org.gnome.Shell.Extensions.GetExtensionInfo "$UUID" 2>&1 || true)"
     state="$(printf '%s' "$info" | grep -oE "'state': <[0-9.]+>" | grep -oE '[0-9]+' | head -n1 || true)"
-    local isled whisper
-    isled="$(command -v isled || echo "$HOME/.local/bin/isled")"
-    whisper="$(command -v isle-whisper || echo "$HOME/.local/bin/isle-whisper")"
-    "$isled" --version
-    "$isled" --doctor || fail "isled --doctor failed."
+    local notchfolkd whisper
+    notchfolkd="$(command -v notchfolkd || echo "$HOME/.local/bin/notchfolkd")"
+    whisper="$(command -v notchfolk-whisper || echo "$HOME/.local/bin/notchfolk-whisper")"
+    "$notchfolkd" --version
+    "$notchfolkd" --doctor || fail "notchfolkd --doctor failed."
     # Speech recognition starts with no GPU and no Vulkan loader, on the processor.
-    say "isle-whisper --probe"
+    say "notchfolk-whisper --probe"
     local probe
     probe="$("$whisper" --probe 2>&1 || true)"
     printf '%s\n' "$probe"
-    [[ "$probe" == *'"device"'* ]] || fail "isle-whisper --probe did not answer."
+    [[ "$probe" == *'"device"'* ]] || fail "notchfolk-whisper --probe did not answer."
     kill "$shell" 2>/dev/null || true
     wait "$shell" 2>/dev/null || true
 
-    echo "--- GNOME Shell's log about Isle and errors:"
-    grep -iE 'isle|JS ERROR|JS WARNING' "$log" || echo "(nothing)"
+    echo "--- GNOME Shell's log about Notchfolk and errors:"
+    grep -iE 'notchfolk|JS ERROR|JS WARNING' "$log" || echo "(nothing)"
     echo "---"
     if grep -q 'JS ERROR' "$log"; then
         fail "GNOME Shell logged a JS ERROR (above)."

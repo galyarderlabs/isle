@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// The few places GNOME Shell 46 to 51 differ for Isle, so the rest of the
+// The few places GNOME Shell 46 to 51 differ for Notchfolk, so the rest of the
 // code reads the same on all of them.
 
 import Clutter from 'gi://Clutter';

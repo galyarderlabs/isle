@@ -38,7 +38,7 @@ test('a small icon stays its own size', () => {
     assert.equal(thumbSize(32, 32, 2), '16px');
 });
 
-test("an older isled's thumbnail covers, as before", () => {
+test("an older notchfolkd's thumbnail covers, as before", () => {
     assert.equal(thumbSize(undefined, undefined, 2), 'cover');
     assert.equal(thumbSize(null, null, 1), 'cover');
 });

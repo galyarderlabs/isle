@@ -158,7 +158,7 @@ test('a stretch merges up to an hour, then starts a new one', () => {
     ]);
 });
 
-test('the buffer keeps the newest 500 stretches while isled is away', () => {
+test('the buffer keeps the newest 500 stretches while notchfolkd is away', () => {
     const reports = new AppUsageReports();
     for (let i = 0; i < 600; i++)
         reports.add({...(i % 2 ? CODE : BRAVE), start: WALL + i * 2_000, ms: 1_000});

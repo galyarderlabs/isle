@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2026 zickrian
-# Packs dist/isle-<version>-<arch>-linux.tar.gz (+ .sha256) with ready-built programs; arg: version (default Cargo.toml).
-# Needs libgtk-4-dev for isle-shelf, and cmake g++ libclang-dev libvulkan-dev glslc for isle-whisper.
+# Packs dist/notchfolk-<version>-<arch>-linux.tar.gz (+ .sha256) with ready-built programs; arg: version (default Cargo.toml).
+# Needs libgtk-4-dev for notchfolk-shelf, and cmake g++ libclang-dev libvulkan-dev glslc for notchfolk-whisper.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 VERSION="${1:-$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n1)}"
-NAME="isle-$VERSION-$(uname -m)-linux"
+NAME="notchfolk-$VERSION-$(uname -m)-linux"
 OUT="dist/$NAME"
 
-cargo build --release --locked -p isle-daemon -p isle-shelf -p isle-whisper
+cargo build --release --locked -p notchfolk-daemon -p notchfolk-shelf -p notchfolk-whisper
 
 rm -rf "$OUT" "dist/$NAME.tar.gz" "dist/$NAME.tar.gz.sha256"
 mkdir -p "$OUT/bin"
-install -m755 target/release/isled target/release/isle-shelf target/release/isle-whisper "$OUT/bin/"
-strip "$OUT/bin/isled" "$OUT/bin/isle-shelf" "$OUT/bin/isle-whisper"
+install -m755 target/release/notchfolkd target/release/notchfolk-shelf target/release/notchfolk-whisper "$OUT/bin/"
+strip "$OUT/bin/notchfolkd" "$OUT/bin/notchfolk-shelf" "$OUT/bin/notchfolk-whisper"
 cp -r gnome-extension data mcp install.sh uninstall.sh README.md LICENSE CHANGELOG.md "$OUT/"
 mkdir -p "$OUT/docs"
 install -m644 docs/mcp.md "$OUT/docs/mcp.md"
 # What install.sh installs as commands: the voice set-up and the battery charge limit.
 mkdir -p "$OUT/scripts"
-install -m755 scripts/setup-voice.sh scripts/setup-mcp.sh scripts/isle-mcp scripts/isle-mcp-keygen scripts/isle-mcp-tunnel scripts/isle-charge-limit scripts/notchfolk-migrate-from-isle.sh "$OUT/scripts/"
+install -m755 scripts/setup-voice.sh scripts/setup-mcp.sh scripts/notchfolk-mcp scripts/notchfolk-mcp-keygen scripts/notchfolk-mcp-tunnel scripts/notchfolk-charge-limit scripts/notchfolk-migrate-from-isle.sh "$OUT/scripts/"
 # Compiled on install, for the GLib there.
 rm -f "$OUT/gnome-extension/schemas/gschemas.compiled"
 

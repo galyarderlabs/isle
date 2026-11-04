@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// Isle's declarations in the top bar's inline style, needing nothing of GNOME, kept apart so tests run it
-// anywhere (tests/). Other extensions write that style too: only Isle's own declarations are ever touched.
+// Notchfolk's declarations in the top bar's inline style, needing nothing of GNOME, kept apart so tests run it
+// anywhere (tests/). Other extensions write that style too: only Notchfolk's own declarations are ever touched.
 
 /** The declarations of `style`: each one's text without its `;`, and where it starts and ends (`;` and the
  * spaces after it included). A `;` inside quotes or brackets doesn't end one. */
@@ -47,9 +47,9 @@ function property(text) {
 }
 
 /**
- * `style` with each of `wanted` in effect (the last of its property) and none of Isle's others left: the very
- * same string when it already is so, however the rest is spelt or ordered. `isOwn(normalized)` tells Isle's
- * declarations. Another's text is kept as it is; Isle's moves to the end only when another's would win.
+ * `style` with each of `wanted` in effect (the last of its property) and none of Notchfolk's others left: the very
+ * same string when it already is so, however the rest is spelt or ordered. `isOwn(normalized)` tells Notchfolk's
+ * declarations. Another's text is kept as it is; Notchfolk's moves to the end only when another's would win.
  */
 export function restyle(style, wanted, isOwn) {
     const current = style ?? '';
@@ -61,7 +61,7 @@ export function restyle(style, wanted, isOwn) {
     if (!stale && wanted.every(inEffect))
         return style;
 
-    // Each wanted one takes the place of Isle's last of its property, if nothing of another's comes after it.
+    // Each wanted one takes the place of Notchfolk's last of its property, if nothing of another's comes after it.
     const replacing = new Map();
     const appended = [];
     for (const text of wanted) {

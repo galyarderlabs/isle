@@ -2,7 +2,7 @@
 // Copyright (C) 2026 zickrian
 
 // Calendar as a widget shows it: the month, and the chosen day's events from the desktop's
-// calendars (GNOME Shell's event source) and Isle's own (isled, removable).
+// calendars (GNOME Shell's event source) and Notchfolk's own (notchfolkd, removable).
 
 import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
@@ -22,10 +22,10 @@ import {Page} from './page.js';
 import {onHover} from './tasks.js';
 
 /** The month grid's height, shared by its rows: what the page has under the title and weekdays (39 of its
- * 144 inside); sizes in CSS pixels (see `px`). Five weeks fill it, six take smaller days (`isle-cal-six-weeks`). */
+ * 144 inside); sizes in CSS pixels (see `px`). Five weeks fill it, six take smaller days (`notchfolk-cal-six-weeks`). */
 const GRID_HEIGHT = 105;
 const MAX_ROW_HEIGHT = 21;
-/** Events of a desktop calendar with no colour of its own (blue), and Isle's own (orange), as RGB. */
+/** Events of a desktop calendar with no colour of its own (blue), and Notchfolk's own (orange), as RGB. */
 const SYSTEM_COLOR = [10, 132, 255];
 const OWN_COLOR = [255, 159, 10];
 /** An event just added shows at once, faint, until its calendar lists it, or this long (ms) at most. */
@@ -103,28 +103,28 @@ function rangeText(start, end) {
 /** A city's sky at `hour`, as its World Clock row shows it: day, evening (16:00 to 18:59) or night (19:00 to 5:59). */
 function skyIcon(hour) {
     if (hour >= 19 || hour < 6)
-        return 'isle-moon';
-    return hour >= 16 ? 'isle-sunset-symbolic' : 'isle-sun-symbolic';
+        return 'notchfolk-moon';
+    return hour >= 16 ? 'notchfolk-sunset-symbolic' : 'notchfolk-sun-symbolic';
 }
 
 /** An alarm's wait is cut into naps this long at most: a sleeping computer stops the time-outs' clock. */
 const ALARM_NAP_MS = 30 * 1000;
-/** Longer than GNOME's month grid ever asks for (six weeks): a span Isle itself asked for before. */
+/** Longer than GNOME's month grid ever asks for (six weeks): a span Notchfolk itself asked for before. */
 const GRID_SPAN_MS = 50 * 24 * 3600 * 1000;
 /** The occurrences already alarmed, and those whose alert was on screen (see `occurrenceKey`); kept as the
- * screen locks and Isle starts again. */
+ * screen locks and Notchfolk starts again. */
 const alarmed = new Set();
 const shown = new Set();
 
 // Signals: `event-soon` (json): an event with a time starts in `alarmLead` minutes, {id, title, start_ms,
-// end_ms}; `id` is GNOME's (source, event and recurrence, a line each), null for one of Isle's own.
+// end_ms}; `id` is GNOME's (source, event and recurrence, a line each), null for one of Notchfolk's own.
 export const CalendarPage = GObject.registerClass({
     Signals: {'event-soon': {param_types: [GObject.TYPE_STRING]}},
 }, class CalendarPage extends Page {
-    /** Month on the left, the day's events on the right; follows isled's own events. */
+    /** Month on the left, the day's events on the right; follows notchfolkd's own events. */
     _init(daemon, settings, {height}) {
         super._init(daemon, {
-            style_class: 'isle-page isle-calendar',
+            style_class: 'notchfolk-page notchfolk-calendar',
             layout_manager: new Clutter.BoxLayout(),
             height,
         });
@@ -137,14 +137,14 @@ export const CalendarPage = GObject.registerClass({
         this._month = new Date(this._today.getFullYear(), this._today.getMonth(), 1);
         this._source = null;
         this._sourceChanged = 0;
-        /** The [begin, end) of the desktop's events GNOME's month grid wants, and Isle's (see `_askRange`). */
+        /** The [begin, end) of the desktop's events GNOME's month grid wants, and Notchfolk's (see `_askRange`). */
         this._gnomeRange = null;
-        this._isleRange = null;
+        this._notchfolkRange = null;
         /** The day the list shows, to start another day's at the top. */
         this._listedDay = null;
 
         this._settings = settings;
-        /** The desktop's calendars a new event can go to ({uid, name, account, color}), from isled. */
+        /** The desktop's calendars a new event can go to ({uid, name, account, color}), from notchfolkd. */
         this._calendars = [];
         /** Every desktop calendar's colour as [r, g, b], by uid, read only ones too. */
         this._colors = new Map();
@@ -205,22 +205,22 @@ export const CalendarPage = GObject.registerClass({
     _requestRange() {
         const today = startOfDay(new Date());
         const monthEnd = new Date(this._month.getFullYear(), this._month.getMonth() + 1, 1);
-        this._isleRange = [new Date(Math.min(this._month, this._selected, today)),
+        this._notchfolkRange = [new Date(Math.min(this._month, this._selected, today)),
             new Date(Math.max(monthEnd, addDays(this._selected, 1), addDays(today, 2)))];
         this._turnGnomeGrid();
         this._askRange();
     }
 
     /** GNOME's calendar server keeps one range for everyone, and asking for another drops the events outside
-     * it: so GNOME's grid's weeks and Isle's days are asked as one span, again only when it changes. */
+     * it: so GNOME's grid's weeks and Notchfolk's days are asked as one span, again only when it changes. */
     _askRange() {
-        const span = spanOf([this._gnomeRange, this._isleRange]);
+        const span = spanOf([this._gnomeRange, this._notchfolkRange]);
         if (!this._source || !span)
             return;
         try {
             this._sourceRequest.call(this._source, ...span);
         } catch (e) {
-            console.warn(`Isle: could not ask for calendar events: ${e.message}`);
+            console.warn(`Notchfolk: could not ask for calendar events: ${e.message}`);
         }
     }
 
@@ -232,7 +232,7 @@ export const CalendarPage = GObject.registerClass({
             dateMenu._calendar.setDate(new Date());
     }
 
-    /** Whether Isle's own alert stands in for the desktop's reminder with GNotification id `id`:
+    /** Whether Notchfolk's own alert stands in for the desktop's reminder with GNotification id `id`:
      * see `standsInFor`. All-day events, earlier heads-ups and tasks are left to the desktop. */
     remindsOf(id) {
         const today = startOfDay(new Date());
@@ -240,7 +240,7 @@ export const CalendarPage = GObject.registerClass({
         return standsInFor(parseReminderId(id), events, {leadMs: this._alarmLeadMs, now: Date.now(), alarmed, shown});
     }
 
-    /** Isle's alert for `event` (as `event-soon` gave it) was on screen: the desktop's reminder of it can go. */
+    /** Notchfolk's alert for `event` (as `event-soon` gave it) was on screen: the desktop's reminder of it can go. */
     alertShown(event) {
         shown.add(occurrenceKey({id: event.id, title: event.title, start: new Date(event.start_ms)}));
     }
@@ -289,27 +289,27 @@ export const CalendarPage = GObject.registerClass({
 
     /** Header with month, year and arrows, the weekday letters, and the empty grid. */
     _buildMonth() {
-        const column = new St.BoxLayout({...VERTICAL, style_class: 'isle-cal-month', y_align: Clutter.ActorAlign.CENTER});
+        const column = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-cal-month', y_align: Clutter.ActorAlign.CENTER});
 
         // "OCTOBER 2026" in red; click it for today.
-        const header = new St.BoxLayout({style_class: 'isle-cal-month-header'});
-        const title = new St.BoxLayout({style_class: 'isle-cal-month-title-box'});
-        this._monthName = label('', 'isle-cal-month-name');
-        this._year = label('', 'isle-cal-year');
+        const header = new St.BoxLayout({style_class: 'notchfolk-cal-month-header'});
+        const title = new St.BoxLayout({style_class: 'notchfolk-cal-month-title-box'});
+        this._monthName = label('', 'notchfolk-cal-month-name');
+        this._year = label('', 'notchfolk-cal-year');
         title.add_child(this._monthName);
         title.add_child(this._year);
-        const titleButton = new St.Button({style_class: 'isle-cal-month-title', child: title, can_focus: true, accessible_name: 'Go to today', x_expand: true, x_align: Clutter.ActorAlign.START});
+        const titleButton = new St.Button({style_class: 'notchfolk-cal-month-title', child: title, can_focus: true, accessible_name: 'Go to today', x_expand: true, x_align: Clutter.ActorAlign.START});
         titleButton.connect('clicked', () => this._goToToday());
         // Its text on the page's edge, as the other pages' titles; the pill it lights on hover reaches past it.
         onUiScale(titleButton, scale => (titleButton.translation_x = -4 * scale));
         header.add_child(titleButton);
-        header.add_child(iconButton('isle-chevron-left-symbolic', 'isle-button-flat isle-cal-arrow',
+        header.add_child(iconButton('notchfolk-chevron-left-symbolic', 'notchfolk-button-flat notchfolk-cal-arrow',
             () => this._moveMonth(-1), {size: 11, accessibleName: 'Previous month'}));
-        header.add_child(iconButton('isle-chevron-right-symbolic', 'isle-button-flat isle-cal-arrow',
+        header.add_child(iconButton('notchfolk-chevron-right-symbolic', 'notchfolk-button-flat notchfolk-cal-arrow',
             () => this._moveMonth(1), {size: 11, accessibleName: 'Next month'}));
         column.add_child(header);
 
-        const weekdays = new St.BoxLayout({style_class: 'isle-cal-weekdays'});
+        const weekdays = new St.BoxLayout({style_class: 'notchfolk-cal-weekdays'});
         this._weekStart = Shell.util_get_week_start();
         this._weekend = Format.weekendDays(GLib.getenv('LC_ALL') || GLib.getenv('LC_TIME') || GLib.getenv('LANG') || '');
         // 4 Jan 1970 was a Sunday.
@@ -320,11 +320,11 @@ export const CalendarPage = GObject.registerClass({
         const short = new Set(initials).size < 4 ? names.map(name => name.slice(0, 2).toUpperCase()) : initials;
         days.forEach((day, i) => {
             const weekend = this._weekend.includes(day.getDay());
-            weekdays.add_child(label(short[i], `isle-cal-weekday${weekend ? ' weekend' : ''}`, {x_align: Clutter.ActorAlign.CENTER}));
+            weekdays.add_child(label(short[i], `notchfolk-cal-weekday${weekend ? ' weekend' : ''}`, {x_align: Clutter.ActorAlign.CENTER}));
         });
         column.add_child(weekdays);
 
-        this._grid = new St.BoxLayout({...VERTICAL, style_class: 'isle-cal-grid', y_align: Clutter.ActorAlign.START});
+        this._grid = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-cal-grid', y_align: Clutter.ActorAlign.START});
         onUiScale(this._grid, scale => (this._grid.height = GRID_HEIGHT * scale));
         column.add_child(this._grid);
         return column;
@@ -332,31 +332,31 @@ export const CalendarPage = GObject.registerClass({
 
     /** Day header, the add field, the event list with its empty state, and the world clocks. */
     _buildAgenda() {
-        const column = new St.BoxLayout({...VERTICAL, style_class: 'isle-cal-agenda', x_expand: true, y_expand: true});
+        const column = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-cal-agenda', x_expand: true, y_expand: true});
 
-        const header = new St.BoxLayout({style_class: 'isle-cal-day-header'});
-        this._dayName = label('', 'isle-cal-day-name', {x_expand: true});
+        const header = new St.BoxLayout({style_class: 'notchfolk-cal-day-header'});
+        this._dayName = label('', 'notchfolk-cal-day-name', {x_expand: true});
         this._dayName.clutter_text.ellipsize = Pango.EllipsizeMode.END;
         header.add_child(this._dayName);
-        this._worldButton = iconButton('isle-globe', 'isle-button-flat isle-cal-world-toggle',
+        this._worldButton = iconButton('notchfolk-globe', 'notchfolk-button-flat notchfolk-cal-world-toggle',
             () => this._setShowingWorld(!this._showingWorld), {size: 13, accessibleName: 'World clocks'});
         this._worldButton.y_align = Clutter.ActorAlign.CENTER;
         this._worldButton.visible = false;
         // Drawn white: dimmed while off, as the tabs' icons.
         this._worldButton.child.opacity = 150;
         header.add_child(this._worldButton);
-        this._todayButton = new St.Button({style_class: 'isle-cal-today', label: 'Today', can_focus: true, y_align: Clutter.ActorAlign.CENTER});
+        this._todayButton = new St.Button({style_class: 'notchfolk-cal-today', label: 'Today', can_focus: true, y_align: Clutter.ActorAlign.CENTER});
         this._todayButton.connect('clicked', () => this._goToToday());
         header.add_child(this._todayButton);
         // While picking where new events go: back to the day, the field with them.
-        this._doneButton = new St.Button({style_class: 'isle-cal-today', label: 'Done', can_focus: true,
+        this._doneButton = new St.Button({style_class: 'notchfolk-cal-today', label: 'Done', can_focus: true,
             y_align: Clutter.ActorAlign.CENTER, visible: false});
         this._doneButton.connect('clicked', () => this._setPicking(false));
         header.add_child(this._doneButton);
         column.add_child(header);
 
-        this._entry = new St.Entry({style_class: 'isle-entry isle-cal-add', can_focus: true, x_expand: true});
-        this._entry.set_primary_icon(new St.Icon({gicon: icon('isle-plus-symbolic'), icon_size: 13, style_class: 'isle-task-add-icon'}));
+        this._entry = new St.Entry({style_class: 'notchfolk-entry notchfolk-cal-add', can_focus: true, x_expand: true});
+        this._entry.set_primary_icon(new St.Icon({gicon: icon('notchfolk-plus-symbolic'), icon_size: 13, style_class: 'notchfolk-task-add-icon'}));
         const text = this._entry.clutter_text;
         text.connect('activate', () => this._add());
         // How the line reads, as it is typed (see `_previewLine`).
@@ -367,20 +367,20 @@ export const CalendarPage = GObject.registerClass({
             this._stopAdding();
             return Clutter.EVENT_STOP;
         });
-        // Where the event goes, in the field: an account's calendar or Isle's own, once there is a choice.
-        // Shown once isled lists a calendar to pick (see `_syncTarget`).
-        this._target = new St.BoxLayout({style_class: 'isle-cal-target', reactive: true, track_hover: true,
+        // Where the event goes, in the field: an account's calendar or Notchfolk's own, once there is a choice.
+        // Shown once notchfolkd lists a calendar to pick (see `_syncTarget`).
+        this._target = new St.BoxLayout({style_class: 'notchfolk-cal-target', reactive: true, track_hover: true,
             y_align: Clutter.ActorAlign.CENTER, accessible_name: 'Calendar for new events', visible: false});
-        this._targetDot = new St.Widget({style_class: 'isle-cal-target-dot', y_align: Clutter.ActorAlign.CENTER});
-        this._targetName = label('', 'isle-cal-target-name');
+        this._targetDot = new St.Widget({style_class: 'notchfolk-cal-target-dot', y_align: Clutter.ActorAlign.CENTER});
+        this._targetName = label('', 'notchfolk-cal-target-name');
         this._targetName.clutter_text.ellipsize = Pango.EllipsizeMode.END;
         this._target.add_child(this._targetDot);
         this._target.add_child(this._targetName);
-        this._target.add_child(new St.Icon({gicon: icon('isle-chevron-down-symbolic'), icon_size: 10,
-            style_class: 'isle-cal-target-arrow', y_align: Clutter.ActorAlign.CENTER}));
+        this._target.add_child(new St.Icon({gicon: icon('notchfolk-chevron-down-symbolic'), icon_size: 10,
+            style_class: 'notchfolk-cal-target-arrow', y_align: Clutter.ActorAlign.CENTER}));
         // The end of the field: when the line typed takes place, then the chip (once there is a choice).
-        this._preview = label('', 'isle-cal-preview', {y_align: Clutter.ActorAlign.CENTER, visible: false});
-        const end = new St.BoxLayout({style_class: 'isle-cal-field-end', y_align: Clutter.ActorAlign.CENTER});
+        this._preview = label('', 'notchfolk-cal-preview', {y_align: Clutter.ActorAlign.CENTER, visible: false});
+        const end = new St.BoxLayout({style_class: 'notchfolk-cal-field-end', y_align: Clutter.ActorAlign.CENTER});
         end.add_child(this._preview);
         end.add_child(this._target);
         this._entry.set_secondary_icon(end);
@@ -392,9 +392,9 @@ export const CalendarPage = GObject.registerClass({
         column.add_child(this._entry);
 
         const listArea = new St.Widget({layout_manager: new Clutter.BinLayout(), x_expand: true, y_expand: true});
-        this._list = new St.BoxLayout({...VERTICAL, style_class: 'isle-cal-events'});
+        this._list = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-cal-events'});
         this._scroll = new St.ScrollView({
-            style_class: 'isle-cal-scroll',
+            style_class: 'notchfolk-cal-scroll',
             hscrollbar_policy: St.PolicyType.NEVER,
             // Scrolls with the wheel or touchpad; no scrollbar over the rows.
             vscrollbar_policy: St.PolicyType.EXTERNAL,
@@ -405,9 +405,9 @@ export const CalendarPage = GObject.registerClass({
         listArea.add_child(this._scroll);
         this._noEvents = new St.BoxLayout({...VERTICAL, x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER,
             x_expand: true, y_expand: true});
-        this._noEvents.add_child(label('No events', 'isle-cal-empty', {x_align: Clutter.ActorAlign.CENTER}));
+        this._noEvents.add_child(label('No events', 'notchfolk-cal-empty', {x_align: Clutter.ActorAlign.CENTER}));
         // With no calendar account at all, where to add one.
-        this._noAccounts = new St.Button({style_class: 'isle-cal-accounts', label: 'Add calendars in Online Accounts',
+        this._noAccounts = new St.Button({style_class: 'notchfolk-cal-accounts', label: 'Add calendars in Online Accounts',
             can_focus: true, x_align: Clutter.ActorAlign.CENTER, visible: false});
         this._noAccounts.connect('clicked', () => {
             GLib.spawn_async(null, ['gnome-control-center', 'online-accounts'], null, GLib.SpawnFlags.SEARCH_PATH, null);
@@ -415,22 +415,22 @@ export const CalendarPage = GObject.registerClass({
         });
         this._noEvents.add_child(this._noAccounts);
         listArea.add_child(this._noEvents);
-        this._worldList = new St.BoxLayout({...VERTICAL, style_class: 'isle-cal-events isle-cal-world', x_expand: true});
-        this._worldScroll = new St.ScrollView({style_class: 'isle-cal-scroll', hscrollbar_policy: St.PolicyType.NEVER,
+        this._worldList = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-cal-events notchfolk-cal-world', x_expand: true});
+        this._worldScroll = new St.ScrollView({style_class: 'notchfolk-cal-scroll', hscrollbar_policy: St.PolicyType.NEVER,
             vscrollbar_policy: St.PolicyType.EXTERNAL, x_expand: true, y_expand: true, visible: false});
         this._worldScroll.set_child(this._worldList);
         listArea.add_child(this._worldScroll);
-        this._targetList = new St.BoxLayout({...VERTICAL, style_class: 'isle-cal-events isle-cal-targets', x_expand: true});
-        this._targetScroll = new St.ScrollView({style_class: 'isle-cal-scroll', hscrollbar_policy: St.PolicyType.NEVER,
+        this._targetList = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-cal-events notchfolk-cal-targets', x_expand: true});
+        this._targetScroll = new St.ScrollView({style_class: 'notchfolk-cal-scroll', hscrollbar_policy: St.PolicyType.NEVER,
             vscrollbar_policy: St.PolicyType.EXTERNAL, x_expand: true, y_expand: true, visible: false});
         this._targetScroll.set_child(this._targetList);
         listArea.add_child(this._targetScroll);
         column.add_child(listArea);
 
         // The cities at a glance, as GNOME's calendar menu lists them; a click shows them in full.
-        this._worldStrip = new St.Button({style_class: 'isle-cal-world-strip', can_focus: true, x_expand: true,
+        this._worldStrip = new St.Button({style_class: 'notchfolk-cal-world-strip', can_focus: true, x_expand: true,
             visible: false, accessible_name: 'World clocks'});
-        this._worldStrip.set_child(new St.BoxLayout({style_class: 'isle-cal-world-strip-box'}));
+        this._worldStrip.set_child(new St.BoxLayout({style_class: 'notchfolk-cal-world-strip-box'}));
         this._worldStrip.connect('clicked', () => this._setShowingWorld(true));
         column.add_child(this._worldStrip);
         return column;
@@ -475,27 +475,27 @@ export const CalendarPage = GObject.registerClass({
         for (const [i, {name, timezone}] of this._cities.entries()) {
             const clock = {timezone};
             if (i < STRIP_CITIES) {
-                const chip = new St.BoxLayout({style_class: 'isle-cal-world-chip'});
-                chip.add_child(label(name, 'isle-cal-world-chip-city'));
-                clock.chipTime = label('', 'isle-cal-world-chip-time');
+                const chip = new St.BoxLayout({style_class: 'notchfolk-cal-world-chip'});
+                chip.add_child(label(name, 'notchfolk-cal-world-chip-city'));
+                clock.chipTime = label('', 'notchfolk-cal-world-chip-time');
                 chip.add_child(clock.chipTime);
                 this._worldStrip.child.add_child(chip);
             }
-            const row = new St.BoxLayout({style_class: 'isle-cal-world-row'});
-            clock.icon = new St.Icon({style_class: 'isle-cal-world-icon', y_align: Clutter.ActorAlign.CENTER});
+            const row = new St.BoxLayout({style_class: 'notchfolk-cal-world-row'});
+            clock.icon = new St.Icon({style_class: 'notchfolk-cal-world-icon', y_align: Clutter.ActorAlign.CENTER});
             row.add_child(clock.icon);
-            const city = label(name, 'isle-cal-world-city', {x_expand: true});
+            const city = label(name, 'notchfolk-cal-world-city', {x_expand: true});
             city.clutter_text.ellipsize = Pango.EllipsizeMode.END;
             row.add_child(city);
-            clock.meta = label('', 'isle-cal-world-meta');
+            clock.meta = label('', 'notchfolk-cal-world-meta');
             row.add_child(clock.meta);
-            clock.time = label('', 'isle-cal-world-time');
+            clock.time = label('', 'notchfolk-cal-world-time');
             row.add_child(clock.time);
             this._worldList.add_child(row);
             this._worldClocks.push(clock);
         }
         if (this._cities.length > STRIP_CITIES)
-            this._worldStrip.child.add_child(label(`+${this._cities.length - STRIP_CITIES}`, 'isle-cal-world-chip-city'));
+            this._worldStrip.child.add_child(label(`+${this._cities.length - STRIP_CITIES}`, 'notchfolk-cal-world-chip-city'));
         this._tickWorld();
     }
 
@@ -531,7 +531,7 @@ export const CalendarPage = GObject.registerClass({
     // The desktop's calendars
 
     /** GNOME Shell's event source; looked up afresh, as it is replaced at the lock screen. While bound, the
-     * range its month grid asks for (again on each `changed`) is asked together with Isle's (see `_askRange`). */
+     * range its month grid asks for (again on each `changed`) is asked together with Notchfolk's (see `_askRange`). */
     _bindSource() {
         const source = Main.panel.statusArea.dateMenu?._eventSource ?? null;
         if (source === this._source)
@@ -545,15 +545,15 @@ export const CalendarPage = GObject.registerClass({
             this.markCold();
             this._scheduleAlarm();
         });
-        // What the grid asked for before Isle came (its six weeks, not a span Isle asked for before).
+        // What the grid asked for before Notchfolk came (its six weeks, not a span Notchfolk asked for before).
         const [lastBegin, lastEnd] = [source._lastRequestBegin, source._lastRequestEnd];
         if (lastBegin && lastEnd && lastEnd - lastBegin <= GRID_SPAN_MS)
             this._gnomeRange = [lastBegin, lastEnd];
-        // Another extension's own `requestRange` is kept under Isle's.
+        // Another extension's own `requestRange` is kept under Notchfolk's.
         this._priorRequest = Object.hasOwn(source, 'requestRange') ? source.requestRange : null;
         const request = this._sourceRequest = source.requestRange;
         this._sharedRequest = (begin, end) => {
-            // Unbound, but still called (another extension's put on top of Isle's): straight through.
+            // Unbound, but still called (another extension's put on top of Notchfolk's): straight through.
             if (this._source !== source)
                 return request.call(source, begin, end);
             this._gnomeRange = [begin, end];
@@ -582,7 +582,7 @@ export const CalendarPage = GObject.registerClass({
         try {
             return this._source?.getEvents(begin, end) ?? [];
         } catch (e) {
-            console.warn(`Isle: could not read calendar events: ${e.message}`);
+            console.warn(`Notchfolk: could not read calendar events: ${e.message}`);
             return [];
         }
     }
@@ -672,7 +672,7 @@ export const CalendarPage = GObject.registerClass({
         return true;
     }
 
-    /** Isle's 12/24-hour setting changed: the times on show, and the field's example, as it says now. */
+    /** Notchfolk's 12/24-hour setting changed: the times on show, and the field's example, as it says now. */
     clockChanged() {
         this._tickWorld();
         this._refresh();
@@ -725,15 +725,15 @@ export const CalendarPage = GObject.registerClass({
         const rowHeight = px(Math.min(MAX_ROW_HEIGHT, Math.floor(GRID_HEIGHT / rows)));
 
         this._grid.destroy_all_children();
-        this._grid.set_style_class_name(rows > 5 ? 'isle-cal-grid isle-cal-six-weeks' : 'isle-cal-grid');
+        this._grid.set_style_class_name(rows > 5 ? 'notchfolk-cal-grid notchfolk-cal-six-weeks' : 'notchfolk-cal-grid');
         this._dayButtons = [];
         for (let row = 0; row < rows; row++) {
-            const week = new St.BoxLayout({style_class: 'isle-cal-week', height: rowHeight});
+            const week = new St.BoxLayout({style_class: 'notchfolk-cal-week', height: rowHeight});
             for (let column = 0; column < 7; column++) {
                 const number = row * 7 + column - lead + 1;
                 week.add_child(number >= 1 && number <= daysInMonth
                     ? this._dayCell(new Date(month.getFullYear(), month.getMonth(), number), busy.has(number))
-                    : new St.Widget({style_class: 'isle-cal-cell'}));
+                    : new St.Widget({style_class: 'notchfolk-cal-cell'}));
             }
             this._grid.add_child(week);
         }
@@ -741,7 +741,7 @@ export const CalendarPage = GObject.registerClass({
 
     /** A day's style: today, picked, or a weekend day. */
     _dayClass(day) {
-        const classes = ['isle-cal-day'];
+        const classes = ['notchfolk-cal-day'];
         if (day.getTime() === this._today.getTime())
             classes.push('today');
         else if (day.getTime() === this._selected.getTime())
@@ -754,7 +754,7 @@ export const CalendarPage = GObject.registerClass({
     /** One day's button, with the busy dot under it. */
     _dayCell(day, busy) {
         const today = day.getTime() === this._today.getTime();
-        const cell = new St.Widget({layout_manager: new Clutter.BinLayout(), style_class: 'isle-cal-cell'});
+        const cell = new St.Widget({layout_manager: new Clutter.BinLayout(), style_class: 'notchfolk-cal-cell'});
         const button = new St.Button({
             style_class: this._dayClass(day),
             label: String(day.getDate()),
@@ -772,7 +772,7 @@ export const CalendarPage = GObject.registerClass({
         if (busy) {
             // Under the number, in the circle's bottom edge.
             cell.add_child(new St.Widget({
-                style_class: `isle-cal-dot${today ? ' on-today' : ''}`,
+                style_class: `notchfolk-cal-dot${today ? ' on-today' : ''}`,
                 x_expand: true,
                 y_expand: true,
                 x_align: Clutter.ActorAlign.CENTER,
@@ -791,15 +791,15 @@ export const CalendarPage = GObject.registerClass({
             : this._showingWorld ? 'World Clocks' : `${name}, ${dateTime(day).format('%-d %B')}`;
         this._todayButton.visible = !this._showingWorld && !this._picking && (offset !== 0 || this._month.getMonth() !== this._today.getMonth() ||
             this._month.getFullYear() !== this._today.getFullYear());
-        // "8:00 PM" or "20:00", as the clock is set; written the way Isle reads it, not the locale's "8:00 p. m.".
+        // "8:00 PM" or "20:00", as the clock is set; written the way Notchfolk reads it, not the locale's "8:00 p. m.".
         const eight = Format.uses12Hour() ? '8:00 PM' : '20:00';
         // Shorter beside the calendar's chip, so it isn't cut; for a moment, where an event just went instead.
-        // Kept here as its calendar was out of reach, it goes there once in reach (see isled's `send_waiting`).
+        // Kept here as its calendar was out of reach, it goes there once in reach (see notchfolkd's `send_waiting`).
         const waiting = (this.daemon.state.events ?? []).some(event => event.send && event.title === this._savedHereTitle &&
             event.date === dayKey(day));
         const hint = Date.now() >= (this._savedHereUntil ?? 0)
             ? this._calendars.length ? `e.g. Dinner ${eight}` : `Add event · e.g. Dinner ${eight}`
-            : waiting ? 'Offline · syncs once online' : 'Saved in Isle instead';
+            : waiting ? 'Offline · syncs once online' : 'Saved in Notchfolk instead';
         // Set only when it changes: St makes the hint's label anew each time.
         if (this._entry.hint_text !== hint)
             this._entry.hint_text = hint;
@@ -814,7 +814,7 @@ export const CalendarPage = GObject.registerClass({
             this._scroll.vadjustment.value = 0;
         this._listedDay = day;
         const now = new Date();
-        // With Isle's own events (×) among them, the others keep the ×'s room, so all their times line up.
+        // With Notchfolk's own events (×) among them, the others keep the ×'s room, so all their times line up.
         const removable = events.some(event => event.ownId !== null);
         // The one just added, scrolled to once laid out: as added, or as its calendar lists it already.
         const reveal = this._reveal && (events.find(event => event.pending === this._reveal) ??
@@ -853,9 +853,9 @@ export const CalendarPage = GObject.registerClass({
 
     // Where new events go
 
-    /** The desktop's calendars a new event can go to, asked of isled (it reads Evolution Data Server). */
+    /** The desktop's calendars a new event can go to, asked of notchfolkd (it reads Evolution Data Server). */
     async _loadCalendars() {
-        // The colours at once; the list once isled knows which calendars only read, which can take seconds.
+        // The colours at once; the list once notchfolkd knows which calendars only read, which can take seconds.
         // Quiet: without Evolution Data Server yet, there is no word, which is no failure.
         const calendars = this.daemon.attemptQuietly('calendar', 'Calendars').then(({result}) => result);
         const colors = await this.daemon.call('calendar', 'Colors');
@@ -863,10 +863,10 @@ export const CalendarPage = GObject.registerClass({
             return;
         this._loadColors(colors?.[0]);
         const result = await calendars;
-        // No word (isled or Evolution Data Server not there yet): what was known stays.
+        // No word (notchfolkd or Evolution Data Server not there yet): what was known stays.
         if (this._destroyed || !result)
             return;
-        // isled answered: an empty list is no account at all, not one still on its way.
+        // notchfolkd answered: an empty list is no account at all, not one still on its way.
         this._calendarsKnown = true;
         if (result[0] === this._calendarsJson)
             return;
@@ -879,7 +879,7 @@ export const CalendarPage = GObject.registerClass({
         this._syncTarget();
     }
 
-    /** The calendars' colours from isled's JSON; the list is drawn again if they changed. */
+    /** The calendars' colours from notchfolkd's JSON; the list is drawn again if they changed. */
     _loadColors(json) {
         if (!json || json === this._colorsJson)
             return;
@@ -893,11 +893,11 @@ export const CalendarPage = GObject.registerClass({
         this._refresh();
     }
 
-    /** Where the next event goes: one of `_calendars`, or null for Isle's own. A calendar picked but gone
+    /** Where the next event goes: one of `_calendars`, or null for Notchfolk's own. A calendar picked but gone
      * (its account removed) counts as no pick: the first account's calendar. */
     get _targetCalendar() {
         const picked = this._settings.get_string('event-calendar');
-        if (picked === 'isle')
+        if (picked === 'notchfolk')
             return null;
         return this._calendars.find(calendar => calendar.uid === picked) ?? this._calendars[0] ?? null;
     }
@@ -907,13 +907,13 @@ export const CalendarPage = GObject.registerClass({
         this._noAccounts.visible = this._source?.hasCalendars === false && !this._calendars.length;
     }
 
-    /** The chip in the field, shown once there is a calendar to pick besides Isle's own. */
+    /** The chip in the field, shown once there is a calendar to pick besides Notchfolk's own. */
     _syncTarget() {
         const target = this._targetCalendar;
         this._target.visible = this._calendars.length > 0;
         this._renderDayHeader();
         this._syncNoAccounts();
-        this._targetName.text = target ? shortName(target.name) : 'Isle';
+        this._targetName.text = target ? shortName(target.name) : 'Notchfolk';
         this._targetDot.style = `background-color: ${target?.color || cssColor(target ? SYSTEM_COLOR : OWN_COLOR)};`;
         if (!this._calendars.length && this._picking)
             this._setPicking(false);
@@ -931,7 +931,7 @@ export const CalendarPage = GObject.registerClass({
             this._stopAdding();
             this._setShowingWorld(false);
             this._buildTargets();
-            // The list as isled sees it now: an account added or removed meanwhile.
+            // The list as notchfolkd sees it now: an account added or removed meanwhile.
             this._loadCalendars();
         }
         if (picking)
@@ -947,11 +947,11 @@ export const CalendarPage = GObject.registerClass({
         this._syncListShown();
     }
 
-    /** A row per calendar, by account, then Isle's own on this computer; a tick on the one in use. */
+    /** A row per calendar, by account, then Notchfolk's own on this computer; a tick on the one in use. */
     _buildTargets() {
         this._targetList.destroy_all_children();
-        const chosen = this._targetCalendar?.uid ?? 'isle';
-        const own = {uid: 'isle', name: 'Isle', account: 'On this computer', color: cssColor(OWN_COLOR)};
+        const chosen = this._targetCalendar?.uid ?? 'notchfolk';
+        const own = {uid: 'notchfolk', name: 'Notchfolk', account: 'On this computer', color: cssColor(OWN_COLOR)};
         for (const calendar of [...this._calendars, own])
             this._targetList.add_child(this._targetRow(calendar, calendar.uid === chosen));
     }
@@ -959,21 +959,21 @@ export const CalendarPage = GObject.registerClass({
     /** A calendar to pick: its colour, its name, its account (unless that is its name), and a tick when new
      * events go there. */
     _targetRow(calendar, chosen) {
-        const box = new St.BoxLayout({style_class: 'isle-cal-target-row-box', x_expand: true});
-        box.add_child(new St.Widget({style_class: 'isle-cal-target-dot', y_align: Clutter.ActorAlign.CENTER,
+        const box = new St.BoxLayout({style_class: 'notchfolk-cal-target-row-box', x_expand: true});
+        box.add_child(new St.Widget({style_class: 'notchfolk-cal-target-dot', y_align: Clutter.ActorAlign.CENTER,
             style: `background-color: ${calendar.color || cssColor(SYSTEM_COLOR)};`}));
-        const name = label(calendar.name, 'isle-cal-target-row-name', {x_expand: true});
+        const name = label(calendar.name, 'notchfolk-cal-target-row-name', {x_expand: true});
         name.clutter_text.ellipsize = Pango.EllipsizeMode.END;
         box.add_child(name);
         if (calendar.account && calendar.account !== calendar.name) {
-            const account = label(calendar.account, 'isle-cal-target-row-account');
+            const account = label(calendar.account, 'notchfolk-cal-target-row-account');
             account.clutter_text.ellipsize = Pango.EllipsizeMode.END;
             box.add_child(account);
         }
-        const tick = new St.Icon({gicon: icon('isle-check-symbolic'), icon_size: 12, style_class: 'isle-cal-target-tick',
+        const tick = new St.Icon({gicon: icon('notchfolk-check-symbolic'), icon_size: 12, style_class: 'notchfolk-cal-target-tick',
             y_align: Clutter.ActorAlign.CENTER, opacity: chosen ? 255 : 0});
         box.add_child(tick);
-        const row = new St.Button({style_class: 'isle-cal-target-row', child: box, x_expand: true, can_focus: true});
+        const row = new St.Button({style_class: 'notchfolk-cal-target-row', child: box, x_expand: true, can_focus: true});
         row.connect('clicked', () => {
             this._settings.set_string('event-calendar', calendar.uid);
             this._setPicking(false);
@@ -981,10 +981,10 @@ export const CalendarPage = GObject.registerClass({
         return row;
     }
 
-    /** A row: its calendar's colour as a dot, title, time, and × for Isle's own. */
+    /** A row: its calendar's colour as a dot, title, time, and × for Notchfolk's own. */
     _eventRow(event, now, removable) {
-        // Only Isle's own events take the pointer (for ×); the desktop's calendars' are to read, not open.
-        const row = new St.BoxLayout({style_class: 'isle-cal-event', reactive: event.ownId !== null});
+        // Only Notchfolk's own events take the pointer (for ×); the desktop's calendars' are to read, not open.
+        const row = new St.BoxLayout({style_class: 'notchfolk-cal-event', reactive: event.ownId !== null});
         // Finished ones recede; one just added is faint until its calendar has it.
         const over = !event.allDay && (event.end ?? event.start) < now;
         if (event.pending)
@@ -992,10 +992,10 @@ export const CalendarPage = GObject.registerClass({
         else if (over)
             row.opacity = 130;
 
-        row.add_child(new St.Widget({style_class: `isle-cal-event-dot${event.waiting ? ' waiting' : ''}`,
+        row.add_child(new St.Widget({style_class: `notchfolk-cal-event-dot${event.waiting ? ' waiting' : ''}`,
             style: `${event.waiting ? 'border-color' : 'background-color'}: ${cssColor(event.color)};`,
             y_align: Clutter.ActorAlign.CENTER}));
-        const title = label(event.title, 'isle-cal-event-title', {x_expand: true});
+        const title = label(event.title, 'notchfolk-cal-event-title', {x_expand: true});
         title.clutter_text.ellipsize = Pango.EllipsizeMode.END;
         row.add_child(title);
 
@@ -1007,12 +1007,12 @@ export const CalendarPage = GObject.registerClass({
             if (startsToday && event.end && event.end > event.start && event.end < addDays(startOfDay(this._selected), 1))
                 when = rangeText(event.start, event.end);
         }
-        row.add_child(label(when, 'isle-cal-event-time'));
+        row.add_child(label(when, 'notchfolk-cal-event-time'));
 
         if (event.ownId !== null) {
             // × while the pointer is on the row, as on the Tasks page; once, as there.
             let removing = false;
-            const remove = iconButton('isle-close-symbolic', 'isle-button-flat isle-task-remove', () => {
+            const remove = iconButton('notchfolk-close-symbolic', 'notchfolk-button-flat notchfolk-task-remove', () => {
                 if (!removing) {
                     removing = true;
                     this.daemon.call('calendar', 'Remove', event.ownId);
@@ -1022,7 +1022,7 @@ export const CalendarPage = GObject.registerClass({
             onHover(row, hovered => remove.ease({opacity: hovered ? 255 : 0, duration: 120}));
             row.add_child(remove);
         } else if (removable) {
-            // As wide as the ×: its icon and padding (see .isle-task-remove).
+            // As wide as the ×: its icon and padding (see .notchfolk-task-remove).
             row.add_child(new St.Widget({width: px(REMOVE_SIZE)}));
         }
         return row;
@@ -1055,22 +1055,22 @@ export const CalendarPage = GObject.registerClass({
         this._select(startOfDay(new Date()));
     }
 
-    /** Sends the typed event to isled for the picked day and calendar; isled reads the time from the text. */
+    /** Sends the typed event to notchfolkd for the picked day and calendar; notchfolkd reads the time from the text. */
     async _add() {
         const text = this._entry.text.trim();
         if (!text)
             return;
         const day = this._selected;
         const target = this._targetCalendar;
-        // No account at all: Isle's own at once, not asked of Evolution again. The list not in yet (isled
+        // No account at all: Notchfolk's own at once, not asked of Evolution again. The list not in yet (notchfolkd
         // starting, EDS slow): the setting as it is, as the assistant sends it.
-        const calendar = this._calendars.length ? target?.uid ?? 'isle'
-            : this._calendarsKnown ? 'isle' : this._settings.get_string('event-calendar');
+        const calendar = this._calendars.length ? target?.uid ?? 'notchfolk'
+            : this._calendarsKnown ? 'notchfolk' : this._settings.get_string('event-calendar');
         // Cleared and shown at once, while the calendar's server takes its time: Enter again adds nothing twice.
         this._entry.text = '';
         const adding = this.daemon.addEvent(calendar, dayKey(day), text);
-        // To an account's calendar (in its colour), unless to Isle's own: picked, or no account at all.
-        const desktop = calendar !== 'isle' && (this._calendars.length > 0 || this._colors.has(calendar));
+        // To an account's calendar (in its colour), unless to Notchfolk's own: picked, or no account at all.
+        const desktop = calendar !== 'notchfolk' && (this._calendars.length > 0 || this._colors.has(calendar));
         const color = desktop ? rgbOf(target?.color) ?? this._colors.get(calendar) ?? SYSTEM_COLOR : OWN_COLOR;
         const pending = await this._showPending(text, day, {desktop, color});
         const result = await adding;
@@ -1092,7 +1092,7 @@ export const CalendarPage = GObject.registerClass({
         }
     }
 
-    /** Shows in the field when the line typed takes place ("8:00 PM", "All day"), as isled reads it, so a
+    /** Shows in the field when the line typed takes place ("8:00 PM", "All day"), as notchfolkd reads it, so a
      * time is never taken for another (a 12-hour clock's "8:00" is the morning's). */
     async _previewLine() {
         const typed = this._entry.text.trim();
@@ -1108,14 +1108,14 @@ export const CalendarPage = GObject.registerClass({
     }
 
     /** Shows the event `text` reads as on `day` at once, in `color`, until its calendar (a desktop one, or
-     * Isle's own) lists it. Returns it, or null when isled can't read it. */
+     * Notchfolk's own) lists it. Returns it, or null when notchfolkd can't read it. */
     async _showPending(text, day, {desktop, color}) {
         const event = await this._parse(text);
         if (!event?.title || this._destroyed)
             return null;
         const begin = startOfDay(day);
         const start = event.start ? atTime(begin, event.start) : begin;
-        // A desktop calendar gets an hour without an end (see isled's `ical_event`); Isle's own, none.
+        // A desktop calendar gets an hour without an end (see notchfolkd's `ical_event`); Notchfolk's own, none.
         const end = event.end ? atTime(begin, event.end)
             : event.start && desktop ? new Date(start.getTime() + 3600000) : null;
         const pending = {date: dayKey(day), title: event.title, start, end, allDay: !event.start, color,
@@ -1128,7 +1128,7 @@ export const CalendarPage = GObject.registerClass({
         return pending;
     }
 
-    /** How isled reads `text` ({title, start, end}), or null: no title yet, or an isled without Parse, which
+    /** How notchfolkd reads `text` ({title, start, end}), or null: no title yet, or an notchfolkd without Parse, which
      * is not asked again. Asked at each pause in typing, so a refusal is no failure to log. */
     async _parse(text) {
         if (this._noParse)
@@ -1192,7 +1192,7 @@ export const CalendarPage = GObject.registerClass({
         this.cancel('world');
         // Closed, only today and tomorrow are needed (the alerts): a far month looked at is let go.
         const today = startOfDay(new Date());
-        this._isleRange = [today, addDays(today, 2)];
+        this._notchfolkRange = [today, addDays(today, 2)];
         this._askRange();
     }
 });
