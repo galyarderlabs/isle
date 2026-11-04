@@ -2,15 +2,29 @@
 
 # Notchfolk
 
-**A little world in your notch.**
+**A living world in your desktop notch.**
 
-A living desktop notch for everyday life — AI agents, personal tools, and MCP
-integrations in one playful, always-with-you space.
+A playful, dynamic island for the GNOME Shell top bar — blending native desktop widgets, synced lyrics, productivity tools, local voice recognition, and autonomous AI agents via the Model Context Protocol (MCP).
 
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
 ![GNOME Shell 46–51](https://img.shields.io/badge/GNOME%20Shell-46%E2%80%9351-4a86cf.svg)
 ![Rust 1.92+](https://img.shields.io/badge/Rust-1.92%2B-orange.svg)
+[![MCP Enabled](https://img.shields.io/badge/MCP-Enabled-8A2BE2.svg)](https://modelcontextprotocol.io)
+[![Whisper AI](https://img.shields.io/badge/AI-Whisper%20Local-success.svg)](https://github.com/ggerganov/whisper.cpp)
 [![Sponsor](https://img.shields.io/badge/sponsor-support-ff69b4?logo=githubsponsors)](https://github.com/sponsors/galyarderlabs)
+
+<p align="center">
+  <code>#gnome-extension</code> &bull;
+  <code>#dynamic-island</code> &bull;
+  <code>#ai-assistant</code> &bull;
+  <code>#model-context-protocol</code> &bull;
+  <code>#mcp-server</code> &bull;
+  <code>#whisper-ai</code> &bull;
+  <code>#synced-lyrics</code> &bull;
+  <code>#rust</code> &bull;
+  <code>#desktop-companion</code> &bull;
+  <code>#productivity</code>
+</p>
 
 </div>
 
