@@ -6,6 +6,27 @@ All notable changes to Isle are listed here. The format follows
 
 ## [Unreleased]
 
+## [1.6.1] - 2026-11-04
+
+The first Galyarder Labs release: MCP write tools answer the key they were made for, the agent can read app usage and
+the clipboard, and installs and updates come from this repository.
+
+### Fixed
+
+- **MCP write tools honor the key's scopes.** A client key with a write scope can use the matching write tools; the
+  `ISLE_MCP_WRITE_TOOLS` allowlist now only governs keyless loopback connections, so enabling write actions when
+  making a key is enough.
+- **App usage and clipboard reads through the extension.** `get_app_usage`, `search_clipboard` and
+  `get_clipboard_text` no longer fail with "only GNOME Shell may call this": the extension answers them in Shell's
+  name, and says so plainly when it is not running.
+- **`get_latest_update`** read a plain version string as JSON and failed; it now returns the version, or empty.
+- **The tarball** was missing `isle-mcp-keygen` and `isle-mcp-tunnel`, so installing it failed.
+
+### Changed
+
+- **Installs and update checks come from `galyarderlabs/isle`.** An upstream release no longer shows up as an update
+  that would overwrite this build.
+
 ## [1.6.0] - 2026-11-03
 
 Send files between the Shelf and your phone, auto-hide, alerts over full-screen apps, a black top bar beside

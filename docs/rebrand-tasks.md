@@ -57,7 +57,9 @@ credentials, data directories, caches, and rollback.
 **Acceptance criteria:**
 - [ ] List every user state store and whether it stays at its current path or
   migrates.
-- [ ] Define a one-time settings migration that preserves values and types.
+- [x] Define a one-time settings migration that preserves values and types
+      (`scripts/notchfolk-migrate-from-isle.sh`, documented in
+      [migrate-from-isle.md](migrate-from-isle.md)).
 - [ ] Define safe handling for keyring credentials and MCP client config.
 - [ ] Define failure/rollback behavior and ensure no duplicate notch or daemon
   is left behind.
@@ -193,6 +195,10 @@ verification without replacing historical upstream release records.
 
 **Acceptance criteria:**
 - [ ] Clean install and update use only Galyarder Labs artifacts.
+      (Started now: `get.sh` and the daemon's latest-version check point at
+      `galyarderlabs/isle` — until that repository has Releases with the
+      `isle-*-linux.tar.gz` assets, installs and update checks find nothing,
+      which is safe: the checker just retries later.)
 - [ ] Package upgrade/uninstall removes only files owned by the new package.
 - [ ] Release workflow publishes source and correctly named artifacts from the
   standalone repository.
