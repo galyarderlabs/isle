@@ -444,7 +444,7 @@ fn ical_event<Tz: TimeZone>(
     event: &Parsed,
     zone: &Tz,
     now: DateTime<Utc>,
-    uid: &str,
+    event_id: &str,
 ) -> Option<String> {
     let stamp = |at: DateTime<Utc>| at.format("%Y%m%dT%H%M%SZ").to_string();
     let at = |minutes: u32| {
@@ -469,7 +469,7 @@ fn ical_event<Tz: TimeZone>(
         ),
     };
     Some(format!(
-        "BEGIN:VEVENT\r\nUID:{uid}\r\nDTSTAMP:{}\r\n{when}\r\nSUMMARY:{}\r\nEND:VEVENT\r\n",
+        "BEGIN:VEVENT\r\nUID:{event_id}\r\nDTSTAMP:{}\r\n{when}\r\nSUMMARY:{}\r\nEND:VEVENT\r\n",
         stamp(now),
         escape(&event.title)
     ))
