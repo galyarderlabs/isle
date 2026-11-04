@@ -134,6 +134,7 @@ jobs:
           glib-compile-schemas --strict --dry-run gnome-extension/schemas
           gjs -m tests/extension/format.gjs.js
           gjs -m tests/extension/downloads.gjs.js
+          gjs -m tests/extension/shellProxy.gjs.js
 
   package:
     name: Release packages

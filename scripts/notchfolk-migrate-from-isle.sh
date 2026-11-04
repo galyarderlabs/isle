@@ -153,17 +153,20 @@ move_dir "$STATE_HOME/$OLD_APP" "$STATE_HOME/$NEW_APP"
 move_dir "$DATA_HOME/doc/$OLD_APP" "$DATA_HOME/doc/$NEW_APP"
 
 # Keyring: the router's password, proxy key and session cookies, read from the old
-# service name and stored under the new one. Without secret-tool they stay put and
-# signing in again replaces them.
+# service name and stored under the new one. rust-keyring names each entry's account
+# `username`, so the accounts come from the search's attribute lines and each secret
+# is looked up plainly (search output is not the plaintext). Without secret-tool they
+# stay put and signing in again replaces them.
 if command -v secret-tool >/dev/null; then
-    while IFS=$'\t' read -r account secret; do
+    while IFS= read -r account; do
         [ -n "$account" ] || continue
-        printf '%s' "$secret" | run secret-tool store --label 'Notchfolk router' service "$NEW_BUS" account "$account"
-        run secret-tool clear service "$OLD_BUS" account "$account"
-    done <<EOF
-$(secret-tool search --all service "$OLD_BUS" 2>/dev/null \
-    | awk 'BEGIN { RS = ""; FS = "\n" } { acct = ""; for (i = 1; i <= NF; i++) if ($i ~ /^account: /) acct = substr($i, 10); if (acct != "") pending = acct; else if (pending != "" && NF >= 1) { printf "%s\t%s\n", pending, $1; pending = "" } }')
-EOF
+        secret=$(secret-tool lookup service "$OLD_BUS" username "$account" 2>/dev/null) || continue
+        printf '%s' "$secret" | run secret-tool store --label 'Notchfolk router' service "$NEW_BUS" username "$account"
+        run secret-tool clear service "$OLD_BUS" username "$account"
+    done < <(
+        secret-tool search --all service "$OLD_BUS" 2>/dev/null \
+            | awk -F' = ' '/^attribute\.username / { print $2 }'
+    )
 else
     say "skip: secret-tool is not installed; the router's stored password and sessions stay under $OLD_BUS"
     say "      (re-signing in stores them again; or install libsecret-tools and rerun before removing Isle)"
