@@ -21,14 +21,14 @@ export class ShellProxy {
     /** `connection` is the session bus unless a test brings its own. */
     constructor(daemon, connection = Gio.DBus.session) {
         this._daemon = daemon;
+        this._exported = Gio.DBusExportedObject.wrapJSObject(XML, this);
+        this._exported.export(connection, PATH);
         this._connection = connection;
-        this._id = connection.register_object(PATH, Gio.DBusNodeInfo.new_for_xml(XML).interfaces[0], this);
     }
 
     /** Takes Shell's name off the bus again; isled's rules need no change of their own. */
     destroy() {
-        this._connection.unregister_object(this._id);
-        this._id = 0;
+        this._exported.unexport(this._connection);
     }
 
     /** App usage as isled's JSON, most used first. */
