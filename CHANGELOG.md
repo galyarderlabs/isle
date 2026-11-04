@@ -1,16 +1,22 @@
 # Changelog
 
-All notable changes to Isle are listed here. The format follows
+All notable changes to Notchfolk are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-04
+
+The first Notchfolk release, on a fresh version sequence. Upgrading from an Isle
+installation is one run of [the migration
+script](migrate-from-isle.md) after installing.
+
 ### Changed
 
 - **The rebrand is done: Notchfolk's own identifiers everywhere.** The extension is
-  `io.galyarderlabs.notchfolk` (schema `org.gnome.shell.extensions.notchfolk`), isled answers
-  on `io.galyarderlabs.notchfolk.*` as `notchfolkd`, the commands are `notchfolk-setup-voice`,
+  `io.galyarderlabs.notchfolk` (schema `org.gnome.shell.extensions.notchfolk`), the daemon
+  answers on `io.galyarderlabs.notchfolk.*` as `notchfolkd`, the commands are `notchfolk-setup-voice`,
   `notchfolk-setup-mcp`, `notchfolk-mcp`, `notchfolk-mcp-keygen`, `notchfolk-mcp-tunnel` and
   `notchfolk-charge-limit`, the environment variables are `NOTCHFOLK_MCP_*`, and the data,
   config, cache and state folders are `~/.local/share/notchfolk`, `~/.config/notchfolk`,
