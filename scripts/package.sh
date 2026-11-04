@@ -21,7 +21,7 @@ mkdir -p "$OUT/docs"
 install -m644 docs/mcp.md "$OUT/docs/mcp.md"
 # What install.sh installs as commands: the voice set-up and the battery charge limit.
 mkdir -p "$OUT/scripts"
-install -m755 scripts/setup-voice.sh scripts/setup-mcp.sh scripts/notchfolk-mcp scripts/notchfolk-mcp-keygen scripts/notchfolk-mcp-tunnel scripts/notchfolk-charge-limit scripts/notchfolk-migrate-from-notchfolk.sh "$OUT/scripts/"
+install -m755 scripts/setup-voice.sh scripts/setup-mcp.sh scripts/notchfolk-mcp scripts/notchfolk-mcp-keygen scripts/notchfolk-mcp-tunnel scripts/notchfolk-charge-limit scripts/notchfolk-migrate-from-isle.sh "$OUT/scripts/"
 # Compiled on install, for the GLib there.
 rm -f "$OUT/gnome-extension/schemas/gschemas.compiled"
 
