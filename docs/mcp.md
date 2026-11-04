@@ -39,9 +39,11 @@ Install the optional Python runtime first:
 isle-setup-mcp
 ```
 
-The service listens on loopback port `8765` by default. To enable write tools,
-create `~/.config/isle/mcp.env` with mode `0600` and list only the tools you
-intend to allow:
+The service listens on loopback port `8765` by default. Authenticated clients
+get write access from the write scopes on their key. The
+`ISLE_MCP_WRITE_TOOLS` allowlist below only governs keyless loopback
+connections; to enable write tools for those, create `~/.config/isle/mcp.env`
+with mode `0600` and list only the tools you intend to allow:
 
 ```ini
 ISLE_MCP_HOST=127.0.0.1
@@ -152,8 +154,8 @@ Read scopes are `tasks:read`, `calendar:read`, `reminders:read`,
 `apps:read`, `system:read`, `shelf:read`, `clipboard:read`, `router:read`,
 and `usage:read`. The `*:read`
 scope grants all read-only tools. Write scopes use the same category followed
-by `:write`; they still require the global `ISLE_MCP_WRITE_TOOLS` allowlist.
-Each token is bound to its own scopes and client name. A caller's MCP
+by `:write`; a key with a write scope can use the matching write tools without
+any further allowlist. Each token is bound to its own scopes and client name. A caller's MCP
 `client_id` is not used as an authorization identity.
 
 Read tools expose Isle tasks, calendar events, reminders, calorie entries,
@@ -164,8 +166,9 @@ events and calorie and water entries can be filtered by `date` or a
 `start_date`/`end_date` range (`YYYY-MM-DD`), and prayer times can be requested
 for a `date`. Clipboard reads are search-first (`search_clipboard` returns
 ids, `get_clipboard_text` reads one item), so full history is never returned in
-one call. Write tools are disabled
-unless named in `ISLE_MCP_WRITE_TOOLS`. Available write names are `add_task`,
+one call. Write tools require the matching `:write` scope on the caller's key;
+keyless loopback callers are refused unless the tool is named in
+`ISLE_MCP_WRITE_TOOLS`. Available write names are `add_task`,
 `set_task_done`, `rename_task`, `remove_task`, `clear_done_tasks`,
 `add_calendar_event`, `add_calendar_event_to`, `remove_calendar_event`,
 `add_reminder`, `dismiss_reminder`, `add_food_entry`,
@@ -212,9 +215,11 @@ record exact versions and results in
 4. **Date filters**: `list_food_entries(date="<today>")` and
    `list_calendar_events(start_date=…, end_date=…)` return only matching
    records; an invalid date is rejected with a clear error.
-5. **Writes**: with `ISLE_MCP_WRITE_TOOLS=add_task,log_water` set in `mcp.env`,
-   `add_task` and `log_water` succeed and show up in the Isle UI; a write not
-   in the allowlist (e.g. `add_reminder`) is refused; writes work again after
+5. **Writes**: with a key whose scopes include `tasks:write` and `water:write`,
+   `add_task` and `log_water` succeed and show up in the Isle UI; `add_reminder`
+   is refused without `reminders:write`; for a keyless loopback client,
+   `ISLE_MCP_WRITE_TOOLS=add_task,log_water` in `mcp.env` allows those two and
+   refuses the rest; writes work again after
    `systemctl --user restart isle-mcp.service`.
 6. **Auth**: generate a key with Settings → MCP (or `isle-mcp-keygen`); without
    the bearer token the client gets 401; with `tasks:read` only, `list_tasks`
