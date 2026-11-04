@@ -166,7 +166,11 @@ events and calorie and water entries can be filtered by `date` or a
 `start_date`/`end_date` range (`YYYY-MM-DD`), and prayer times can be requested
 for a `date`. Clipboard reads are search-first (`search_clipboard` returns
 ids, `get_clipboard_text` reads one item), so full history is never returned in
-one call. Write tools require the matching `:write` scope on the caller's key;
+one call. `get_app_usage`, `search_clipboard`, and `get_clipboard_text` are answered by
+the GNOME Shell extension (`io.github.zickrian.isle.Shell1` on `org.gnome.Shell`), which
+relays them in Shell's name — isled answers only GNOME Shell for app usage and the
+clipboard's full texts — so those three tools need the extension enabled.
+Write tools require the matching `:write` scope on the caller's key;
 keyless loopback callers are refused unless the tool is named in
 `ISLE_MCP_WRITE_TOOLS`. Available write names are `add_task`,
 `set_task_done`, `rename_task`, `remove_task`, `clear_done_tasks`,

@@ -19,6 +19,9 @@ from isle_oauth import IsleOAuthProvider
 
 BUS = "io.github.zickrian.isle.Daemon"
 PATH = "/io/github/zickrian/isle/Daemon"
+SHELL_BUS = "org.gnome.Shell"
+SHELL_PATH = "/io/github/zickrian/isle/Shell"
+SHELL_INTERFACE = "io.github.zickrian.isle.Shell1"
 WRITE_TOOLS = {item.strip() for item in os.getenv("ISLE_MCP_WRITE_TOOLS", "").split(",") if item.strip()}
 HOST = os.getenv("ISLE_MCP_HOST", "127.0.0.1")
 PORT = int(os.getenv("ISLE_MCP_PORT", "8765"))
@@ -42,14 +45,27 @@ if HOST not in {"127.0.0.1", "::1", "localhost"} and not TOKENS:
 bus: MessageBus | None = None
 
 
-async def call(interface: str, member: str, signature: str = "", *args):
+async def call(interface: str, member: str, signature: str = "", *args, bus_name: str = BUS, path: str = PATH):
     if bus is None:
         raise RuntimeError("Isle MCP server is not connected to the session bus")
-    response = await bus.call(Message(destination=BUS, path=PATH, interface=interface,
+    response = await bus.call(Message(destination=bus_name, path=path, interface=interface,
                                       member=member, signature=signature, body=list(args)))
     if response.message_type.name == "ERROR":
         raise RuntimeError(response.body[0] if response.body else response.error_name)
     return response.body[0] if response.body else None
+
+
+async def shell_call(member: str, signature: str = "", *args):
+    """Asks the Isle extension, in GNOME Shell's name, for what isled tells only Shell.
+
+    The extension exports Shell1 (see gnome-extension/src/shellProxy.js); without it there is
+    nothing at that address, and the caller hears that as the reason.
+    """
+    try:
+        return await call(SHELL_INTERFACE, member, signature, *args,
+                          bus_name=SHELL_BUS, path=SHELL_PATH)
+    except RuntimeError as error:
+        raise RuntimeError(f"{member} needs Isle's GNOME Shell extension: {error}") from error
 
 
 READ_SCOPES = {
@@ -504,7 +520,7 @@ async def get_app_usage() -> dict:
     await authorize("get_app_usage")
     token = get_access_token() if auth else None
     LOG.info("MCP read tool called: client=%s tool=%s", token.client_id if token else "loopback", "get_app_usage")
-    return json.loads(await call("io.github.zickrian.isle.AppUsage1", "GetStats"))
+    return json.loads(await shell_call("GetAppStats"))
 
 
 @mcp.tool
@@ -575,7 +591,7 @@ async def search_clipboard(query: str) -> list:
     await authorize("search_clipboard")
     token = get_access_token() if auth else None
     LOG.info("MCP read tool called: client=%s tool=%s", token.client_id if token else "loopback", "search_clipboard")
-    return list(await call("io.github.zickrian.isle.Clipboard1", "Search", "s", query))
+    return list(await shell_call("SearchClipboard", "s", query))
 
 
 @mcp.tool
@@ -584,7 +600,7 @@ async def get_clipboard_text(item_id: int) -> str:
     await authorize("get_clipboard_text")
     token = get_access_token() if auth else None
     LOG.info("MCP read tool called: client=%s tool=%s", token.client_id if token else "loopback", "get_clipboard_text")
-    return await call("io.github.zickrian.isle.Clipboard1", "GetText", "t", item_id)
+    return await shell_call("GetClipboardText", "t", item_id)
 
 
 @mcp.tool
