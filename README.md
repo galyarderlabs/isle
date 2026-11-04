@@ -13,19 +13,6 @@ A playful, dynamic island for the GNOME Shell top bar — blending native deskto
 [![Whisper AI](https://img.shields.io/badge/AI-Whisper%20Local-success.svg)](https://github.com/ggerganov/whisper.cpp)
 [![Sponsor](https://img.shields.io/badge/sponsor-support-ff69b4?logo=githubsponsors)](https://github.com/sponsors/galyarderlabs)
 
-<p align="center">
-  <code>#gnome-extension</code> &bull;
-  <code>#dynamic-island</code> &bull;
-  <code>#ai-assistant</code> &bull;
-  <code>#model-context-protocol</code> &bull;
-  <code>#mcp-server</code> &bull;
-  <code>#whisper-ai</code> &bull;
-  <code>#synced-lyrics</code> &bull;
-  <code>#rust</code> &bull;
-  <code>#desktop-companion</code> &bull;
-  <code>#productivity</code>
-</p>
-
 </div>
 
 Notchfolk turns the centre of the top bar into a black notch.
