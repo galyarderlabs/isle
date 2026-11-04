@@ -2,9 +2,9 @@
 
 # Notchfolk
 
-**A living world in your desktop notch.**
+**A little world in your notch.**
 
-A playful, dynamic island for the GNOME Shell top bar — blending native desktop widgets, synced lyrics, productivity tools, local voice recognition, and autonomous AI agents via the Model Context Protocol (MCP).
+Your desktop notch, alive — GNOME today, Windows and macOS next. Music with synced lyrics, calls, a focus timer, calendar, food and water tracking, prayer times, weather, a file shelf, app usage, phone integration, and AI agents (Hermes, Claude Code, Grok, Codex, OMP) through a built-in MCP server — with AI router analytics and subscription usage quota tracking.
 
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
 ![GNOME Shell 46–51](https://img.shields.io/badge/GNOME%20Shell-46%E2%80%9351-4a86cf.svg)
