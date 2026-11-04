@@ -37,7 +37,7 @@ function setUniforms(effect, values) {
 export function shaderEffect(name, uniforms, code, functions = '') {
     const types = Object.entries(uniforms).map(([uniform, size]) => `uniform ${size === 1 ? 'float' : `vec${size}`} ${uniform};`);
     const declarations = `${types.join('\n')}\n${functions}`;
-    const GTypeName = `IsleShader${name}`;
+    const GTypeName = `NotchfolkShader${name}`;
     if (Shell.GLSLEffect) {
         return GObject.registerClass({GTypeName}, class extends Shell.GLSLEffect {
             _init() {

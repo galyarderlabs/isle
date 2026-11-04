@@ -3,7 +3,7 @@
 
 // The Calendar page's rules that need nothing of GNOME, kept apart so tests run them anywhere (tests/).
 
-/** A desktop reminder Isle's alert stands in for comes at most this long before the alert, or after the start. */
+/** A desktop reminder Notchfolk's alert stands in for comes at most this long before the alert, or after the start. */
 export const REMINDER_EARLY_MS = 30 * 60 * 1000;
 export const REMINDER_LATE_MS = 15 * 60 * 1000;
 
@@ -31,7 +31,7 @@ export function parseReminderId(id) {
     return {calendar, uid, rid: lines.length > 3 ? lines[2] : null, alarmMs: seconds > 0 ? seconds * 1000 : null};
 }
 
-/** Whether Isle's own alert stands in for `reminder` (see `parseReminderId`), among the `events` of today and
+/** Whether Notchfolk's own alert stands in for `reminder` (see `parseReminderId`), among the `events` of today and
  * tomorrow: the same occurrence, a reminder about when its alert goes, and that alert still to come or shown. */
 export function standsInFor(reminder, events, {leadMs, now, alarmed, shown}) {
     if (!reminder || !leadMs)
@@ -46,7 +46,7 @@ export function standsInFor(reminder, events, {leadMs, now, alarmed, shown}) {
         const ahead = event.start.getTime() - (reminder.alarmMs ?? now);
         if (ahead > leadMs + REMINDER_EARLY_MS || ahead <= -REMINDER_LATE_MS)
             return false;
-        // Not alerted (begun before Isle looked, or Do Not Disturb then): the desktop's reminder stays.
+        // Not alerted (begun before Notchfolk looked, or Do Not Disturb then): the desktop's reminder stays.
         const key = occurrenceKey(event);
         return shown.has(key) || (!alarmed.has(key) && event.start.getTime() > now);
     });

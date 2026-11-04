@@ -6,7 +6,7 @@
 /** No session in which the user turned Do Not Disturb off. */
 export const NONE = -1;
 
-/** The focus session under way, by when it started (epoch ms; 0 when isled doesn't say), or null. A focus
+/** The focus session under way, by when it started (epoch ms; 0 when notchfolkd doesn't say), or null. A focus
  * phase waiting for "Start focus" after a break is none yet; one paused part way still is. */
 export function focusSession(pomodoro) {
     if (pomodoro?.phase !== 'focus')

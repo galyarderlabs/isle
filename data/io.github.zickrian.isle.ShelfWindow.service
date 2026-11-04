@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=io.github.zickrian.isle.ShelfWindow
-Exec=@BINDIR@/isle-shelf

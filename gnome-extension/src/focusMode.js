@@ -16,7 +16,7 @@ export class FocusMode {
         this._notifications = notifications;
         this._settings = settings;
         this._changing = false;
-        // Turned off by hand while Isle was not running: it is theirs again.
+        // Turned off by hand while Notchfolk was not running: it is theirs again.
         if (!notifications.dnd)
             this._owned = false;
 
@@ -37,7 +37,7 @@ export class FocusMode {
         this._sync();
     }
 
-    /** Whether Isle turned Do Not Disturb on and owes turning it off. */
+    /** Whether Notchfolk turned Do Not Disturb on and owes turning it off. */
     get _owned() {
         return this._settings.get_boolean('focus-dnd-owned');
     }
@@ -64,9 +64,9 @@ export class FocusMode {
         return this._settings.get_boolean('focus-dnd') ? focusSession(this._daemon.state.pomodoro) : null;
     }
 
-    /** Turns DND on as a focus session starts and off when Isle's own claim ends. */
+    /** Turns DND on as a focus session starts and off when Notchfolk's own claim ends. */
     _sync() {
-        // Not known until isled answers; don't switch anything off before.
+        // Not known until notchfolkd answers; don't switch anything off before.
         if (this._daemon.state.pomodoro?.phase === undefined)
             return;
         const step = focusStep({session: this._session(), dnd: this._notifications.dnd, owned: this._owned,

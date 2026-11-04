@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// Clipboard history: hands each copy to isled, which keeps the list (Clipboard1 in docs/dbus-api.md),
+// Clipboard history: hands each copy to notchfolkd, which keeps the list (Clipboard1 in docs/dbus-api.md),
 // and puts items back or pastes them. Lives here: only GNOME Shell can read every app's clipboard on Wayland.
 
 import Clutter from 'gi://Clutter';
@@ -25,7 +25,7 @@ const URI_LIST_TYPE = 'text/uri-list';
 const IMAGE_TYPE = 'image/png';
 /** Plain text as St reads it, best first. */
 const TEXT_TYPES = ['text/plain;charset=utf-8', 'UTF8_STRING', 'text/plain', 'STRING'];
-/** Larger copies are not kept (isled refuses them too). */
+/** Larger copies are not kept (notchfolkd refuses them too). */
 const MAX_TEXT_BYTES = 512 * 1024;
 const MAX_IMAGE_BYTES = 16 * 1024 * 1024;
 /** A password manager clears what it copied this soon after; the item then leaves the history too. */
@@ -126,7 +126,7 @@ export class ClipboardHistory {
         const appId = app && !app.is_window_backed() ? app.get_id() : '';
         if (this._settings.get_strv('clipboard-ignored-apps').includes(appId))
             return;
-        this._addCopy(mimetypes, appId).catch(e => console.warn(`Isle: could not keep a copy: ${e.message}`));
+        this._addCopy(mimetypes, appId).catch(e => console.warn(`Notchfolk: could not keep a copy: ${e.message}`));
     }
 
     // Files first; then plain text (a spreadsheet's cells come with a picture of them too), else an image.
@@ -218,7 +218,7 @@ export class ClipboardHistory {
                         resolve(bytes.get_size() > max ? null : bytes);
                     } catch (e) {
                         if (!e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
-                            console.warn(`Isle: could not read the clipboard's ${mimetype}: ${e.message}`);
+                            console.warn(`Notchfolk: could not read the clipboard's ${mimetype}: ${e.message}`);
                         resolve(null);
                     }
                 });
@@ -235,7 +235,7 @@ export class ClipboardHistory {
                 bytes = await loadBytes(item.image);
                 mimetype = IMAGE_TYPE;
             } catch (e) {
-                console.warn(`Isle: could not read ${item.image}: ${e.message}`);
+                console.warn(`Notchfolk: could not read ${item.image}: ${e.message}`);
                 return false;
             }
             break;

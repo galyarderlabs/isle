@@ -14,7 +14,7 @@ import * as Theme from '../../gnome-extension/src/theme.js';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../gnome-extension');
 
 test('the schema offers Black and Glass, Black by default', () => {
-    const schema = readFileSync(resolve(root, 'schemas/org.gnome.shell.extensions.isle.gschema.xml'), 'utf8');
+    const schema = readFileSync(resolve(root, 'schemas/org.gnome.shell.extensions.notchfolk.gschema.xml'), 'utf8');
     const key = schema.match(/<key name="island-theme"[\s\S]*?<\/key>/)[0];
     assert.deepEqual([...key.matchAll(/<choice value="([^"]+)"\/>/g)].map(m => m[1]), ['black', 'glass']);
     assert.match(key, /<default>'black'<\/default>/);

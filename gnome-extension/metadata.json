@@ -1,6 +1,6 @@
 {
-  "uuid": "isle@zickrian.github.io",
-  "name": "Isle",
+  "uuid": "io.galyarderlabs.notchfolk",
+  "name": "Notchfolk",
   "description": "Notchfolk (formerly Isle): A living dynamic island and AI companion for the GNOME Shell top bar. Features interactive desktop notch, voice assistant with local Whisper, Model Context Protocol (MCP) server, synced lyrics, call monitoring, focus timer, calendar, file shelf, and system HUD.",
   "shell-version": [
     "46",
@@ -14,7 +14,7 @@
     "user",
     "unlock-dialog"
   ],
-  "settings-schema": "org.gnome.shell.extensions.isle",
-  "url": "https://github.com/zickrian/isle",
+  "settings-schema": "org.gnome.shell.extensions.notchfolk",
+  "url": "https://github.com/galyarderlabs/notchfolk",
   "version-name": "1.6.1"
 }

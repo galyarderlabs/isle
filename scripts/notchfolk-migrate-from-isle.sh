@@ -152,6 +152,16 @@ move_dir "$CACHE_HOME/$OLD_APP" "$CACHE_HOME/$NEW_APP"
 move_dir "$STATE_HOME/$OLD_APP" "$STATE_HOME/$NEW_APP"
 move_dir "$DATA_HOME/doc/$OLD_APP" "$DATA_HOME/doc/$NEW_APP"
 
+# The MCP env file's variable names belonged to the old name; the rebranded service reads
+# NOTCHFOLK_MCP_*. Its values are kept as they are.
+env_file="$CONFIG_HOME/$NEW_APP/mcp.env"
+if [ -f "$env_file" ]; then
+    if ! $DRY_RUN; then
+        cp -p "$env_file" "$BACKUP/"
+    fi
+    run sed -i -e 's/ISLE_MCP_/NOTCHFOLK_MCP_/g' "$env_file"
+fi
+
 # Keyring: the router's password, proxy key and session cookies, read from the old
 # service name and stored under the new one. rust-keyring names each entry's account
 # `username`, so the accounts come from the search's attribute lines and each secret

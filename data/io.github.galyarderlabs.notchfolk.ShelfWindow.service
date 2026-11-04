@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=io.galyarderlabs.notchfolk.ShelfWindow
+Exec=@BINDIR@/notchfolk-shelf

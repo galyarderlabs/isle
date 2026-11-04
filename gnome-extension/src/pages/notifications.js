@@ -26,7 +26,7 @@ function notificationBadge(gicon) {
     if (!isSymbolic(gicon))
         return new St.Icon({gicon, icon_size: 20, y_align: Clutter.ActorAlign.CENTER});
     return new St.Bin({
-        style_class: 'isle-notification-glyph',
+        style_class: 'notchfolk-notification-glyph',
         child: new St.Icon({gicon, icon_size: 12}),
         y_align: Clutter.ActorAlign.CENTER,
     });
@@ -38,7 +38,7 @@ class NotificationsPage extends Page {
     /** The list itself is built late, on the first warm-up or showing. */
     _init(daemon, center, {height}) {
         super._init(daemon, {
-            style_class: 'isle-page isle-notifications',
+            style_class: 'notchfolk-page notchfolk-notifications',
             layout_manager: new Clutter.BoxLayout({orientation: Clutter.Orientation.VERTICAL}),
             height,
         });
@@ -77,13 +77,13 @@ class NotificationsPage extends Page {
 
     /** How many there are, then Do Not Disturb and Clear All as small round buttons. */
     _buildBar() {
-        const bar = new St.BoxLayout({style_class: 'isle-notifications-bar'});
-        bar.add_child(label('Notifications', 'isle-notifications-heading', {x_expand: true, y_align: Clutter.ActorAlign.CENTER}));
-        this._dndButton = iconButton('isle-bell', 'isle-button-round isle-button-small isle-dnd-toggle', () => {
+        const bar = new St.BoxLayout({style_class: 'notchfolk-notifications-bar'});
+        bar.add_child(label('Notifications', 'notchfolk-notifications-heading', {x_expand: true, y_align: Clutter.ActorAlign.CENTER}));
+        this._dndButton = iconButton('notchfolk-bell', 'notchfolk-button-round notchfolk-button-small notchfolk-dnd-toggle', () => {
             this._center.dnd = !this._center.dnd;
         }, {size: 13, accessibleName: 'Do Not Disturb'});
         this._dndButton.y_align = Clutter.ActorAlign.CENTER;
-        this._clearButton = pillButton('Clear', 'isle-pill-small isle-notifications-clear', () => this._center.clearAll());
+        this._clearButton = pillButton('Clear', 'notchfolk-pill-small notchfolk-notifications-clear', () => this._center.clearAll());
         this._clearButton.y_align = Clutter.ActorAlign.CENTER;
         bar.add_child(this._dndButton);
         bar.add_child(this._clearButton);
@@ -92,10 +92,10 @@ class NotificationsPage extends Page {
 
     /** While Do Not Disturb is on, what it does: a moon and a line under the heading. */
     _buildDndNote() {
-        this._dndNote = new St.BoxLayout({style_class: 'isle-notifications-dnd-note', visible: false});
+        this._dndNote = new St.BoxLayout({style_class: 'notchfolk-notifications-dnd-note', visible: false});
         // Dimmed as the line beside it: the moon is drawn white, so its colour can't be set.
-        this._dndNote.add_child(new St.Icon({gicon: icon('isle-moon'), icon_size: 10, opacity: 130, y_align: Clutter.ActorAlign.CENTER}));
-        const text = label('Do Not Disturb: new ones wait here; urgent ones still show', 'isle-notifications-dnd-text',
+        this._dndNote.add_child(new St.Icon({gicon: icon('notchfolk-moon'), icon_size: 10, opacity: 130, y_align: Clutter.ActorAlign.CENTER}));
+        const text = label('Do Not Disturb: new ones wait here; urgent ones still show', 'notchfolk-notifications-dnd-text',
             {x_expand: true, y_align: Clutter.ActorAlign.CENTER});
         text.clutter_text.ellipsize = Pango.EllipsizeMode.END;
         this._dndNote.add_child(text);
@@ -104,9 +104,9 @@ class NotificationsPage extends Page {
 
     /** The scrolling list of rows, with "No notifications" in its place when empty. */
     _buildList() {
-        this._list = new St.BoxLayout({...VERTICAL, style_class: 'isle-notification-list'});
+        this._list = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-notification-list'});
         this._scroll = new St.ScrollView({
-            style_class: 'isle-task-scroll',
+            style_class: 'notchfolk-task-scroll',
             hscrollbar_policy: St.PolicyType.NEVER,
             // Scrolls with the wheel or touchpad; no scrollbar over the cards.
             vscrollbar_policy: St.PolicyType.EXTERNAL,
@@ -115,10 +115,10 @@ class NotificationsPage extends Page {
         });
         this._scroll.set_child(this._list);
 
-        this._empty = new St.BoxLayout({...VERTICAL, style_class: 'isle-empty', x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER, x_expand: true});
-        this._empty.add_child(new St.Icon({gicon: icon('isle-bell'), icon_size: 24, style_class: 'isle-empty-icon', x_align: Clutter.ActorAlign.CENTER}));
-        this._empty.add_child(label('No notifications', 'isle-empty-title', {x_align: Clutter.ActorAlign.CENTER}));
-        this._empty.add_child(label('You’re all caught up', 'isle-empty-hint', {x_align: Clutter.ActorAlign.CENTER}));
+        this._empty = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-empty', x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER, x_expand: true});
+        this._empty.add_child(new St.Icon({gicon: icon('notchfolk-bell'), icon_size: 24, style_class: 'notchfolk-empty-icon', x_align: Clutter.ActorAlign.CENTER}));
+        this._empty.add_child(label('No notifications', 'notchfolk-empty-title', {x_align: Clutter.ActorAlign.CENTER}));
+        this._empty.add_child(label('You’re all caught up', 'notchfolk-empty-hint', {x_align: Clutter.ActorAlign.CENTER}));
 
         const column = new St.Widget({layout_manager: new Clutter.BinLayout(), x_expand: true, y_expand: true});
         column.add_child(this._scroll);
@@ -163,27 +163,27 @@ class NotificationsPage extends Page {
             this._dndButton.add_style_pseudo_class('checked');
         else
             this._dndButton.remove_style_pseudo_class('checked');
-        setButtonIcon(this._dndButton, on ? 'isle-moon' : 'isle-bell');
+        setButtonIcon(this._dndButton, on ? 'notchfolk-moon' : 'notchfolk-bell');
         this._dndNote.visible = on;
     }
 
     /** A row: the app's icon, who, what under it on up to three lines, its buttons, and when; × under the pointer. */
     _row(notification) {
-        const content = new St.BoxLayout({style_class: 'isle-notification', x_expand: true});
+        const content = new St.BoxLayout({style_class: 'notchfolk-notification', x_expand: true});
         const badge = notificationBadge(notificationIcon(notification));
         content.add_child(badge);
 
         // On one line: a title may hold line breaks too.
-        const title = label((notification.title || notification.source?.title || '').replace(/\s+/g, ' ').trim(), 'isle-notification-title');
+        const title = label((notification.title || notification.source?.title || '').replace(/\s+/g, ' ').trim(), 'notchfolk-notification-title');
         title.clutter_text.ellipsize = Pango.EllipsizeMode.END;
-        const texts = new St.BoxLayout({...VERTICAL, style_class: 'isle-notification-texts', x_expand: true,
+        const texts = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-notification-texts', x_expand: true,
             y_align: Clutter.ActorAlign.CENTER});
         texts.add_child(title);
         // While the screen is shared, only who wrote, not what.
         const text = this._sharing ? '' : plainBody(notification).replace(/\s+/g, ' ').trim();
         if (text) {
             // Filling its lines' height: given only its own (one line), it would show one.
-            const body = label(text, 'isle-notification-body', {y_align: Clutter.ActorAlign.FILL});
+            const body = label(text, 'notchfolk-notification-body', {y_align: Clutter.ActorAlign.FILL});
             wrapLines(body, Pango.EllipsizeMode.END);
             texts.add_child(new Lines(body, BODY_LINES));
         }
@@ -192,10 +192,10 @@ class NotificationsPage extends Page {
         const actions = this._sharing ? [] : (notification.actions ?? []).slice(0, MAX_ACTIONS);
         if (actions.length) {
             // Whole, never cut: those that don't fit go on to a line below.
-            const buttons = new St.Widget({style_class: 'isle-notification-actions', x_expand: true,
+            const buttons = new St.Widget({style_class: 'notchfolk-notification-actions', x_expand: true,
                 layout_manager: new WrapLayout(px(6))});
             for (const action of actions) {
-                buttons.add_child(pillButton(action.label, 'isle-pill-small isle-notification-action', () => {
+                buttons.add_child(pillButton(action.label, 'notchfolk-pill-small notchfolk-notification-action', () => {
                     action.activate();
                     this.emit('request-close');
                 }));
@@ -210,19 +210,19 @@ class NotificationsPage extends Page {
         // The time, and in its place under the pointer the ×.
         const corner = new St.Widget({layout_manager: new Clutter.BinLayout(),
             y_align: tall ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER});
-        const time = label(Format.ago(notification.datetime), 'isle-notification-time', {x_align: Clutter.ActorAlign.END});
+        const time = label(Format.ago(notification.datetime), 'notchfolk-notification-time', {x_align: Clutter.ActorAlign.END});
         this._times.push([time, notification.datetime]);
         corner.add_child(time);
         // Every one can be put away, a resident one too, as in GNOME's list.
-        const tools = new St.BoxLayout({style_class: 'isle-notification-tools', x_align: Clutter.ActorAlign.END, opacity: 0, visible: false});
-        const dismiss = iconButton('isle-close-symbolic', 'isle-button-flat isle-notification-dismiss',
+        const tools = new St.BoxLayout({style_class: 'notchfolk-notification-tools', x_align: Clutter.ActorAlign.END, opacity: 0, visible: false});
+        const dismiss = iconButton('notchfolk-close-symbolic', 'notchfolk-button-flat notchfolk-notification-dismiss',
             () => notification.destroy(), {size: 10, accessibleName: 'Dismiss'});
         dismiss.y_align = Clutter.ActorAlign.CENTER;
         tools.add_child(dismiss);
         corner.add_child(tools);
         content.add_child(corner);
 
-        const row = new St.Button({style_class: 'isle-notification-row', child: content, x_expand: true, can_focus: true});
+        const row = new St.Button({style_class: 'notchfolk-notification-row', child: content, x_expand: true, can_focus: true});
         row.connect('clicked', () => {
             notification.activate();
             this.emit('request-close');

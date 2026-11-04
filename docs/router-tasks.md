@@ -1,4 +1,4 @@
-# Isle × LLM Routers Work
+# Notchfolk × LLM Routers Work
 
 This tracks the target in [router-plan.md](router-plan.md). Each phase
 ends in something a user can see; nothing in a later phase starts
@@ -9,7 +9,7 @@ gateway.
 
 ### 1. Daemon: the gateway abstraction and the local token
 
-- [x] A `router` module in `isled` behind the `RouterGateway` trait
+- [x] A `router` module in `notchfolkd` behind the `RouterGateway` trait
   (connect / stats / auth_mode), wired like the other watchers:
   publishes its state under the daemon `state` the extension already
   watches, with a `changed` signal on every refresh, never a timer
@@ -30,7 +30,7 @@ gateway.
   and the extension's. The feature switch is in Island → Pages.
 - [ ] Verify on a live desktop: 9Router's npm default on the same
   machine, Local chosen, zero input — data appears without restarting
-  Isle.
+  Notchfolk.
 
 Acceptance: with a default 9Router running, the state carries live
 usage numbers, and with it stopped, nothing is published and no error
@@ -91,7 +91,7 @@ matter ranked, without leaving the notch.
 ### 5. Mode 2: the dashboard password
 
 - [x] The login call (`POST /api/auth/login`), the session cookie
-  persisted with the password in the keyring (isled holds both; the
+  persisted with the password in the keyring (notchfolkd holds both; the
   extension sees derived state only).
 - [x] 401 / expired cookie: log in again, at most once per 60 s —
   never a loop; unauthorized shows in Settings and auth requests pause
@@ -110,7 +110,7 @@ when they are not.
   `GET {PROXY}/notch?period=…` with `Authorization: Bearer <key>`,
   camelCase usage fields adapted to Router state; the key in the keyring.
 - [ ] The README lists the proxy as the option for users who will not
-  put a dashboard password in Isle.
+  put a dashboard password in Notchfolk.
 - [ ] Verify: the proxy serves numbers identical to the other modes.
 
 Acceptance: the same page and chip, no password stored.
@@ -139,5 +139,5 @@ Acceptance: the chip moves the moment a request completes.
 ## Not in this list
 
 Billing, the AI traffic's own streams, configuring the gateway from
-Isle, and gateways beyond the trait's one implementation; see the
+Notchfolk, and gateways beyond the trait's one implementation; see the
 plan's section 10.

@@ -2,7 +2,7 @@
 // Copyright (C) 2026 zickrian
 
 // The rules of an app usage session, apart from GNOME: which app is timed and for how long. The
-// extension wires this to focus signals and isled (see appUsage.js); `node --test` checks it here.
+// extension wires this to focus signals and notchfolkd (see appUsage.js); `node --test` checks it here.
 // Input, or its absence, never pauses the clock by itself: appUsage.js ends the session after five
 // idle minutes, or keeps it while something holds the session awake.
 

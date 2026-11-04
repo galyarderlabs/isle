@@ -173,7 +173,7 @@ export const Island = GObject.registerClass({
     /** Starts at zero size; the first `morph` gives it a shape. */
     _init() {
         super._init({
-            name: 'isleIsland',
+            name: 'notchfolkIsland',
             reactive: true,
             layout_manager: new Clutter.FixedLayout(),
         });
@@ -713,7 +713,7 @@ export const Island = GObject.registerClass({
             if (actor instanceof St.DrawingArea)
                 actor.queue_repaint();
             actor.syncTheme?.();
-            if (actor._isleDisabled)
+            if (actor._notchfolkDisabled)
                 setEnabled(actor, false);
             actor.get_children().forEach(repaint);
         };

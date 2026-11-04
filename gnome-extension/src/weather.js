@@ -11,8 +11,8 @@ import GWeather from 'gi://GWeather?version=4.0';
 import * as WorldClocks from './worldClocks.js';
 
 const REFRESH_MS = 30 * 60 * 1000;
-const APP_ID = 'io.github.zickrian.isle';
-const CONTACT = 'https://github.com/zickrian/isle/issues';
+const APP_ID = 'io.galyarderlabs.notchfolk';
+const CONTACT = 'https://github.com/galyarderlabs/notchfolk/issues';
 
 /** Signals `changed` when the current conditions or selected location change. */
 export const WeatherWatcher = GObject.registerClass({

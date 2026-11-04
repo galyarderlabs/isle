@@ -1,4 +1,4 @@
-The calendar icons (gnome-extension/icons/isle-calendar.svg, and isle-calendar-fill.svg drawn after it)
+The calendar icons (gnome-extension/icons/notchfolk-calendar.svg, and notchfolk-calendar-fill.svg drawn after it)
 take their shape from Lucide's "calendar-days", https://lucide.dev, under this licence:
 
 ISC License

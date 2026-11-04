@@ -34,7 +34,7 @@ programs.
 Paste this into a terminal and press Enter:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/zickrian/isle/main/get.sh | bash
+curl -fsSL https://raw.githubusercontent.com/zickrian/notchfolk/main/get.sh | bash
 ```
 
 (`curl: command not found`? Install it first: `sudo apt install curl`.)
@@ -64,28 +64,28 @@ Super+I:
    assistant guide says how; each uses your own plan).
 2. Set up speech recognition once, in a terminal. It downloads the speech
    model picked in Settings → Assistant (`small`, 265 MB, by default; or name
-   one, which Settings then uses: `isle-setup-voice base`) and needs nothing
+   one, which Settings then uses: `notchfolk-setup-voice base`) and needs nothing
    else installed. A graphics
    card is used through Vulkan when there is one, else the processor:
 
    ```sh
-   ~/.local/bin/isle-setup-voice
+   ~/.local/bin/notchfolk-setup-voice
    ```
 
    Set up with an older Notchfolk, speech recognition used a Python environment
    of up to 3 GB; updating Notchfolk with the installer downloads the new model
-   and deletes it by itself (`isle-setup-voice --remove-old` does the same by
+   and deletes it by itself (`notchfolk-setup-voice --remove-old` does the same by
    hand). In the assistant, a **Set up** button opens a terminal that runs
-   `isle-setup-voice` for you.
+   `notchfolk-setup-voice` for you.
 
 3. Pick the AI in Notchfolk's Settings → Assistant, or leave it on Automatic,
    and press Super+I. An AI installed later is found by itself.
 
-`isle-setup-voice` ends by checking what Notchfolk itself finds; run the same check
+`notchfolk-setup-voice` ends by checking what Notchfolk itself finds; run the same check
 any time:
 
 ```sh
-~/.local/bin/isled --doctor
+~/.local/bin/notchfolkd --doctor
 ```
 
 (Notchfolk's commands are in `~/.local/bin`. When that folder is on your PATH,
@@ -113,22 +113,22 @@ Your tasks, calendar events, clipboard history and settings stay.
 press Enter, then log out and back in:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/zickrian/isle/main/get.sh | bash
+curl -fsSL https://raw.githubusercontent.com/zickrian/notchfolk/main/get.sh | bash
 ```
 
 **Installed from a package?** Update it the way you installed it: download
-the new `.deb` or `.rpm` from [Releases](https://github.com/zickrian/isle/releases/latest)
+the new `.deb` or `.rpm` from [Releases](https://github.com/zickrian/notchfolk/releases/latest)
 and open it, or on Arch run `git pull` and `makepkg -si` again in
 `packaging/aur`. Then log out and back in. Don't also run the command above: it would add a second copy (see
 [below](#both-a-package-and-the-one-line-install)).
 
-To install a particular version, put `ISLE_VERSION` before `bash`:
-`… | ISLE_VERSION=1.0.5 bash`.
+To install a particular version, put `NOTCHFOLK_VERSION` before `bash`:
+`… | NOTCHFOLK_VERSION=1.0.5 bash`.
 
 ## Uninstalling
 
 ```sh
-~/.local/bin/isle-uninstall
+~/.local/bin/notchfolk-uninstall
 ```
 
 This removes the extension, its programs, its service and its font, the
@@ -136,22 +136,22 @@ voice assistant's speech recognition and its models, Notchfolk's caches, and a
 battery charge limit Notchfolk set (asking for your password), and takes Notchfolk's
 hooks out of Claude Code's and Codex's settings. Your tasks,
 calendar events, clipboard history, timer settings and app usage (if you
-turned the Apps page on) stay in `~/.local/share/isle`; delete it too to
+turned the Apps page on) stay in `~/.local/share/notchfolk`; delete it too to
 remove everything.
 
 Remove Notchfolk this way, not with the Extensions app's Remove button: that
-deletes only the extension, and leaves `isled`, its service and its hooks.
+deletes only the extension, and leaves `notchfolkd`, its service and its hooks.
 A system-wide package is removed as [below](#both-a-package-and-the-one-line-install).
 
 ## Without internet on the computer
 
-Download `isle-<version>-x86_64-linux.tar.gz` from
-[Releases](https://github.com/zickrian/isle/releases) on another computer,
+Download `notchfolk-<version>-x86_64-linux.tar.gz` from
+[Releases](https://github.com/zickrian/notchfolk/releases) on another computer,
 copy it over, then:
 
 ```sh
-tar -xzf isle-*-x86_64-linux.tar.gz
-cd isle-*-x86_64-linux
+tar -xzf notchfolk-*-x86_64-linux.tar.gz
+cd notchfolk-*-x86_64-linux
 ./install.sh
 ```
 
@@ -159,13 +159,13 @@ cd isle-*-x86_64-linux
 
 ### Ubuntu and Debian (.deb), Fedora (.rpm)
 
-Each [release](https://github.com/zickrian/isle/releases) also has
+Each [release](https://github.com/zickrian/notchfolk/releases) also has
 system-wide packages, installed for every user of the computer with the
 system's package manager (so they update and uninstall with it):
 
 ```sh
-sudo apt install ./isle_*_amd64.deb        # Ubuntu 24.04 and newer, Debian 13
-sudo dnf install ./isle-*.x86_64.rpm       # Fedora 40 and newer
+sudo apt install ./notchfolk_*_amd64.deb        # Ubuntu 24.04 and newer, Debian 13
+sudo dnf install ./notchfolk-*.x86_64.rpm       # Fedora 40 and newer
 ```
 
 They put the programs in `/usr/bin`, the extension in
@@ -175,11 +175,11 @@ on per user: so each user logs out and back in, then turns Notchfolk on once, in
 the Extensions app or with:
 
 ```sh
-gnome-extensions enable isle@zickrian.github.io
+gnome-extensions enable io.galyarderlabs.notchfolk
 ```
 
-`isled` starts on its own when the extension first calls it. The voice
-assistant is set up per user as above, with `isle-setup-voice`.
+`notchfolkd` starts on its own when the extension first calls it. The voice
+assistant is set up per user as above, with `notchfolk-setup-voice`.
 
 ### Arch Linux
 
@@ -193,7 +193,7 @@ git clone --depth 1 https://github.com/zickrian/isle.git
 cd isle/packaging/aur
 makepkg -si
 # Log out and back in, then:
-gnome-extensions enable isle@zickrian.github.io
+gnome-extensions enable io.galyarderlabs.notchfolk
 ```
 
 To update, run `git pull` in that folder and `makepkg -si` again.
@@ -202,18 +202,18 @@ To update, run `git pull` in that folder and `makepkg -si` again.
 
 A copy installed with `get.sh`, in your home folder, takes precedence for
 you over a system-wide package: GNOME Shell, D-Bus and systemd all look in
-your home folder first. Run `isle-uninstall` to remove your own copy; the
+your home folder first. Run `notchfolk-uninstall` to remove your own copy; the
 package's then takes over, with your settings and data kept.
 
 Before removing the package itself, each user who ran Notchfolk takes its alert
 hooks out of Claude Code's and Codex's settings, which would otherwise call
-an `isled` that is gone. A battery charge limit set with the assistant
+an `notchfolkd` that is gone. A battery charge limit set with the assistant
 stays after the package goes, so lift it first too:
 
 ```sh
-isled --unhook-all
-isle-charge-limit 100       # only if the assistant set a charge limit
-sudo apt remove isle        # or: sudo dnf remove isle, sudo pacman -R isle-bin
+notchfolkd --unhook-all
+notchfolk-charge-limit 100       # only if the assistant set a charge limit
+sudo apt remove notchfolk        # or: sudo dnf remove notchfolk, sudo pacman -R notchfolk-bin
 ```
 
 ### Checking a download
@@ -222,7 +222,7 @@ Release files are built by GitHub Actions from the tagged source, with a
 build provenance attestation. With the [GitHub CLI](https://cli.github.com):
 
 ```sh
-gh attestation verify isle-*-x86_64-linux.tar.gz --repo zickrian/isle
+gh attestation verify notchfolk-*-x86_64-linux.tar.gz --repo zickrian/notchfolk
 ```
 
 `get.sh` checks each download against its `.sha256` already.
@@ -233,19 +233,19 @@ Everything goes in your home folder:
 
 | Where | What |
 |---|---|
-| `~/.local/share/gnome-shell/extensions/isle@zickrian.github.io` | The GNOME Shell extension |
-| `~/.local/bin` | `isled` (the background service), `isle-shelf` (drag and drop), `isle-whisper` (speech recognition), `isle-uninstall`, `isle-setup-voice`, `isle-charge-limit` |
-| `~/.config/systemd/user`, `~/.local/share/dbus-1/services` | Starting `isled` with your session |
-| `~/.local/share/fonts/isle` | Inter, the island's typeface |
-| `~/.local/share/isle` | Your data, and the speech models `isle-setup-voice` downloads (`models`) |
-| `~/.local/share/doc/isle` | This README |
+| `~/.local/share/gnome-shell/extensions/io.galyarderlabs.notchfolk` | The GNOME Shell extension |
+| `~/.local/bin` | `notchfolkd` (the background service), `notchfolk-shelf` (drag and drop), `notchfolk-whisper` (speech recognition), `notchfolk-uninstall`, `notchfolk-setup-voice`, `notchfolk-charge-limit` |
+| `~/.config/systemd/user`, `~/.local/share/dbus-1/services` | Starting `notchfolkd` with your session |
+| `~/.local/share/fonts/notchfolk` | Inter, the island's typeface |
+| `~/.local/share/notchfolk` | Your data, and the speech models `notchfolk-setup-voice` downloads (`models`) |
+| `~/.local/share/doc/notchfolk` | This README |
 
 Once running, Notchfolk adds its hooks to Claude Code's `~/.claude/settings.json`
 and Codex's `~/.codex/hooks.json` when it finds them, so they ask you on
 the island (Codex asks once, at its next start, to trust them); turning
 them off in Settings → AI Usage → AI Agents, or uninstalling, takes them
 out. Commands you run from the assistant keep their logs in
-`~/.cache/isle/runs` until they end.
+`~/.cache/notchfolk/runs` until they end.
 
 On a first install only, it sets Notchfolk's look (a slim glass top bar with the
 island in it); updates leave it as you have it. It never changes other
@@ -260,12 +260,12 @@ switch), it switches them on.
 **The island does not appear.** Log out and back in once more, then check:
 
 ```sh
-gnome-extensions info isle@zickrian.github.io   # State: ACTIVE (or ENABLED)
+gnome-extensions info io.galyarderlabs.notchfolk   # State: ACTIVE (or ENABLED)
 ```
 
 If it says `OUT OF DATE`, your GNOME Shell version is outside 46 to 51. If
 it says `ERROR`, that is most likely a bug in Notchfolk: please
-[open an issue](https://github.com/zickrian/isle/issues) with GNOME Shell's
+[open an issue](https://github.com/zickrian/notchfolk/issues) with GNOME Shell's
 log (see **Anything else** below).
 
 **A phone can't open the Shelf.** It must be on the same Wi-Fi as the
@@ -273,15 +273,15 @@ computer. A firewall that blocks incoming connections keeps it out too: see
 the [usage guide](usage.md#troubleshooting) for the ufw and firewalld commands.
 
 **Music does not show.** Check the background service:
-`systemctl --user status isled`.
+`systemctl --user status notchfolkd`.
 
-**The voice assistant does not answer.** Run `~/.local/bin/isled --doctor` (with a .deb, .rpm
-or AUR package, `isled --doctor`): it says what is missing (speech recognition, an AI, or its
+**The voice assistant does not answer.** Run `~/.local/bin/notchfolkd --doctor` (with a .deb, .rpm
+or AUR package, `notchfolkd --doctor`): it says what is missing (speech recognition, an AI, or its
 sign-in) and what to run.
 
 **Anything else.** GNOME Shell's log shows extension errors:
-`journalctl -b -o cat /usr/bin/gnome-shell | grep -i isle`. Please
-[open an issue](https://github.com/zickrian/isle/issues) with what it says
+`journalctl -b -o cat /usr/bin/gnome-shell | grep -i notchfolk`. Please
+[open an issue](https://github.com/zickrian/notchfolk/issues) with what it says
 and the output of `gnome-shell --version`.
 
 # Other ways to install
@@ -294,13 +294,13 @@ extension at login), then turn Notchfolk on once as each user, in the Extensions
 app or with `gnome-extensions enable`:
 
 ```sh
-sudo apt install ./isle_*_amd64.deb        # Ubuntu 24.04 and newer, Debian 13
-sudo dnf install ./isle-*.x86_64.rpm       # Fedora 40 and newer
+sudo apt install ./notchfolk_*_amd64.deb        # Ubuntu 24.04 and newer, Debian 13
+sudo dnf install ./notchfolk-*.x86_64.rpm       # Fedora 40 and newer
 # Log out and back in, then:
-gnome-extensions enable isle@zickrian.github.io
+gnome-extensions enable io.galyarderlabs.notchfolk
 ```
 
-**Arch Linux.** Notchfolk is not in the AUR yet (`yay -S isle-bin` finds
+**Arch Linux.** Notchfolk is not in the AUR yet (`yay -S notchfolk-bin` finds
 nothing). Build its package from the `PKGBUILD` in
 [`packaging/aur`](../packaging/aur), made from the release tarball, or use the
 one-line install above:
@@ -311,7 +311,7 @@ git clone --depth 1 https://github.com/galyarderlabs/notchfolk.git
 cd notchfolk/packaging/aur
 makepkg -si
 # Log out and back in, then:
-gnome-extensions enable isle@zickrian.github.io
+gnome-extensions enable io.galyarderlabs.notchfolk
 ```
 
 To update a package, install the new release's package the same way (or run
@@ -319,7 +319,7 @@ To update a package, install the new release's package the same way (or run
 above, which would add a second copy in your home folder.
 
 A copy installed with the command above, in your home folder, takes
-precedence over a system-wide package; `isle-uninstall` removes it and the
+precedence over a system-wide package; `notchfolk-uninstall` removes it and the
 package's takes over. Releases can be checked with
 `gh attestation verify <file> --repo galyarderlabs/notchfolk` (see
 [SECURITY.md](../SECURITY.md#verifying-a-release)).
@@ -327,12 +327,12 @@ package's takes over. Releases can be checked with
 <details>
 <summary><b>From the release tarball, or from source</b></summary>
 
-**From a release package.** Download `isle-<version>-x86_64-linux.tar.gz`
+**From a release package.** Download `notchfolk-<version>-x86_64-linux.tar.gz`
 from [Releases](../../releases), then:
 
 ```sh
-tar -xzf isle-*-x86_64-linux.tar.gz
-cd isle-*-x86_64-linux
+tar -xzf notchfolk-*-x86_64-linux.tar.gz
+cd notchfolk-*-x86_64-linux
 ./install.sh
 ```
 

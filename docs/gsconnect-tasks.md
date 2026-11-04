@@ -1,4 +1,4 @@
-# Isle × GSConnect Work
+# Notchfolk × GSConnect Work
 
 This tracks the target in [gsconnect-plan.md](gsconnect-plan.md). Each phase
 ends in something a user can see; nothing in a later phase starts before the
@@ -8,7 +8,7 @@ phase before it is verified on a live desktop with a paired phone.
 
 ### 1. Daemon: watch GSConnect on the session bus
 
-- [x] Add a `gsconnect` module to `isled` that follows the
+- [x] Add a `gsconnect` module to `notchfolkd` that follows the
   `org.gnome.Shell.Extensions.GSConnect` name on the session bus, under the
   same supervision pattern as UPower and NetworkManager (`system/mod.rs`):
   comes up when the name appears, backs off on failure, goes away cleanly.
@@ -27,7 +27,7 @@ phase before it is verified on a live desktop with a paired phone.
   restart mid-session.
 
 Acceptance: the daemon's state tracks a real phone's battery figure live,
-without polling, and Isle stays silent with GSConnect gone.
+without polling, and Notchfolk stays silent with GSConnect gone.
 
 ### 2. Compact island: the phone battery chip
 
@@ -67,7 +67,7 @@ touching the phone.
   actions: ring (Find My Phone) and send clipboard. Send file waits on the
   XDG file chooser portal, a slice of its own.
 - [x] Register in `controller.js` with a tab (name `devices`, icon
-  `isle-phone-symbolic`), hidden with `hidden-pages` like every page, and no
+  `notchfolk-phone-symbolic`), hidden with `hidden-pages` like every page, and no
   tab at all when the daemon reports no connected device.
 - [x] Keep it light: built a step at a time like the other pages
   (`_buildPages`), nothing synchronous on load.

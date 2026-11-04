@@ -1,0 +1,13 @@
+[Unit]
+Description=Notchfolk MCP tools for local and remote agents
+After=dbus.service
+
+[Service]
+Type=simple
+EnvironmentFile=-%h/.config/notchfolk/mcp.env
+ExecStart=@BINDIR@/notchfolk-mcp
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

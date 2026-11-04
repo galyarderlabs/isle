@@ -6,12 +6,12 @@ targets = ["x86_64-unknown-linux-gnu"]
 all-features = true
 
 [advisories]
-# Unmaintained crates are reported for those Isle uses directly, not for everything below them.
+# Unmaintained crates are reported for those Notchfolk uses directly, not for everything below them.
 unmaintained = "workspace"
 ignore = []
 
 [licenses]
-# All compatible with the GPL version 3 (Apache-2.0 is not with version 2, which Isle does not use).
+# All compatible with the GPL version 3 (Apache-2.0 is not with version 2, which Notchfolk does not use).
 allow = [
     "GPL-3.0-or-later",
     "MIT",

@@ -1,31 +1,31 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// Isle's colour in the top bar's inline style beside other extensions': `node --experimental-default-type=module --test tests/extension/*.test.js`.
+// Notchfolk's colour in the top bar's inline style beside other extensions': `node --experimental-default-type=module --test tests/extension/*.test.js`.
 
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 
 import {normalized, restyle} from '../../gnome-extension/src/panelStyle.js';
 
-const isle = ['background-color: transparent'];
+const notchfolk = ['background-color: transparent'];
 const ownOf = (...texts) => text => texts.map(normalized).includes(text);
 
-test('a style already showing Isle\'s colour is left as it is, however spelt or ordered', () => {
+test('a style already showing Notchfolk\'s colour is left as it is, however spelt or ordered', () => {
     const own = ownOf('background-color: transparent');
     for (const style of ['background-color: transparent;', 'background-color: transparent',
         ' background-color: transparent; border-radius: 0px 0px 0px 0px;',
         'border-radius: 0px 0px 0px 0px; background-color:transparent ;', 'BACKGROUND-COLOR: Transparent'])
-        assert.equal(restyle(style, isle, own), style);
+        assert.equal(restyle(style, notchfolk, own), style);
 });
 
-test('Isle adds its colour once, after another\'s, keeping the other\'s text as it is', () => {
+test('Notchfolk adds its colour once, after another\'s, keeping the other\'s text as it is', () => {
     const own = ownOf('background-color: transparent');
-    assert.equal(restyle(null, isle, own), 'background-color: transparent;');
-    assert.equal(restyle('', isle, own), 'background-color: transparent;');
-    assert.equal(restyle('border-radius: 0px 0px 0px 0px', isle, own),
+    assert.equal(restyle(null, notchfolk, own), 'background-color: transparent;');
+    assert.equal(restyle('', notchfolk, own), 'background-color: transparent;');
+    assert.equal(restyle('border-radius: 0px 0px 0px 0px', notchfolk, own),
         'border-radius: 0px 0px 0px 0px; background-color: transparent;');
-    assert.equal(restyle('background-color: red;  border-radius:4px;', isle, own),
+    assert.equal(restyle('background-color: red;  border-radius:4px;', notchfolk, own),
         'background-color: red;  border-radius:4px; background-color: transparent;');
 });
 
@@ -41,7 +41,7 @@ test('a new colour takes the old one\'s place, and moves only when another\'s wo
         'color: red; background-color: rgba(0, 0, 0, 0.5);');
 });
 
-test('taking Isle\'s colour out leaves the rest, or nothing', () => {
+test('taking Notchfolk\'s colour out leaves the rest, or nothing', () => {
     const own = ownOf('background-color: transparent');
     assert.equal(restyle('background-color: transparent; border-radius: 0px 0px 0px 0px;', [], own),
         'border-radius: 0px 0px 0px 0px;');
@@ -52,11 +52,11 @@ test('taking Isle\'s colour out leaves the rest, or nothing', () => {
 
 test('a ; inside quotes or brackets ends no declaration', () => {
     const own = ownOf('background-color: transparent');
-    assert.equal(restyle('background-image: url("a;b.png");', isle, own),
+    assert.equal(restyle('background-image: url("a;b.png");', notchfolk, own),
         'background-image: url("a;b.png"); background-color: transparent;');
 });
 
-// The top bar with Isle and Blur my Shell writing its style, each as it does in GNOME Shell.
+// The top bar with Notchfolk and Blur my Shell writing its style, each as it does in GNOME Shell.
 function bar() {
     const panel = {style: null, writes: [], listeners: []};
     panel.set = (style, who) => {
@@ -68,7 +68,7 @@ function bar() {
 }
 
 // TopBar in shell.js: `_syncColor` and `_onPanelStyle`.
-function isleOn(panel, opacity = 0) {
+function notchfolkOn(panel, opacity = 0) {
     const own = new Set();
     let writing = false;
     const rule = () => opacity === null ? null
@@ -85,7 +85,7 @@ function isleOn(panel, opacity = 0) {
         if (style === panel.style)
             return;
         writing = true;
-        panel.set(style, 'isle');
+        panel.set(style, 'notchfolk');
         writing = false;
     };
     panel.listeners.push(() => {
@@ -115,11 +115,11 @@ const backgrounds = style => (style ?? '').split(';').filter(text => /background
 for (const [name, radius] of [['without rounding', null], ['with rounding', 0], ['with round corners', 12]]) {
     test(`Blur my Shell ${name} checking windows 50 times: one write each, then quiet`, () => {
         const panel = bar();
-        isleOn(panel);
+        notchfolkOn(panel);
         const actors = {};
         for (let i = 0; i < 50; i++)
             bms(panel, actors, radius);
-        assert.deepEqual(panel.writes, ['isle', 'bms']);
+        assert.deepEqual(panel.writes, ['notchfolk', 'bms']);
         assert.equal(backgrounds(panel.style), 1);
         assert.match(panel.style, /background-color: transparent/);
     });
@@ -127,7 +127,7 @@ for (const [name, radius] of [['without rounding', null], ['with rounding', 0], 
 
 test('rounding on and off, and new colours: at most one write each per change, nothing piling up', () => {
     const panel = bar();
-    const topBar = isleOn(panel);
+    const topBar = notchfolkOn(panel);
     const actors = {};
     const steps = [[null, 0], [0, 0], [8, 0], [8, 50], [null, 50], [null, 100], [12, 100], [12, 0], [null, 0]];
     for (const [radius, opacity] of steps) {
@@ -136,7 +136,7 @@ test('rounding on and off, and new colours: at most one write each per change, n
         for (let i = 0; i < 10; i++)
             bms(panel, actors, radius);
         assert.ok(panel.writes.length - before <= 2, `${radius}/${opacity}: ${panel.writes.slice(before)}`);
-        assert.equal(panel.writes.slice(before).filter(who => who === 'isle').length <= 1, true);
+        assert.equal(panel.writes.slice(before).filter(who => who === 'notchfolk').length <= 1, true);
         assert.equal(backgrounds(panel.style), 1);
         assert.equal((panel.style.match(/border-radius/g) ?? []).length, radius === null ? 0 : 1);
         const colour = opacity === 0 ? 'transparent' : opacity === 100 ? '#000000' : `rgba(0, 0, 0, ${opacity / 100})`;
@@ -144,9 +144,9 @@ test('rounding on and off, and new colours: at most one write each per change, n
     }
 });
 
-test('Isle stopping takes out its colour only; Blur my Shell\'s corners stay', () => {
+test('Notchfolk stopping takes out its colour only; Blur my Shell\'s corners stay', () => {
     const panel = bar();
-    const topBar = isleOn(panel, 50);
+    const topBar = notchfolkOn(panel, 50);
     const actors = {};
     bms(panel, actors, 8);
     topBar.opacity = null;
@@ -155,10 +155,10 @@ test('Isle stopping takes out its colour only; Blur my Shell\'s corners stay', (
     assert.equal(panel.style, null);
 });
 
-test('an extension replacing the whole style gets Isle\'s colour after its own, once', () => {
+test('an extension replacing the whole style gets Notchfolk\'s colour after its own, once', () => {
     const panel = bar();
-    isleOn(panel);
+    notchfolkOn(panel);
     panel.set('background-color: rgba(20, 20, 20, 0.8); height: 40px', 'other');
     assert.equal(panel.style, 'background-color: rgba(20, 20, 20, 0.8); height: 40px; background-color: transparent;');
-    assert.deepEqual(panel.writes, ['isle', 'other', 'isle']);
+    assert.deepEqual(panel.writes, ['notchfolk', 'other', 'notchfolk']);
 });

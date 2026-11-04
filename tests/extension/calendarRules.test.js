@@ -16,20 +16,20 @@ const seconds = date => Math.floor(date.getTime() / 1000);
 /** A desktop event as the Calendar page lists it; GNOME's id is "calendar\nevent\nrecurrence". */
 const event = (start, {uid = 'standup', rid = '', allDay = false} = {}) =>
     ({id: `work\n${uid}\n${rid}`, title: 'Standup', start, allDay});
-/** What standsInFor knows of Isle's alerts: a 5 minute lead, nothing alarmed or shown yet. */
+/** What standsInFor knows of Notchfolk's alerts: a 5 minute lead, nothing alarmed or shown yet. */
 const state = (more = {}) => ({leadMs: 5 * MINUTE, now: NOW, alarmed: new Set(), shown: new Set(), ...more});
 
 test('the span asked for holds every range given', () => {
     assert.equal(spanOf([null, null]), null);
     const grid = [at(0, 0, 1), at(0, 0, 40)];
-    const isle = [at(0, 0, 28), at(0, 0, 30)];
+    const notchfolk = [at(0, 0, 28), at(0, 0, 30)];
     assert.deepEqual(spanOf([grid, null]), grid);
-    assert.deepEqual(spanOf([grid, isle]), grid);
-    // Isle on next month while GNOME's grid shows this one: both, so neither loses its events.
+    assert.deepEqual(spanOf([grid, notchfolk]), grid);
+    // Notchfolk on next month while GNOME's grid shows this one: both, so neither loses its events.
     const next = [at(0, 0, 32), at(0, 0, 62)];
     assert.deepEqual(spanOf([grid, next]), [grid[0], next[1]]);
     // The same span again for the same ranges, so GNOME's source sees no change.
-    assert.equal(spanOf([grid, isle])[0].getTime(), spanOf([grid, isle])[0].getTime());
+    assert.equal(spanOf([grid, notchfolk])[0].getTime(), spanOf([grid, notchfolk])[0].getTime());
 });
 
 test('Evolution\'s reminder id is read with or without its recurrence', () => {
@@ -43,7 +43,7 @@ test('Evolution\'s reminder id is read with or without its recurrence', () => {
         assert.equal(parseReminderId(id), null);
 });
 
-test('a reminder of an event whose alert is still to come is Isle\'s', () => {
+test('a reminder of an event whose alert is still to come is Notchfolk\'s', () => {
     const reminder = parseReminderId(`work\nstandup\n${seconds(at(8, 45))}`);
     assert.equal(standsInFor(reminder, [event(at(9, 0))], state()), true);
     // Another event, another calendar, an all-day one, or alerts off: the desktop's.
@@ -55,15 +55,15 @@ test('a reminder of an event whose alert is still to come is Isle\'s', () => {
 });
 
 test('an earlier heads-up stays the desktop\'s', () => {
-    // An hour before, with a 5 minute lead: not about when Isle's alert goes.
+    // An hour before, with a 5 minute lead: not about when Notchfolk's alert goes.
     const hour = parseReminderId(`work\nstandup\n${seconds(at(8, 0))}`);
     assert.equal(standsInFor(hour, [event(at(9, 0))], state({now: at(8, 0).getTime()})), false);
-    // Seen only later (Isle started after it came): still an hour before by its own time.
+    // Seen only later (Notchfolk started after it came): still an hour before by its own time.
     assert.equal(standsInFor(hour, [event(at(9, 0))], state()), false);
 });
 
-test('an event Isle never alerted keeps its reminder', () => {
-    // Logged in during the meeting: begun before Isle looked, so no alert of Isle's.
+test('an event Notchfolk never alerted keeps its reminder', () => {
+    // Logged in during the meeting: begun before Notchfolk looked, so no alert of Notchfolk's.
     const late = parseReminderId(`work\nstandup\n${seconds(at(8, 45))}`);
     const begun = state({now: at(9, 5).getTime()});
     assert.equal(standsInFor(late, [event(at(9, 0))], begun), false);
@@ -72,7 +72,7 @@ test('an event Isle never alerted keeps its reminder', () => {
     const alarmed = new Set([occurrenceKey(startsSoon)]);
     const reminder = parseReminderId(`work\nstandup\n${seconds(at(8, 56))}`);
     assert.equal(standsInFor(reminder, [startsSoon], state({now: at(8, 56).getTime(), alarmed})), false);
-    // On screen: one at the start is Isle's too, but not one long after it.
+    // On screen: one at the start is Notchfolk's too, but not one long after it.
     const shown = new Set(alarmed);
     const atStart = parseReminderId(`work\nstandup\n${seconds(at(9, 0))}`);
     assert.equal(standsInFor(atStart, [startsSoon], state({now: at(9, 0).getTime(), alarmed, shown})), true);
@@ -87,7 +87,7 @@ test('a recurring event\'s reminder is matched to its own occurrence', () => {
     const dayBefore = parseReminderId(`work\nstandup\n20261029T090000\n${seconds(at(9, 0))}`);
     const now = state({now: at(9, 0).getTime() - MINUTE});
     assert.equal(standsInFor(dayBefore, [today, tomorrow], now), false);
-    // Today's own: Isle's.
+    // Today's own: Notchfolk's.
     const own = parseReminderId(`work\nstandup\n20261028T090000\n${seconds(at(8, 45))}`);
     assert.equal(standsInFor(own, [today, tomorrow], state()), true);
     // Without a recurrence line, the event as a whole.

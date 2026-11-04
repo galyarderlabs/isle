@@ -30,34 +30,34 @@ the tagged source and carry a build provenance attestation. With the
 [GitHub CLI](https://cli.github.com):
 
 ```sh
-gh attestation verify isle-<version>-x86_64-linux.tar.gz --repo zickrian/isle
+gh attestation verify notchfolk-<version>-x86_64-linux.tar.gz --repo zickrian/notchfolk
 ```
 
 `get.sh` also checks each download against the release's `.sha256`, and the
-AUR package `isle-bin` checks the same tarball against the SHA-256 in its
+AUR package `notchfolk-bin` checks the same tarball against the SHA-256 in its
 `PKGBUILD`.
 
 ## What leaves your computer
 
-Isle runs as your user, with no server of its own and no telemetry. It
+Notchfolk runs as your user, with no server of its own and no telemetry. It
 connects to the network only for these:
 
 | What | Where to | What is sent |
 |---|---|---|
 | Synced lyrics | [LRCLIB](https://lrclib.net) (`lrclib.net/api`) | The playing song's title, artist, album and length, once per song (then cached) |
 | Cover art | The address the music player gives for the song's cover | A plain download of that picture, once per song (then cached) |
-| Claude plan usage | `api.anthropic.com/api/oauth/usage` | Claude Code's own sign-in token, read from Claude Code's credentials; Isle never signs in or refreshes it. Off when AI usage, or Claude in it, is turned off |
-| ChatGPT plan usage | `chatgpt.com/backend-api/wham/usage` | Codex's own sign-in token and account id, read from Codex's `auth.json`; Isle never signs in or refreshes it. Off when AI usage, or ChatGPT in it, is turned off |
-| Grok plan usage | Grok's own billing (`cli-chat-proxy.grok.com/v1`, or the address set in Grok's own config; https only) | Grok's own sign-in token and user id, read from Grok's sign-in; Isle never signs in or refreshes it. Off when AI usage, or Grok in it, is turned off |
+| Claude plan usage | `api.anthropic.com/api/oauth/usage` | Claude Code's own sign-in token, read from Claude Code's credentials; Notchfolk never signs in or refreshes it. Off when AI usage, or Claude in it, is turned off |
+| ChatGPT plan usage | `chatgpt.com/backend-api/wham/usage` | Codex's own sign-in token and account id, read from Codex's `auth.json`; Notchfolk never signs in or refreshes it. Off when AI usage, or ChatGPT in it, is turned off |
+| Grok plan usage | Grok's own billing (`cli-chat-proxy.grok.com/v1`, or the address set in Grok's own config; https only) | Grok's own sign-in token and user id, read from Grok's sign-in; Notchfolk never signs in or refreshes it. Off when AI usage, or Grok in it, is turned off |
 | Voice assistant | The AI command-line app you picked (Claude Code, Codex, Antigravity, Grok or opencode), which sends it to its own service under your plan (opencode: to the provider of the model picked, under your own key or subscription) | The text of your request (speech is turned into text on this computer), the context it needs (time, open apps and windows, reminders and events, which Linux and package managers this is), the output of the checks and commands it runs for you (with keys, tokens and passwords blanked), the conversation so far and, only if you allow it, the selected text or your notifications |
 | Web search by the assistant | Whatever the AI's own web search and page reading reach; opencode searches with [Exa](https://exa.ai) (`mcp.exa.ai`), as opencode does for its own models, and reads no pages itself | Search words and page addresses the AI chooses for your request |
 | Package checks by the assistant | Your package managers' own servers (npm's registry, Snap and Flatpak stores, dnf's mirrors) | Package names it looks up, when a check like `npm view codex` or `snap find vlc` asks them |
 | Song check | `open.spotify.com/oembed` | A Spotify link the AI suggested, to check it exists before playing it |
 | OpenCode Go's models | `opencode.ai/zen/go/v1/models` (OpenCode's public model list) | A plain request, no key, only with an OpenCode Go sign-in, when Settings or the assistant looks at opencode's models (at most every 6 hours) |
-| New versions | `api.github.com` (Isle's latest release) | A plain request, at most once a day; off when New versions is turned off in Settings |
-| Speech model | `huggingface.co` (the official whisper.cpp and Silero files) | A plain download, only when you run `isle-setup-voice` (or press Set up); each file's SHA-256 is checked |
+| New versions | `api.github.com` (Notchfolk's latest release) | A plain request, at most once a day; off when New versions is turned off in Settings |
+| Speech model | `huggingface.co` (the official whisper.cpp and Silero files) | A plain download, only when you run `notchfolk-setup-voice` (or press Set up); each file's SHA-256 is checked |
 | Shelf files you share with your phone | Your phone, over the local network, only while sharing (see below) | The names, sizes and contents of the Shelf's files, to a phone you allowed; nothing goes through the internet |
-| Events you add to an account's calendar | That account's server (Google, or another in Online Accounts), through Evolution Data Server, as any calendar app sends it | The event's title, day and time, once, when you add it to that calendar (picked with the chip in the add field). Just before, isled opens a connection to that server and closes it, sending nothing, to see it is in reach; behind a proxy it skips that |
+| Events you add to an account's calendar | That account's server (Google, or another in Online Accounts), through Evolution Data Server, as any calendar app sends it | The event's title, day and time, once, when you add it to that calendar (picked with the chip in the add field). Just before, notchfolkd opens a connection to that server and closes it, sending nothing, to see it is in reach; behind a proxy it skips that |
 | LLM Router usage | The gateway's own address (Settings → LLM Router: the local default, or the base URL you set) | Read-only requests for the usage numbers, with the token the gateway's own CLI uses on this machine (never a password); the numbers never go anywhere else. Off when LLM Router is turned off; while its chip and page are not shown, nothing is asked at all |
 
 When ChatGPT can't be asked (offline, signed out), its limits are read from
@@ -65,25 +65,25 @@ Codex's own logs on this computer, with no network at all.
 
 ## What stays on your computer
 
-- The clipboard history, shelf, reminders, calendar events kept in Isle (with
-  Isle picked, with no account, or waiting for their calendar's server to be
-  in reach), timer settings and the assistant's conversation, in `~/.local/share/isle`
+- The clipboard history, shelf, reminders, calendar events kept in Notchfolk (with
+  Notchfolk picked, with no account, or waiting for their calendar's server to be
+  in reach), timer settings and the assistant's conversation, in `~/.local/share/notchfolk`
   (readable by you only). The conversation is deleted, with the AI's own
   copy of it, at midnight at the latest (or after 30 minutes or 2 hours
   quiet, as set in Settings), on **+**, and on **Clear the conversation
-  now**. opencode keeps Isle's copy in `~/.local/share/isle/opencode`, apart
-  from your own opencode's, and its models list in `~/.cache/isle/opencode`.
+  now**. opencode keeps Notchfolk's copy in `~/.local/share/notchfolk/opencode`, apart
+  from your own opencode's, and its models list in `~/.cache/notchfolk/opencode`.
 - Logs of the commands the assistant ran for you, in
-  `~/.cache/isle/runs` (readable by you only), deleted once Isle has
+  `~/.cache/notchfolk/runs` (readable by you only), deleted once Notchfolk has
   followed each to its end.
-- Caches of covers and lyrics, in `~/.cache/isle`.
-- What your login shell sets for your AI tools: once at start, isled runs
+- Caches of covers and lyrics, in `~/.cache/notchfolk`.
+- What your login shell sets for your AI tools: once at start, notchfolkd runs
   your shell as a login shell to read its environment, and keeps only
   `PATH` and the variables those tools read (`CLAUDE_CONFIG_DIR`,
   `CODEX_HOME`, `ANTHROPIC_*`, `CLAUDE_CODE_*`, `OPENAI_*`, `AWS_*`, proxy
   and certificate settings, where Node managers live). They stay in
-  isled's memory and go only to the AI tools it starts.
-- Your voice: speech is recognised by whisper.cpp (isle-whisper) on this computer, and
+  notchfolkd's memory and go only to the AI tools it starts.
+- Your voice: speech is recognised by whisper.cpp (notchfolk-whisper) on this computer, and
   the recording is never stored or sent.
 - The call preview: GNOME Shell draws it from the call's window as it is on
   screen; nothing is recorded, and it hides while you share your screen.
@@ -91,9 +91,9 @@ Codex's own logs on this computer, with no network at all.
   Data Server) on this computer, and opened in your browser only when you
   click Join.
 - AI agents: for each of Claude Code and Codex it finds (unless turned off
-  in Settings), Isle adds its hooks to `~/.claude/settings.json` or
+  in Settings), Notchfolk adds its hooks to `~/.claude/settings.json` or
   `~/.codex/hooks.json`, keeping a copy of the file as it was
-  (`*.isle-backup`) the first time. The hook runs `isled --agent-hook`,
+  (`*.notchfolk-backup`) the first time. The hook runs `notchfolkd --agent-hook`,
   which passes what the agent asks (the project's folder name, the tool and
   its command or file) or its last message to the island over the session
   bus, and for a permission waits for your answer and prints it for the
@@ -102,7 +102,7 @@ Codex's own logs on this computer, with no network at all.
   characters, or with hidden characters) is never asked there: the agent
   asks in its terminal. **Always** keeps only the rule the agent suggests
   for that command or folder, never a change of its permission mode. Turning
-  the switch off, or uninstalling Isle, removes Isle's entries and leaves
+  the switch off, or uninstalling Notchfolk, removes Notchfolk's entries and leaves
   the rest of the file as it is.
 
 ## Clipboard history
@@ -113,12 +113,12 @@ managers (`x-kde-passwordManagerHint`), and every copy from the apps on the
 ignore list (KeePassXC, Bitwarden, 1Password, Secrets, Seahorse, Proton Pass
 by default; editable in Settings), are never kept. When the password manager
 quits, GNOME puts its last copy back without the mark; to leave that out too,
-Isle keeps a salted hash of the secret in memory until the next copy, never
+Notchfolk keeps a salted hash of the secret in memory until the next copy, never
 the secret itself. Clearing the history deletes its files.
 
 ## Sharing the Shelf with a phone
 
-**Phone** on the Shelf's Files tab opens a small web server in `isled` so a
+**Phone** on the Shelf's Files tab opens a small web server in `notchfolkd` so a
 phone on the same network can save the Shelf's files and send files to it, in
 its browser. It is plain HTTP on the local network; this is what keeps it
 safe:
@@ -127,7 +127,7 @@ safe:
   server closes when you press Stop, after 10 minutes without a download, an
   upload, a phone picking files to send or an Allow (a page left open and
   checking for changes does not count, nor anything a phone not yet allowed
-  does; a transfer under way does), when the screen locks, when the computer sleeps, when Isle is
+  does; a transfer under way does), when the screen locks, when the computer sleeps, when Notchfolk is
   turned off, when GNOME Shell leaves the bus, and when its network changes:
   its address gone from its interface, or the connection active on that
   interface another, even with the same address (another device taking the
@@ -185,7 +185,7 @@ safe:
 - **Files sent in are kept apart.** They are streamed to disk as they come
   (never held in memory), through the file created for them (new, private,
   never one already there), into the Shelf's own folder,
-  `~/.local/share/isle/shelf`, readable by you only; once whole they are
+  `~/.local/share/notchfolk/shelf`, readable by you only; once whole they are
   renamed without ever replacing a file (`RENAME_NOREPLACE`) and put on the
   Shelf in one step that stopping sharing can't cut half way. The name is the
   last part of the one the phone gives, without control, invisible, line- or
@@ -206,18 +206,18 @@ safe:
   for changes gives its connection back as soon as it goes away. A refused
   upload has its body read and dropped for up to 2 seconds, so the phone sees
   why rather than a broken connection. The page is one file built into
-  `isled`, with no outside scripts, styles or fonts, a strict content security
+  `notchfolkd`, with no outside scripts, styles or fonts, a strict content security
   policy (its own script and style by a fresh nonce, connections to itself
-  only) and no referrer. `isled` runs as you; it never needs or asks for more.
+  only) and no referrer. `notchfolkd` runs as you; it never needs or asks for more.
 
 If ufw is on and drops what it is not told to let in, phones can't reach the
 server; the island then offers the command that lets in the local network on
 those ports (`sudo ufw allow from <network> to any port 47830:47839 proto
-tcp`), until a phone gets through. Isle never changes the firewall itself.
+tcp`), until a phone gets through. Notchfolk never changes the firewall itself.
 
 ## The voice assistant's safety model
 
-- The AI only answers. It cannot run commands or change files itself: Isle
+- The AI only answers. It cannot run commands or change files itself: Notchfolk
   runs its actions, and only those it knows (music, apps and windows, files,
   reminders and events, a few system settings, writing text where your
   cursor is).
@@ -227,23 +227,23 @@ tcp`), until a phone gets through. Isle never changes the firewall itself.
   else, Grok in its own home folder (sharing only your sign-in) with its
   terminal, file editing, task and image tools refused, and opencode 1.4.8 or
   newer (an older one is refused) in folders of its own
-  (`~/.local/share/isle/opencode`) with every tool but web search denied, each
+  (`~/.local/share/notchfolk/opencode`) with every tool but web search denied, each
   by name, and not even offered to the model (no shell, files, page fetching,
   subagents or skills). Only the file reader is offered, as OpenCode's free
   models answer nothing without it, and it may open only a path that never
-  exists (`/nonexistent/isle-reads-nothing`). It gets none of your opencode config (`opencode.json`,
+  exists (`/nonexistent/notchfolk-reads-nothing`). It gets none of your opencode config (`opencode.json`,
   so no MCP servers, plugins or custom providers of yours), no project files,
   and none of your environment but the locale, time zone and proxy settings.
   Your sign-ins come from `~/.local/share/opencode/auth.json`, for each
   request: only API keys and OAuth sign-ins; an organisation's "well-known"
   sign-in is left out, as it would bring its server's own config, MCP servers
   and permissions with it. When opencode renews an OAuth sign-in during a
-  request (ChatGPT's, whose old refresh token then stops working), Isle writes
+  request (ChatGPT's, whose old refresh token then stops working), Notchfolk writes
   just that entry back into your `auth.json` (all at once, readable by you
   only), so your own opencode stays signed in; nothing else in it is ever
-  changed, and Isle's own copy is deleted as the request ends, also when it
+  changed, and Notchfolk's own copy is deleted as the request ends, also when it
   was stopped.
-- Files: Isle searches by name for it, within your home folder and removable
+- Files: Notchfolk searches by name for it, within your home folder and removable
   drives, and reads only small plain-text files you ask about. It skips
   hidden folders, never searches those that hold keys or passwords (`.ssh`,
   `.gnupg`, keyrings), judges a link by where it really points (a link to
@@ -262,8 +262,8 @@ tcp`), until a phone gets through. Isle never changes the firewall itself.
   press **Run**: one line of at most 400 characters, with no hidden or
   reordering characters, so what you read is all that runs. Run and Deny
   (and Allow on an agent's alert) take no press in the first half second,
-  so a click or Enter meant for something else never answers them. isled builds a `systemd-run` call for it; GNOME Shell starts
-  it only if it is exactly that: Isle's own options, the log in Isle's
+  so a click or Enter meant for something else never answers them. notchfolkd builds a `systemd-run` call for it; GNOME Shell starts
+  it only if it is exactly that: Notchfolk's own options, the log in Notchfolk's
   folder, and the shown command last, unchanged. Root commands go through
   polkit (GNOME's password dialog), get only the system's folders on their
   `PATH` (so a program in your home cannot stand in for `apt`), and have
@@ -280,10 +280,10 @@ tcp`), until a phone gets through. Isle never changes the firewall itself.
 
 Areas where a report is especially welcome:
 
-- `isled`'s D-Bus API on the session bus (`docs/dbus-api.md`): input that
+- `notchfolkd`'s D-Bus API on the session bus (`docs/dbus-api.md`): input that
   crashes it, or reads or changes data it should not.
 - The voice assistant: a way for a request, a web page, a file, a
-  notification or other text to make Isle run something you did not ask for
+  notification or other text to make Notchfolk run something you did not ask for
   or did not see on the card, run a check that changes anything, read
   hidden or private files, or gain root without GNOME's password dialog.
 - The AI agents' hooks: a way for another program to answer an agent's
@@ -293,10 +293,10 @@ Areas where a report is especially welcome:
 - The LLM Router: usage data sent anywhere but the user's own gateway, or a
   secret (a gateway password or key) written anywhere but the keyring.
 - The calendar: an event sent to a calendar you didn't pick, or one you
-  deleted in Isle left in your account's calendar.
-- The clipboard history in `~/.local/share/isle`: copies kept from apps on
+  deleted in Notchfolk left in your account's calendar.
+- The clipboard history in `~/.local/share/notchfolk`: copies kept from apps on
   the ignore list or marked as secrets, or files readable by other users.
 - Network requests: anything sent beyond what the table above lists.
-- `isle-shelf`: files it opens or exposes that the user did not drop on it.
+- `notchfolk-shelf`: files it opens or exposes that the user did not drop on it.
 - The installers and packages (`get.sh`, `install.sh`, the `.deb`, `.rpm`
   and AUR package): files written outside the places they document.

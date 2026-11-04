@@ -23,7 +23,7 @@ const PHASES = {
 const RING_SIZE = 82;
 /** Reset and Start, at the right, in a slot as wide as both (CSS px): Reset appearing moves nothing. */
 const CONTROLS_WIDTH = 152;
-/** Shown until isled reports the timer: a fresh 25-minute focus session. */
+/** Shown until notchfolkd reports the timer: a fresh 25-minute focus session. */
 const DEFAULT_STATE = {phase: 'idle', running: false, remaining_ms: 25 * 60000, duration_ms: 25 * 60000, today_sessions: 0};
 /** The lengths the steppers keep to, in minutes (as Settings). */
 const STEPPERS = [
@@ -37,25 +37,25 @@ class TimerPage extends Page {
     /** `height` is the expanded island's page height. */
     _init(daemon, {height}) {
         super._init(daemon, {
-            style_class: 'isle-page isle-timer',
+            style_class: 'notchfolk-page notchfolk-timer',
             layout_manager: new Clutter.BoxLayout(),
             height,
         });
         this.name = 'focus';
 
         // The coloured progress ring anchors the page; the larger countdown gets its own space.
-        const glyph = new St.Icon({gicon: icon('isle-timer'), icon_size: 29, style_class: 'isle-timer-glyph'});
+        const glyph = new St.Icon({gicon: icon('notchfolk-timer'), icon_size: 29, style_class: 'notchfolk-timer-glyph'});
         this._ring = new Ring({size: RING_SIZE, lineWidth: 5, trackOpacity: 0.22, child: glyph});
         this._ring.y_align = Clutter.ActorAlign.CENTER;
         this.add_child(this._ring);
 
-        const main = new St.BoxLayout({...VERTICAL, style_class: 'isle-timer-main', x_expand: true, y_align: Clutter.ActorAlign.CENTER});
-        this._time = label('25:00', 'isle-timer-time', {x_align: Clutter.ActorAlign.CENTER});
-        this._phase = label('Focus', 'isle-timer-phase', {x_align: Clutter.ActorAlign.CENTER});
+        const main = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-timer-main', x_expand: true, y_align: Clutter.ActorAlign.CENTER});
+        this._time = label('25:00', 'notchfolk-timer-time', {x_align: Clutter.ActorAlign.CENTER});
+        this._phase = label('Focus', 'notchfolk-timer-phase', {x_align: Clutter.ActorAlign.CENTER});
         main.add_child(this._time);
         main.add_child(this._phase);
 
-        const steppers = new St.BoxLayout({style_class: 'isle-steppers', x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER});
+        const steppers = new St.BoxLayout({style_class: 'notchfolk-steppers', x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER});
         this._values = new Map();
         for (const stepper of STEPPERS)
             steppers.add_child(this._buildStepper(stepper));
@@ -63,18 +63,18 @@ class TimerPage extends Page {
         this.add_child(main);
 
         // Reset only once started; then Start, Pause or Resume.
-        const controls = new St.BoxLayout({style_class: 'isle-timer-controls', x_expand: true,
+        const controls = new St.BoxLayout({style_class: 'notchfolk-timer-controls', x_expand: true,
             x_align: Clutter.ActorAlign.END, y_align: Clutter.ActorAlign.CENTER});
-        this._reset = iconButton('isle-reset', 'isle-button-round',
+        this._reset = iconButton('notchfolk-reset', 'notchfolk-button-round',
             () => daemon.call('pomodoro', 'Stop'), {size: 14, accessibleName: 'Reset the timer'});
         this._reset.y_align = Clutter.ActorAlign.CENTER;
         controls.add_child(this._reset);
-        const pill = new St.BoxLayout({style_class: 'isle-start-pill-box'});
-        this._playIcon = new St.Icon({gicon: icon('isle-play-symbolic'), icon_size: 13, y_align: Clutter.ActorAlign.CENTER});
-        this._playLabel = label('Start', 'isle-start-pill-label');
+        const pill = new St.BoxLayout({style_class: 'notchfolk-start-pill-box'});
+        this._playIcon = new St.Icon({gicon: icon('notchfolk-play-symbolic'), icon_size: 13, y_align: Clutter.ActorAlign.CENTER});
+        this._playLabel = label('Start', 'notchfolk-start-pill-label');
         pill.add_child(this._playIcon);
         pill.add_child(this._playLabel);
-        this._play = new St.Button({style_class: 'isle-start-pill', child: pill, can_focus: true, accessible_name: 'Start or pause'});
+        this._play = new St.Button({style_class: 'notchfolk-start-pill', child: pill, can_focus: true, accessible_name: 'Start or pause'});
         this._phaseStyle = null;
         this._play.connect('clicked', () => this._toggle());
         controls.add_child(this._play);
@@ -91,14 +91,14 @@ class TimerPage extends Page {
 
     /** "Work  25  −  +": a length, and buttons a minute down or up. */
     _buildStepper({key, label: name, min, max}) {
-        const row = new St.BoxLayout({style_class: 'isle-stepper'});
-        row.add_child(label(name, 'isle-stepper-name'));
-        const value = label('', 'isle-stepper-value');
+        const row = new St.BoxLayout({style_class: 'notchfolk-stepper'});
+        row.add_child(label(name, 'notchfolk-stepper-name'));
+        const value = label('', 'notchfolk-stepper-value');
         this._values.set(key, value);
         row.add_child(value);
-        for (const [glyph, step, accessibleName] of [['isle-minus-symbolic', -1, `Shorter ${name.toLowerCase()}`],
-            ['isle-plus-symbolic', 1, `Longer ${name.toLowerCase()}`]]) {
-            row.add_child(iconButton(glyph, 'isle-button-flat isle-stepper-button',
+        for (const [glyph, step, accessibleName] of [['notchfolk-minus-symbolic', -1, `Shorter ${name.toLowerCase()}`],
+            ['notchfolk-plus-symbolic', 1, `Longer ${name.toLowerCase()}`]]) {
+            row.add_child(iconButton(glyph, 'notchfolk-button-flat notchfolk-stepper-button',
                 () => this._step(key, step, min, max), {size: 12, accessibleName}));
         }
         return row;
@@ -106,7 +106,7 @@ class TimerPage extends Page {
 
     /** One stepper click, kept within `min`..`max` minutes. */
     _step(key, step, min, max) {
-        // From what was last asked for: clicks faster than isled answers each count.
+        // From what was last asked for: clicks faster than notchfolkd answers each count.
         const config = this._asked ?? this.daemon.state.pomodoroConfig;
         if (!config)
             return;
@@ -114,15 +114,15 @@ class TimerPage extends Page {
         if (minutes === config[key])
             return;
         this._asked = {...config, [key]: minutes};
-        // Shown at once; isled's answer brings the same.
+        // Shown at once; notchfolkd's answer brings the same.
         this._values.get(key).text = String(minutes);
         this.daemon.call('pomodoro', 'SetConfig', JSON.stringify(this._asked));
     }
 
-    /** Steppers show isled's lengths, or the clicks it hasn't answered yet. */
+    /** Steppers show notchfolkd's lengths, or the clicks it hasn't answered yet. */
     _syncSteppers() {
         const config = this.daemon.state.pomodoroConfig;
-        // isled has caught up with the clicks (or another change came): its config holds again.
+        // notchfolkd has caught up with the clicks (or another change came): its config holds again.
         if (this._asked && (!config || STEPPERS.every(({key}) => config[key] === this._asked[key])))
             this._asked = null;
         const shown = this._asked ?? config;
@@ -142,7 +142,7 @@ class TimerPage extends Page {
         this.daemon.call('pomodoro', state?.running ? 'Pause' : 'Start');
     }
 
-    /** Ring, time, phase and buttons from isled's timer state. */
+    /** Ring, time, phase and buttons from notchfolkd's timer state. */
     _update() {
         const state = this.daemon.state.pomodoro ?? DEFAULT_STATE;
         const idle = state.phase === 'idle';
@@ -151,7 +151,7 @@ class TimerPage extends Page {
         const onBreak = state.phase === 'short_break' || state.phase === 'long_break';
         this._ring.color = onBreak ? Palette.GREEN : Palette.RED;
         this._ring.progress = idle ? 0 : 1 - remaining / state.duration_ms;
-        const phaseStyle = onBreak ? 'isle-phase-break' : 'isle-phase-focus';
+        const phaseStyle = onBreak ? 'notchfolk-phase-break' : 'notchfolk-phase-focus';
         if (this._phaseStyle !== phaseStyle) {
             if (this._phaseStyle)
                 this._play.remove_style_class_name(this._phaseStyle);
@@ -160,7 +160,7 @@ class TimerPage extends Page {
         }
         this._time.text = Format.duration(remaining);
         this._phase.text = PHASES[state.phase] ?? 'Focus';
-        this._playIcon.gicon = icon(state.running ? 'isle-pause-symbolic' : 'isle-play-symbolic');
+        this._playIcon.gicon = icon(state.running ? 'notchfolk-pause-symbolic' : 'notchfolk-play-symbolic');
         this._playLabel.text = state.running ? 'Pause' : idle ? 'Start' : 'Resume';
         this._reset.visible = !idle;
         this._scheduleTick(state);
@@ -176,7 +176,7 @@ class TimerPage extends Page {
         if (!this.active || !state.running)
             return;
         const remaining = this._remaining(state);
-        // At zero, isled's PhaseFinished brings the next state.
+        // At zero, notchfolkd's PhaseFinished brings the next state.
         if (remaining <= 0)
             return;
         this.later('tick', (remaining % 1000) + 15, () => this._update());
@@ -189,7 +189,7 @@ class TimerPage extends Page {
 
     /** Forgets unanswered clicks. */
     onDeactivate() {
-        // A click isled refused, or a change from Settings meanwhile: what it holds shows next time.
+        // A click notchfolkd refused, or a change from Settings meanwhile: what it holds shows next time.
         this._asked = null;
         this._syncSteppers();
     }

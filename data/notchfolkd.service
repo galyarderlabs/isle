@@ -1,0 +1,26 @@
+[Unit]
+Description=Notchfolk background service
+Documentation=file://%h/.local/share/doc/notchfolk/README.md
+PartOf=graphical-session.target
+After=graphical-session.target
+# Never given up on for good: no start limit; a crash loop slows down instead (RestartSteps).
+StartLimitIntervalSec=0
+
+[Service]
+Type=dbus
+BusName=io.galyarderlabs.notchfolk.Daemon
+ExecStart=@BINDIR@/notchfolkd
+Restart=on-failure
+# 2 s after a crash at first, growing to one try a minute while it keeps crashing.
+RestartSec=2
+RestartSteps=8
+RestartMaxDelaySec=60
+# What notchfolkd runs (the AI CLIs, the speech helper) never gains privileges: it sets that for each of
+# them (see child.rs), so a CLI that runs on a snap's Node still starts.
+# Few malloc arenas: notchfolkd mostly waits, and each arena keeps memory it freed.
+Environment=MALLOC_ARENA_MAX=2
+# Its timers (the clock, retries) may fire a little late, so wakeups bunch up.
+TimerSlackNSec=50ms
+
+[Install]
+WantedBy=graphical-session.target

@@ -27,54 +27,54 @@ export function setIconDir(dir) {
     icons.clear();
 }
 
-/** GNOME's icons that Isle draws itself (icons/), in one rounded, even-weight style; a name or the start of one. */
+/** GNOME's icons that Notchfolk draws itself (icons/), in one rounded, even-weight style; a name or the start of one. */
 const OWN_ICONS = {
-    'audio-volume-muted': 'isle-speaker-off-symbolic',
-    'audio-volume-low': 'isle-speaker-1-symbolic',
-    'audio-volume-medium': 'isle-speaker-2-symbolic',
-    'audio-volume-high': 'isle-speaker-3-symbolic',
-    'audio-volume-overamplified': 'isle-speaker-3-symbolic',
-    'audio-speakers': 'isle-speaker-device-symbolic',
-    'audio-card': 'isle-speaker-2-symbolic',
-    'audio-headphones': 'isle-headphones-symbolic',
-    'audio-headset': 'isle-headphones-symbolic',
-    'display-brightness': 'isle-sun-symbolic',
-    'keyboard-brightness': 'isle-sun-min-symbolic',
-    'microphone-sensitivity-muted': 'isle-mic-off-symbolic',
-    'microphone-disabled': 'isle-mic-off-symbolic',
-    'microphone-hardware-disabled': 'isle-mic-off-symbolic',
-    'microphone-sensitivity': 'isle-mic-symbolic',
-    'audio-input-microphone': 'isle-mic-symbolic',
-    'touchpad-disabled': 'isle-touchpad-off-symbolic',
-    'input-touchpad': 'isle-touchpad-symbolic',
-    'airplane-mode': 'isle-airplane-symbolic',
-    'camera-disabled': 'isle-video-off-symbolic',
-    'camera-hardware-disabled': 'isle-video-off-symbolic',
-    'camera': 'isle-video-symbolic',
-    'bluetooth-disabled': 'isle-bluetooth-off-symbolic',
-    'bluetooth-hardware-disabled': 'isle-bluetooth-off-symbolic',
-    'bluetooth': 'isle-bluetooth-symbolic',
-    'network-wireless-disabled': 'isle-wifi-off-symbolic',
-    'network-wireless-offline': 'isle-wifi-off-symbolic',
-    'network-wireless-hardware-disabled': 'isle-wifi-off-symbolic',
-    'network-wireless': 'isle-wifi-symbolic',
-    'video-display': 'isle-display-symbolic',
-    'input-mouse': 'isle-mouse-symbolic',
-    'input-keyboard': 'isle-keyboard-symbolic',
-    'phone': 'isle-phone-symbolic',
-    'input-gaming': 'isle-gamepad-symbolic',
-    'input-tablet': 'isle-tablet-symbolic',
-    'computer': 'isle-laptop-symbolic',
-    'dialog-warning': 'isle-warning-symbolic',
-    'dialog-information': 'isle-info-symbolic',
-    'software-update-available': 'isle-update-symbolic',
-    'media-record': 'isle-record-symbolic',
+    'audio-volume-muted': 'notchfolk-speaker-off-symbolic',
+    'audio-volume-low': 'notchfolk-speaker-1-symbolic',
+    'audio-volume-medium': 'notchfolk-speaker-2-symbolic',
+    'audio-volume-high': 'notchfolk-speaker-3-symbolic',
+    'audio-volume-overamplified': 'notchfolk-speaker-3-symbolic',
+    'audio-speakers': 'notchfolk-speaker-device-symbolic',
+    'audio-card': 'notchfolk-speaker-2-symbolic',
+    'audio-headphones': 'notchfolk-headphones-symbolic',
+    'audio-headset': 'notchfolk-headphones-symbolic',
+    'display-brightness': 'notchfolk-sun-symbolic',
+    'keyboard-brightness': 'notchfolk-sun-min-symbolic',
+    'microphone-sensitivity-muted': 'notchfolk-mic-off-symbolic',
+    'microphone-disabled': 'notchfolk-mic-off-symbolic',
+    'microphone-hardware-disabled': 'notchfolk-mic-off-symbolic',
+    'microphone-sensitivity': 'notchfolk-mic-symbolic',
+    'audio-input-microphone': 'notchfolk-mic-symbolic',
+    'touchpad-disabled': 'notchfolk-touchpad-off-symbolic',
+    'input-touchpad': 'notchfolk-touchpad-symbolic',
+    'airplane-mode': 'notchfolk-airplane-symbolic',
+    'camera-disabled': 'notchfolk-video-off-symbolic',
+    'camera-hardware-disabled': 'notchfolk-video-off-symbolic',
+    'camera': 'notchfolk-video-symbolic',
+    'bluetooth-disabled': 'notchfolk-bluetooth-off-symbolic',
+    'bluetooth-hardware-disabled': 'notchfolk-bluetooth-off-symbolic',
+    'bluetooth': 'notchfolk-bluetooth-symbolic',
+    'network-wireless-disabled': 'notchfolk-wifi-off-symbolic',
+    'network-wireless-offline': 'notchfolk-wifi-off-symbolic',
+    'network-wireless-hardware-disabled': 'notchfolk-wifi-off-symbolic',
+    'network-wireless': 'notchfolk-wifi-symbolic',
+    'video-display': 'notchfolk-display-symbolic',
+    'input-mouse': 'notchfolk-mouse-symbolic',
+    'input-keyboard': 'notchfolk-keyboard-symbolic',
+    'phone': 'notchfolk-phone-symbolic',
+    'input-gaming': 'notchfolk-gamepad-symbolic',
+    'input-tablet': 'notchfolk-tablet-symbolic',
+    'computer': 'notchfolk-laptop-symbolic',
+    'dialog-warning': 'notchfolk-warning-symbolic',
+    'dialog-information': 'notchfolk-info-symbolic',
+    'software-update-available': 'notchfolk-update-symbolic',
+    'media-record': 'notchfolk-record-symbolic',
 };
 const OWN_KEYS = Object.keys(OWN_ICONS).sort((a, b) => b.length - a.length);
 // A state a key's glyph doesn't show ("bluetooth-disabled" isn't "bluetooth"): left to GNOME unless listed.
 const OTHER_STATE = /(^|-)(disabled|muted|off|offline|disconnected|none|no-route|acquiring|error|blocked)(-|$)/;
 
-/** Isle's own icon for GNOME's `name` ("audio-volume-high-symbolic"), or null. */
+/** Notchfolk's own icon for GNOME's `name` ("audio-volume-high-symbolic"), or null. */
 function ownName(name) {
     const base = name.replace(/-symbolic$/, '');
     const key = OWN_KEYS.find(k => base === k ||
@@ -82,12 +82,12 @@ function ownName(name) {
     return key ? OWN_ICONS[key] : null;
 }
 
-/** Whether Isle draws GNOME's icon `name` itself (see `OWN_ICONS`). */
+/** Whether Notchfolk draws GNOME's icon `name` itself (see `OWN_ICONS`). */
 export function hasOwnIcon(name) {
     return ownName(name) !== null;
 }
 
-/** `gicon` in Isle's own style when Isle draws it (GNOME's OSD and device icons), else as it is. */
+/** `gicon` in Notchfolk's own style when Notchfolk draws it (GNOME's OSD and device icons), else as it is. */
 export function ownIcon(gicon) {
     const names = gicon instanceof Gio.ThemedIcon ? gicon.get_names() : [];
     const own = names.map(ownName).find(Boolean);
@@ -186,7 +186,7 @@ export function fence(box) {
 /** A round icon button. */
 export function iconButton(iconName, styleClass, onClick, {size = 16, accessibleName = ''} = {}) {
     const button = new St.Button({
-        style_class: `isle-button ${styleClass}`,
+        style_class: `notchfolk-button ${styleClass}`,
         child: new St.Icon({gicon: icon(iconName), icon_size: size}),
         can_focus: true,
         accessible_name: accessibleName,
@@ -199,7 +199,7 @@ export function iconButton(iconName, styleClass, onClick, {size = 16, accessible
 /** A small × over the top-left corner of an alert's icon, shown under the pointer (see `revealClose`), taking
  * no room. `out` (CSS px) sets it further out from the corner, for a round icon whose corner is empty. */
 export function cornerClose(onClick, {out = 8} = {}) {
-    const button = iconButton('isle-close-symbolic', 'isle-corner-close', onClick, {size: 8, accessibleName: 'Close'});
+    const button = iconButton('notchfolk-close-symbolic', 'notchfolk-corner-close', onClick, {size: 8, accessibleName: 'Close'});
     // Always there, only faded out and untouchable: showing and hiding it would restyle the icon beside it.
     button.set({x_align: Clutter.ActorAlign.START, y_align: Clutter.ActorAlign.START, opacity: 0, reactive: false,
         can_focus: false});
@@ -229,7 +229,7 @@ const DOT_FADE_MS = 900;
 /** A pill-shaped text button. */
 export function pillButton(text, styleClass, onClick) {
     const button = new St.Button({
-        style_class: `isle-pill ${styleClass}`,
+        style_class: `notchfolk-pill ${styleClass}`,
         label: text,
         can_focus: true,
         y_align: Clutter.ActorAlign.CENTER,
@@ -305,7 +305,7 @@ const DISABLED_OPACITY = 90, DISABLED_OPACITY_SEE_THROUGH = 105;
 // Dimmed by opacity, not CSS colour: the bundled icons are white images that take no colour.
 export function setEnabled(button, enabled) {
     // Kept, so a change of look dims it as that look does (see Island `refreshTheme`).
-    button._isleDisabled = !enabled;
+    button._notchfolkDisabled = !enabled;
     button.reactive = enabled;
     button.can_focus = enabled;
     const opacity = enabled ? 255 : Theme.translucent() ? DISABLED_OPACITY_SEE_THROUGH : DISABLED_OPACITY;
@@ -508,7 +508,7 @@ export const Bars = GObject.registerClass(
 class Bars extends St.BoxLayout {
     /** `height` is the tallest bar, in CSS pixels. */
     _init({height = 14, count = 4} = {}) {
-        super._init({style_class: 'isle-bars', y_align: Clutter.ActorAlign.CENTER});
+        super._init({style_class: 'notchfolk-bars', y_align: Clutter.ActorAlign.CENTER});
         this._maxHeight = height;
         this._playing = false;
         this._bars = [];
@@ -516,7 +516,7 @@ class Bars extends St.BoxLayout {
         this._bounces = [];
         for (let i = 0; i < count; i++) {
             // Full height, scaled about its middle: a scale moves below a pixel and lays nothing out again.
-            const bar = new Bar({style_class: 'isle-bar', y_align: Clutter.ActorAlign.CENTER});
+            const bar = new Bar({style_class: 'notchfolk-bar', y_align: Clutter.ActorAlign.CENTER});
             bar.set_pivot_point(0.5, 0.5);
             bar.scale_y = this._rest(i);
             // A bar's bounce pauses off screen. Each bar is watched itself: the box maps a moment before them.
@@ -634,7 +634,7 @@ class Bars extends St.BoxLayout {
     }
 });
 
-/** Lets go of the icon theme `isSymbolic` asks, once Isle is turned off. */
+/** Lets go of the icon theme `isSymbolic` asks, once Notchfolk is turned off. */
 export function releaseIconTheme() {
     iconTheme = null;
 }
@@ -774,7 +774,7 @@ export const smallCover = memoByFile(async path => {
                 }
             });
         });
-        const dir = GLib.build_filenamev([GLib.get_user_runtime_dir(), 'isle-covers']);
+        const dir = GLib.build_filenamev([GLib.get_user_runtime_dir(), 'notchfolk-covers']);
         GLib.mkdir_with_parents(dir, 0o700);
         copy = GLib.build_filenamev([dir, `${GLib.uuid_string_random()}.png`]);
         coversMade.push(copy);
@@ -822,7 +822,7 @@ export const Art = GObject.registerClass({
     /** `size` and `radius` in CSS pixels. */
     _init({size, radius}) {
         super._init({
-            style_class: 'isle-art',
+            style_class: 'notchfolk-art',
             y_align: Clutter.ActorAlign.CENTER,
         });
         this._size = size;
@@ -832,9 +832,9 @@ export const Art = GObject.registerClass({
         this._key = null;
         this._showsIcon = false;
         this._placeholder = new St.Icon({
-            gicon: icon('isle-music'),
+            gicon: icon('notchfolk-music'),
             icon_size: Math.round(size * 0.42),
-            style_class: 'isle-art-placeholder',
+            style_class: 'notchfolk-art-placeholder',
         });
         this.setPath('');
         onUiScale(this, scale => this.set_size(this._size * scale, this._size * scale));
@@ -943,7 +943,7 @@ export function easeTo(actor, props, duration, mode = Clutter.AnimationMode.EASE
 /** Slides `actor` along `axis` ('x' or 'y') from `from` to `to` px, in whole pixels: between two pixels a picture
  * or text is resampled and shivers. `onDone` runs on arrival; a later slide on the same axis takes over. */
 export function slideBy(actor, axis, from, to, {delay = 0, duration = 0, onDone = null} = {}) {
-    const key = `_isleSlide${axis}`;
+    const key = `_notchfolkSlide${axis}`;
     const property = `translation_${axis}`;
     actor[key]?.stop();
     actor[key] = null;
@@ -953,9 +953,9 @@ export function slideBy(actor, axis, from, to, {delay = 0, duration = 0, onDone 
         onDone?.();
         return;
     }
-    if (!actor._isleSlideWatched) {
-        actor._isleSlideWatched = true;
-        actor.connect('destroy', () => ['x', 'y'].forEach(each => actor[`_isleSlide${each}`]?.stop()));
+    if (!actor._notchfolkSlideWatched) {
+        actor._notchfolkSlideWatched = true;
+        actor.connect('destroy', () => ['x', 'y'].forEach(each => actor[`_notchfolkSlide${each}`]?.stop()));
     }
     const timeline = new Clutter.Timeline({actor, duration, delay, progress_mode: Clutter.AnimationMode.EASE_OUT_CUBIC});
     // Only when the whole pixel changes: each write re-places the actor's whole subtree and re-picks the pointer.
@@ -1037,12 +1037,12 @@ class VolumeGlyph extends St.Widget {
     _init({size = 16} = {}) {
         super._init({layout_manager: new Clutter.BinLayout(), x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER});
         const part = name => new St.Icon({gicon: icon(name), icon_size: size});
-        this._body = part('isle-speaker-0-symbolic');
-        this._off = part('isle-speaker-off-symbolic');
+        this._body = part('notchfolk-speaker-0-symbolic');
+        this._off = part('notchfolk-speaker-off-symbolic');
         this._off.opacity = 0;
         // Each wave grows out from the speaker's cone.
         this._waves = [1, 2, 3].map(n => {
-            const wave = part(`isle-speaker-wave-${n}-symbolic`);
+            const wave = part(`notchfolk-speaker-wave-${n}-symbolic`);
             wave.opacity = 0;
             wave.set_pivot_point(0.45, 0.5);
             wave.set_scale(0.6, 0.6);
@@ -1116,10 +1116,10 @@ class LevelBar extends St.Widget {
     /** As wide as `width` CSS pixels at any scale. */
     _init({width, styleClass = ''}) {
         super._init({
-            style_class: `isle-level ${styleClass}`,
+            style_class: `notchfolk-level ${styleClass}`,
             y_align: Clutter.ActorAlign.CENTER,
         });
-        this._fill = new St.Widget({style_class: 'isle-level-fill', width: 0});
+        this._fill = new St.Widget({style_class: 'notchfolk-level-fill', width: 0});
         this.add_child(this._fill);
         /** Its width in stage pixels, from `width` in CSS pixels. */
         this._width = 0;
@@ -1211,16 +1211,16 @@ export const Slider = GObject.registerClass({
     /** `scrollStep` is how far one scroll moves it; 0 leaves scrolling to the parent. */
     _init({scrollStep = 0} = {}) {
         super._init({
-            style_class: 'isle-slider',
+            style_class: 'notchfolk-slider',
             reactive: true,
             track_hover: true,
             x_expand: true,
             y_align: Clutter.ActorAlign.CENTER,
         });
         this._scrollStep = scrollStep;
-        this._track = new St.Widget({style_class: 'isle-slider-track'});
-        this._fill = new St.Widget({style_class: 'isle-slider-fill'});
-        this._knob = new St.Widget({style_class: 'isle-slider-knob', opacity: 0});
+        this._track = new St.Widget({style_class: 'notchfolk-slider-track'});
+        this._fill = new St.Widget({style_class: 'notchfolk-slider-fill'});
+        this._knob = new St.Widget({style_class: 'notchfolk-slider-knob', opacity: 0});
         this.add_child(this._track);
         this.add_child(this._fill);
         this.add_child(this._knob);
@@ -1341,11 +1341,11 @@ export const PrivacyDots = GObject.registerClass(
 class PrivacyDots extends St.BoxLayout {
     /** A hidden dot per kind, always in the same order. */
     _init() {
-        super._init({style_class: 'isle-privacy-dots', y_align: Clutter.ActorAlign.CENTER, visible: false});
+        super._init({style_class: 'notchfolk-privacy-dots', y_align: Clutter.ActorAlign.CENTER, visible: false});
         this._dots = {};
         // `phone`: the Shelf shared with a phone, a port open on the network.
         for (const kind of ['camera', 'microphone', 'screenShare', 'phone']) {
-            const dot = new St.Widget({style_class: `isle-privacy-dot ${kind}`, visible: false, y_align: Clutter.ActorAlign.CENTER});
+            const dot = new St.Widget({style_class: `notchfolk-privacy-dot ${kind}`, visible: false, y_align: Clutter.ActorAlign.CENTER});
             dot.set_pivot_point(0.5, 0.5);
             this._dots[kind] = dot;
             this.add_child(dot);
@@ -1376,7 +1376,7 @@ export const RecordingDot = GObject.registerClass(
 class RecordingDot extends St.Widget {
     /** Breathes again each time it is shown. */
     _init() {
-        super._init({style_class: 'isle-recording-dot', y_align: Clutter.ActorAlign.CENTER});
+        super._init({style_class: 'notchfolk-recording-dot', y_align: Clutter.ActorAlign.CENTER});
         this._timer = 0;
         this.connect('notify::mapped', () => this._breathe());
         this.connect('destroy', () => this._timer && GLib.source_remove(this._timer));

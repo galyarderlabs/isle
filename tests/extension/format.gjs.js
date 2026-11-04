@@ -42,7 +42,7 @@ const morning = GLib.DateTime.new_local(2026, 10, 31, 9, 30, 0);
 check('24-hour clock', clockParts(afternoon, false), {time: '15:04', meridiem: ''});
 check('12-hour clock, afternoon', clockParts(afternoon, true), {time: '3:04', meridiem: 'PM'});
 check('12-hour clock, morning', clockParts(morning, true), {time: '9:30', meridiem: 'AM'});
-// Isle's Clock setting wins over GNOME's; 'system' asks GNOME again.
+// Notchfolk's Clock setting wins over GNOME's; 'system' asks GNOME again.
 setClockFormat('12h');
 check('Clock set to 12-hour', uses12Hour(), true);
 setClockFormat('24h');

@@ -18,7 +18,7 @@ import * as Format from '../format.js';
 import {icon, iconButton, label, wrapLines} from '../widgets.js';
 import {SHELF_CAPACITY} from './files.js';
 
-/** isled keeps 20 recent items and up to 10 pinned ones. */
+/** notchfolkd keeps 20 recent items and up to 10 pinned ones. */
 const MAX_CARDS = 30;
 const MAX_PINNED = 10;
 /** Cards drawn at once (about a screenful); the rest follow a few per frame so opening never stutters. */
@@ -44,7 +44,7 @@ function hostOf(url) {
 }
 
 /** Whether `item` matches the search `query` (already lower case): its app's name or what the card shows, or,
- * as isled found (`found`, ids), any of its text. */
+ * as notchfolkd found (`found`, ids), any of its text. */
 function matches(item, query, found) {
     if (!query || found?.has(item.id))
         return true;
@@ -69,9 +69,9 @@ export const ClipsView = GObject.registerClass({
             this._cancelPending();
         });
         this._query = '';
-        /** The items isled found holding `_query` in their whole text (cards show only its start). */
+        /** The items notchfolkd found holding `_query` in their whole text (cards show only its start). */
         this._found = null;
-        /** A search isled is still answering, and how many were asked for. */
+        /** A search notchfolkd is still answering, and how many were asked for. */
         this._searching = null;
         this._searches = 0;
         this._selected = 0;
@@ -84,9 +84,9 @@ export const ClipsView = GObject.registerClass({
         /** A card's "Copied" (or similar), kept across redraws while it shows. */
         this._flashing = null;
 
-        this._strip = new St.BoxLayout({style_class: 'isle-clips'});
+        this._strip = new St.BoxLayout({style_class: 'notchfolk-clips'});
         this._scroll = new St.ScrollView({
-            style_class: 'isle-clips-scroll',
+            style_class: 'notchfolk-clips-scroll',
             hscrollbar_policy: St.PolicyType.EXTERNAL,
             vscrollbar_policy: St.PolicyType.NEVER,
             x_expand: true,
@@ -100,13 +100,13 @@ export const ClipsView = GObject.registerClass({
 
         this._empty = new St.BoxLayout({
             ...VERTICAL,
-            style_class: 'isle-empty',
+            style_class: 'notchfolk-empty',
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
         });
-        this._emptyIcon = new St.Icon({icon_size: 24, style_class: 'isle-empty-icon'});
-        this._emptyTitle = label('', 'isle-empty-title', {x_align: Clutter.ActorAlign.CENTER});
-        this._emptyHint = label('', 'isle-empty-hint', {x_align: Clutter.ActorAlign.CENTER});
+        this._emptyIcon = new St.Icon({icon_size: 24, style_class: 'notchfolk-empty-icon'});
+        this._emptyTitle = label('', 'notchfolk-empty-title', {x_align: Clutter.ActorAlign.CENTER});
+        this._emptyHint = label('', 'notchfolk-empty-hint', {x_align: Clutter.ActorAlign.CENTER});
         this._empty.add_child(this._emptyIcon);
         this._empty.add_child(this._emptyTitle);
         this._empty.add_child(this._emptyHint);
@@ -128,7 +128,7 @@ export const ClipsView = GObject.registerClass({
         this._filter();
     }
 
-    /** The search box's words; isled searches the items' whole text. */
+    /** The search box's words; notchfolkd searches the items' whole text. */
     set query(query) {
         query = query.trim().toLowerCase();
         if (query === this._query && !this._searching)
@@ -145,8 +145,8 @@ export const ClipsView = GObject.registerClass({
         this._selected = 0;
     }
 
-    // Asks isled which items hold `query` in their whole text. The cards change once it answers, from the last
-    // search's straight to this one's, so none blink out and back while typing; without isled, by what they show.
+    // Asks notchfolkd which items hold `query` in their whole text. The cards change once it answers, from the last
+    // search's straight to this one's, so none blink out and back while typing; without notchfolkd, by what they show.
     _search(query, {reset = false} = {}) {
         const search = ++this._searches;
         if (!query) {
@@ -173,7 +173,7 @@ export const ClipsView = GObject.registerClass({
     update({off = this._off, hidden = this._hidden} = {}) {
         this._off = off;
         this._hidden = hidden;
-        // Pinned items stay at the front, the rest newest first (as isled
+        // Pinned items stay at the front, the rest newest first (as notchfolkd
         // sends them).
         const all = hidden ? [] : this._daemon.state.clipboard ?? [];
         this._all = [...all.filter(item => item.pinned), ...all.filter(item => !item.pinned)];
@@ -273,19 +273,19 @@ export const ClipsView = GObject.registerClass({
     _updateEmpty() {
         const searching = this._query || this._kind;
         if (this._hidden) {
-            this._emptyIcon.gicon = icon('isle-clipboard');
+            this._emptyIcon.gicon = icon('notchfolk-clipboard');
             this._emptyTitle.text = 'Hidden while you share your screen';
             this._emptyHint.text = 'Your clipboard shows again once sharing stops';
         } else if (searching) {
-            this._emptyIcon.gicon = icon('isle-search');
+            this._emptyIcon.gicon = icon('notchfolk-search');
             this._emptyTitle.text = 'Nothing found';
             this._emptyHint.text = 'Try other words or another filter';
         } else if (this._off) {
-            this._emptyIcon.gicon = icon('isle-clipboard');
+            this._emptyIcon.gicon = icon('notchfolk-clipboard');
             this._emptyTitle.text = 'Clipboard history is off';
-            this._emptyHint.text = 'Turn it on in Isle’s settings';
+            this._emptyHint.text = 'Turn it on in Notchfolk’s settings';
         } else {
-            this._emptyIcon.gicon = icon('isle-clipboard');
+            this._emptyIcon.gicon = icon('notchfolk-clipboard');
             this._emptyTitle.text = 'Nothing copied yet';
             this._emptyHint.text = 'Text, links, images and files you copy show up here';
         }
@@ -374,7 +374,7 @@ export const ClipsView = GObject.registerClass({
     /** Body, hover actions, header and a feedback layer, stacked. */
     _card(item) {
         const card = new St.Widget({
-            style_class: `isle-clip isle-clip-${item.kind}`,
+            style_class: `notchfolk-clip notchfolk-clip-${item.kind}`,
             layout_manager: new Clutter.BinLayout(),
             reactive: true,
             track_hover: true,
@@ -390,7 +390,7 @@ export const ClipsView = GObject.registerClass({
         card.add_child(this._header(item, card));
 
         const feedback = new St.BoxLayout({
-            style_class: 'isle-clip-feedback',
+            style_class: 'notchfolk-clip-feedback',
             x_expand: true,
             y_expand: true,
             opacity: 0,
@@ -398,7 +398,7 @@ export const ClipsView = GObject.registerClass({
         });
         const feedbackBox = new St.BoxLayout({...VERTICAL, x_expand: true, x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER});
         card._feedbackIcon = new St.Icon({icon_size: 18, x_align: Clutter.ActorAlign.CENTER});
-        card._feedbackLabel = label('', 'isle-clip-feedback-label', {x_align: Clutter.ActorAlign.CENTER});
+        card._feedbackLabel = label('', 'notchfolk-clip-feedback-label', {x_align: Clutter.ActorAlign.CENTER});
         feedbackBox.add_child(card._feedbackIcon);
         feedbackBox.add_child(card._feedbackLabel);
         feedback.add_child(feedbackBox);
@@ -453,7 +453,7 @@ export const ClipsView = GObject.registerClass({
     /** Pin, app icon and age in the top-left corner. */
     _header(item, card) {
         const header = new St.BoxLayout({
-            style_class: 'isle-clip-header',
+            style_class: 'notchfolk-clip-header',
             x_expand: true,
             y_expand: true,
             x_align: Clutter.ActorAlign.START,
@@ -461,11 +461,11 @@ export const ClipsView = GObject.registerClass({
         });
         const app = appFor(item.app_id);
         if (item.pinned)
-            header.add_child(new St.Icon({gicon: icon('isle-pin-fill'), icon_size: 11, style_class: 'isle-clip-pin', y_align: Clutter.ActorAlign.CENTER}));
+            header.add_child(new St.Icon({gicon: icon('notchfolk-pin-fill'), icon_size: 11, style_class: 'notchfolk-clip-pin', y_align: Clutter.ActorAlign.CENTER}));
         if (app)
             header.add_child(new St.Icon({gicon: app.get_icon(), icon_size: 13, y_align: Clutter.ActorAlign.CENTER}));
         const age = GLib.DateTime.new_from_unix_local(Math.floor(item.at_ms / 1000));
-        const ageLabel = label(Format.ago(age), 'isle-clip-age', {y_align: Clutter.ActorAlign.CENTER});
+        const ageLabel = label(Format.ago(age), 'notchfolk-clip-age', {y_align: Clutter.ActorAlign.CENTER});
         card._age = [ageLabel, age];
         header.add_child(ageLabel);
         return header;
@@ -475,7 +475,7 @@ export const ClipsView = GObject.registerClass({
     _body(item) {
         switch (item.kind) {
         case 'image': {
-            const body = new St.Widget({style_class: 'isle-clip-thumb', x_expand: true, y_expand: true});
+            const body = new St.Widget({style_class: 'notchfolk-clip-thumb', x_expand: true, y_expand: true});
             if (item.thumb) {
                 const uri = GLib.filename_to_uri(item.thumb, null).replace(/"/g, '%22');
                 // Sized for the screen's pixels: 2 per CSS px on a 200% display, by St's scale or the monitor's.
@@ -487,8 +487,8 @@ export const ClipsView = GObject.registerClass({
                 body.connect('resource-scale-changed', fit);
             }
             const size = new St.Bin({
-                style_class: 'isle-clip-badge',
-                child: label(`${item.width}×${item.height}`, 'isle-clip-badge-label'),
+                style_class: 'notchfolk-clip-badge',
+                child: label(`${item.width}×${item.height}`, 'notchfolk-clip-badge-label'),
                 x_expand: true,
                 y_expand: true,
                 x_align: Clutter.ActorAlign.START,
@@ -501,35 +501,35 @@ export const ClipsView = GObject.registerClass({
             return layers;
         }
         case 'files': {
-            const box = new St.BoxLayout({...VERTICAL, style_class: 'isle-clip-body', x_expand: true, y_expand: true});
+            const box = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-clip-body', x_expand: true, y_expand: true});
             const names = item.preview.split('\n');
             const [type] = Gio.content_type_guess(names[0], null);
-            box.add_child(new St.Icon({gicon: Gio.content_type_get_icon(type), icon_size: 28, style_class: 'isle-clip-file-icon', x_align: Clutter.ActorAlign.START}));
-            const name = label(names[0], 'isle-clip-file-name');
+            box.add_child(new St.Icon({gicon: Gio.content_type_get_icon(type), icon_size: 28, style_class: 'notchfolk-clip-file-icon', x_align: Clutter.ActorAlign.START}));
+            const name = label(names[0], 'notchfolk-clip-file-name');
             name.clutter_text.ellipsize = Pango.EllipsizeMode.MIDDLE;
             box.add_child(name);
             if (names.length > 1)
-                box.add_child(label(`+${names.length - 1} more`, 'isle-clip-subtle'));
+                box.add_child(label(`+${names.length - 1} more`, 'notchfolk-clip-subtle'));
             return box;
         }
         case 'link': {
-            const box = new St.BoxLayout({...VERTICAL, style_class: 'isle-clip-body', x_expand: true, y_expand: true});
+            const box = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-clip-body', x_expand: true, y_expand: true});
             const link = item.preview.trim();
-            const host = label(hostOf(link), 'isle-clip-host');
+            const host = label(hostOf(link), 'notchfolk-clip-host');
             host.clutter_text.ellipsize = Pango.EllipsizeMode.END;
-            const url = label(link.replace(/^https?:\/\//i, ''), 'isle-clip-url', {y_expand: true, y_align: Clutter.ActorAlign.FILL});
+            const url = label(link.replace(/^https?:\/\//i, ''), 'notchfolk-clip-url', {y_expand: true, y_align: Clutter.ActorAlign.FILL});
             wrapLines(url, Pango.EllipsizeMode.END);
             box.add_child(host);
             box.add_child(url);
             return box;
         }
         default: {
-            const box = new St.BoxLayout({...VERTICAL, style_class: 'isle-clip-body', x_expand: true, y_expand: true});
+            const box = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-clip-body', x_expand: true, y_expand: true});
             const code = CODE_PATTERN.test(item.preview);
             // Leading blank lines and long runs of spaces waste the card.
             const shown = code ? item.preview.replace(/^\s*\n/, '') : item.preview.replace(/\s+/g, ' ').trim();
             // The card's height for its lines: else the text asks for one line and is cut there.
-            const text = label(shown.slice(0, 160), code ? 'isle-clip-text isle-clip-code' : 'isle-clip-text',
+            const text = label(shown.slice(0, 160), code ? 'notchfolk-clip-text notchfolk-clip-code' : 'notchfolk-clip-text',
                 {y_expand: true, y_align: Clutter.ActorAlign.FILL});
             wrapLines(text, Pango.EllipsizeMode.END);
             box.add_child(text);
@@ -539,9 +539,9 @@ export const ClipsView = GObject.registerClass({
     }
 
     // Puts a copy of a clipboard image on the shelf under a readable name: the history's file goes when
-    // the item is pruned, the copy stays until taken off the shelf (isled then deletes it).
+    // the item is pruned, the copy stays until taken off the shelf (notchfolkd then deletes it).
     _shelveImage(item) {
-        const dir = GLib.build_filenamev([GLib.get_user_data_dir(), 'isle', 'shelf']);
+        const dir = GLib.build_filenamev([GLib.get_user_data_dir(), 'notchfolk', 'shelf']);
         GLib.mkdir_with_parents(dir, 0o700);
         const stamp = GLib.DateTime.new_now_local().format('%Y-%m-%d at %H.%M.%S');
         // Two in the same second get " 2", " 3"…: never one over another.
@@ -556,7 +556,7 @@ export const ClipsView = GObject.registerClass({
                         if (e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.EXISTS) && n < 50)
                             attempt(n + 1);
                         else
-                            console.warn(`Isle: could not put the image on the shelf: ${e.message}`);
+                            console.warn(`Notchfolk: could not put the image on the shelf: ${e.message}`);
                     }
                 });
         };
@@ -566,7 +566,7 @@ export const ClipsView = GObject.registerClass({
     /** Pin, a hand-off and × in the top-right corner, shown on hover. */
     _actions(item, card) {
         const actions = new St.BoxLayout({
-            style_class: 'isle-clip-actions',
+            style_class: 'notchfolk-clip-actions',
             x_expand: true,
             y_expand: true,
             x_align: Clutter.ActorAlign.END,
@@ -576,49 +576,49 @@ export const ClipsView = GObject.registerClass({
         // St.Button stops the release it handles, so a click on one of these
         // never also copies the card.
         const button = (iconName, accessibleName, onClick) =>
-            iconButton(iconName, 'isle-clip-action', onClick, {size: 11, accessibleName});
+            iconButton(iconName, 'notchfolk-clip-action', onClick, {size: 11, accessibleName});
 
         // Pinned items stay at the front and survive Clear all.
-        actions.add_child(button(item.pinned ? 'isle-pin-fill' : 'isle-pin',
+        actions.add_child(button(item.pinned ? 'notchfolk-pin-fill' : 'notchfolk-pin',
             item.pinned ? 'Unpin' : 'Pin',
             () => {
                 const pinned = (this._daemon.state.clipboard ?? []).filter(other => other.pinned).length;
                 if (!item.pinned && pinned >= MAX_PINNED) {
-                    this.flash(item, 'isle-pin', 'Pins full · unpin one');
+                    this.flash(item, 'notchfolk-pin', 'Pins full · unpin one');
                     return;
                 }
                 this._daemon.call('clipboard', 'SetPinned', item.id, !item.pinned);
                 if (!item.pinned)
-                    this.flash(item, 'isle-pin-fill', 'Pinned');
+                    this.flash(item, 'notchfolk-pin-fill', 'Pinned');
             }));
 
         if (item.kind === 'image' || item.kind === 'files') {
-            actions.add_child(button('isle-shelf', 'Add to the Files tab', () => {
+            actions.add_child(button('notchfolk-shelf', 'Add to the Files tab', () => {
                 const shelf = this._daemon.state.shelf ?? [];
                 const fresh = item.kind === 'image'
                     ? 1
                     : item.uris.filter(uri => !shelf.some(file => file.uri === uri)).length;
                 if (shelf.length + fresh > SHELF_CAPACITY) {
-                    this.flash(item, 'isle-shelf', 'Files is full');
+                    this.flash(item, 'notchfolk-shelf', 'Files is full');
                     return;
                 }
                 if (item.kind === 'image')
                     this._shelveImage(item);
                 else
                     this._daemon.call('shelf', 'Add', item.uris);
-                this.flash(item, 'isle-shelf', 'Added to Files');
+                this.flash(item, 'notchfolk-shelf', 'Added to Files');
             }));
         } else {
-            actions.add_child(button('isle-tasks', 'Add to Reminders', () => {
+            actions.add_child(button('notchfolk-tasks', 'Add to Reminders', () => {
                 const title = item.preview.split('\n').find(line => line.trim())?.trim().slice(0, 120);
                 if (!title)
                     return;
                 this._daemon.call('todo', 'Add', title);
-                this.flash(item, 'isle-tasks', 'Added to Reminders');
+                this.flash(item, 'notchfolk-tasks', 'Added to Reminders');
             }));
         }
 
-        actions.add_child(button('isle-close-symbolic', 'Remove', () => {
+        actions.add_child(button('notchfolk-close-symbolic', 'Remove', () => {
             // Removed at once; the card shrinks away until the list redraws.
             this._daemon.call('clipboard', 'Remove', item.id);
             card._removed = true;

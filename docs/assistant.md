@@ -35,7 +35,7 @@ answer shows, or later the same day: it remembers the conversation (see
 Notchfolk also provides an optional MCP server for agents outside Notchfolk. Its tool
 set covers Notchfolk's data and actions (daily life, media, focus, shelf, clipboard
 search, system, AI usage); keys, scopes and remote access are managed in
-Settings → MCP or with `isle-mcp-keygen` and `isle-mcp-tunnel`. See
+Settings → MCP or with `notchfolk-mcp-keygen` and `notchfolk-mcp-tunnel`. See
 [the MCP server guide](mcp.md) for setup and permissions. See
 [assistant runtime setup](assistant-runtimes.md) for Hermes, OMP, and MCP.
 See [assistant platform status](assistant-platform-status.md) for implemented features and remaining verification.
@@ -49,7 +49,7 @@ card with the one command it proposes, why, and what to know about it:
 or **Removes files or apps**. Press **Run** (Enter) or **Deny** (Esc); with
 the island closed, the card comes as an alert. A command runs in the
 background as a systemd unit of its own, so you can close the island or
-lock the screen, and Notchfolk follows it to its end, even after isled restarts
+lock the screen, and Notchfolk follows it to its end, even after notchfolkd restarts
 (a command still running when you log out ends with your session); the card
 shows how long it has run and its last lines, and **Stop** ends it (for a
 package manager, press it twice: stopping one halfway can leave things half
@@ -86,23 +86,23 @@ after 10 minutes, and a command is stopped after 30.
    environment variables are not used.
 
 2. Set up speech recognition, once: press **Set up** when the assistant asks
-   for it, or run `~/.local/bin/isle-setup-voice` in a terminal (`isle-setup-voice` with a .deb,
+   for it, or run `~/.local/bin/notchfolk-setup-voice` in a terminal (`notchfolk-setup-voice` with a .deb,
    .rpm or AUR package; from the source folder: `scripts/setup-voice.sh`). It downloads the speech
    model chosen in Settings, `small` by default (265 MB; `tiny` 44 MB, `base`
-   82 MB, `medium` 823 MB; `isle-setup-voice base` names one and picks it in
-   Settings), which `isle-whisper` runs with
+   82 MB, `medium` 823 MB; `notchfolk-setup-voice base` names one and picks it in
+   Settings), which `notchfolk-whisper` runs with
    [whisper.cpp](https://github.com/ggml-org/whisper.cpp): nothing else to
    install. On a computer with a graphics card (NVIDIA, AMD or Intel Arc,
    through Vulkan) it runs there, in about a second; otherwise on the
    processor, in several seconds (it needs AVX2: Intel since 2013, AMD since
    2015). An older Notchfolk's Python environment (up to 3 GB) is no longer
    needed: updating Notchfolk moves you over and deletes it by itself, or run
-   `isle-setup-voice --remove-old`.
+   `notchfolk-setup-voice --remove-old`.
 3. Pick the AI in **Settings → Assistant**, or leave it on Automatic, which
    uses the first one signed in: Claude Code, Codex, Grok, Hermes, OpenAI-compatible
    API, Oh My Pi, opencode, then Antigravity. Select Oh My Pi explicitly when you
    want the Notchfolk assistant to use OMP. An AI installed later is found by itself.
-4. Check with `~/.local/bin/isled --doctor` (`isled --doctor` with a
+4. Check with `~/.local/bin/notchfolkd --doctor` (`notchfolkd --doctor` with a
    package): it lists speech recognition (the models downloaded, and the GPU
    or processor it runs on) and each AI's installation and setup status as
    Notchfolk can determine it. OMP's provider authentication is managed by OMP.
@@ -163,7 +163,7 @@ midnight at the latest, or until it has been quiet for 30 minutes or 2
 hours if you choose so in Settings; then it is deleted, with the AI's own
 copy of it. **Settings → Assistant → Clear the conversation now** deletes it
 at once. Your voice is never kept: the recording lives in memory only until
-it is text. The conversation is kept in `~/.local/share/isle/chat.json`,
+it is text. The conversation is kept in `~/.local/share/notchfolk/chat.json`,
 readable by you alone, and the AI's copy apart from your own chats with it.
 
 ## AI usage
@@ -191,9 +191,9 @@ also when you install one later, and says so once. It adds its hooks to
 `~/.codex/hooks.json` (PermissionRequest and Stop); Codex asks once, at its
 next start, whether to trust them (or trust them in `/hooks`), and a Codex
 older than 0.124 gets `notify` in its `config.toml` instead, for done
-alerts only. Each hook runs `isled --agent-hook`, which asks the island and
+alerts only. Each hook runs `notchfolkd --agent-hook`, which asks the island and
 waits for your answer. With no answer (the alert put away, the agent's
-window in front, Do Not Disturb, isled not running) it says nothing, and the
+window in front, Do Not Disturb, notchfolkd not running) it says nothing, and the
 agent asks in its terminal as it would without Notchfolk; answering in Claude
 Code's terminal first takes the alert away. **Always** keeps the rule
 Claude Code itself suggests, where it suggests it (usually the project's

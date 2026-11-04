@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      # GTK 4 for isle-shelf; cmake, libclang, the Vulkan headers and glslc for isle-whisper (whisper.cpp).
+      # GTK 4 for notchfolk-shelf; cmake, libclang, the Vulkan headers and glslc for notchfolk-whisper (whisper.cpp).
       - name: Install build dependencies
         run: |
           # man-db's index rebuild can stall apt for many minutes on the runners; nothing here needs it.
@@ -59,7 +59,7 @@ jobs:
         id: msrv
         run: |
           echo "core=$(sed -n 's/^rust-version = "\(.*\)"/\1/p' Cargo.toml)" >> "$GITHUB_OUTPUT"
-          echo "shelf=$(sed -n 's/^rust-version = "\(.*\)"/\1/p' crates/isle-shelf/Cargo.toml)" >> "$GITHUB_OUTPUT"
+          echo "shelf=$(sed -n 's/^rust-version = "\(.*\)"/\1/p' crates/notchfolk-shelf/Cargo.toml)" >> "$GITHUB_OUTPUT"
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ steps.msrv.outputs.core }}
@@ -67,11 +67,11 @@ jobs:
         with:
           toolchain: ${{ steps.msrv.outputs.shelf }}
       - uses: Swatinem/rust-cache@v2
-      - name: isle-core and isled on their rust-version
+      - name: notchfolk-core and notchfolkd on their rust-version
         env:
           TOOLCHAIN: ${{ steps.msrv.outputs.core }}
         run: cargo "+$TOOLCHAIN" check --locked
-      - name: The whole workspace on isle-shelf's rust-version
+      - name: The whole workspace on notchfolk-shelf's rust-version
         env:
           TOOLCHAIN: ${{ steps.msrv.outputs.shelf }}
         run: cargo "+$TOOLCHAIN" check --locked --workspace
@@ -102,7 +102,7 @@ jobs:
       - name: ShellCheck
         run: |
           shellcheck --version
-          shellcheck get.sh install.sh uninstall.sh scripts/*.sh scripts/isle-charge-limit scripts/ci/*.sh packaging/aur/update.sh
+          shellcheck get.sh install.sh uninstall.sh scripts/*.sh scripts/notchfolk-charge-limit scripts/ci/*.sh packaging/aur/update.sh
 
   extension:
     runs-on: ubuntu-24.04
@@ -142,7 +142,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      # As the release builds them: isle-whisper needs cmake, libclang, the Vulkan headers and glslc.
+      # As the release builds them: notchfolk-whisper needs cmake, libclang, the Vulkan headers and glslc.
       - name: Install build dependencies
         run: |
           # man-db's index rebuild can stall apt for many minutes on the runners; nothing here needs it.
@@ -160,7 +160,7 @@ jobs:
           scripts/package-system.sh "$tarball"
       - uses: actions/upload-artifact@v4
         with:
-          name: isle-packages
+          name: notchfolk-packages
           path: dist/*
           retention-days: 14
 
@@ -181,16 +181,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          name: isle-packages
+          name: notchfolk-packages
           path: dist
-      - name: Install Isle and start a headless GNOME Shell
+      - name: Install Notchfolk and start a headless GNOME Shell
         env:
           IMAGE: ${{ matrix.image }}
           KIND: ${{ matrix.package }}
         run: |
           case "$KIND" in
-            tarball) package="$(ls dist/isle-*-linux.tar.gz)" ;;
-            deb) package="$(ls dist/isle_*.deb)" ;;
-            rpm) package="$(ls dist/isle-*.rpm)" ;;
+            tarball) package="$(ls dist/notchfolk-*-linux.tar.gz)" ;;
+            deb) package="$(ls dist/notchfolk_*.deb)" ;;
+            rpm) package="$(ls dist/notchfolk-*.rpm)" ;;
           esac
           docker run --rm -v "$PWD:/src:ro" "$IMAGE" /src/scripts/ci/smoke-test.sh "/src/$package"

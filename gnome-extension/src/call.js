@@ -25,8 +25,8 @@ const MAYBE = 'maybe';
 const SERVICE_GRACE_US = 15 * 1000 * 1000;
 /** A call outlasts the microphone closing this long, as apps reopen it to switch devices. */
 const END_DELAY_MS = 4000;
-/** Isle's own recordings: the voice assistant listening. */
-const OWN_APP_ID = 'io.github.zickrian.isle';
+/** Notchfolk's own recordings: the voice assistant listening. */
+const OWN_APP_ID = 'io.galyarderlabs.notchfolk';
 /** Apps that record rather than call, matched in their names. */
 const RECORDERS = ['obs', 'audacity', 'tenacity', 'recorder', 'kooha', 'kdenlive', 'ardour'];
 /** The icon Gvc gives a stream that names none. */
@@ -162,7 +162,7 @@ export class CallMonitor extends Signals.EventEmitter {
             this.emit('changed');
     }
 
-    /** The recordings a call could be on: none while Settings turn calls off, and never a level meter's, Isle's own,
+    /** The recordings a call could be on: none while Settings turn calls off, and never a level meter's, Notchfolk's own,
      * a recorder's or one recording a speaker (an equaliser, #35). */
     _candidates() {
         if (!this._settings.get_boolean('call-activity'))

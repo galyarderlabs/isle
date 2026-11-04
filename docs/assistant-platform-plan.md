@@ -1,24 +1,24 @@
-# Isle Assistant and MCP: Target Architecture
+# Notchfolk Assistant and MCP: Target Architecture
 
 This document describes two separate products: the assistant that runs inside
-Isle, and the MCP server that lets AI agents outside Isle use Isle's features.
+Notchfolk, and the MCP server that lets AI agents outside Notchfolk use Notchfolk's features.
 Current implementation is in [assistant-platform-status.md](assistant-platform-status.md);
 remaining work is in [assistant-platform-tasks.md](assistant-platform-tasks.md).
 
-## 1. Assistant inside Isle
+## 1. Assistant inside Notchfolk
 
-The in-app assistant is Isle's own harness. Its supported runtimes are Hermes
-Agent and Oh My Pi (OMP). Isle owns provider selection, its UI, Isle-specific
+The in-app assistant is Notchfolk's own harness. Its supported runtimes are Hermes
+Agent and Oh My Pi (OMP). Notchfolk owns provider selection, its UI, Notchfolk-specific
 context, the actions it executes, and the permissions for those actions.
 
 - **Hermes Agent:** connect to Hermes through its local API. Keep Hermes'
-  identity, personality, memory, and native runtime behavior. Isle handles
-  Isle-owned desktop actions through its own action and approval path. Hermes'
+  identity, personality, memory, and native runtime behavior. Notchfolk handles
+  Notchfolk-owned desktop actions through its own action and approval path. Hermes'
   native tools execute inside its gateway and use Hermes' permissions; their
-  approval requests are not currently bridged into Isle's alert UI.
+  approval requests are not currently bridged into Notchfolk's alert UI.
 - **Oh My Pi:** connect through OMP's RPC interface. Keep OMP's native coding
-  tools and runtime behavior. OMP can use Isle's in-app action path for
-  Isle-owned actions; those actions still go through Isle's permissions.
+  tools and runtime behavior. OMP can use Notchfolk's in-app action path for
+  Notchfolk-owned actions; those actions still go through Notchfolk's permissions.
   OMP's configured default model is the normal choice; allow a manual
   `provider/model` override without loading the full model catalog in Settings.
   Native tools that need approval must keep their approval behavior; never
@@ -30,24 +30,24 @@ continuation, cancellation, and useful errors.
 
 Direct OpenAI-compatible BYOK is not a target provider for the in-app
 assistant. AI agents that use OpenAI-compatible models can use their existing
-harness and connect to Isle through the external MCP server described below.
+harness and connect to Notchfolk through the external MCP server described below.
 Existing provider code outside Hermes and OMP is not part of this target.
 
-## 2. MCP for AI agents outside Isle
+## 2. MCP for AI agents outside Notchfolk
 
-The MCP server is an external interface to Isle's features. It wraps Isle's
+The MCP server is an external interface to Notchfolk's features. It wraps Notchfolk's
 data and actions as MCP tools so agents such as Claude Code, Antigravity, or
 Codex can call them. Configure the MCP endpoint and credentials in the external agent's own
 MCP settings. This is not an internal tool protocol for the assistant inside
-Isle, and the external agent's model or API key is not configured in Isle.
+Notchfolk, and the external agent's model or API key is not configured in Notchfolk.
 
-The MCP surface must cover all Isle pages and capabilities, including useful
+The MCP surface must cover all Notchfolk pages and capabilities, including useful
 ways to query their data. For example, an agent must be able to request food
 entries for a specific date or date range and receive the matching records;
-it must not only be able to add a food entry. Inventory every existing Isle
+it must not only be able to add a food entry. Inventory every existing Notchfolk
 read and action, including tasks, reminders, calendar, focus, media, prayer,
 calories, water, clipboard/shelf, notifications, calls, usage, and any other
-Isle-owned capability. Define typed inputs and results for each operation.
+Notchfolk-owned capability. Define typed inputs and results for each operation.
 
 Apply per-client scopes and write allowlists. Read-only data queries should be
 available under read scopes; writes and sensitive desktop actions need the
@@ -55,13 +55,13 @@ appropriate authorization and audit trail. If a capability cannot be exposed,
 record its specific technical or security reason and provide the closest
 useful supported operation where possible.
 
-The MCP server and the in-app assistant may call the same underlying Isle
+The MCP server and the in-app assistant may call the same underlying Notchfolk
 services, but they remain separate interfaces with separate clients and setup.
 Do not require the in-app Hermes or OMP adapter to speak MCP.
 
-## Isle-managed context for OMP
+## Notchfolk-managed context for OMP
 
-Isle manages three context files for OMP, the non-Hermes runtime in the
+Notchfolk manages three context files for OMP, the non-Hermes runtime in the
 in-app assistant:
 
 - `SOUL.md`: personality and working style.
@@ -76,8 +76,8 @@ size limits, and safe memory updates before allowing automatic writes.
 ## Settings boundaries
 
 Assistant Settings configure the in-app Hermes or OMP runtime, model where
-available, and Isle-managed OMP context. MCP client setup belongs in the
-external agent's own MCP settings; Isle's MCP server configuration covers its
+available, and Notchfolk-managed OMP context. MCP client setup belongs in the
+external agent's own MCP settings; Notchfolk's MCP server configuration covers its
 endpoint, authentication, and permissions. Do not add an OpenAI-compatible
 provider, base-URL field, or model API-key field to Assistant Settings for
 this target.
@@ -98,14 +98,14 @@ this target.
 
 ## Acceptance
 
-1. Hermes and OMP each complete a multi-step request in the Isle assistant UI
-   and route Isle-owned actions through Isle's permission path.
+1. Hermes and OMP each complete a multi-step request in the Notchfolk assistant UI
+   and route Notchfolk-owned actions through Notchfolk's permission path.
 2. An external MCP client can discover and use tools for every inventoried
-   Isle capability, with useful read queries as well as actions. For example,
+   Notchfolk capability, with useful read queries as well as actions. For example,
    a date-filtered calorie query returns the matching data.
 3. An external agent connects using its own MCP settings and receives results
-   from Isle; its model/provider credentials remain in that agent's harness.
+   from Notchfolk; its model/provider credentials remain in that agent's harness.
 4. MCP read scopes, write allowlists, authentication, and audit behavior are
    verified for local and authenticated network access.
-5. OMP receives Isle-managed `SOUL.md`, `USER.md`, and `MEMORY.md`; Hermes'
+5. OMP receives Notchfolk-managed `SOUL.md`, `USER.md`, and `MEMORY.md`; Hermes'
    own identity and memory remain untouched.

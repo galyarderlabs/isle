@@ -1,7 +1,7 @@
-# isled D-Bus API
+# notchfolkd D-Bus API
 
-`isled` owns `io.github.zickrian.isle.Daemon` on the session bus and serves every
-interface at `/io/github/zickrian/isle/Daemon`. State is exposed as read-only string
+`notchfolkd` owns `io.galyarderlabs.notchfolk.Daemon` on the session bus and serves every
+interface at `/io/github/galyarderlabs/notchfolk/Daemon`. State is exposed as read-only string
 properties holding JSON, with `PropertiesChanged` emitted on every change.
 Timestamps are milliseconds since the Unix epoch; durations are
 milliseconds unless the name says `_us` (microseconds).
@@ -12,15 +12,15 @@ assistant (every `Assistant1` method but `ClearChat`), answer an AI agent
 with a phone (`Share1.Start`, `Stop` and `Answer`) answer GNOME Shell only, where the extension runs; any other caller gets
 `org.freedesktop.DBus.Error.AccessDenied`.
 
-`isled --version`, `isled --doctor` (what works: the service, speech
+`notchfolkd --version`, `notchfolkd --doctor` (what works: the service, speech
 recognition, each AI's install and sign-in, and whether its alerts are on) and
-`isled --report` (that, the versions and recent logs, for a bug report) print
-and exit. `isled --unhook-all` takes Isle's alert hooks out of Claude Code's
+`notchfolkd --report` (that, the versions and recent logs, for a bug report) print
+and exit. `notchfolkd --unhook-all` takes Notchfolk's alert hooks out of Claude Code's
 and Codex's settings (`uninstall.sh` runs it), one line per AI. A second
-`isled` started by hand exits at once ("already running") and leaves the
+`notchfolkd` started by hand exits at once ("already running") and leaves the
 running one alone.
 
-## io.github.zickrian.isle.Media1
+## io.galyarderlabs.notchfolk.Media1
 
 The active MPRIS player: the one picked with `Choose` while it runs, else the one playing, else the one
 that played last, a paused song before a browser's media that rests. Another player starting to play ends
@@ -33,10 +33,10 @@ the pick. A player put away with `Dismiss` is left out until it plays again.
 | `Raise()` | | Bring the player's window to the front. |
 | `Choose(s name)` | | Show and control the player `name` (from `Players`). |
 | `Dismiss()` | | Put the active player away until it plays again (the Music page's ×); another shows, or none. |
-| `SetLyrics(b enabled)` | | Look lyrics up online (LRCLIB), or not; off, `Lyrics` says `off`. The extension sends its setting whenever isled appears. |
-| `SetWatching(b watching)` | | While on, read the active player at once and then every second it plays (every 0.35 s to confirm a read that fell behind or while it buffers, every 0.5 s after a read that was off or while a new speed is measured, every 10 s after a read failed). The extension turns it on only while the open island shows the position (the player or lyrics), and sends it again whenever isled appears; off, isled sets no timer at all. |
+| `SetLyrics(b enabled)` | | Look lyrics up online (LRCLIB), or not; off, `Lyrics` says `off`. The extension sends its setting whenever notchfolkd appears. |
+| `SetWatching(b watching)` | | While on, read the active player at once and then every second it plays (every 0.35 s to confirm a read that fell behind or while it buffers, every 0.5 s after a read that was off or while a new speed is measured, every 10 s after a read failed). The extension turns it on only while the open island shows the position (the player or lyrics), and sends it again whenever notchfolkd appears; off, notchfolkd sets no timer at all. |
 | `NowPlaying` | `s` | `{available, identity, desktop_entry, status, title, artist, album, art_path, length_us, position_us, sampled_at_ms, rate, can_go_next, can_go_previous, can_play_pause, can_seek, resting}`; `resting`: a browser's media that is over (paused at its end, or paused for a minute), which the closed island leaves out |
-| `Lyrics` | `s` | `{track, status, lines: [{time_ms, text}]}`; `status` is `none`, `loading`, `synced`, `plain` (lines have `time_ms` -1), `instrumental`, `not_found`, `error` (LRCLIB could not be reached), `unavailable` (LRCLIB answered but is busy or failing) or `off` (turned off with `SetLyrics`); isled retries `error` and `unavailable` on its own. |
+| `Lyrics` | `s` | `{track, status, lines: [{time_ms, text}]}`; `status` is `none`, `loading`, `synced`, `plain` (lines have `time_ms` -1), `instrumental`, `not_found`, `error` (LRCLIB could not be reached), `unavailable` (LRCLIB answered but is busy or failing) or `off` (turned off with `SetLyrics`); notchfolkd retries `error` and `unavailable` on its own. |
 | `Players` | `s` | `[{name, identity, desktop_entry, playing, active}]`, sorted by name; empty unless two or more players run. |
 
 The position is sampled when something changes, and while watched (see
@@ -54,15 +54,15 @@ two agreeing steps between reads show another speed (0.25–4, a player that kee
 `Rate` at 1 while it plays faster); that measure ends with a seek, a pause, the
 song or a new `Rate`. While two reads in a row stand at the same place though
 the player says it plays (buffering), `rate` is 0 until a read moves on. A length that disappears for the same track is kept.
-While playing with no length yet, isled reads the player again after 1s and
+While playing with no length yet, notchfolkd reads the player again after 1s and
 after 3s. A relative seek, used when the player gives no track id, is measured
 from this position when the player's own `Position` read is 0.
 
 The control methods only fail when no player is running. They return
 without waiting for the player, so a slow player cannot hold the daemon up;
-if the player then rejects the command, isled only logs it.
+if the player then rejects the command, notchfolkd only logs it.
 
-## io.github.zickrian.isle.Pomodoro1
+## io.galyarderlabs.notchfolk.Pomodoro1
 
 | Member | Signature | |
 |---|---|---|
@@ -74,7 +74,7 @@ if the player then rejects the command, isled only logs it.
 | `Config` | `s` | `{focus_minutes, short_break_minutes, long_break_minutes, sessions_before_long_break, auto_start_breaks, auto_start_focus}` |
 | `PhaseFinished(s finished, s next)` | signal | A phase ran out (not emitted for `Skip` or `Stop`). |
 
-## io.github.zickrian.isle.Todo1
+## io.galyarderlabs.notchfolk.Todo1
 
 | Member | Signature | |
 |---|---|---|
@@ -82,16 +82,16 @@ if the player then rejects the command, isled only logs it.
 | `SetDone(t id, b done)`, `Rename(t id, s title)`, `Remove(t id)`, `ClearDone()` | | Finished tasks are cleared at midnight. |
 | `Items` | `s` | `[{id, title, done, done_at_ms}]`; `done_at_ms` is when the task was ticked off, or null. |
 
-## io.github.zickrian.isle.Calendar1
+## io.galyarderlabs.notchfolk.Calendar1
 
-Isle's own calendar events, kept in `~/.local/share/isle/calendar.json`.
+Notchfolk's own calendar events, kept in `~/.local/share/notchfolk/calendar.json`.
 Times are local wall-clock times. (Events of the desktop's calendars come
 from GNOME Shell, not from here.)
 
 | Member | Signature | |
 |---|---|---|
 | `Add(s date, s text) → t id` | | Adds an event on `date` (`YYYY-MM-DD`) from a line of text, taking its time from it: `Dinner 8:00 pm`, `Standup 9:00-9:15`, `Gym at 7pm`; without a time it lasts all day. A date that does not exist, or no title left, is refused with `InvalidArgs`. |
-| `AddTo(s calendar, s date, s text) → s` | | As `Add`, to a desktop calendar: a uid `Calendars` lists, or `"isle"` for Isle's own; `""`, or a uid no longer there, tries each account calendar in order (without waiting on which only read: one that does turns the event down). When none takes it (read only, offline, signed out) the event is kept in Isle's own instead. A calendar out of reach (EDS offline, or its server not taking a TCP connection within 3 seconds; behind a proxy, EDS's word is taken) isn't written to, as EDS would only queue the event: the event waits in Isle's own (its `send`) and isled tries it again every 30 seconds with the same iCalendar uid, so it never lands twice; once there it leaves Isle's own. It stays in Isle's own for good when its calendar goes, or turns it down 10 times running. One its server had, with no answer within 20 seconds, counts as added, so it never shows twice; one still on its way to the server by then waits in Isle's own as above. Returns where it went: the calendar's uid, or `""` for Isle's own. |
+| `AddTo(s calendar, s date, s text) → s` | | As `Add`, to a desktop calendar: a uid `Calendars` lists, or `"notchfolk"` for Notchfolk's own; `""`, or a uid no longer there, tries each account calendar in order (without waiting on which only read: one that does turns the event down). When none takes it (read only, offline, signed out) the event is kept in Notchfolk's own instead. A calendar out of reach (EDS offline, or its server not taking a TCP connection within 3 seconds; behind a proxy, EDS's word is taken) isn't written to, as EDS would only queue the event: the event waits in Notchfolk's own (its `send`) and notchfolkd tries it again every 30 seconds with the same iCalendar uid, so it never lands twice; once there it leaves Notchfolk's own. It stays in Notchfolk's own for good when its calendar goes, or turns it down 10 times running. One its server had, with no answer within 20 seconds, counts as added, so it never shows twice; one still on its way to the server by then waits in Notchfolk's own as above. Returns where it went: the calendar's uid, or `""` for Notchfolk's own. |
 | `Calendars() → s` | | The desktop's calendars a new event can go to, `[{uid, name, account, color}]` by account (its own calendar first) and name: those of Online Accounts and other accounts in Evolution Data Server, without the ones that only read (birthdays, weather, web subscriptions, and any EDS reports as not `Writable`, such as a subscribed holiday calendar) nor EDS's own on this computer. `[]` without accounts; fails (Failed) while EDS can't be asked (not running yet), so that is never taken for no accounts. |
 | `Colors() → s` | | Every desktop calendar's colour, `{uid: "#rrggbb"}`, read only ones too: GNOME Shell's events name their calendar's uid on the first line of their id. `{}` without EDS. |
 | `Parse(s text) → s` | | How `Add` reads `text`, without adding it: `{title, start, end}`, times as `HH:MM` or null. Fails (InvalidArgs) when no title is left. |
@@ -108,7 +108,7 @@ leaving out those turned off, and those of an account whose calendars are off.
 Each one left is opened once (`OpenCalendar`, and `Calendar.Open` when it
 reads as read only, then asked again for up to 3 seconds, as a calendar just
 opened reads as read only until it has reached its server) for its `Writable`
-property. Writable is remembered while isled runs; read only, for an hour, and
+property. Writable is remembered while notchfolkd runs; read only, for an hour, and
 only from a server that takes a connection (out of reach, EDS calls a calendar
 read only for now).
 
@@ -124,9 +124,9 @@ most 256 events). Without EDS (not installed, masked or not answering within
 five seconds) it is `""`; empty or over-long ids are refused with
 `InvalidArgs`.
 
-## io.github.zickrian.isle.Calories1
+## io.galyarderlabs.notchfolk.Calories1
 
-A local food log kept in `~/.local/share/isle/calories.json`.
+A local food log kept in `~/.local/share/notchfolk/calories.json`.
 
 | Member | Signature | |
 |---|---|---|
@@ -135,9 +135,9 @@ A local food log kept in `~/.local/share/isle/calories.json`.
 | `Remove(t id)` | | Removes an entry. |
 | `Entries` | `s` | `[{id, food, calories, at_ms}]`, oldest first. |
 
-## io.github.zickrian.isle.Water1
+## io.galyarderlabs.notchfolk.Water1
 
-A local water log kept in `~/.local/share/isle/water.json`.
+A local water log kept in `~/.local/share/notchfolk/water.json`.
 
 | Member | Signature | |
 |---|---|---|
@@ -145,7 +145,7 @@ A local water log kept in `~/.local/share/isle/water.json`.
 | `Remove(t id)` | | Removes an entry. |
 | `Entries` | `s` | `[{id, amount_ml, at_ms}]`, oldest first. |
 
-## io.github.zickrian.isle.Prayer1
+## io.galyarderlabs.notchfolk.Prayer1
 
 Prayer schedule for the selected city, calculated by AlAdhan using Kemenag
 Indonesia method 20.
@@ -157,7 +157,7 @@ Indonesia method 20.
 | `RefreshForDate(s date)` | | Fetch a date (`YYYY-MM-DD`) in the selected city's timezone. |
 | `Schedule` | `s` | `{status, city, country, date, timezone, prayers:[{name,time}]}` or a status/error object. |
 
-## io.github.zickrian.isle.Shelf1
+## io.galyarderlabs.notchfolk.Shelf1
 
 | Member | Signature | |
 |---|---|---|
@@ -167,12 +167,12 @@ Indonesia method 20.
 | `Items` | `s` | `[{uri, name, added_at_ms}]`, newest first. |
 
 Files a phone sends (see `Share1`) are kept in the shelf's own folder,
-`~/.local/share/isle/shelf`, as copied clipboard images are; taking one off
+`~/.local/share/notchfolk/shelf`, as copied clipboard images are; taking one off
 the shelf deletes it.
 
-## io.github.zickrian.isle.Share1
+## io.galyarderlabs.notchfolk.Share1
 
-Sharing the shelf with a phone (see SECURITY.md). While it runs, isled serves
+Sharing the shelf with a phone (see SECURITY.md). While it runs, notchfolkd serves
 one web page and the shelf's files over plain HTTP on the local network; off,
 nothing listens and nothing runs.
 
@@ -199,7 +199,7 @@ taken as no change).
 The extension calls `Stop` when it is turned off.
 
 The phone's side, all under `/<token>`: `GET /<token>` the page; `POST
-api/hello` asks to connect (sets the `isle` cookie, `HttpOnly`,
+api/hello` asks to connect (sets the `notchfolk` cookie, `HttpOnly`,
 `SameSite=Strict`; answers `{status, code}`, `status` being `asking`,
 `allowed`, `denied`, `removed` or `expired`, or `403 {status: denied | busy}`,
 or `403 {status: later, wait}` for a new phone from an address that made one
@@ -209,20 +209,20 @@ allowed, the shelf (`{v, status, items: [{id, name, size, kind, thumb, view}],
 room, capacity, max_file, left}`), held up to 25 s until `v` changes or the
 page goes; `POST api/bye` the page is going (closed, reloaded); `POST api/picking` the page goes behind the phone's file picker; `GET f/<id>` a file (`?view=1` shows a JPEG, PNG, GIF or WebP in
 place); `GET t/<id>` a picture's preview (the extension's own, in
-`~/.cache/isle/shelf`); `PUT api/upload?name=<name>` a file as the body, with
+`~/.cache/notchfolk/shelf`); `PUT api/upload?name=<name>` a file as the body, with
 a `Content-Length`, answered `201 {name}` or `400 incomplete`, `403
 not-allowed`, `409 shelf-full`, `411 length`, `413 too-big` or
 `session-full`, `507 disk`. Every other request is `404 Not found`.
 
-## io.github.zickrian.isle.Clipboard1
+## io.galyarderlabs.notchfolk.Clipboard1
 
 Clipboard history. The extension watches the clipboard and reports each
-copy; isled keeps the list in `~/.local/share/isle/clipboard.json` and
-images in `~/.local/share/isle/clips` (`<hash>.png` as copied, plus a
+copy; notchfolkd keeps the list in `~/.local/share/notchfolk/clipboard.json` and
+images in `~/.local/share/notchfolk/clips` (`<hash>.png` as copied, plus a
 `<hash>.card.png` thumbnail: the middle of the image cut to the card's shape
 at 272×216, or at its own pixels when too small or thin to fill that).
 Thumbnails older versions made (`<hash>.thumb.png`) are made again shortly
-after isled starts. `app_id` is the desktop app id of the app copied from,
+after notchfolkd starts. `app_id` is the desktop app id of the app copied from,
 or `""`.
 
 | Member | Signature | |
@@ -244,10 +244,10 @@ it was. Beyond 20 unpinned items the oldest are
 dropped; pinned items are only removed by hand. Unknown ids and invalid
 content are rejected with `InvalidArgs`.
 
-## io.github.zickrian.isle.Reminders1
+## io.galyarderlabs.notchfolk.Reminders1
 
 Reminders the voice assistant sets ("remind me in ten minutes to…"), kept in
-`~/.local/share/isle/reminders.json`. The extension shows each as an alert
+`~/.local/share/notchfolk/reminders.json`. The extension shows each as an alert
 when it is due, then dismisses it.
 
 | Member | Signature | |
@@ -256,10 +256,10 @@ when it is due, then dismisses it.
 | `Dismiss(t id)` | | Forgets one, once shown (or cancelled). |
 | `Items` | `s` | `[{id, text, due_ms}]`, soonest first. |
 
-## io.github.zickrian.isle.AppUsage1
+## io.galyarderlabs.notchfolk.AppUsage1
 
 Time spent in each application, timed by the extension as GNOME's focus
-changes and kept in `~/.local/share/isle/app-usage.json` for 30 days. Only
+changes and kept in `~/.local/share/notchfolk/app-usage.json` for 30 days. Only
 the application in front is timed, whether or not there is keyboard or
 pointer input; it stops when focus moves, when no window is in front, or
 when the screen locks. Five minutes without input pause it too, unless a
@@ -276,10 +276,10 @@ Every method is GNOME Shell's: the history names every app the user ran.
 | `GetStats() → s` | | `{today: [{id, name, ms}], week: [{id, name, ms}], month: [{id, name, ms}]}`, most used first; `week` is the last seven days including today, and `month` the last 30 (all that is kept). |
 | `Clear()` | | Forgets every day. |
 
-## io.github.zickrian.isle.Assistant1
+## io.galyarderlabs.notchfolk.Assistant1
 
-The voice assistant. isled records the microphone, turns speech into text
-(whisper.cpp, through `isle-whisper`), asks the AI picked in Settings
+The voice assistant. notchfolkd records the microphone, turns speech into text
+(whisper.cpp, through `notchfolk-whisper`), asks the AI picked in Settings
 (Claude Code, Codex, Grok, opencode or agy, with the user's own sign-in), runs the look-up
 tools the AI asks for (finding files and apps, reading small text files), and
 publishes the answer; the extension runs its actions. It works step by step:
@@ -289,14 +289,14 @@ A request carries on after `End`. The speech model runs only while needed;
 the AI starts on `Warm` and quits 3 minutes after the last request.
 
 Checks that only read (`uname`, `apt-cache policy`, `<program> --version`…)
-isled runs itself, without a shell. A command that changes the computer is
+notchfolkd runs itself, without a shell. A command that changes the computer is
 a `run` action: `{type: "run", id, command, why, detail, risks, spawn}`,
 where `spawn` is the `systemd-run` argv that starts it as unit
-`isle-run-<id>` (the user's, or the system's for root), its output in
-`~/.cache/isle/runs/run-<id>.log`. The extension shows the card, waits for
-Run, checks `spawn` starts exactly `command` with Isle's own options, and
-starts it; isled follows the log to the end (its last line is
-`[isle-exit <code>]`) and, after a restart, finds running ones again in
+`notchfolk-run-<id>` (the user's, or the system's for root), its output in
+`~/.cache/notchfolk/runs/run-<id>.log`. The extension shows the card, waits for
+Run, checks `spawn` starts exactly `command` with Notchfolk's own options, and
+starts it; notchfolkd follows the log to the end (its last line is
+`[notchfolk-exit <code>]`) and, after a restart, finds running ones again in
 `tasks.json`.
 
 | Member | Signature | |
@@ -311,15 +311,15 @@ starts it; isled follows the log to the end (its last line is
 | `NewChat()` | | Starts a new conversation. The old one comes back with `UndoNewChat()` within 5 seconds; after that it is deleted, with the AI's copy. |
 | `UndoNewChat()` | | Brings back the conversation `NewChat` put away. |
 | `ClearChat()` | | Deletes the conversation now, with the AI's copy. Any caller (Settings asks it). |
-| `State` | `s` | `{phase, heard, reply, actions, error, hint, sign_in, provider, set_up, model, listen, heard_nothing, activity, turn, step}`. With `sign_in`, signing in to `provider` fixes the error; with `set_up`, running `isle-setup-voice model` does. `phase` is `idle`, `listening`, `transcribing`, `thinking`, `acting`, `reply` or `error`. In `acting`, `actions` are to run now, once per `step`, and reported with `Results`; in `reply`, they are what the answer asks, run once per `turn`. `activity` says what the AI is doing while it thinks ("Searching ~/Downloads for “ttd”…"); `draft`, its answer so far as it writes it. `card` is the command it asked to run, or null: `{id, command, why, detail, risks, status, output, seconds, exit, stop}`, `risks` some of `root`, `internet`, `removes`, `status` `waiting`, `running`, `done`, `failed`, `denied` or `stopped`, `output` its last lines (secrets blanked), and `stop` the argv that stops it. |
+| `State` | `s` | `{phase, heard, reply, actions, error, hint, sign_in, provider, set_up, model, listen, heard_nothing, activity, turn, step}`. With `sign_in`, signing in to `provider` fixes the error; with `set_up`, running `notchfolk-setup-voice model` does. `phase` is `idle`, `listening`, `transcribing`, `thinking`, `acting`, `reply` or `error`. In `acting`, `actions` are to run now, once per `step`, and reported with `Results`; in `reply`, they are what the answer asks, run once per `turn`. `activity` says what the AI is doing while it thinks ("Searching ~/Downloads for “ttd”…"); `draft`, its answer so far as it writes it. `card` is the command it asked to run, or null: `{id, command, why, detail, risks, status, output, seconds, exit, stop}`, `risks` some of `root`, `internet`, `removes`, `status` `waiting`, `running`, `done`, `failed`, `denied` or `stopped`, `output` its last lines (secrets blanked), and `stop` the argv that stops it. |
 | `History` | `s` | The conversation: `[{role, text, spoken, command, status, at}]`, `role` `user`, `assistant` or `command` (with `command` and its `status`), the newest 50. |
 | `Models` | `s` | Each AI installed and signed in, its plan and the models the plan allows: `{claude, codex, grok, opencode, agy}`, each `{plan, default, default_name, models: [{id, name}], checked_ms}`. `plan` is as the account has it (`Team`, `Pro`, `Free`; empty for agy, whose plan cannot be read); `default` is what an empty model in the context answers with (empty: the CLI's own choice). Claude's models are its aliases (`opus`, `sonnet`, `haiku`, never Fable), named as the model each means now, from Claude Code's own cached catalog; Codex's from its app server's `model/list`; Grok's from `grok models`; opencode's from `opencode models` (no plan; its default is the model the user's own opencode uses); agy's from `agy models`. Kept in `models.json`. Any caller (Settings reads it). |
 | `RefreshModels()` | | Looks at `Models` again in the background and returns at once; each AI but Claude at most once a minute. Also looked at: Codex's and Claude's when the usage shows another plan, agy's, Grok's and opencode's every 6 hours as the assistant opens (and Codex's when it has none), and an AI's after it refused a model. Any caller. |
 | `ModelSwitched` (signal) | `ssss` | `(provider, plan, picked, used)`, by names: the AI answers with `used` because its plan lacks `picked` (or it refused it, and the request was asked again with `used`). Once per pick; the pick is kept and used again once the plan allows it. |
-| `Notice` (signal) | `sb` | `(text, ok)`: a command ended while no request watched it (isled had restarted). |
+| `Notice` (signal) | `sb` | `(text, ok)`: a command ended while no request watched it (notchfolkd had restarted). |
 | `Level` (signal) | `d` | The microphone's level (0..1) while listening, 20 times a second. |
 
-## io.github.zickrian.isle.Usage1
+## io.galyarderlabs.notchfolk.Usage1
 
 How much of the user's AI plans is used. Claude's numbers come from
 `api.anthropic.com/api/oauth/usage` with Claude Code's sign-in (asked every
@@ -336,7 +336,7 @@ nothing runs.
 | `Usage` | `s` | `{providers: [{id, name, plan, windows: [{label, percent, resets_at_ms}], updated_ms, note}]}`; a provider not signed in is left out. |
 | `Alert` (signal) | `ssdx` | `(provider, window, percent, resets_at_ms)`: a limit passed the warning or the critical share, once per window. |
 
-## io.github.zickrian.isle.Router1
+## io.galyarderlabs.notchfolk.Router1
 
 What the LLM gateway reports: requests, tokens and its own cost estimate
 ("est.", never billing), behind one gateway abstraction. The first gateway
@@ -345,7 +345,7 @@ Remote can use a dashboard password and persisted session cookie from GNOME
 Keyring. A compatible usage proxy can instead receive a bearer key at
 `/notch?period=…`; its camelCase response is mapped into Router state.
 Remote passwords and keys use HTTPS except on loopback.
-Below 9Router version 0.4.42 the usage endpoint once leaked API keys: isled
+Below 9Router version 0.4.42 the usage endpoint once leaked API keys: notchfolkd
 fetches no usage. Polled only while the chip or page is shown (10–15 s,
 10 s timeout, one request in flight), backing off 2 s → 5 s → 15 s → 60 s
 on failure and recovering by itself. Turned off or unwatched, nothing runs.
@@ -360,48 +360,48 @@ on failure and recovering by itself. Turned off or unwatched, nothing runs.
 | `Refresh()` | | Reads again now. |
 | `State` | `s` | `{status, version, period, stats}` — `status` `connected`, `unauthorized`, `unreachable`, `invalid-response`, `outdated`, `needs-local-setup`, `needs-credentials`, `needs-configuration`, `keyring-unavailable`, `https-required` or empty; `stats`: `{requests, prompt_tokens, completion_tokens, cached_tokens, cost, by_model: [{model, tokens}], recent: [{model, prompt_tokens, completion_tokens, ok, at_ms}], active}`. |
 
-## io.github.zickrian.isle.Agents1
+## io.galyarderlabs.notchfolk.Agents1
 
 AI coding agents on the island: Claude Code and Codex ask their permissions
 there (`Decide`), and say when they are waiting or done (`Report`). The
 extension turns each on for an agent it finds (Settings can turn it off),
-which puts hooks in that AI's own config, running isled as a client
-(`isled --agent-hook claude|codex`).
+which puts hooks in that AI's own config, running notchfolkd as a client
+(`notchfolkd --agent-hook claude|codex`).
 
 | Member | Signature | |
 |---|---|---|
-| `SetHooked(s provider, b on)` | | Puts Isle's hook in `claude`'s or `codex`'s config, or takes it out (below). GNOME Shell only. Fails with `Failed` and a message to show (`Codex already sends its notifications to another program`, a config that does not parse); an unknown `provider` is `InvalidArgs`. |
+| `SetHooked(s provider, b on)` | | Puts Notchfolk's hook in `claude`'s or `codex`'s config, or takes it out (below). GNOME Shell only. Fails with `Failed` and a message to show (`Codex already sends its notifications to another program`, a config that does not parse); an unknown `provider` is `InvalidArgs`. |
 | `Decide(s json)` | `s` | From the hook: `{provider, project, cwd, session, tool, input, always, pids}` (`input` the command or file exactly as the AI would run it, cut to 300 characters, `InvalidArgs` with a line break or a character that hides or reorders text; `always` whether the AI offers to keep a rule, which only Claude Code and Grok do; `pids` the hook's parent processes, nearest first, at most 32, so the island can tell the agent's own window by its process). Emits `Asking` and waits, at most 9½ minutes, for `Resolve`: returns `allow`, `always` or `deny`, or `""` when the island will not answer (the AI then asks in its own terminal). Returns `""` at once with 8 already waiting, or while the island is away (`SetPresent`). When the caller leaves the bus first (the user answered in the terminal), it ends and emits `Withdrawn`. |
 | `Resolve(s id, s decision)` | | The island's answer to `Asking` `id`. GNOME Shell only. |
-| `SetPresent(b present)` | | Whether the island is there to answer `Asking`: the extension says `true` once it is built and whenever isled appears, `false` as it is turned off (the screen locks too). Away, every `Decide` waiting returns `""` at once, and new ones do too until it is back; the caller leaving the bus (GNOME Shell stopping or restarting) counts as away, seen within 2 s. Never told (an older extension never says), isled takes the island as there. GNOME Shell only. |
+| `SetPresent(b present)` | | Whether the island is there to answer `Asking`: the extension says `true` once it is built and whenever notchfolkd appears, `false` as it is turned off (the screen locks too). Away, every `Decide` waiting returns `""` at once, and new ones do too until it is back; the caller leaving the bus (GNOME Shell stopping or restarting) counts as away, seen within 2 s. Never told (an older extension never says), notchfolkd takes the island as there. GNOME Shell only. |
 | `Asking` (signal) | `s` | The `Decide` JSON with its `id`. |
 | `Withdrawn` (signal) | `s` | `id` needs no answer any more. |
 | `Report(s json)` | | From the hook: `{provider, kind, project, cwd, message, session, pids}`. Unknown providers or kinds are `InvalidArgs`. Texts are put on one line and cut (`message` to 160 characters, `project` to 60, `session` to 100); a `cwd` that is not absolute is dropped, and `project` defaults to its last folder. An event follows another of the same `provider` and `kind` by at least 300 ms, or is dropped. |
-| `Agents` | `s` | `{claude: {found, hooked}, codex: {found, hooked}}`: `found`, the CLI is installed; `hooked`, Isle's hook is in its config. Read afresh on each `Get`, and published again after `SetHooked` and whenever either config file changes. |
+| `Agents` | `s` | `{claude: {found, hooked}, codex: {found, hooked}}`: `found`, the CLI is installed; `hooked`, Notchfolk's hook is in its config. Read afresh on each `Get`, and published again after `SetHooked` and whenever either config file changes. |
 | `Event(s json)` | signal | `{provider, kind, project, cwd, message, session, pids}`; `provider` is `claude` or `codex`, `kind` is `permission`, `waiting` or `done`, `project` the name of the folder it works in, `session` its session (Codex: thread) id or `""`. |
 
-The hooks, put in idempotently; taking them out removes only Isle's, and a
-file is copied to `<name>.isle-backup` once, before Isle first changes it.
+The hooks, put in idempotently; taking them out removes only Notchfolk's, and a
+file is copied to `<name>.notchfolk-backup` once, before Notchfolk first changes it.
 Each is rewritten whole and moved into place, keeping its permissions; a
 file that does not parse is never written.
 
 - **Claude Code**: `$CLAUDE_CONFIG_DIR/settings.json`, else
   `~/.claude/settings.json`, gets
-  `{"hooks": [{"type": "command", "command": "<isled> --agent-hook claude"}]}`
+  `{"hooks": [{"type": "command", "command": "<notchfolkd> --agent-hook claude"}]}`
   under `hooks.Notification` and `hooks.Stop`, and with `"timeout": 600`
   under `hooks.PermissionRequest`, beside the user's own hooks (every other
-  key keeps its place). Lists and `hooks` that only Isle's hook was in go
+  key keeps its place). Lists and `hooks` that only Notchfolk's hook was in go
   again with it.
 - **Codex** 0.124 and newer: `$CODEX_HOME/hooks.json`, else
   `~/.codex/hooks.json`, gets the same for `PermissionRequest` (timeout 600)
   and `Stop`; Codex asks the user to trust them once. An older Codex gets
-  `notify = ["<isled>", "--agent-hook", "codex"]` in its `config.toml` (made
+  `notify = ["<notchfolkd>", "--agent-hook", "codex"]` in its `config.toml` (made
   if missing), with its comments and layout kept; a `notify` that runs
   another program is left alone, and `SetHooked` fails.
 
-`<isled>` is the running isled's own path (`~/.local/bin/isled` or
-`/usr/bin/isled`). The client reads the hook JSON from standard input (at
-most 1 MB). A `PermissionRequest` goes to `Decide` (without starting isled)
+`<notchfolkd>` is the running notchfolkd's own path (`~/.local/bin/notchfolkd` or
+`/usr/bin/notchfolkd`). The client reads the hook JSON from standard input (at
+most 1 MB). A `PermissionRequest` goes to `Decide` (without starting notchfolkd)
 and the answer is printed as the hook's decision,
 `{"hookSpecificOutput": {"hookEventName": "PermissionRequest", "decision":
 {"behavior": "allow" | "deny", …}}}`, with Claude's own suggested rule as
@@ -414,28 +414,28 @@ asked already); `Stop`, Claude's or Codex's, is `done`, with the first line
 of `last_assistant_message`. An older Codex's `agent-turn-complete` JSON,
 its last argument, is `done`, with the first line of
 `last-assistant-message`. It calls `Report` with a one-second limit and
-without starting isled, prints nothing and always exits 0.
+without starting notchfolkd, prints nothing and always exits 0.
 
-## io.github.zickrian.isle.Updates1
+## io.galyarderlabs.notchfolk.Updates1
 
-Whether a newer Isle is out: GitHub's latest release, looked up at most once a day while enabled.
+Whether a newer Notchfolk is out: GitHub's latest release, looked up at most once a day while enabled.
 
 | Member | Signature | |
 |---|---|---|
 | `SetEnabled(b enabled)` | | Look, or not (Settings → New versions); off until set. |
-| `Latest` | `s` | The latest release's version (`0.8.0`) when it is newer than this isled; empty otherwise. |
+| `Latest` | `s` | The latest release's version (`0.8.0`) when it is newer than this notchfolkd; empty otherwise. |
 
-## io.github.zickrian.isle.System1
+## io.galyarderlabs.notchfolk.System1
 
 | Member | Signature | |
 |---|---|---|
 | `State` | `s` | `{battery: {percent (a whole number), plugged, charging} or null, network: {connected, connection, name}, bluetooth: [{path, name, icon, battery}], camera_in_use}` |
 | `Event(s json)` | signal | One of `{kind: "power", plugged, percent}`, `{kind: "battery_low", percent}`, `{kind: "battery_full"}`, `{kind: "network", connected, connection, name}`, `{kind: "bluetooth", connected, device}`. |
 
-## io.github.zickrian.isle.ShelfWindow1
+## io.galyarderlabs.notchfolk.ShelfWindow1
 
-Served by `isle-shelf` (not `isled`) as `io.github.zickrian.isle.ShelfWindow` at
-`/io/github/zickrian/isle/ShelfWindow`.
+Served by `notchfolk-shelf` (not `notchfolkd`) as `io.galyarderlabs.notchfolk.ShelfWindow` at
+`/io/github/galyarderlabs/notchfolk/ShelfWindow`.
 
 | Member | | |
 |---|---|---|
@@ -447,4 +447,4 @@ Served by `isle-shelf` (not `isled`) as `io.github.zickrian.isle.ShelfWindow` at
 | `SetDropping(b dropping)` | | A file is being dragged towards the island: show where it will land. |
 | `Hovering` | signal `as uris` | The files dragged over the window, for the island to light in their colours; empty once they leave. |
 | `SetSaves(b saves)` | | 1.5.4: the extension saves files on `Save`; until it says so (an older one), the helper shows no ↓. The extension says it whenever the helper starts. |
-| `Save` | signal `s uri` | 1.5.4: ↓ was pressed on a file the shelf keeps itself (in isled's shelf folder); the extension copies it into Downloads, as from its own tile, and only such a file. |
+| `Save` | signal `s uri` | 1.5.4: ↓ was pressed on a file the shelf keeps itself (in notchfolkd's shelf folder); the extension copies it into Downloads, as from its own tile, and only such a file. |

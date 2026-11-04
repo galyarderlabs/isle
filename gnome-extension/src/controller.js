@@ -48,7 +48,7 @@ const REST_DISTANCE_PX = 10;
 const WARM_STEP_MS = 60;
 // A ring alert's parts, the alert views' warm-up (see `_warmUp`). Its words are blank, figure spaces as wide
 // as real ones, so nothing readable could ever show even if a frame caught it.
-const WARM_ALERT = {key: 'warm', title: '\u2007'.repeat(8), subtitle: '\u2007'.repeat(4), icon: 'isle-bolt', ring: 0,
+const WARM_ALERT = {key: 'warm', title: '\u2007'.repeat(8), subtitle: '\u2007'.repeat(4), icon: 'notchfolk-bolt', ring: 0,
     value: '\u2007'.repeat(3), tone: 'neutral'};
 /** And again this long after the island closes, or a page changes out of sight, while it stays closed... */
 const WARM_AFTER_CLOSE_MS = 1500;
@@ -82,7 +82,7 @@ const HEADER_WITHOUT_BAR = 32;
 const SCANOUT_SETTLE_MS = 400;
 /** Auto-hidden on a display without the top bar, its top this many px (CSS) still brings it back. */
 const REVEAL_EDGE_PX = 2;
-/** isled may be away this long (restarting after an update) before the island does anything about it. */
+/** notchfolkd may be away this long (restarting after an update) before the island does anything about it. */
 const SERVICE_GRACE_MS = 5000;
 /** Opened from the keyboard without getting it, the island closes this soon unless the pointer is on it. */
 const KEYBOARD_LESS_CLOSE_MS = 4000;
@@ -120,24 +120,24 @@ const VOICE_READ_MS = {base: 3000, perChar: 45, max: 8000};
 const VOICE_ERROR_MS = 4000;
 /** Once read with the pointer on it, an answer goes this soon after the pointer leaves. */
 const VOICE_LEAVE_MS = 1200;
-/** Listening shown this long (ms) without isled recording yet, it says "Getting ready…" instead. */
+/** Listening shown this long (ms) without notchfolkd recording yet, it says "Getting ready…" instead. */
 const MIC_WAIT_MS = 400;
-/** Closed while listening, a request isled starts on within this long (ms) was the last words' own. */
+/** Closed while listening, a request notchfolkd starts on within this long (ms) was the last words' own. */
 const CLOSED_LISTENING_MS = 3000;
 /** Where in its flow, and how bright, the still glow of an alert that asks is drawn. */
 const ALERT_GLOW_TIME = 2.2;
 const ALERT_GLOW_LEVEL = 0.3;
-/** A command the AI wants run waits this long (ms) for Run or Deny, as isled does (see agent.rs). */
+/** A command the AI wants run waits this long (ms) for Run or Deny, as notchfolkd does (see agent.rs). */
 const APPROVAL_MS = 10 * 60 * 1000;
 /** In the conversation, the field comes back this soon (ms) after an answer. */
 const CHAT_TYPE_AGAIN_MS = 250;
-/** isled's phases while it works on a request: with the island closed, it carries on in the background. */
+/** notchfolkd's phases while it works on a request: with the island closed, it carries on in the background. */
 const VOICE_WORKING = ['transcribing', 'thinking', 'acting'];
 
 // Pages that open by default when they have something to show, best first, unless one was picked
 // by hand lately. Notifications count only when some arrived unseen (others were shown as alerts).
 const DEFAULT_PAGE_ORDER = ['call', 'notifications', 'music', 'focus'];
-/** The AI agents Isle can hear from (see `Agents1` in the daemon). */
+/** The AI agents Notchfolk can hear from (see `Agents1` in the daemon). */
 const AGENT_PROVIDERS = ['claude', 'codex'];
 
 /** Whether `alert` waits on screen while no one is there, its time counted once they are back: a reminder,
@@ -161,7 +161,7 @@ export class Controller {
         this._timeouts = new Map();
         /** When the island last asked for each agent session (`provider:session`); see `_onAgentEvent`. */
         this._askedAt = new Map();
-        /** The AIs whose hook isled is changing now, and whether to ask again after (see `_hookAgent`). */
+        /** The AIs whose hook notchfolkd is changing now, and whether to ask again after (see `_hookAgent`). */
         this._hooking = new Map();
         this._presentation = 'compact';
         /** Whether auto-hide has faded the closed island away (see `_syncAutoHide`). */
@@ -187,12 +187,12 @@ export class Controller {
         this._viewsWarm = false;
         /** Counts `_listen` calls, so only the latest sends its request. */
         this._listenRequest = 0;
-        /** A Listen went to isled and is not over: typing instead cancels it, even before isled says it listens. */
+        /** A Listen went to notchfolkd and is not over: typing instead cancels it, even before notchfolkd says it listens. */
         this._listenSent = false;
-        /** The last request handed to isled (see `_listenRequest`). */
+        /** The last request handed to notchfolkd (see `_listenRequest`). */
         this._sentRequest = -1;
         this._voiceCloseMs = VOICE_ERROR_MS;
-        /** The last answer whose actions ran, and the last batch of actions run mid-way (see isled's `step`). */
+        /** The last answer whose actions ran, and the last batch of actions run mid-way (see notchfolkd's `step`). */
         this._voiceTurn = 0;
         this._voiceStep = 0;
         /** A request carries on after the island closed; its answer comes as an alert. */
@@ -201,7 +201,7 @@ export class Controller {
         this._voiceByHover = false;
         /** When it closed while listening (see `CLOSED_LISTENING_MS`), else 0. */
         this._closedListeningAt = 0;
-        /** Whether isled's assistant state was seen yet (see `_onAssistant`). */
+        /** Whether notchfolkd's assistant state was seen yet (see `_onAssistant`). */
         this._assistantSeen = false;
         /** Times in a row it listened again by itself; see `VOICE_MAX_AUTO_LISTENS`. */
         this._autoListens = 0;
@@ -268,7 +268,7 @@ export class Controller {
         if (this._destroying || this._failed)
             return;
         // A part failing (on a GNOME that changed under it) leaves no half-built island.
-        console.warn(`Isle: could not start: ${error.message}\n${error.stack}`);
+        console.warn(`Notchfolk: could not start: ${error.message}\n${error.stack}`);
         this._failed = true;
         this._destroyPartial();
     }
@@ -342,8 +342,8 @@ export class Controller {
         this._shelfHelper = new ShelfHelper(this._island, this._shelf);
         for (const view of [...this._peeks, this._expanded, this._voice])
             this._island.addView(view);
-        // GNOME Shell shutting down takes the island with the stage, Isle still on, and GNOME 51 runs on a
-        // moment after: nothing of Isle's may run on it then.
+        // GNOME Shell shutting down takes the island with the stage, Notchfolk still on, and GNOME 51 runs on a
+        // moment after: nothing of Notchfolk's may run on it then.
         this._island.connect('destroy', () => {
             for (const name of [...this._timeouts.keys()])
                 this._cancel(name);
@@ -353,7 +353,7 @@ export class Controller {
         this._render();
     }
 
-    /** The last step: hooks the island to GNOME and isled, then lets isled's held changes through. */
+    /** The last step: hooks the island to GNOME and notchfolkd, then lets notchfolkd's held changes through. */
     _connectAll() {
         this._primaryChanged = global.display.get_selection().connect('owner-changed', (_selection, type) => {
             if (type === Meta.SelectionType.SELECTION_PRIMARY)
@@ -507,7 +507,7 @@ export class Controller {
         return expanded;
     }
 
-    /** Everything else it reacts to: pointer, keys, the shelf helper, Settings, isled and notifications. */
+    /** Everything else it reacts to: pointer, keys, the shelf helper, Settings, notchfolkd and notifications. */
     _connectSignals() {
         const island = this._island;
         island.connect('notify::hovered', () => this._onHoverChanged());
@@ -689,7 +689,7 @@ export class Controller {
             if (!this._notifications.dnd)
                 this._post(Alerts.usage(provider, window, percent, resetsAt, this._settings.get_int('usage-critical')));
         });
-        // isled forgets the settings when it restarts; they are sent again whenever it appears.
+        // notchfolkd forgets the settings when it restarts; they are sent again whenever it appears.
         daemon.connect('appeared', (_daemon, name) => {
             if (name === 'usage')
                 this._syncUsage();
@@ -718,7 +718,7 @@ export class Controller {
                 this._render();
             }
         });
-        // A command that ended while nobody watched (isled restarted, or the user was logged out).
+        // A command that ended while nobody watched (notchfolkd restarted, or the user was logged out).
         daemon.connect('model-switched', (_daemon, provider, plan, picked, used) =>
             this._post(Alerts.modelSwitched(provider, plan, picked, used)));
         daemon.connect('assistant-notice', (_daemon, text, ok) =>
@@ -1054,14 +1054,14 @@ export class Controller {
         this._expanded.pageNamed('calendar').worldClocks = this._settings.get_boolean('world-clocks');
     }
 
-    /** The island in Isle's black or in glass, the glass with GNOME's accent (see theme.js). */
+    /** The island in Notchfolk's black or in glass, the glass with GNOME's accent (see theme.js). */
     _syncTheme() {
         Theme.setTheme(this._settings.get_string('island-theme'), this._settings.get_int('glass-tint'));
         const see = Theme.translucent();
         // The controls follow the tint in three steps (CSS can't blend): clear, middle, and dark like GNOME's menus.
         const tint = see ? this._settings.get_int('glass-tint') : 0;
-        for (const [name, on] of [['isle-translucent', see], ['isle-accent-system', see && HAS_ACCENT],
-            ['isle-glass-mid', see && tint >= 34 && tint < 67], ['isle-glass-dark', see && tint >= 67]]) {
+        for (const [name, on] of [['notchfolk-translucent', see], ['notchfolk-accent-system', see && HAS_ACCENT],
+            ['notchfolk-glass-mid', see && tint >= 34 && tint < 67], ['notchfolk-glass-dark', see && tint >= 67]]) {
             if (on)
                 this._island.add_style_class_name(name);
             else
@@ -1076,8 +1076,8 @@ export class Controller {
     /** Times the app in front while the Apps page's switch is on; clears when asked. */
     _syncAppUsage() {
         this._appUsage.enabled = this._settings.get_boolean('app-usage');
-        // Settings cannot call isled's shell-only Clear; it leaves this request for the island, which
-        // resets it once isled has cleared (asked again when isled appears).
+        // Settings cannot call notchfolkd's shell-only Clear; it leaves this request for the island, which
+        // resets it once notchfolkd has cleared (asked again when notchfolkd appears).
         if (!this._settings.get_boolean('app-usage-clear') || this._clearingAppUsage || !this._daemon.running)
             return;
         this._clearingAppUsage = true;
@@ -1105,22 +1105,22 @@ export class Controller {
         const [source, uid] = event.id?.split('\n') ?? [];
         if (source && uid)
             link = (await this._daemon.call('calendar', 'MeetingLink', source, uid))?.[0] ?? '';
-        // Isle turned off, or Do Not Disturb on, while the link was looked for.
+        // Notchfolk turned off, or Do Not Disturb on, while the link was looked for.
         if (this._destroying || this._notifications.dnd)
             return;
         this._post(Alerts.meeting(event, link, () => {
             try {
                 Gio.AppInfo.launch_default_for_uri(link, global.create_app_launch_context(0, -1));
             } catch (e) {
-                console.warn(`Isle: could not open the meeting: ${e.message}`);
+                console.warn(`Notchfolk: could not open the meeting: ${e.message}`);
             }
         }, () => this._expanded?.pageNamed('calendar')?.alertShown(event)));
     }
 
-    /** The hooks as Settings say, once isled is there: a switch left on comes back after a reinstall, and one
-     * turned off while isled was away takes its hook out. */
+    /** The hooks as Settings say, once notchfolkd is there: a switch left on comes back after a reinstall, and one
+     * turned off while notchfolkd was away takes its hook out. */
     _syncAgents(appeared = false) {
-        // Started again, isled's properties may come a moment after it: then on the first of them.
+        // Started again, notchfolkd's properties may come a moment after it: then on the first of them.
         this._agentsUnsynced = !this._daemon.state.agents && (appeared || this._agentsUnsynced);
         if (this._agentsUnsynced)
             return;
@@ -1134,7 +1134,7 @@ export class Controller {
         }
     }
 
-    /** An AI installed (or found again) while Isle runs gets its hook, if its switch is on. A hook the user took
+    /** An AI installed (or found again) while Notchfolk runs gets its hook, if its switch is on. A hook the user took
      * out of the AI's own config by hand stays out: only an agent that just appeared is hooked. */
     _hookNewAgents() {
         const agents = this._daemon.state.agents ?? {};
@@ -1148,7 +1148,7 @@ export class Controller {
         }
     }
 
-    /** `_setHooked`, one call at a time per AI: two at once (isled appearing as its state comes) would race
+    /** `_setHooked`, one call at a time per AI: two at once (notchfolkd appearing as its state comes) would race
      * on the AI's config file, and the one refused would turn the switch off. One asked meanwhile runs after. */
     async _hookAgent(provider) {
         if (this._hooking.has(provider)) {
@@ -1618,7 +1618,7 @@ export class Controller {
             this._dismissAlert(true);
             return Clutter.EVENT_STOP;
         }
-        // isled down: why the island can do little, and how to fix it, rather than the pages.
+        // notchfolkd down: why the island can do little, and how to fix it, rather than the pages.
         if (!this._expandWanted && this._compact.serviceDown) {
             this._post(Alerts.serviceDown(() => this._daemon.start()));
             return Clutter.EVENT_STOP;
@@ -1761,7 +1761,7 @@ export class Controller {
 
     /** Opens the island, on `pageName` or the most useful page. */
     expand(pageName = null) {
-        // An action finishing after Isle was turned off.
+        // An action finishing after Notchfolk was turned off.
         if (this._destroying)
             return;
         this._hasOpened = true;
@@ -1957,7 +1957,7 @@ export class Controller {
             }, {fresh: !inPlace});
         } catch (e) {
             // One that can't be shown must not hold up those behind it, never timed out.
-            console.warn(`Isle: could not show an alert: ${e.message}`);
+            console.warn(`Notchfolk: could not show an alert: ${e.message}`);
             this._alert = null;
             this._shownAlertKey = null;
             this._nextAlert();
@@ -2032,10 +2032,10 @@ export class Controller {
         }
     }
 
-    /** Tells isled the island is there to answer agents' asks, or not: then they ask in their terminals at once.
-     * An isled from before it (not restarted since an update) has no SetPresent, and waits as it did. */
+    /** Tells notchfolkd the island is there to answer agents' asks, or not: then they ask in their terminals at once.
+     * An notchfolkd from before it (not restarted since an update) has no SetPresent, and waits as it did. */
     _sayPresent(present) {
-        // Never starting isled just to hear the island goes: one not running has no asks waiting.
+        // Never starting notchfolkd just to hear the island goes: one not running has no asks waiting.
         if (present || this._daemon.running)
             this._daemon.attemptQuietly('agents', 'SetPresent', present);
     }
@@ -2093,7 +2093,7 @@ export class Controller {
             this._post(Alerts.track(nowPlaying));
     }
 
-    // isled gone (a crash, or stopped by hand): started again once; still gone, the island says so and offers
+    // notchfolkd gone (a crash, or stopped by hand): started again once; still gone, the island says so and offers
     // to restart it, with a warning on the closed island meanwhile.
     _onServiceChanged() {
         if (this._daemon.running) {
@@ -2134,7 +2134,7 @@ export class Controller {
 
     // Updates
 
-    /** Tells isled whether to look for new versions. */
+    /** Tells notchfolkd whether to look for new versions. */
     _syncUpdates() {
         this._daemon.call('updates', 'SetEnabled', this._settings.get_boolean('check-updates'));
     }
@@ -2144,7 +2144,7 @@ export class Controller {
             this._settings.get_string('prayer-country'));
     }
 
-    /** A newer Isle is out: said once per version; in Do Not Disturb, next time Isle starts. */
+    /** A newer Notchfolk is out: said once per version; in Do Not Disturb, next time Notchfolk starts. */
     _onLatest() {
         const latest = this._daemon.state.updates;
         if (!latest || latest === this._settings.get_string('update-shown') || this._notifications.dnd)
@@ -2159,7 +2159,7 @@ export class Controller {
 
     // Usage
 
-    /** Sends the usage settings to isled, and the warning marks to the page. */
+    /** Sends the usage settings to notchfolkd, and the warning marks to the page. */
     _syncUsage() {
         const config = {
             enabled: this._settings.get_boolean('usage-enabled'),
@@ -2177,7 +2177,7 @@ export class Controller {
 
     // Router
 
-    /** Sends Router settings to isled, and keeps its poll to what is being watched. */
+    /** Sends Router settings to notchfolkd, and keeps its poll to what is being watched. */
     _syncRouter() {
         const config = {
             enabled: this._settings.get_boolean('router-enabled'),
@@ -2256,7 +2256,7 @@ export class Controller {
                 this._openVoice();
             return;
         }
-        // isled's phase, not the view's: the view says listening before isled has started.
+        // notchfolkd's phase, not the view's: the view says listening before notchfolkd has started.
         const phase = this._daemon.state.assistant?.phase;
         if (phase === 'listening')
             this._daemon.call('assistant', 'Stop');
@@ -2303,14 +2303,14 @@ export class Controller {
         }
     }
 
-    /** The AI starts as the field opens, ready by the time the request is typed (see `Warm` in isled). */
+    /** The AI starts as the field opens, ready by the time the request is typed (see `Warm` in notchfolkd). */
     async _warm() {
         try {
             const json = await voiceContext(this._settings, this._notifications,
                 {apps: this._installedApps.names, selectedIn: this._selectedIn});
             this._daemon.call('assistant', 'Warm', json);
         } catch (e) {
-            console.warn(`Isle: could not get the AI ready: ${e.message}`);
+            console.warn(`Notchfolk: could not get the AI ready: ${e.message}`);
         }
     }
 
@@ -2337,7 +2337,7 @@ export class Controller {
     /** Asks a typed request, with what the island knows, as `_listen` does for a spoken one. */
     async _ask(text) {
         this._askedTyped = true;
-        // In the conversation, what was sent shows at once, as in Messages; isled's own copy replaces it.
+        // In the conversation, what was sent shows at once, as in Messages; notchfolkd's own copy replaces it.
         if (this._voice.chatOpen)
             this._voice.setHistory([...this._history, {role: 'user', text, at: Date.now()}]);
         const request = ++this._listenRequest;
@@ -2350,14 +2350,14 @@ export class Controller {
             json = await voiceContext(this._settings, this._notifications,
                 {apps: this._installedApps.names, selectedIn: this._selectedIn});
         } catch (e) {
-            console.warn(`Isle: could not gather the request's context: ${e.message}`);
+            console.warn(`Notchfolk: could not gather the request's context: ${e.message}`);
             json = JSON.stringify({...aiSettings(this._settings), actions: actionTypes(this._settings)});
         }
         if (this._voiceOpen && request === this._listenRequest)
             this._sendRequest(request, 'Ask', text, json);
     }
 
-    // Sends a request to isled; not running (or refusing it), it would never answer, so the island says so
+    // Sends a request to notchfolkd; not running (or refusing it), it would never answer, so the island says so
     // rather than listen or think forever.
     async _sendRequest(request, method, ...args) {
         this._sentRequest = request;
@@ -2370,7 +2370,7 @@ export class Controller {
             this._syncAssistantBusy();
             return;
         }
-        const why = error || (this._daemon.running ? 'Isle couldn’t take that' : 'Isle’s service isn’t running');
+        const why = error || (this._daemon.running ? 'Notchfolk couldn’t take that' : 'Notchfolk’s service isn’t running');
         this._listenSent = false;
         this._voice.setState({phase: 'error', error: why, hint: this._askAgainHint});
         this._setKeyboard(false);
@@ -2392,7 +2392,7 @@ export class Controller {
         const state = this._daemon.state.assistant;
         if (!this._voiceBound || !state)
             return;
-        // Ended since (another request, or isled restarted), there is nothing to show again: the conversation.
+        // Ended since (another request, or notchfolkd restarted), there is nothing to show again: the conversation.
         if (!['reply', 'error', ...VOICE_WORKING].includes(state.phase)) {
             this._openVoice({typing: true});
             return;
@@ -2439,7 +2439,7 @@ export class Controller {
         this._compact.assistantBusy = this._voiceWorking;
     }
 
-    /** Shows "Listening…" and sends isled a Listen with the request's context; `greet` for a conversation's first. */
+    /** Shows "Listening…" and sends notchfolkd a Listen with the request's context; `greet` for a conversation's first. */
     async _listen({greet = false} = {}) {
         this._voiceByHover = false;
         this._askedTyped = false;
@@ -2457,7 +2457,7 @@ export class Controller {
         this._voice.greeting = greet ? GREETING : null;
         this._voice.micWaiting = false;
         this._voice.setState({phase: 'listening'});
-        // Not recording yet after a moment (isled getting the AI or the speech model ready): it says so.
+        // Not recording yet after a moment (notchfolkd getting the AI or the speech model ready): it says so.
         this._later('mic-wait', MIC_WAIT_MS, () => {
             if (this._voiceOpen && request === this._listenRequest && this._voice.phase === 'listening')
                 this._voice.micWaiting = true;
@@ -2468,7 +2468,7 @@ export class Controller {
             json = await context;
         } catch (e) {
             // Never left listening for nothing: ask without the extras.
-            console.warn(`Isle: could not gather the request's context: ${e.message}`);
+            console.warn(`Notchfolk: could not gather the request's context: ${e.message}`);
             json = JSON.stringify({
                 ...aiSettings(this._settings),
                 actions: actionTypes(this._settings),
@@ -2483,13 +2483,13 @@ export class Controller {
         }
     }
 
-    /** Follows isled's assistant: shows each phase, runs the answer's actions, and closes or alerts once done. */
+    /** Follows notchfolkd's assistant: shows each phase, runs the answer's actions, and closes or alerts once done. */
     _onAssistant() {
         const state = this._daemon.state.assistant;
         if (!state)
             return;
         // Built again (turned back on after a lock) while a request was at work: it carries on as if asked with the
-        // island closed. A batch isled still waits on is told as cut short, never run twice (it may have happened).
+        // island closed. A batch notchfolkd still waits on is told as cut short, never run twice (it may have happened).
         if (!this._assistantSeen) {
             this._assistantSeen = true;
             if (!this._voiceOpen && VOICE_WORKING.includes(state.phase)) {
@@ -2497,13 +2497,13 @@ export class Controller {
                 this._voiceTurn = state.turn ?? 0;
                 this._voiceStep = state.step ?? 0;
                 if (state.phase === 'acting') {
-                    const detail = 'Isle was restarted (the screen locked) while this ran; it may not have happened';
+                    const detail = 'Notchfolk was restarted (the screen locked) while this ran; it may not have happened';
                     this._daemon.call('assistant', 'Results', state.step,
                         JSON.stringify((state.actions ?? []).map(action => ({type: action.type, ok: false, detail}))));
                 }
             }
         }
-        // Closed as the last words were heard, isled had just begun on them unseen (its state lags a moment):
+        // Closed as the last words were heard, notchfolkd had just begun on them unseen (its state lags a moment):
         // the request carries on as one closed while at work, its actions run and its answer told.
         if (!this._voiceOpen && !this._voiceInBackground && VOICE_WORKING.includes(state.phase) &&
             Date.now() - this._closedListeningAt < CLOSED_LISTENING_MS) {
@@ -2519,7 +2519,7 @@ export class Controller {
                 this._daemon.call('assistant', 'Results', step, JSON.stringify(results)));
         }
         // Keep the modal only while the mic is listening. Transcription, generation and tool work happen
-        // asynchronously; the user can use other apps while Isle keeps showing progress.
+        // asynchronously; the user can use other apps while Notchfolk keeps showing progress.
         if (this._voiceOpen && ['transcribing', 'thinking', 'acting'].includes(state.phase))
             this._setKeyboard(false);
         this._syncAssistantBusy();
@@ -2596,13 +2596,13 @@ export class Controller {
         this._post(Alerts.assistant({...state, hint: this._voice.withShortcut(state.hint ?? '')}, () => this._reopenVoice()));
     }
 
-    /** isled records (it said so, or sound comes in): "Listening…" again (see `micWaiting` in voice.js). */
+    /** notchfolkd records (it said so, or sound comes in): "Listening…" again (see `micWaiting` in voice.js). */
     _micReady() {
         this._cancel('mic-wait');
         this._voice.micWaiting = false;
     }
 
-    /** The conversation, as isled keeps it (see chat.rs). */
+    /** The conversation, as notchfolkd keeps it (see chat.rs). */
     get _history() {
         return Array.isArray(this._daemon.state.chat) ? this._daemon.state.chat : [];
     }
@@ -2618,7 +2618,7 @@ export class Controller {
         }
     }
 
-    // +: isled starts a new conversation; Undo brings the old one back for a moment, then it is deleted.
+    // +: notchfolkd starts a new conversation; Undo brings the old one back for a moment, then it is deleted.
     _newChat() {
         this._openWhenBack = false;
         this._daemon.call('assistant', 'NewChat');
@@ -2626,10 +2626,10 @@ export class Controller {
         this._later('chat-undo', UNDO_MS, () => this._voice.showUndo(false));
     }
 
-    /** Asks isled for the old conversation back, opening it when it comes (see `_onHistory`). */
+    /** Asks notchfolkd for the old conversation back, opening it when it comes (see `_onHistory`). */
     _undoNewChat() {
         this._openWhenBack = true;
-        // Not back by then (isled busy, or it dropped it), it never pops open on a later change.
+        // Not back by then (notchfolkd busy, or it dropped it), it never pops open on a later change.
         this._later('chat-undo', UNDO_MS, () => (this._openWhenBack = false));
         this._daemon.call('assistant', 'UndoNewChat');
     }
@@ -2754,7 +2754,7 @@ export class Controller {
     }
 
     // Gone to the agent's own window while its ask waits here: it asks there instead (Codex shows its
-    // prompt only once Isle lets go).
+    // prompt only once Notchfolk lets go).
     _passToAgentWindow(focus) {
         if (!focus)
             return;
@@ -2770,24 +2770,24 @@ export class Controller {
         return ['reply', 'error'].includes(this._voice.phase);
     }
 
-    // isled restarted (an update) or stopped while listening or thinking: it will never answer, so
+    // notchfolkd restarted (an update) or stopped while listening or thinking: it will never answer, so
     // the island says so rather than wait forever.
     _onAssistantLost() {
         // Its request is gone, so is a command card waiting for it.
         this._deciding?.done(false);
-        // isled counts its answers and batches of actions from 0 again.
+        // notchfolkd counts its answers and batches of actions from 0 again.
         this._voiceTurn = 0;
         this._voiceStep = 0;
         if (this._voiceInBackground) {
             this._voiceInBackground = false;
             this._syncAssistantBusy();
-            this._post(Alerts.assistant({phase: 'error', error: 'Isle restarted', hint: this._askAgainHint},
+            this._post(Alerts.assistant({phase: 'error', error: 'Notchfolk restarted', hint: this._askAgainHint},
                 () => this._openVoice()));
             return;
         }
         if (!this._voiceOpen || !['listening', ...VOICE_WORKING].includes(this._voice.phase))
             return;
-        this._voice.setState({phase: 'error', error: 'Isle restarted', hint: this._askAgainHint});
+        this._voice.setState({phase: 'error', error: 'Notchfolk restarted', hint: this._askAgainHint});
         this._setKeyboard(false);
         this._render();
         this._scheduleVoiceClose(VOICE_ERROR_MS);
@@ -2853,7 +2853,7 @@ export class Controller {
         // comes as an alert.
         const asked = this._voice.phase === 'thinking' && this._sentRequest === this._listenRequest;
         this._voiceInBackground = asked || VOICE_WORKING.includes(this._daemon.state.assistant?.phase);
-        // Still listening as far as it knows: isled may be turning the last words into a request (see `_onAssistant`).
+        // Still listening as far as it knows: notchfolkd may be turning the last words into a request (see `_onAssistant`).
         this._closedListeningAt = !this._voiceInBackground && this._voice.phase === 'listening' ? Date.now() : 0;
         this._syncAssistantBusy();
         this._daemon.call('assistant', 'End');
@@ -2862,7 +2862,7 @@ export class Controller {
     /** Plays a theme sound, if chimes are on. */
     _chime(soundName) {
         if (this._settings.get_boolean('chimes'))
-            global.display.get_sound_player().play_from_theme(soundName, 'Isle', null);
+            global.display.get_sound_player().play_from_theme(soundName, 'Notchfolk', null);
     }
 
     // Idle
@@ -2915,7 +2915,7 @@ export class Controller {
         }
     }
 
-    /** Turns Isle off: agents' asks go back to their terminals, then all it built is torn down. */
+    /** Turns Notchfolk off: agents' asks go back to their terminals, then all it built is torn down. */
     destroy() {
         // Failed to start: what it built went then.
         if (this._failed)
@@ -2930,14 +2930,14 @@ export class Controller {
         }
         this._stopRevealWait();
         // Turned off (the screen locks too): agents waiting on an answer here ask in their terminals at once,
-        // and so do those that ask until Isle is back.
+        // and so do those that ask until Notchfolk is back.
         this._passAgentAsks();
         this._sayPresent(false);
-        // Sharing with a phone never outlives Isle (the screen locking turns it off too): asked whatever the
-        // state last said (a Start may be on its way), but never starting isled just for that.
+        // Sharing with a phone never outlives Notchfolk (the screen locking turns it off too): asked whatever the
+        // state last said (a Start may be on its way), but never starting notchfolkd just for that.
         if (this._daemon.running)
             this._daemon.call('share', 'Stop');
-        // What waits goes with Isle, never shown (a notification marked read, its sound played) as it goes.
+        // What waits goes with Notchfolk, never shown (a notification marked read, its sound played) as it goes.
         this._queue = [];
         Alerts.stopWatching();
         global.display.get_selection().disconnect(this._primaryChanged);
@@ -2948,7 +2948,7 @@ export class Controller {
         stopPending();
         if (this._voiceBound)
             Main.wm.removeKeybinding('voice-shortcut');
-        // A command waiting for Run or Deny ends with Isle; built again, it is asked again (see `_onAssistant`).
+        // A command waiting for Run or Deny ends with Notchfolk; built again, it is asked again (see `_onAssistant`).
         this._deciding?.done(false);
         if (this._voiceOpen)
             this._closeVoice();
@@ -3001,7 +3001,7 @@ export class Controller {
         Format.release();
     }
 
-    /** Lets GNOME send windows straight to the screen again, as it was before Isle (see `_syncScanout`). */
+    /** Lets GNOME send windows straight to the screen again, as it was before Notchfolk (see `_syncScanout`). */
     // Hide Top Bar adds the bar again, over the island, which then never gets the pointer: put it back below.
     _keepAbovePanel() {
         const group = Main.layoutManager.uiGroup;

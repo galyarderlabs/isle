@@ -25,10 +25,10 @@ const TABS = [
     {name: 'phone', label: 'Phone'},
 ];
 const FILTERS = [
-    {kind: 'text', icon: 'isle-text', name: 'Text'},
-    {kind: 'link', icon: 'isle-link', name: 'Links'},
-    {kind: 'image', icon: 'isle-image', name: 'Images'},
-    {kind: 'files', icon: 'isle-file', name: 'Files'},
+    {kind: 'text', icon: 'notchfolk-text', name: 'Text'},
+    {kind: 'link', icon: 'notchfolk-link', name: 'Links'},
+    {kind: 'image', icon: 'notchfolk-image', name: 'Images'},
+    {kind: 'files', icon: 'notchfolk-file', name: 'Files'},
 ];
 /** How long "Clear all" waits for its confirming click. */
 const CONFIRM_MS = 3000;
@@ -56,7 +56,7 @@ export const ShelfPage = GObject.registerClass({
     _init(daemon, history, settings, {height}) {
         // The tab's bar and content in a column; while sharing, the phone's code beside it, the page's full height.
         super._init(daemon, {
-            style_class: 'isle-page isle-shelf',
+            style_class: 'notchfolk-page notchfolk-shelf',
             layout_manager: new Clutter.BoxLayout(),
             height,
         });
@@ -111,9 +111,9 @@ export const ShelfPage = GObject.registerClass({
         /** Sharing with a phone (Share1's state is active). */
         this._phoneSharing = false;
 
-        const column = new St.BoxLayout({...VERTICAL, style_class: 'isle-shelf-column', x_expand: true});
+        const column = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-shelf-column', x_expand: true});
         column.add_child(this._buildBar());
-        const content = new St.Widget({layout_manager: new Clutter.BinLayout(), style_class: 'isle-shelf-content', x_expand: true, y_expand: true});
+        const content = new St.Widget({layout_manager: new Clutter.BinLayout(), style_class: 'notchfolk-shelf-content', x_expand: true, y_expand: true});
         content.add_child(this._clips);
         content.add_child(this._files);
         content.add_child(this._phone);
@@ -148,12 +148,12 @@ export const ShelfPage = GObject.registerClass({
 
     /** The tabs, then the controls of the tab shown: filters, search and Clear, or the files hint. */
     _buildBar() {
-        const bar = new St.BoxLayout({style_class: 'isle-shelf-bar'});
+        const bar = new St.BoxLayout({style_class: 'notchfolk-shelf-bar'});
 
-        const tabs = new St.BoxLayout({style_class: 'isle-segmented'});
+        const tabs = new St.BoxLayout({style_class: 'notchfolk-segmented'});
         this._tabButtons = new Map();
         for (const {name, label: text} of TABS) {
-            const button = new St.Button({style_class: 'isle-segment', label: text, can_focus: true});
+            const button = new St.Button({style_class: 'notchfolk-segment', label: text, can_focus: true});
             button.connect('clicked', () => this.showTab(name));
             this._tabButtons.set(name, button);
             tabs.add_child(button);
@@ -162,12 +162,12 @@ export const ShelfPage = GObject.registerClass({
 
         // Clipboard: type filters, search (a button that opens into a field)
         // and Clear all.
-        this._clipboardControls = new St.BoxLayout({style_class: 'isle-shelf-controls', x_expand: true});
-        const filters = new St.BoxLayout({style_class: 'isle-segmented isle-segmented-icons'});
+        this._clipboardControls = new St.BoxLayout({style_class: 'notchfolk-shelf-controls', x_expand: true});
+        const filters = new St.BoxLayout({style_class: 'notchfolk-segmented notchfolk-segmented-icons'});
         this._filterButtons = new Map();
         for (const filter of FILTERS) {
             const button = new St.Button({
-                style_class: 'isle-segment',
+                style_class: 'notchfolk-segment',
                 child: new St.Icon({gicon: icon(filter.icon), icon_size: 13}),
                 accessible_name: `Only ${filter.name.toLowerCase()}`,
                 can_focus: true,
@@ -178,8 +178,8 @@ export const ShelfPage = GObject.registerClass({
         }
         this._clipboardControls.add_child(filters);
 
-        this._search = new St.Entry({style_class: 'isle-entry isle-shelf-field', hint_text: 'Search', can_focus: true, x_expand: true});
-        this._search.set_primary_icon(new St.Icon({gicon: icon('isle-search'), icon_size: 12, style_class: 'isle-shelf-field-icon'}));
+        this._search = new St.Entry({style_class: 'notchfolk-entry notchfolk-shelf-field', hint_text: 'Search', can_focus: true, x_expand: true});
+        this._search.set_primary_icon(new St.Icon({gicon: icon('notchfolk-search'), icon_size: 12, style_class: 'notchfolk-shelf-field-icon'}));
         const text = this._search.clutter_text;
         text.connect('text-changed', () => {
             if (!this._clearingSearch)
@@ -197,32 +197,32 @@ export const ShelfPage = GObject.registerClass({
         this._search.hide();
         // Keeps the buttons at the end while the field is closed.
         this._searchSpacer = new St.Widget({x_expand: true});
-        this._searchButton = iconButton('isle-search', 'isle-button-round isle-button-small',
+        this._searchButton = iconButton('notchfolk-search', 'notchfolk-button-round notchfolk-button-small',
             () => this._openSearch(), {size: 13, accessibleName: 'Search the clipboard history'});
         this._clipboardControls.add_child(this._searchSpacer);
         this._clipboardControls.add_child(this._search);
         this._clipboardControls.add_child(this._searchButton);
 
-        this._clear = iconButton('isle-trash', 'isle-button-round isle-button-small', () => this._askToClear(),
+        this._clear = iconButton('notchfolk-trash', 'notchfolk-button-round notchfolk-button-small', () => this._askToClear(),
             {size: 14, accessibleName: 'Clear the clipboard history'});
-        this._confirm = pillButton('Clear all', 'isle-pill-small isle-shelf-confirm', () => this._clearHistory());
+        this._confirm = pillButton('Clear all', 'notchfolk-pill-small notchfolk-shelf-confirm', () => this._clearHistory());
         this._confirm.hide();
         this._clipboardControls.add_child(this._clear);
         this._clipboardControls.add_child(this._confirm);
         bar.add_child(this._clipboardControls);
 
         // Files: what the tab is for, and sharing with a phone.
-        this._filesHint = label('', 'isle-shelf-hint', {
+        this._filesHint = label('', 'notchfolk-shelf-hint', {
             x_expand: true,
             x_align: Clutter.ActorAlign.END,
             y_align: Clutter.ActorAlign.CENTER,
         });
         bar.add_child(this._filesHint);
-        const phone = new St.BoxLayout({style_class: 'isle-shelf-phone-box'});
-        phone.add_child(new St.Icon({gicon: icon('isle-smartphone-symbolic'), icon_size: 13, y_align: Clutter.ActorAlign.CENTER}));
-        phone.add_child(label('Phone', 'isle-shelf-phone-label'));
+        const phone = new St.BoxLayout({style_class: 'notchfolk-shelf-phone-box'});
+        phone.add_child(new St.Icon({gicon: icon('notchfolk-smartphone-symbolic'), icon_size: 13, y_align: Clutter.ActorAlign.CENTER}));
+        phone.add_child(label('Phone', 'notchfolk-shelf-phone-label'));
         this._phoneStart = new St.Button({
-            style_class: 'isle-pill isle-pill-small isle-shelf-phone',
+            style_class: 'notchfolk-pill notchfolk-pill-small notchfolk-shelf-phone',
             child: phone,
             can_focus: true,
             accessible_name: 'Share the Shelf with your phone',
@@ -232,8 +232,8 @@ export const ShelfPage = GObject.registerClass({
         bar.add_child(this._phoneStart);
 
         // Phone: Stop, at the end.
-        this._phoneControls = new St.BoxLayout({style_class: 'isle-shelf-controls', x_expand: true, x_align: Clutter.ActorAlign.END});
-        this._phoneControls.add_child(pillButton('Stop', 'isle-pill-small', () => this.daemon.call('share', 'Stop')));
+        this._phoneControls = new St.BoxLayout({style_class: 'notchfolk-shelf-controls', x_expand: true, x_align: Clutter.ActorAlign.END});
+        this._phoneControls.add_child(pillButton('Stop', 'notchfolk-pill-small', () => this.daemon.call('share', 'Stop')));
         bar.add_child(this._phoneControls);
         return bar;
     }
@@ -319,7 +319,7 @@ export const ShelfPage = GObject.registerClass({
 
     // Phone
 
-    /** Starts sharing with a phone; the Phone tab opens once isled says it shares. */
+    /** Starts sharing with a phone; the Phone tab opens once notchfolkd says it shares. */
     async _startSharing() {
         this._startingShare = true;
         setEnabled(this._phoneStart, false);
@@ -329,9 +329,9 @@ export const ShelfPage = GObject.registerClass({
         setEnabled(this._phoneStart, true);
         if (error || result === null) {
             this._startingShare = false;
-            // An isled from before sharing: updated, not yet restarted.
+            // An notchfolkd from before sharing: updated, not yet restarted.
             this._shareError = error ?? (unknownMethod ? 'Log out and back in to share with a phone'
-                : 'Couldn’t start sharing · is Isle’s service running?');
+                : 'Couldn’t start sharing · is Notchfolk’s service running?');
             this._updateFilesHint();
             this.later('share-error', SHARE_ERROR_MS, () => {
                 this._shareError = null;
@@ -352,7 +352,7 @@ export const ShelfPage = GObject.registerClass({
         this.showTab('phone');
     }
 
-    /** Follows isled's sharing: the Phone tab comes and goes with it. */
+    /** Follows notchfolkd's sharing: the Phone tab comes and goes with it. */
     _syncShare() {
         const state = this.daemon.state.share;
         const sharing = Boolean(state?.active);
@@ -380,7 +380,7 @@ export const ShelfPage = GObject.registerClass({
             this._syncControls();
     }
 
-    /** The session's QR code: isled gives it to GNOME Shell alone, not in its state. */
+    /** The session's QR code: notchfolkd gives it to GNOME Shell alone, not in its state. */
     async _fetchCode(session) {
         const result = await this.daemon.call('share', 'Code');
         if (this._destroyed || session !== this._codeSession || !result)
@@ -390,7 +390,7 @@ export const ShelfPage = GObject.registerClass({
             this._code.rows = qr ?? [];
             this._phone.url = url ?? null;
         } catch (e) {
-            console.warn(`Isle: invalid sharing code from isled: ${e.message}`);
+            console.warn(`Notchfolk: invalid sharing code from notchfolkd: ${e.message}`);
         }
     }
 
@@ -562,7 +562,7 @@ export const ShelfPage = GObject.registerClass({
     async _noticeNewFiles() {
         const items = this.daemon.state.shelf;
         if (!items) {
-            // isled went away; what it lists when back is not new.
+            // notchfolkd went away; what it lists when back is not new.
             this._shelved = null;
             return;
         }
@@ -653,7 +653,7 @@ export const ShelfPage = GObject.registerClass({
             this.emit('request-close');
             this._history.paste();
         } else {
-            this._clips.flash(item, 'isle-check-symbolic', 'Copied');
+            this._clips.flash(item, 'notchfolk-check-symbolic', 'Copied');
             this._copied = [...this._copied.filter(id => id !== item.id), item.id];
         }
     }

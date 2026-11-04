@@ -1,6 +1,6 @@
-# Isle × LLM Routers: Usage & Analytics Plan
+# Notchfolk × LLM Routers: Usage & Analytics Plan
 
-This document describes how Isle shows the usage and analytics of an
+This document describes how Notchfolk shows the usage and analytics of an
 LLM gateway running on this machine or one the user reaches over the
 network. The first gateway supported is 9Router
 (https://github.com/decolua/9router), the gateway many AI coding tools
@@ -10,7 +10,7 @@ network. The first gateway supported is 9Router
 A gateway is optional. Every part of this integration degrades to
 nothing when the gateway is missing, unreachable, or unauthorized: no
 page keeps its tab, no chip stays on the notch, no error surfaces in the
-console. Isle talks to the gateway over HTTP only, and only to the
+console. Notchfolk talks to the gateway over HTTP only, and only to the
 address the user configured — usage data is never sent anywhere else.
 
 ## 1. Why
@@ -23,7 +23,7 @@ those numbers live in the gateway's dashboard, a browser tab away; this
 brings them to the notch, at a glance, with a page for the detail.
 
 The cost the gateway reports is its own **estimate** from public API
-prices — never billing. Isle always labels it "est.".
+prices — never billing. Notchfolk always labels it "est.".
 
 ## 2. Naming
 
@@ -36,7 +36,7 @@ prices — never billing. Isle always labels it "est.".
 
 ## 3. Gateway abstraction
 
-All gateway specifics live behind one trait (Rust: in `isled`; the
+All gateway specifics live behind one trait (Rust: in `notchfolkd`; the
 extension never speaks HTTP itself — it reads the daemon's state, as it
 does for battery, network and GSConnect):
 
@@ -58,7 +58,7 @@ poll loop changes. For now exactly one implementation exists: 9Router.
 Settings → Router, one panel:
 
 - **Connection** (radio):
-  - **Local — Same Machine** (default): zero input. Isle looks for the
+  - **Local — Same Machine** (default): zero input. Notchfolk looks for the
     gateway at `http://localhost:20128`; when it is not there, the
     status line says so and the Remote option is a click away.
   - **Remote — VPS / Server**: Base URL + auth method (radio):
@@ -77,7 +77,7 @@ Three technical modes sit behind the two options above.
 ### Mode 1 — local CLI token (the Local option)
 
 9Router keeps credentials for CLIs on the same machine in its data
-directory; Isle reads them and derives the same token its CLI does:
+directory; Notchfolk reads them and derives the same token its CLI does:
 
 - `machineId` from `~/.9router/data/machine-id` (fallback:
   `~/.9router/machine-id`)
@@ -95,14 +95,14 @@ dashboard password — Mode 2 — as the fallback.
 a session cookie (JWT), which is persisted in the keyring with the
 password (see Security). A 401 or an expired cookie logs in again, at
 most once per 60 seconds — the gateway rate-limits logins per IP, so
-Isle never retries in a loop.
+Notchfolk never retries in a loop.
 
 ### Mode 3 — proxy key (the Remote option's advanced path)
 
-Some users will not put a dashboard password in Isle at all. A tiny
+Some users will not put a dashboard password in Notchfolk at all. A tiny
 open-source proxy (single Node file, linked from the README) holds the
 password and serves `GET {PROXY}/notch?period=…` with
-`Authorization: Bearer <key>`. Isle knows nothing about the proxy's
+`Authorization: Bearer <key>`. Notchfolk knows nothing about the proxy's
 implementation; its camelCase response fields are adapted to the same
 usage data as the other modes. (For 9Router, the proxy relays the usage
 endpoints with the session it maintains.)
@@ -114,7 +114,7 @@ Without auth:
 - `GET /api/version` → `{currentVersion, latestVersion, hasUpdate}`.
   `currentVersion` below 0.4.42 shows a permanent warning
   ("Update your gateway first") — 9Router's old usage endpoint once
-  leaked API keys; below that version Isle does not fetch usage at all.
+  leaked API keys; below that version Notchfolk does not fetch usage at all.
 
 With the Mode 1 or 2 auth:
 
@@ -159,7 +159,7 @@ Numbers are compact everywhere; the cost always carries "est.".
   (cap). Recovery is automatic when the gateway returns, without a
   restart.
 - **Timeout**: 10 s. One request in flight per endpoint.
-- All HTTP is async (isled's agent, off the main loop); the extension
+- All HTTP is async (notchfolkd's agent, off the main loop); the extension
   re-renders at most once a second, and keeps no large response
   strings longer than the render needs.
 
@@ -167,7 +167,7 @@ Numbers are compact everywhere; the cost always carries "est.".
 
 - The password and the proxy key live in the keyring only — never in
   gsettings, never in a file in the clear, never in logs, never in the
-  clipboard history, never in any telemetry. isled holds them, as it
+  clipboard history, never in any telemetry. notchfolkd holds them, as it
   holds the AIs' own credentials; the extension only ever sees
   derived state.
 - Every request is read-only except the single login call.
@@ -179,5 +179,5 @@ Numbers are compact everywhere; the cost always carries "est.".
 
 - Billing (the gateway's numbers are estimates only)
 - Streaming responses of the AI traffic itself
-- Configuring the gateway from Isle (its own dashboard does that)
+- Configuring the gateway from Notchfolk (its own dashboard does that)
 - Other gateways' implementations beyond the trait above

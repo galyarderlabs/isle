@@ -19,10 +19,10 @@ import {Art, LevelBar, Ring, VolumeGlyph, WrapLayout, cornerClose, icon, isSymbo
 
 /** The widest an alert gets; narrower, it fits its content. Sizes are in CSS pixels (see `px`). */
 const MAX_WIDTH = 380;
-/** Room round the badge, as much on every side (see .isle-peek-row); PEEK_RADIUS in controller.js is the
+/** Room round the badge, as much on every side (see .notchfolk-peek-row); PEEK_RADIUS in controller.js is the
  * badge's radius plus this, so the corners follow it. */
 const PADDING = 12;
-/** Room round one lit along its edges (an agent's ask): its buttons clear of the light (see .isle-peek-row-glow). */
+/** Room round one lit along its edges (an agent's ask): its buttons clear of the light (see .notchfolk-peek-row-glow). */
 const GLOW_PADDING = 16;
 /** Height of the part that hangs below the top bar: the badge and its room above and below. */
 const HEIGHT = 32 + 2 * PADDING;
@@ -35,7 +35,7 @@ const ACTIONS_WIDTH = 560;
 /** Between its buttons, and between their lines. */
 const ACTIONS_SPACING = 8;
 const BOT_SIZE = 46;
-/** Its texts' widest: less its padding, the assistant and the spacing (12); see .isle-peek-row-asks. */
+/** Its texts' widest: less its padding, the assistant and the spacing (12); see .notchfolk-peek-row-asks. */
 const DECISION_TEXT_WIDTH = DECISION_WIDTH - 2 * PADDING - BOT_SIZE - 12;
 /** Its answer shows this long (ms), the assistant hopping or shaking, before the alert goes. */
 const ANSWERED_MS = 850;
@@ -94,11 +94,11 @@ export const PeekView = GObject.registerClass({
 }, class PeekView extends St.Widget {
     /** Builds every piece once; each alert only picks which are shown. */
     _init() {
-        super._init({style_class: 'isle-peek', layout_manager: new Clutter.BinLayout()});
+        super._init({style_class: 'notchfolk-peek', layout_manager: new Clutter.BinLayout()});
 
         // The content sits in one row, centred; the island fits its width.
         this._row = new St.BoxLayout({
-            style_class: 'isle-peek-row',
+            style_class: 'notchfolk-peek-row',
             x_expand: true,
             // Filling the island, which is an even width: a spare pixel goes to the texts, so the badge and
             // the value or button stay as far from the edges, not half a pixel off.
@@ -115,7 +115,7 @@ export const PeekView = GObject.registerClass({
         this._art.connect('shown', () => this._syncArtBadge());
         this._artBadgeIcon = new St.Icon({icon_size: 12});
         this._artBadge = new St.Bin({
-            style_class: 'isle-app-badge',
+            style_class: 'notchfolk-app-badge',
             child: this._artBadgeIcon,
             x_expand: true,
             y_expand: true,
@@ -129,7 +129,7 @@ export const PeekView = GObject.registerClass({
         this._artBox.add_child(this._artBadge);
         // A level as a ring around a lit badge, like the other alerts' badges.
         this._ringIcon = new St.Icon({icon_size: 12});
-        this._ringBadge = new St.Bin({style_class: 'isle-peek-ring-badge', child: this._ringIcon});
+        this._ringBadge = new St.Bin({style_class: 'notchfolk-peek-ring-badge', child: this._ringIcon});
         this._ring = new Ring({size: 32, lineWidth: 3, child: this._ringBadge});
         this._volume = new VolumeGlyph();
         // The assistant, for what it or an AI agent asks or has done.
@@ -143,8 +143,8 @@ export const PeekView = GObject.registerClass({
 
         const texts = new St.BoxLayout({...VERTICAL, x_expand: true, y_align: Clutter.ActorAlign.CENTER});
         this._texts = texts;
-        this._title = new St.Label({style_class: 'isle-peek-title'});
-        this._subtitle = new St.Label({style_class: 'isle-peek-subtitle'});
+        this._title = new St.Label({style_class: 'notchfolk-peek-title'});
+        this._subtitle = new St.Label({style_class: 'notchfolk-peek-subtitle'});
         for (const text of [this._title, this._subtitle]) {
             text.clutter_text.ellipsize = Pango.EllipsizeMode.END;
             texts.add_child(text);
@@ -160,19 +160,19 @@ export const PeekView = GObject.registerClass({
         this._subtitleLines = 1;
         this._subtitleLineHeight = 0;
         // What an agent wants to run, and the answers to give it.
-        this._code = new St.Label({style_class: 'isle-peek-code', x_align: Clutter.ActorAlign.START});
+        this._code = new St.Label({style_class: 'notchfolk-peek-code', x_align: Clutter.ActorAlign.START});
         // Whole, over as many lines as it takes: what is allowed is all there to read.
         this._code.clutter_text.set({line_wrap: true, line_wrap_mode: Pango.WrapMode.WORD_CHAR,
             ellipsize: Pango.EllipsizeMode.NONE});
         texts.add_child(this._code);
         // Its buttons small, each as wide as its label, from where the texts start; whole, a line below if need be.
         const wrap = new WrapLayout();
-        this._actions = new St.Widget({style_class: 'isle-peek-actions', layout_manager: wrap, x_expand: true});
+        this._actions = new St.Widget({style_class: 'notchfolk-peek-actions', layout_manager: wrap, x_expand: true});
         onUiScale(this._actions, scale => (wrap.spacing = ACTIONS_SPACING * scale));
         texts.add_child(this._actions);
-        this._answered = new St.BoxLayout({style_class: 'isle-peek-answered', visible: false});
+        this._answered = new St.BoxLayout({style_class: 'notchfolk-peek-answered', visible: false});
         this._answeredIcon = new St.Icon({icon_size: 12, y_align: Clutter.ActorAlign.CENTER});
-        this._answeredText = new St.Label({style_class: 'isle-peek-answered-text', y_align: Clutter.ActorAlign.CENTER});
+        this._answeredText = new St.Label({style_class: 'notchfolk-peek-answered-text', y_align: Clutter.ActorAlign.CENTER});
         this._answered.add_child(this._answeredIcon);
         this._answered.add_child(this._answeredText);
         texts.add_child(this._answered);
@@ -181,11 +181,11 @@ export const PeekView = GObject.registerClass({
 
         // Trailing: a value, a level bar or a button.
         this._accessory = new St.Bin({y_align: Clutter.ActorAlign.CENTER});
-        this._value = new St.Label({style_class: 'isle-peek-value', y_align: Clutter.ActorAlign.CENTER});
-        this._status = new St.Label({style_class: 'isle-peek-status', y_align: Clutter.ActorAlign.CENTER});
+        this._value = new St.Label({style_class: 'notchfolk-peek-value', y_align: Clutter.ActorAlign.CENTER});
+        this._status = new St.Label({style_class: 'notchfolk-peek-status', y_align: Clutter.ActorAlign.CENTER});
         this._level = new LevelBar({width: 72});
-        this._levelText = new St.Label({style_class: 'isle-peek-level-text', y_align: Clutter.ActorAlign.CENTER});
-        this._levelBox = new St.BoxLayout({style_class: 'isle-peek-level-box'});
+        this._levelText = new St.Label({style_class: 'notchfolk-peek-level-text', y_align: Clutter.ActorAlign.CENTER});
+        this._levelBox = new St.BoxLayout({style_class: 'notchfolk-peek-level-box'});
         this._levelBox.add_child(this._level);
         this._levelBox.add_child(this._levelText);
         this._row.add_child(this._accessory);
@@ -235,7 +235,7 @@ export const PeekView = GObject.registerClass({
         // One that asks reads from the left, like a dialog, the assistant level with its title.
         const decision = this._asks || Boolean(alert.code);
         this._lit = Boolean(alert.glow);
-        this._row.style_class = decision ? `isle-peek-row isle-peek-row-asks${this._lit ? ' isle-peek-row-glow' : ''}` : 'isle-peek-row';
+        this._row.style_class = decision ? `notchfolk-peek-row notchfolk-peek-row-asks${this._lit ? ' notchfolk-peek-row-glow' : ''}` : 'notchfolk-peek-row';
         this._lead.y_align = this._texts.y_align = decision ? Clutter.ActorAlign.START : Clutter.ActorAlign.CENTER;
         // One that asks is answered with its own buttons; the volume and the like pass by themselves.
         // From what it is, not where its button went: one moved under its words keeps its ×.
@@ -274,7 +274,7 @@ export const PeekView = GObject.registerClass({
             this._volume.setLevel(alert.volume.level, alert.volume.muted, {fresh: alert.key !== this._volumeKey});
             this._volume.style = `color: ${color};`;
             this._setChild(this._badge, this._volume);
-            this._badge.style_class = 'isle-peek-icon';
+            this._badge.style_class = 'notchfolk-peek-icon';
         } else {
             // An app's own colour icon stands alone; a symbolic one gets a badge.
             const appIcon = alert.appIcon && !isSymbolic(gicon);
@@ -282,7 +282,7 @@ export const PeekView = GObject.registerClass({
             this._icon.icon_size = appIcon ? 28 : 16;
             this._icon.style = appIcon ? null : `color: ${color};`;
             this._setChild(this._badge, this._icon);
-            this._badge.style_class = appIcon ? '' : 'isle-peek-icon';
+            this._badge.style_class = appIcon ? '' : 'notchfolk-peek-icon';
         }
         this._badge.style = this._badge.style_class
             ? badgeStyle(rgb, (alert.tone ?? 'neutral') === 'neutral')
@@ -347,7 +347,7 @@ export const PeekView = GObject.registerClass({
         if (action) {
             // The one thing to do now (Join) in the accent colour, as a default button.
             if (!keepButton) {
-                this._actionButton = pillButton(action.label, action.primary ? 'isle-pill-small isle-pill-accent' : 'isle-pill-small', () => {
+                this._actionButton = pillButton(action.label, action.primary ? 'notchfolk-pill-small notchfolk-pill-accent' : 'notchfolk-pill-small', () => {
                     this._shownAction.callback();
                     this._actionDone?.();
                 });
@@ -414,9 +414,9 @@ export const PeekView = GObject.registerClass({
         this._answered.visible = false;
         this._actionsShownAt = GLib.get_monotonic_time();
         actions.forEach((action, i) => {
-            const style = action.accent ? 'isle-pill-small isle-peek-action isle-pill-accent'
-                : action.primary ? `isle-pill-small isle-peek-action isle-pill-white${action.answer ? ' isle-pill-decision' : ''}`
-                    : 'isle-pill-small isle-peek-action';
+            const style = action.accent ? 'notchfolk-pill-small notchfolk-peek-action notchfolk-pill-accent'
+                : action.primary ? `notchfolk-pill-small notchfolk-peek-action notchfolk-pill-white${action.answer ? ' notchfolk-pill-decision' : ''}`
+                    : 'notchfolk-pill-small notchfolk-peek-action';
             this._actions.add_child(pillButton(action.label, style, () => this._answer(this._shownActions[i], this._actionsDone)));
         });
     }
@@ -449,9 +449,9 @@ export const PeekView = GObject.registerClass({
         this._bot.badge = {color: Theme.semantic(allowed ? Palette.GREEN : Palette.RED), glyph: allowed ? 'check' : 'cross'};
         this._bot.form = allowed ? 'success' : 'attentive';
         this._bot.play(allowed ? 'hop' : 'shake');
-        this._answeredIcon.gicon = icon(allowed ? 'isle-check-symbolic' : 'isle-close-symbolic');
+        this._answeredIcon.gicon = icon(allowed ? 'notchfolk-check-symbolic' : 'notchfolk-close-symbolic');
         this._answeredText.text = action.done ?? (allowed ? 'Allowed' : 'Denied');
-        this._answered.style_class = `isle-peek-answered ${allowed ? 'isle-peek-allowed' : 'isle-peek-denied'}`;
+        this._answered.style_class = `notchfolk-peek-answered ${allowed ? 'notchfolk-peek-allowed' : 'notchfolk-peek-denied'}`;
         this._actions.visible = false;
         this._answered.visible = true;
         if (!allowed)

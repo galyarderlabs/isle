@@ -33,13 +33,13 @@ const FILL_MS = 500;
 const css = ([r, g, b], alpha = 1) => `rgba(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}, ${alpha})`;
 
 /** Each provider's logo (icons/), shown by its name. */
-const LOGOS = {claude: 'isle-claude', codex: 'isle-openai', grok: 'isle-grok'};
+const LOGOS = {claude: 'notchfolk-claude', codex: 'notchfolk-openai', grok: 'notchfolk-grok'};
 
 /** The provider's logo, or a dot of its colour for one without. */
 function mark(id) {
     if (LOGOS[id])
-        return new St.Icon({gicon: icon(LOGOS[id]), icon_size: 18, style_class: 'isle-usage-logo', y_align: Clutter.ActorAlign.CENTER});
-    const dot = new St.Widget({style_class: 'isle-usage-mark', y_align: Clutter.ActorAlign.CENTER});
+        return new St.Icon({gicon: icon(LOGOS[id]), icon_size: 18, style_class: 'notchfolk-usage-logo', y_align: Clutter.ActorAlign.CENTER});
+    const dot = new St.Widget({style_class: 'notchfolk-usage-mark', y_align: Clutter.ActorAlign.CENTER});
     dot.style = `background-color: ${css(ACCENTS[id] ?? FALLBACK)};`;
     return dot;
 }
@@ -52,10 +52,10 @@ const Bar = GObject.registerClass({
 }, class Bar extends St.Widget {
     /** `level` is 'normal', 'warn' or 'critical'. */
     _init(share, level, accent) {
-        super._init({style_class: 'isle-usage-track', x_expand: true});
+        super._init({style_class: 'notchfolk-usage-track', x_expand: true});
         this._share = share;
         this._sweep = 1;
-        this._fill = new St.Widget({style_class: `isle-usage-fill ${level}`});
+        this._fill = new St.Widget({style_class: `notchfolk-usage-fill ${level}`});
         // In the plan's colour until nearly used up, then red.
         if (level !== 'critical')
             this._fill.style = `background-color: ${css(accent)};`;
@@ -93,7 +93,7 @@ class UsagePage extends Page {
     /** `height` is the expanded island's page height. */
     _init(daemon, {height}) {
         super._init(daemon, {
-            style_class: 'isle-page isle-usage',
+            style_class: 'notchfolk-page notchfolk-usage',
             layout_manager: new Clutter.BinLayout(),
             height,
             reactive: true,
@@ -109,7 +109,7 @@ class UsagePage extends Page {
         this._card = new St.Widget({layout_manager: new Clutter.BinLayout(), x_expand: true, y_expand: true, clip_to_allocation: true});
         row.add_child(this._card);
         // A dot per provider on the right, the shown one lit; only with more than one.
-        this._dots = new St.BoxLayout({...VERTICAL, style_class: 'isle-usage-dots', y_align: Clutter.ActorAlign.CENTER});
+        this._dots = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-usage-dots', y_align: Clutter.ActorAlign.CENTER});
         row.add_child(this._dots);
         this.add_child(row);
 
@@ -118,7 +118,7 @@ class UsagePage extends Page {
         this._update();
     }
 
-    /** As isled last read them. */
+    /** As notchfolkd last read them. */
     _providers() {
         return this.daemon.state.usage?.providers ?? [];
     }
@@ -136,7 +136,7 @@ class UsagePage extends Page {
 
     /** Asks for fresh numbers and grows the bars in. */
     onActivate() {
-        // Fresh numbers when looked at; isled asks Claude at most every two minutes.
+        // Fresh numbers when looked at; notchfolkd asks Claude at most every two minutes.
         this.daemon.call('usage', 'Refresh');
         this._update();
         this._fill();
@@ -148,7 +148,7 @@ class UsagePage extends Page {
         return Math.max(0, index);
     }
 
-    /** Isle's 12/24-hour setting changed: "Updated 20:40" as it says now, while on show. */
+    /** Notchfolk's 12/24-hour setting changed: "Updated 20:40" as it says now, while on show. */
     clockChanged() {
         if (this.active)
             this._update();
@@ -193,7 +193,7 @@ class UsagePage extends Page {
         if (count < 2)
             return;
         for (let i = 0; i < count; i++) {
-            const dot = new St.Button({style_class: `isle-usage-dot${i === index ? ' shown' : ''}`, can_focus: true,
+            const dot = new St.Button({style_class: `notchfolk-usage-dot${i === index ? ' shown' : ''}`, can_focus: true,
                 accessible_name: this._providers()[i].name});
             dot.connect('clicked', () => this._show(i));
             this._dots.add_child(dot);
@@ -287,28 +287,28 @@ class UsagePage extends Page {
     /** One provider's card: logo, name, plan and freshness, then up to three limits. */
     _content(provider) {
         const accent = ACCENTS[provider.id] ?? FALLBACK;
-        const content = new St.BoxLayout({...VERTICAL, style_class: 'isle-usage-content', x_expand: true, y_align: Clutter.ActorAlign.CENTER});
+        const content = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-usage-content', x_expand: true, y_align: Clutter.ActorAlign.CENTER});
 
         // The provider, its plan, and how fresh the numbers are (or what is wrong).
-        const head = new St.BoxLayout({style_class: 'isle-usage-head'});
+        const head = new St.BoxLayout({style_class: 'notchfolk-usage-head'});
         head.add_child(mark(provider.id));
-        head.add_child(label(provider.name, 'isle-usage-name'));
+        head.add_child(label(provider.name, 'notchfolk-usage-name'));
         if (provider.plan)
-            head.add_child(label(provider.plan, 'isle-usage-plan'));
+            head.add_child(label(provider.plan, 'notchfolk-usage-plan'));
         const fromCodex = provider.note?.startsWith('As of');
         const warning = provider.note && !fromCodex;
         const stamp = label(warning ? provider.note : updated(provider.updated_ms, fromCodex),
-            `isle-usage-stamp${warning ? ' warning' : ''}`, {x_expand: true, x_align: Clutter.ActorAlign.END});
+            `notchfolk-usage-stamp${warning ? ' warning' : ''}`, {x_expand: true, x_align: Clutter.ActorAlign.END});
         stamp.clutter_text.ellipsize = Pango.EllipsizeMode.END;
         this._stamp = stamp;
         head.add_child(stamp);
         content.add_child(head);
 
-        const limits = new St.BoxLayout({...VERTICAL, style_class: 'isle-usage-limits'});
+        const limits = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-usage-limits'});
         for (const window of provider.windows.slice(0, 3))
             limits.add_child(this._limit(window, accent));
         if (provider.windows.length === 0)
-            limits.add_child(label(provider.empty || 'No limits reported yet', 'isle-usage-empty'));
+            limits.add_child(label(provider.empty || 'No limits reported yet', 'notchfolk-usage-empty'));
         content.add_child(limits);
         return content;
     }
@@ -319,17 +319,17 @@ class UsagePage extends Page {
         // Its colour from the number shown: "80%" is never left white for a 79.6.
         const shown = Math.round(used);
         const level = shown >= this._marks.critical ? 'critical' : shown >= this._marks.warn ? 'warn' : 'normal';
-        const limit = new St.BoxLayout({...VERTICAL, style_class: 'isle-usage-limit'});
-        const line = new St.BoxLayout({style_class: 'isle-usage-line'});
-        const title = label(name, 'isle-usage-window', {x_expand: true});
+        const limit = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-usage-limit'});
+        const line = new St.BoxLayout({style_class: 'notchfolk-usage-line'});
+        const title = label(name, 'notchfolk-usage-window', {x_expand: true});
         title.clutter_text.ellipsize = Pango.EllipsizeMode.END;
         line.add_child(title);
         if (resetsAt > 0) {
-            const reset = label(resets(resetsAt), 'isle-usage-reset');
+            const reset = label(resets(resetsAt), 'notchfolk-usage-reset');
             this._resetLabels.push([reset, resetsAt]);
             line.add_child(reset);
         }
-        line.add_child(label(`${shown}%`, `isle-usage-percent ${level}`));
+        line.add_child(label(`${shown}%`, `notchfolk-usage-percent ${level}`));
         limit.add_child(line);
 
         const bar = new Bar(used / 100, level, accent);

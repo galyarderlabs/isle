@@ -1121,65 +1121,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "isle-core"
-version = "1.6.1"
-dependencies = [
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "isle-daemon"
-version = "1.6.1"
-dependencies = [
- "anyhow",
- "chrono",
- "dirs",
- "env_logger",
- "futures-util",
- "httparse",
- "image",
- "inotify",
- "isle-core",
- "keyring",
- "libc",
- "log",
- "md5",
- "qrcode",
- "serde",
- "serde_json",
- "sha2",
- "subtle",
- "tokio",
- "toml_edit",
- "ureq",
- "zbus",
-]
-
-[[package]]
-name = "isle-shelf"
-version = "1.6.1"
-dependencies = [
- "env_logger",
- "gdk4-x11",
- "gtk4",
- "log",
- "serde",
- "serde_json",
- "x11rb",
-]
-
-[[package]]
-name = "isle-whisper"
-version = "1.6.1"
-dependencies = [
- "isle-core",
- "libc",
- "serde_json",
- "whisper-rs",
-]
-
-[[package]]
 name = "itertools"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1350,6 +1291,65 @@ checksum = "d273983c5a657a70a3e8f2a01329822f3b8c8172b73826411a55751e404a0a4a"
 dependencies = [
  "memchr",
  "minimal-lexical",
+]
+
+[[package]]
+name = "notchfolk-core"
+version = "1.6.1"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "notchfolk-daemon"
+version = "1.6.1"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "dirs",
+ "env_logger",
+ "futures-util",
+ "httparse",
+ "image",
+ "inotify",
+ "keyring",
+ "libc",
+ "log",
+ "md5",
+ "notchfolk-core",
+ "qrcode",
+ "serde",
+ "serde_json",
+ "sha2",
+ "subtle",
+ "tokio",
+ "toml_edit",
+ "ureq",
+ "zbus",
+]
+
+[[package]]
+name = "notchfolk-shelf"
+version = "1.6.1"
+dependencies = [
+ "env_logger",
+ "gdk4-x11",
+ "gtk4",
+ "log",
+ "serde",
+ "serde_json",
+ "x11rb",
+]
+
+[[package]]
+name = "notchfolk-whisper"
+version = "1.6.1"
+dependencies = [
+ "libc",
+ "notchfolk-core",
+ "serde_json",
+ "whisper-rs",
 ]
 
 [[package]]

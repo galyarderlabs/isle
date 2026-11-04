@@ -2,7 +2,7 @@
 // Copyright (C) 2026 zickrian
 
 // Square previews and colours for shelf files, decoded on a worker thread and
-// cached as small PNGs in ~/.cache/isle/shelf.
+// cached as small PNGs in ~/.cache/notchfolk/shelf.
 
 import GdkPixbuf from 'gi://GdkPixbuf';
 import Gio from 'gi://Gio';
@@ -33,7 +33,7 @@ function call(begin, finish) {
 export class Thumbnails {
     /** Nothing is read until a tile asks. */
     constructor() {
-        this._dir = GLib.build_filenamev([GLib.get_user_cache_dir(), 'isle', 'shelf']);
+        this._dir = GLib.build_filenamev([GLib.get_user_cache_dir(), 'notchfolk', 'shelf']);
         /** uri → Promise of what `get` returns. */
         this._loads = new Map();
         this._cancellable = new Gio.Cancellable();
@@ -45,7 +45,7 @@ export class Thumbnails {
         if (!this._loads.has(uri)) {
             this._loads.set(uri, this._load(uri).catch(e => {
                 if (!e.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
-                    console.warn(`Isle: no preview for ${uri}: ${e.message}`);
+                    console.warn(`Notchfolk: no preview for ${uri}: ${e.message}`);
                 return null;
             }));
         }

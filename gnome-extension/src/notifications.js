@@ -10,15 +10,15 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
 import * as Signals from 'resource:///org/gnome/shell/misc/signals.js';
 
-/** GNOME's calendar reminders, whose window Isle's own event alerts stand in for: Evolution's, and since
+/** GNOME's calendar reminders, whose window Notchfolk's own event alerts stand in for: Evolution's, and since
  * GNOME 51 the shell's calendar server's own, with the same ids. */
 const CALENDAR_REMINDERS = ['org.gnome.Evolution-alarm-notify', 'org.gnome.Shell.CalendarServer'];
 
 /** Signals: `changed` (the list), `seen-changed` (only what is seen), `updated` (one changed in place),
  * `banner` (notification: show it, then acknowledge it) and `dnd-changed`. */
 export class NotificationCenter extends Signals.EventEmitter {
-    /** `isleSettings` says whether GNOME keeps its own banners (`gnome-banners`). */
-    constructor(isleSettings) {
+    /** `notchfolkSettings` says whether GNOME keeps its own banners (`gnome-banners`). */
+    constructor(notchfolkSettings) {
         super();
         this._tray = Main.messageTray;
         this._sources = new Map();
@@ -26,12 +26,12 @@ export class NotificationCenter extends Signals.EventEmitter {
         this._settings = new Gio.Settings({schema_id: 'org.gnome.desktop.notifications'});
         this._settingsChanged = this._settings.connect('changed::show-banners', () => this.emit('dnd-changed'));
 
-        this._isleSettings = isleSettings;
-        /** Whether Isle's own event alert stands in for the calendar reminder with this id, as (id) => boolean. */
+        this._notchfolkSettings = notchfolkSettings;
+        /** Whether Notchfolk's own event alert stands in for the calendar reminder with this id, as (id) => boolean. */
         this.remindsOf = null;
-        this._bannersChanged = isleSettings.connect('changed::gnome-banners', () => this._syncBanners());
+        this._bannersChanged = notchfolkSettings.connect('changed::gnome-banners', () => this._syncBanners());
         this._syncBanners();
-        this._eventAlertsChanged = isleSettings.connect('changed::event-alerts', () => {
+        this._eventAlertsChanged = notchfolkSettings.connect('changed::event-alerts', () => {
             for (const source of this._sources.keys())
                 this._dropReminders(source);
         });
@@ -88,7 +88,7 @@ export class NotificationCenter extends Signals.EventEmitter {
 
     /** Whether GNOME shows its own banners (as the user chose); else the island does. */
     get _gnomeBanners() {
-        return this._isleSettings.get_boolean('gnome-banners');
+        return this._notchfolkSettings.get_boolean('gnome-banners');
     }
 
     /** Blocks or unblocks GNOME's banners to match the setting. */
@@ -153,18 +153,18 @@ export class NotificationCenter extends Signals.EventEmitter {
         this.emit('changed');
     }
 
-    /** Whether `notification` is a calendar reminder Isle's own event alert stands in for: clicked, they
-     * opened a window of their own, and came on top of Isle's, which has the meeting's Join. Under Do Not
-     * Disturb Isle alerts of nothing, so the reminder stays; see `CalendarPage.remindsOf` for which others. */
+    /** Whether `notification` is a calendar reminder Notchfolk's own event alert stands in for: clicked, they
+     * opened a window of their own, and came on top of Notchfolk's, which has the meeting's Join. Under Do Not
+     * Disturb Notchfolk alerts of nothing, so the reminder stays; see `CalendarPage.remindsOf` for which others. */
     _standsInFor(source, notification) {
         const app = source.policy?.id ?? source.app?.get_id?.()?.replace(/\.desktop$/, '');
-        if (!CALENDAR_REMINDERS.includes(app) || !this._isleSettings.get_boolean('event-alerts') || this.dnd)
+        if (!CALENDAR_REMINDERS.includes(app) || !this._notchfolkSettings.get_boolean('event-alerts') || this.dnd)
             return false;
         // Their id: the calendar, the event, its recurrence (if any) and the alarm's time, a line each.
         return Boolean(this.remindsOf?.(String(notification.id ?? '')));
     }
 
-    /** Takes away the calendar reminders already there that Isle's event alerts stand in for. */
+    /** Takes away the calendar reminders already there that Notchfolk's event alerts stand in for. */
     _dropReminders(source) {
         for (const notification of [...source.notifications]) {
             if (this._standsInFor(source, notification))
@@ -232,8 +232,8 @@ export class NotificationCenter extends Signals.EventEmitter {
         for (const source of [...this._sources.keys()])
             this._unwatch(source);
         this._settings.disconnect(this._settingsChanged);
-        this._isleSettings.disconnect(this._bannersChanged);
-        this._isleSettings.disconnect(this._eventAlertsChanged);
+        this._notchfolkSettings.disconnect(this._bannersChanged);
+        this._notchfolkSettings.disconnect(this._eventAlertsChanged);
         if (this._blocking)
             this._unblockBanners();
     }

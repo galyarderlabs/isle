@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// The island's look: Isle's own black, or glass over what is behind it. What Cairo paints in the island's
+// The island's look: Notchfolk's own black, or glass over what is behind it. What Cairo paints in the island's
 // colour asks here; CSS does the rest. Settings loads it too: no shell imports.
 
 // What is behind is blurred and toned in one pass (glass.js): its lightness mapped to lo + span × l^gamma, its

@@ -5,7 +5,7 @@ What is kept where, and what leaves your computer. Also see [SECURITY.md](../SEC
 ## Data & network
 
 Notchfolk has no Notchfolk-operated server and no telemetry; your clipboard history, reminders,
-events, timer, app usage and the assistant's chats stay in `~/.local/share/isle`, and
+events, timer, app usage and the assistant's chats stay in `~/.local/share/notchfolk`, and
 speech is recognised on this computer. It goes online only for synced lyrics
 ([LRCLIB](https://lrclib.net)) and cover art, once per song (lyrics can be
 turned off in Settings); your Claude plan's usage (`api.anthropic.com`, with
@@ -25,9 +25,9 @@ Notchfolk's service or steer its assistant. The call preview is drawn by GNOME
 Shell from what is on screen and never recorded.
 
 The optional MCP service is off until you set it up and enable it. It offers
-read tools and enables only the writes you list in `~/.config/isle/mcp.env`;
+read tools and enables only the writes you list in `~/.config/notchfolk/mcp.env`;
 it listens on loopback by default. Food and water logs stay on this computer
-in `~/.local/share/isle/calories.json` and `~/.local/share/isle/water.json`.
+in `~/.local/share/notchfolk/calories.json` and `~/.local/share/notchfolk/water.json`.
 Custom instructions in Settings → Assistant are sent with requests to Claude
 Code and Codex; Antigravity manages its own personality. See the
 [MCP setup guide](mcp.md) for remote access and write permissions.

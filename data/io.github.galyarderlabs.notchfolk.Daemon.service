@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=io.galyarderlabs.notchfolk.Daemon
+Exec=@BINDIR@/notchfolkd
+SystemdService=notchfolkd.service

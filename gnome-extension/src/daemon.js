@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// Client for isled, the Rust service that does the actual work. Each interface's state comes as
+// Client for notchfolkd, the Rust service that does the actual work. Each interface's state comes as
 // JSON string properties, parsed here into plain objects on `Daemon.state`.
 
 import Gio from 'gi://Gio';
@@ -9,12 +9,12 @@ import GLib from 'gi://GLib';
 
 import * as Signals from 'resource:///org/gnome/shell/misc/signals.js';
 
-const BUS_NAME = 'io.github.zickrian.isle.Daemon';
-const OBJECT_PATH = '/io/github/zickrian/isle/Daemon';
+const BUS_NAME = 'io.galyarderlabs.notchfolk.Daemon';
+const OBJECT_PATH = '/io/github/galyarderlabs/notchfolk/Daemon';
 
-// One isled interface's introspection XML.
+// One notchfolkd interface's introspection XML.
 const node = (name, body) =>
-    `<node><interface name="io.github.zickrian.isle.${name}">${body}</interface></node>`;
+    `<node><interface name="io.galyarderlabs.notchfolk.${name}">${body}</interface></node>`;
 
 // Each interface, its JSON properties and the `state` keys they map to.
 const INTERFACES = {
@@ -218,9 +218,9 @@ const INTERFACES = {
 const PLAIN = new Set(['updates']);
 
 // Signals: `changed` (key) when `state[key]` is new; `appeared` (interface), `running-changed` and `assistant-lost`
-// (a request in flight dies) as isled comes and goes; isled's own signals, renamed in `_onSignal`.
+// (a request in flight dies) as notchfolkd comes and goes; notchfolkd's own signals, renamed in `_onSignal`.
 export class Daemon extends Signals.EventEmitter {
-    /** Makes a proxy per interface and starts isled if needed. */
+    /** Makes a proxy per interface and starts notchfolkd if needed. */
     constructor() {
         super();
         /** Parsed state; a key is `null` until the daemon has reported it. */
@@ -237,7 +237,7 @@ export class Daemon extends Signals.EventEmitter {
                 this.state[key] = null;
             this._connect(name, xml, properties);
         }
-        /** Whether isled is on the bus. */
+        /** Whether notchfolkd is on the bus. */
         this.running = false;
         this._nameWatch = Gio.bus_watch_name(Gio.BusType.SESSION, BUS_NAME, Gio.BusNameWatcherFlags.NONE,
             () => this._setRunning(true), () => this._setRunning(false));
@@ -252,7 +252,7 @@ export class Daemon extends Signals.EventEmitter {
         this.emit('running-changed');
     }
 
-    /** Starts isled through D-Bus activation if it is not running. */
+    /** Starts notchfolkd through D-Bus activation if it is not running. */
     start() {
         Gio.DBus.session.call(
             'org.freedesktop.DBus', '/org/freedesktop/DBus', 'org.freedesktop.DBus',
@@ -263,7 +263,7 @@ export class Daemon extends Signals.EventEmitter {
                     connection.call_finish(result);
                 } catch (e) {
                     if (!e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
-                        console.warn(`Isle: could not start isled: ${e.message}`);
+                        console.warn(`Notchfolk: could not start notchfolkd: ${e.message}`);
                 }
             });
     }
@@ -271,12 +271,12 @@ export class Daemon extends Signals.EventEmitter {
     /** Makes the proxy for interface `name` and keeps its `properties` mirrored in `state`. */
     _connect(name, xml, properties) {
         const DaemonProxy = Gio.DBusProxy.makeProxyWrapper(xml);
-        // The proxy is created even while isled is not running, and picks up
+        // The proxy is created even while notchfolkd is not running, and picks up
         // its state whenever it appears (or restarts).
         new DaemonProxy(Gio.DBus.session, BUS_NAME, OBJECT_PATH, (proxy, error) => {
             if (error) {
                 if (!error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
-                    console.warn(`Isle: could not create the ${name} proxy: ${error.message}`);
+                    console.warn(`Notchfolk: could not create the ${name} proxy: ${error.message}`);
                 return;
             }
             this._proxies[name] = proxy;
@@ -317,7 +317,7 @@ export class Daemon extends Signals.EventEmitter {
         }, this._cancellable, Gio.DBusProxyFlags.DO_NOT_AUTO_START_AT_CONSTRUCTION);
     }
 
-    /** Keeps what it would tell (changes, signals) until `release`: Isle, being built a part at a time, has
+    /** Keeps what it would tell (changes, signals) until `release`: Notchfolk, being built a part at a time, has
      * listeners still to connect, and each must hear the first state as it would have. */
     hold() {
         this._held ??= [];
@@ -343,7 +343,7 @@ export class Daemon extends Signals.EventEmitter {
 
     /** Parses a property's new JSON into `state[key]`. */
     _update(key, json) {
-        // isled may send a value again unchanged; nobody needs to hear it twice.
+        // notchfolkd may send a value again unchanged; nobody needs to hear it twice.
         if (key in this._raw && this._raw[key] === json)
             return;
         this._raw[key] = json;
@@ -352,13 +352,13 @@ export class Daemon extends Signals.EventEmitter {
             // Updates1's Latest is a bare version ("1.5.1"), not JSON.
             value = !json ? null : PLAIN.has(key) ? json : JSON.parse(json);
         } catch (e) {
-            console.warn(`Isle: invalid ${key} from isled: ${e.message}`);
+            console.warn(`Notchfolk: invalid ${key} from notchfolkd: ${e.message}`);
         }
         this.state[key] = value;
         this.emit('changed', key);
     }
 
-    /** Passes a D-Bus signal on under its Isle name. */
+    /** Passes a D-Bus signal on under its Notchfolk name. */
     _onSignal(name, signal, args) {
         switch (signal) {
         case 'PhaseFinished':
@@ -380,7 +380,7 @@ export class Daemon extends Signals.EventEmitter {
             try {
                 this.emit('agent-asking', JSON.parse(args[0]));
             } catch (e) {
-                console.warn(`Isle: invalid permission request: ${e.message}`);
+                console.warn(`Notchfolk: invalid permission request: ${e.message}`);
             }
             break;
         case 'Alert':
@@ -394,7 +394,7 @@ export class Daemon extends Signals.EventEmitter {
                 // System1's and Agents1's: the computer, or an AI agent that needs you or is done.
                 this.emit(name === 'agents' ? 'agent-event' : 'system-event', JSON.parse(args[0]));
             } catch (e) {
-                console.warn(`Isle: invalid ${name} event: ${e.message}`);
+                console.warn(`Notchfolk: invalid ${name} event: ${e.message}`);
             }
             break;
         }
@@ -405,17 +405,17 @@ export class Daemon extends Signals.EventEmitter {
         return this.attempt(name, method, ...args).then(({result}) => result);
     }
 
-    /** Adds an event to `calendar` (see Calendar1.AddTo); [where it went], or null if refused. An isled from
-     * before AddTo (Isle updated, isled not yet restarted) keeps it in Isle's own instead. */
+    /** Adds an event to `calendar` (see Calendar1.AddTo); [where it went], or null if refused. An notchfolkd from
+     * before AddTo (Notchfolk updated, notchfolkd not yet restarted) keeps it in Notchfolk's own instead. */
     async addEvent(calendar, date, text) {
         const {result, unknownMethod} = await this.attempt('calendar', 'AddTo', calendar, date, text);
-        // Only for an isled without AddTo: one slow to answer may still add it, and it would show twice.
+        // Only for an notchfolkd without AddTo: one slow to answer may still add it, and it would show twice.
         if (!unknownMethod)
             return result;
         return await this.call('calendar', 'Add', date, text) ? [''] : null;
     }
 
-    /** As `call`, with why it failed: {result, error}; `error` is isled's own message when it refused. */
+    /** As `call`, with why it failed: {result, error}; `error` is notchfolkd's own message when it refused. */
     attempt(name, method, ...args) {
         return this._attempt(name, method, args, false);
     }
@@ -433,24 +433,24 @@ export class Daemon extends Signals.EventEmitter {
             try {
                 proxy[`${method}Remote`](...args, (result, error) => {
                     this._settle(proxy);
-                    // Sent as Isle went (SetWatching(false) from the Music page): isled has it; nobody waits.
+                    // Sent as Notchfolk went (SetWatching(false) from the Music page): notchfolkd has it; nobody waits.
                     if (this._destroyed) {
                         resolve({result: null, error: null});
                         return;
                     }
                     if (error && !quiet)
-                        console.warn(`Isle: ${method} failed: ${error.message}`);
-                    // isled's own words: why it would not (Failed), or what was wrong with what it was asked (InvalidArgs).
+                        console.warn(`Notchfolk: ${method} failed: ${error.message}`);
+                    // notchfolkd's own words: why it would not (Failed), or what was wrong with what it was asked (InvalidArgs).
                     const name = error ? Gio.DBusError.get_remote_error(error) : null;
                     const refused = ['org.freedesktop.DBus.Error.Failed', 'org.freedesktop.DBus.Error.InvalidArgs'].includes(name);
-                    // "GDBus.Error:org.freedesktop.DBus.Error.Failed: <isled's words>"
+                    // "GDBus.Error:org.freedesktop.DBus.Error.Failed: <notchfolkd's words>"
                     resolve({result: error ? null : result, error: refused ? error.message.replace(/^GDBus\.Error:[\w.]+:\s*/, '') : null,
                         unknownMethod: name === 'org.freedesktop.DBus.Error.UnknownMethod'});
                 });
                 this._inFlight.set(proxy, (this._inFlight.get(proxy) ?? 0) + 1);
             } catch (e) {
                 // Arguments that do not fit the method's signature.
-                console.warn(`Isle: ${method} failed: ${e.message}`);
+                console.warn(`Notchfolk: ${method} failed: ${e.message}`);
                 resolve({result: null, error: null});
             }
         });

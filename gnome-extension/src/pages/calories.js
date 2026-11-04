@@ -16,7 +16,7 @@ export const CaloriesPage = GObject.registerClass(
 class CaloriesPage extends Page {
     _init(daemon, settings, {height}) {
         super._init(daemon, {
-            style_class: 'isle-page isle-calories',
+            style_class: 'notchfolk-page notchfolk-calories',
             layout_manager: new Clutter.BinLayout(),
             height,
         });
@@ -24,24 +24,24 @@ class CaloriesPage extends Page {
         this._settings = settings;
 
         // Master horizontal layout: Left = Visual Progress Ring, Right = Meal list & quick logger
-        const mainRow = new St.BoxLayout({x_expand: true, y_expand: true, style_class: 'isle-calorie-layout'});
+        const mainRow = new St.BoxLayout({x_expand: true, y_expand: true, style_class: 'notchfolk-calorie-layout'});
 
         // ── Left: Ring & Daily Summary ──
         const leftCol = new St.BoxLayout({
             ...VERTICAL,
-            style_class: 'isle-calorie-left',
+            style_class: 'notchfolk-calorie-left',
             y_align: Clutter.ActorAlign.CENTER,
         });
 
         const insideRing = new St.BoxLayout({...VERTICAL, y_align: Clutter.ActorAlign.CENTER});
         const flameIcon = new St.Icon({
-            gicon: icon('isle-flame'),
+            gicon: icon('notchfolk-flame'),
             icon_size: 14,
-            style_class: 'isle-calorie-flame-icon',
+            style_class: 'notchfolk-calorie-flame-icon',
             x_align: Clutter.ActorAlign.CENTER,
         });
-        this._ringKcal = label('0', 'isle-calorie-ring-val', {x_align: Clutter.ActorAlign.CENTER});
-        const ringUnit = label('kcal', 'isle-calorie-ring-unit', {x_align: Clutter.ActorAlign.CENTER});
+        this._ringKcal = label('0', 'notchfolk-calorie-ring-val', {x_align: Clutter.ActorAlign.CENTER});
+        const ringUnit = label('kcal', 'notchfolk-calorie-ring-unit', {x_align: Clutter.ActorAlign.CENTER});
         insideRing.add_child(flameIcon);
         insideRing.add_child(this._ringKcal);
         insideRing.add_child(ringUnit);
@@ -56,32 +56,32 @@ class CaloriesPage extends Page {
         this._ring.x_align = Clutter.ActorAlign.CENTER;
         leftCol.add_child(this._ring);
 
-        this._percentLabel = label('0% of goal', 'isle-calorie-goal-sub', {
+        this._percentLabel = label('0% of goal', 'notchfolk-calorie-goal-sub', {
             x_align: Clutter.ActorAlign.CENTER,
         });
         leftCol.add_child(this._percentLabel);
-        this._remainingLabel = label(`${DEFAULT_GOAL} kcal left`, 'isle-calorie-remaining', {
+        this._remainingLabel = label(`${DEFAULT_GOAL} kcal left`, 'notchfolk-calorie-remaining', {
             x_align: Clutter.ActorAlign.CENTER,
         });
         leftCol.add_child(this._remainingLabel);
         mainRow.add_child(leftCol);
 
         // Divider
-        mainRow.add_child(new St.Widget({style_class: 'isle-calorie-divider'}));
+        mainRow.add_child(new St.Widget({style_class: 'notchfolk-calorie-divider'}));
 
         // ── Right: List of meals & Add form ──
-        const rightCol = new St.BoxLayout({...VERTICAL, x_expand: true, y_expand: true, style_class: 'isle-calorie-right'});
+        const rightCol = new St.BoxLayout({...VERTICAL, x_expand: true, y_expand: true, style_class: 'notchfolk-calorie-right'});
 
         // Header
-        const header = new St.BoxLayout({style_class: 'isle-calorie-header'});
-        header.add_child(label('Today’s Intake', 'isle-calorie-title', {x_expand: true}));
-        this._mealsBadge = label('0 meals', 'isle-calorie-badge');
+        const header = new St.BoxLayout({style_class: 'notchfolk-calorie-header'});
+        header.add_child(label('Today’s Intake', 'notchfolk-calorie-title', {x_expand: true}));
+        this._mealsBadge = label('0 meals', 'notchfolk-calorie-badge');
         header.add_child(this._mealsBadge);
         rightCol.add_child(header);
 
         // Meal list
-        this._list = new St.BoxLayout({...VERTICAL, style_class: 'isle-calorie-list', x_expand: true});
-        this._emptyLabel = label('No meals recorded today yet', 'isle-calorie-empty', {
+        this._list = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-calorie-list', x_expand: true});
+        this._emptyLabel = label('No meals recorded today yet', 'notchfolk-calorie-empty', {
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
             y_expand: true,
@@ -89,7 +89,7 @@ class CaloriesPage extends Page {
         const listStack = new St.Widget({layout_manager: new Clutter.BinLayout(), x_expand: true, y_expand: true});
 
         const scroll = new St.ScrollView({
-            style_class: 'isle-calorie-scroll',
+            style_class: 'notchfolk-calorie-scroll',
             hscrollbar_policy: St.PolicyType.NEVER,
             vscrollbar_policy: St.PolicyType.EXTERNAL,
             x_expand: true,
@@ -101,18 +101,18 @@ class CaloriesPage extends Page {
         rightCol.add_child(listStack);
 
         // Form at bottom
-        const form = new St.BoxLayout({style_class: 'isle-calorie-form'});
+        const form = new St.BoxLayout({style_class: 'notchfolk-calorie-form'});
         this._food = new St.Entry({
-            style_class: 'isle-calorie-field isle-calorie-field-food',
+            style_class: 'notchfolk-calorie-field notchfolk-calorie-field-food',
             hint_text: 'Food item...',
             can_focus: true,
             x_expand: true,
         });
         form.add_child(this._food);
-        form.add_child(new St.Widget({style_class: 'isle-calorie-field-sep'}));
+        form.add_child(new St.Widget({style_class: 'notchfolk-calorie-field-sep'}));
 
         this._kcal = new St.Entry({
-            style_class: 'isle-calorie-field isle-calorie-field-kcal',
+            style_class: 'notchfolk-calorie-field notchfolk-calorie-field-kcal',
             hint_text: 'kcal',
             can_focus: true,
             width: 52,
@@ -120,7 +120,7 @@ class CaloriesPage extends Page {
         this._kcal.clutter_text.set_input_purpose(Clutter.InputContentPurpose.DIGITS);
         form.add_child(this._kcal);
 
-        const addBtn = iconButton('isle-plus-symbolic', 'isle-calorie-add-btn', () => this._add(), {
+        const addBtn = iconButton('notchfolk-plus-symbolic', 'notchfolk-calorie-add-btn', () => this._add(), {
             size: 11,
             accessibleName: 'Add meal',
         });
@@ -164,13 +164,13 @@ class CaloriesPage extends Page {
         this._emptyLabel.visible = entries.length === 0;
 
         for (const entry of [...entries].reverse()) {
-            const row = new St.BoxLayout({style_class: 'isle-calorie-row', x_expand: true});
-            const item = label(entry.food, 'isle-calorie-food', {x_expand: true});
+            const row = new St.BoxLayout({style_class: 'notchfolk-calorie-row', x_expand: true});
+            const item = label(entry.food, 'notchfolk-calorie-food', {x_expand: true});
             item.clutter_text.ellipsize = Pango.EllipsizeMode.END;
             row.add_child(item);
 
-            row.add_child(label(`+${entry.calories} kcal`, 'isle-calorie-kcal'));
-            row.add_child(iconButton('isle-close-symbolic', 'isle-calorie-remove', () =>
+            row.add_child(label(`+${entry.calories} kcal`, 'notchfolk-calorie-kcal'));
+            row.add_child(iconButton('notchfolk-close-symbolic', 'notchfolk-calorie-remove', () =>
                 this.daemon.call('calories', 'Remove', entry.id), {
                 size: 10, accessibleName: `Remove ${entry.food}`,
             }));

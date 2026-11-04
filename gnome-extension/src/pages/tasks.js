@@ -73,13 +73,13 @@ class ReminderRow extends St.BoxLayout {
     }
 });
 
-// The reminder list, kept in isled's todo store.
+// The reminder list, kept in notchfolkd's todo store.
 export const TasksPage = GObject.registerClass(
 class TasksPage extends Page {
     /** `height` is the expanded island's page height. */
     _init(daemon, {height}) {
         super._init(daemon, {
-            style_class: 'isle-page isle-reminders',
+            style_class: 'notchfolk-page notchfolk-reminders',
             layout_manager: new Clutter.BinLayout(),
             height,
         });
@@ -89,29 +89,29 @@ class TasksPage extends Page {
         this._renaming = null;
         /** Reminders ticked a moment ago, on their way out; the list holds still meanwhile. */
         this._leaving = new Set();
-        /** Ticked and folded away, until isled reports them done. */
+        /** Ticked and folded away, until notchfolkd reports them done. */
         this._gone = new Set();
         /** Each shown reminder's row by id, kept while the reminder is unchanged. */
         this._rows = new Map();
 
-        const layout = new St.BoxLayout({style_class: 'isle-reminders-layout', x_expand: true, y_expand: true});
+        const layout = new St.BoxLayout({style_class: 'notchfolk-reminders-layout', x_expand: true, y_expand: true});
         layout.add_child(this._buildSummary());
-        const column = new St.BoxLayout({...VERTICAL, style_class: 'isle-reminders-content', x_expand: true, y_expand: true});
-        this._list = new St.BoxLayout({...VERTICAL, style_class: 'isle-reminder-list'});
-        const contents = new St.BoxLayout({...VERTICAL, style_class: 'isle-reminders-scroll-content'});
+        const column = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-reminders-content', x_expand: true, y_expand: true});
+        this._list = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-reminder-list'});
+        const contents = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-reminders-scroll-content'});
         contents.add_child(this._list);
-        this._scheduled = new St.BoxLayout({...VERTICAL, style_class: 'isle-reminders-scheduled'});
-        this._scheduledHeading = new St.BoxLayout({style_class: 'isle-reminders-scheduled-heading'});
-        this._scheduledHeading.add_child(label('Upcoming', 'isle-reminders-scheduled-title'));
-        this._scheduledCount = label('', 'isle-reminders-scheduled-count');
+        this._scheduled = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-reminders-scheduled'});
+        this._scheduledHeading = new St.BoxLayout({style_class: 'notchfolk-reminders-scheduled-heading'});
+        this._scheduledHeading.add_child(label('Upcoming', 'notchfolk-reminders-scheduled-title'));
+        this._scheduledCount = label('', 'notchfolk-reminders-scheduled-count');
         this._scheduledHeading.add_child(this._scheduledCount);
         this._scheduled.add_child(this._scheduledHeading);
-        this._scheduledRows = new St.BoxLayout({...VERTICAL, style_class: 'isle-reminders-scheduled-list'});
+        this._scheduledRows = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-reminders-scheduled-list'});
         this._scheduled.add_child(this._scheduledRows);
         this._scheduled.visible = false;
         contents.add_child(this._scheduled);
         this._scroll = new St.ScrollView({
-            style_class: 'isle-reminder-scroll',
+            style_class: 'notchfolk-reminder-scroll',
             hscrollbar_policy: St.PolicyType.NEVER,
             // Scrolls with the wheel or touchpad; no scrollbar over the list.
             vscrollbar_policy: St.PolicyType.EXTERNAL,
@@ -122,7 +122,7 @@ class TasksPage extends Page {
         this._newRow = this._buildNewRow();
         this._newRow.visible = false;
         // Shown over the list when there are no tasks.
-        this._empty = label('', 'isle-reminders-empty', {x_align: Clutter.ActorAlign.CENTER, y_expand: true});
+        this._empty = label('', 'notchfolk-reminders-empty', {x_align: Clutter.ActorAlign.CENTER, y_expand: true});
         const middle = new St.Widget({layout_manager: new Clutter.BinLayout(), x_expand: true, y_expand: true});
         middle.add_child(this._scroll);
         middle.add_child(this._empty);
@@ -134,7 +134,7 @@ class TasksPage extends Page {
         this._update();
     }
 
-    /** Open and done alike, as isled has them. */
+    /** Open and done alike, as notchfolkd has them. */
     _tasks() {
         return this.daemon.state.tasks ?? [];
     }
@@ -154,19 +154,19 @@ class TasksPage extends Page {
     // Building
 
     _buildSummary() {
-        const summary = new St.BoxLayout({...VERTICAL, style_class: 'isle-reminders-summary'});
-        summary.add_child(label('Reminders', 'isle-reminders-title'));
-        this._progress = label('0', 'isle-reminders-progress');
-        this._progressSummary = label('No tasks yet', 'isle-reminders-progress-summary');
+        const summary = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-reminders-summary'});
+        summary.add_child(label('Reminders', 'notchfolk-reminders-title'));
+        this._progress = label('0', 'notchfolk-reminders-progress');
+        this._progressSummary = label('No tasks yet', 'notchfolk-reminders-progress-summary');
         summary.add_child(this._progress);
         summary.add_child(this._progressSummary);
 
-        const actions = new St.BoxLayout({style_class: 'isle-reminders-actions'});
-        const addContents = new St.BoxLayout({style_class: 'isle-reminders-action-contents'});
-        addContents.add_child(new St.Icon({gicon: icon('isle-plus-symbolic'), icon_size: 12}));
-        addContents.add_child(label('Add task', 'isle-reminders-action-label'));
+        const actions = new St.BoxLayout({style_class: 'notchfolk-reminders-actions'});
+        const addContents = new St.BoxLayout({style_class: 'notchfolk-reminders-action-contents'});
+        addContents.add_child(new St.Icon({gicon: icon('notchfolk-plus-symbolic'), icon_size: 12}));
+        addContents.add_child(label('Add task', 'notchfolk-reminders-action-label'));
         const add = new St.Button({
-            style_class: 'isle-reminders-action isle-reminders-add-action',
+            style_class: 'notchfolk-reminders-action notchfolk-reminders-add-action',
             child: addContents,
             can_focus: true,
             accessible_name: 'Add a reminder',
@@ -174,12 +174,12 @@ class TasksPage extends Page {
         add.connect('clicked', () => this._focusNew());
         actions.add_child(add);
 
-        const editContents = new St.BoxLayout({style_class: 'isle-reminders-action-contents'});
-        editContents.add_child(new St.Icon({gicon: icon('isle-text'), icon_size: 12}));
-        this._editLabel = label('Edit', 'isle-reminders-action-label');
+        const editContents = new St.BoxLayout({style_class: 'notchfolk-reminders-action-contents'});
+        editContents.add_child(new St.Icon({gicon: icon('notchfolk-text'), icon_size: 12}));
+        this._editLabel = label('Edit', 'notchfolk-reminders-action-label');
         editContents.add_child(this._editLabel);
         this._editButton = new St.Button({
-            style_class: 'isle-reminders-action isle-reminders-edit-action',
+            style_class: 'notchfolk-reminders-action notchfolk-reminders-edit-action',
             child: editContents,
             can_focus: true,
             accessible_name: 'Edit reminders',
@@ -205,11 +205,11 @@ class TasksPage extends Page {
     // The last row: a faint ring and a field, where typing a title and Enter adds it.
     _buildNewRow() {
         // Never y_expand: its column fills the row, and that would pass up (see `_row`).
-        const row = new St.BoxLayout({style_class: 'isle-reminder isle-reminder-new', y_expand: false});
-        row.add_child(new St.Widget({style_class: 'isle-reminder-check faint', y_align: Clutter.ActorAlign.CENTER}));
+        const row = new St.BoxLayout({style_class: 'notchfolk-reminder notchfolk-reminder-new', y_expand: false});
+        row.add_child(new St.Widget({style_class: 'notchfolk-reminder-check faint', y_align: Clutter.ActorAlign.CENTER}));
         const column = new St.BoxLayout({...VERTICAL, x_expand: true, y_expand: true});
-        this._entry = new St.Entry({style_class: 'isle-reminder-field', hint_text: 'New reminder', can_focus: true, x_expand: true});
-        const content = new St.BoxLayout({style_class: 'isle-reminder-content', y_expand: true});
+        this._entry = new St.Entry({style_class: 'notchfolk-reminder-field', hint_text: 'New reminder', can_focus: true, x_expand: true});
+        const content = new St.BoxLayout({style_class: 'notchfolk-reminder-content', y_expand: true});
         content.add_child(this._entry);
         column.add_child(content);
         row.add_child(column);
@@ -249,7 +249,7 @@ class TasksPage extends Page {
         });
     }
 
-    /** Sends the typed title to isled. */
+    /** Sends the typed title to notchfolkd. */
     async _add() {
         const text = this._entry.text.trim();
         if (!text)
@@ -271,7 +271,7 @@ class TasksPage extends Page {
 
     // Showing
 
-    /** Brings the rows in line with isled's list, unless a rename or a tick is under way. */
+    /** Brings the rows in line with notchfolkd's list, unless a rename or a tick is under way. */
     _update() {
         const scheduled = this._scheduledItems();
         this._syncProgress(this._tasks(), scheduled);
@@ -333,18 +333,18 @@ class TasksPage extends Page {
 
     /** A timed reminder stays visible here until it is dismissed or shown. */
     _scheduledRow(item) {
-        const row = new St.BoxLayout({style_class: 'isle-reminder-scheduled-row'});
-        row.add_child(new St.Widget({style_class: 'isle-reminder-scheduled-marker', y_align: Clutter.ActorAlign.CENTER}));
+        const row = new St.BoxLayout({style_class: 'notchfolk-reminder-scheduled-row'});
+        row.add_child(new St.Widget({style_class: 'notchfolk-reminder-scheduled-marker', y_align: Clutter.ActorAlign.CENTER}));
 
-        const details = new St.BoxLayout({...VERTICAL, style_class: 'isle-reminder-scheduled-details', x_expand: true});
-        const title = label(item.text, 'isle-reminder-scheduled-text', {x_expand: true});
+        const details = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-reminder-scheduled-details', x_expand: true});
+        const title = label(item.text, 'notchfolk-reminder-scheduled-text', {x_expand: true});
         wrapLines(title);
         details.add_child(title);
-        details.add_child(label(this._scheduledTime(item.due_ms), 'isle-reminder-scheduled-time'));
+        details.add_child(label(this._scheduledTime(item.due_ms), 'notchfolk-reminder-scheduled-time'));
         row.add_child(details);
 
         let dismissing = false;
-        row.add_child(iconButton('isle-close-symbolic', 'isle-button-flat isle-reminder-scheduled-dismiss', () => {
+        row.add_child(iconButton('notchfolk-close-symbolic', 'notchfolk-button-flat notchfolk-reminder-scheduled-dismiss', () => {
             if (dismissing)
                 return;
             dismissing = true;
@@ -395,13 +395,13 @@ class TasksPage extends Page {
     _row(task) {
         // Never y_expand: its column fills it, and once a child changes (a rename) the row would ask to
         // expand too and take all the list's room.
-        const row = new ReminderRow({style_class: 'isle-reminder', reactive: true, y_expand: false});
+        const row = new ReminderRow({style_class: 'notchfolk-reminder', reactive: true, y_expand: false});
 
         // The tick box: an empty ring, then a checkmark that pops into the filled circle.
         const dot = new St.Icon({
-            gicon: icon('isle-check-symbolic'),
+            gicon: icon('notchfolk-check-symbolic'),
             icon_size: 10,
-            style_class: 'isle-reminder-checkmark',
+            style_class: 'notchfolk-reminder-checkmark',
             opacity: 0,
             scale_x: 0,
             scale_y: 0,
@@ -411,7 +411,7 @@ class TasksPage extends Page {
         dot.set_pivot_point(0.5, 0.5);
         // By the first line of a title that wraps.
         const check = new St.Button({
-            style_class: 'isle-reminder-check',
+            style_class: 'notchfolk-reminder-check',
             child: dot,
             accessible_name: task.done ? 'Mark as not done' : 'Mark as done',
             y_align: Clutter.ActorAlign.START,
@@ -420,16 +420,16 @@ class TasksPage extends Page {
             check.add_style_pseudo_class('checked');
             dot.scale_x = dot.scale_y = 1;
             dot.opacity = 255;
-            row.add_style_class_name('isle-reminder-done');
+            row.add_style_class_name('notchfolk-reminder-done');
         }
         row.add_child(check);
 
         // The title over its own strike line, so long titles can wrap cleanly.
         const column = new St.BoxLayout({...VERTICAL, x_expand: true, y_expand: true});
-        const content = new St.BoxLayout({style_class: 'isle-reminder-content', y_expand: true});
-        const titleBox = new St.Widget({style_class: 'isle-reminder-title-box', layout_manager: new Clutter.BinLayout(),
+        const content = new St.BoxLayout({style_class: 'notchfolk-reminder-content', y_expand: true});
+        const titleBox = new St.Widget({style_class: 'notchfolk-reminder-title-box', layout_manager: new Clutter.BinLayout(),
             x_expand: true, y_align: Clutter.ActorAlign.CENTER});
-        const title = label(task.title, 'isle-reminder-title', {reactive: true, x_expand: true});
+        const title = label(task.title, 'notchfolk-reminder-title', {reactive: true, x_expand: true});
         // A long one wraps, to be read whole.
         wrapLines(title);
         // Click the title to rename it in place.
@@ -440,7 +440,7 @@ class TasksPage extends Page {
             return Clutter.EVENT_STOP;
         });
         // As wide as the box, scaled from the left to the text's width when ticked.
-        const strike = new St.Widget({style_class: 'isle-reminder-strike', scale_x: 0, x_expand: true, y_align: Clutter.ActorAlign.CENTER});
+        const strike = new St.Widget({style_class: 'notchfolk-reminder-strike', scale_x: 0, x_expand: true, y_align: Clutter.ActorAlign.CENTER});
         strike.set_pivot_point(0, 0.5);
         titleBox.add_child(title);
         titleBox.add_child(strike);
@@ -457,9 +457,9 @@ class TasksPage extends Page {
         content.add_child(titleBox);
 
         // × appears while the pointer is on the row.
-        // Once: a double click would ask isled to delete what is already gone.
+        // Once: a double click would ask notchfolkd to delete what is already gone.
         let removing = false;
-        const remove = iconButton('isle-close-symbolic', 'isle-button-flat isle-reminder-remove', () => {
+        const remove = iconButton('notchfolk-close-symbolic', 'notchfolk-button-flat notchfolk-reminder-remove', () => {
             if (!removing) {
                 removing = true;
                 this.daemon.call('todo', 'Remove', task.id);
@@ -508,7 +508,7 @@ class TasksPage extends Page {
             this.cancel(name);
             this._leaving.delete(task.id);
             this._syncProgress();
-            row.remove_style_class_name('isle-reminder-done');
+            row.remove_style_class_name('notchfolk-reminder-done');
             check.remove_style_pseudo_class('checked');
             check.accessible_name = 'Mark as done';
             title.remove_style_class_name('done');
@@ -523,7 +523,7 @@ class TasksPage extends Page {
         const [textWidth] = title.clutter_text.get_layout().get_pixel_size();
         this._leaving.add(task.id);
         this._syncProgress();
-        row.add_style_class_name('isle-reminder-done');
+        row.add_style_class_name('notchfolk-reminder-done');
         check.add_style_pseudo_class('checked');
         check.accessible_name = 'Not done';
         // On the title alone: on the row it restyled every widget in it, in the click's frame.
@@ -546,7 +546,7 @@ class TasksPage extends Page {
                 duration: LEAVE_MS,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onStopped: () => {
-                    // Already settled by `onDeactivate`, whose rebuild is what stopped this; or Isle stopped.
+                    // Already settled by `onDeactivate`, whose rebuild is what stopped this; or Notchfolk stopped.
                     if (this._destroyed || !this._leaving.delete(task.id))
                         return;
                     this._gone.add(task.id);
@@ -561,7 +561,7 @@ class TasksPage extends Page {
 
     /** Swaps the title for a field; Enter or a click away saves, Esc cancels. */
     _startRenaming(titleBox, title, task) {
-        const entry = new St.Entry({style_class: 'isle-reminder-field', text: task.title, x_expand: true, can_focus: true});
+        const entry = new St.Entry({style_class: 'notchfolk-reminder-field', text: task.title, x_expand: true, can_focus: true});
         titleBox.replace_child(title, entry);
         this._renaming = task.id;
         // Built anew once renamed, with its title back in place of the field.

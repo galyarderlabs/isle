@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// Shows isled's reminders when they are due. isled keeps them until shown, so one that fell due
-// while the screen was locked (and Isle was off) shows as soon as Isle is back.
+// Shows notchfolkd's reminders when they are due. notchfolkd keeps them until shown, so one that fell due
+// while the screen was locked (and Notchfolk was off) shows as soon as Notchfolk is back.
 
 import GLib from 'gi://GLib';
 
@@ -91,7 +91,7 @@ export class WellbeingWatcher {
     }
 }
 
-/** Watches isled's reminder list and hands each due one to the island once. */
+/** Watches notchfolkd's reminder list and hands each due one to the island once. */
 export class ReminderWatcher {
     /** `onDue({id, text}, done)` shows a reminder that is due, and calls `done` once it was on screen. */
     constructor(daemon, onDue) {
@@ -113,7 +113,7 @@ export class ReminderWatcher {
             this._timeout = 0;
         }
         const items = this._daemon.state.reminders ?? [];
-        // Only those isled still has: the rest were dismissed for good.
+        // Only those notchfolkd still has: the rest were dismissed for good.
         this._shown = new Set([...this._shown].filter(id => items.some(item => item.id === id)));
         const now = Date.now();
         for (const item of items) {
@@ -121,7 +121,7 @@ export class ReminderWatcher {
             if (item.due_ms > now || this._shown.has(item.id))
                 continue;
             this._shown.add(item.id);
-            // isled keeps it until it was really shown (the island may be hidden by a fullscreen window).
+            // notchfolkd keeps it until it was really shown (the island may be hidden by a fullscreen window).
             this._onDue(item, () => this._daemon.call('reminders', 'Dismiss', item.id));
         }
         const next = items.find(item => item.due_ms > now);
@@ -135,7 +135,7 @@ export class ReminderWatcher {
         });
     }
 
-    /** Stops the timer and lets go of isled's signal. */
+    /** Stops the timer and lets go of notchfolkd's signal. */
     destroy() {
         if (this._timeout)
             GLib.source_remove(this._timeout);

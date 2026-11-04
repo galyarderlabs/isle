@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
 
-// The shelf's Files tab. The `isle-shelf` helper draws it over this view for drag and
+// The shelf's Files tab. The `notchfolk-shelf` helper draws it over this view for drag and
 // drop; both look the same tile for tile, so the hand-over cannot be seen.
 
 import Cairo from 'cairo';
@@ -16,7 +16,7 @@ import {VERTICAL, onUiScale, px, uiScale} from '../compat.js';
 import {isShelfCopy} from '../downloads.js';
 import {Lines, icon, iconButton, label} from '../widgets.js';
 
-/** The shelf holds this many files (as isled enforces). */
+/** The shelf holds this many files (as notchfolkd enforces). */
 export const SHELF_CAPACITY = 6;
 
 // Sizes in CSS pixels (see `px`); keep them in step with the helper's tile.rs, which GTK scales likewise.
@@ -55,14 +55,14 @@ export const FilesView = GObject.registerClass({
     /** `thumbnails` loads the previews and keeps them while the files stay. */
     _init(daemon, thumbnails) {
         super._init({
-            style_class: 'isle-shelf-files',
+            style_class: 'notchfolk-shelf-files',
             layout_manager: new Clutter.BinLayout(),
             x_expand: true,
             y_expand: true,
         });
         this._daemon = daemon;
         this._thumbnails = thumbnails;
-        /** isled's last list: kept while it is away, as the helper keeps its own, so the two never disagree. */
+        /** notchfolkd's last list: kept while it is away, as the helper keeps its own, so the two never disagree. */
         this._items = [];
         this._helperActive = false;
         /** Fading out under the helper's window as it fades in (see `handOver`). */
@@ -84,7 +84,7 @@ export const FilesView = GObject.registerClass({
 
         // Expanding, as BinLayout only honours START for children that do.
         this._tiles = new St.BoxLayout({
-            style_class: 'isle-shelf-tiles',
+            style_class: 'notchfolk-shelf-tiles',
             x_expand: true,
             x_align: Clutter.ActorAlign.START,
             y_align: Clutter.ActorAlign.CENTER,
@@ -93,13 +93,13 @@ export const FilesView = GObject.registerClass({
 
         this._empty = new St.BoxLayout({
             ...VERTICAL,
-            style_class: 'isle-empty',
+            style_class: 'notchfolk-empty',
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
         });
-        this._empty.add_child(new St.Icon({gicon: icon('isle-shelf'), icon_size: 24, style_class: 'isle-empty-icon', x_align: Clutter.ActorAlign.CENTER}));
-        this._emptyTitle = label('', 'isle-empty-title', {x_align: Clutter.ActorAlign.CENTER});
-        this._emptyHint = label('', 'isle-empty-hint', {x_align: Clutter.ActorAlign.CENTER});
+        this._empty.add_child(new St.Icon({gicon: icon('notchfolk-shelf'), icon_size: 24, style_class: 'notchfolk-empty-icon', x_align: Clutter.ActorAlign.CENTER}));
+        this._emptyTitle = label('', 'notchfolk-empty-title', {x_align: Clutter.ActorAlign.CENTER});
+        this._emptyHint = label('', 'notchfolk-empty-hint', {x_align: Clutter.ActorAlign.CENTER});
         this._empty.add_child(this._emptyTitle);
         this._empty.add_child(this._emptyHint);
         this.add_child(this._empty);
@@ -260,14 +260,14 @@ export const FilesView = GObject.registerClass({
         cr.$dispose();
     }
 
-    /** isled's last list (kept while it is away), as the tiles show it. */
+    /** notchfolkd's last list (kept while it is away), as the tiles show it. */
     get items() {
         return this._items;
     }
 
-    /** Redraws from isled's shelf list. */
+    /** Redraws from notchfolkd's shelf list. */
     update() {
-        // While isled is away (no list) the last one stays, previews and all.
+        // While notchfolkd is away (no list) the last one stays, previews and all.
         if (this._daemon.state.shelf) {
             this._items = this._daemon.state.shelf;
             this._thumbnails.keepOnly(this._items.map(item => item.uri));
@@ -317,10 +317,10 @@ export const FilesView = GObject.registerClass({
     /** What the empty shelf says, as the helper does: where to drop, and what then. */
     _updateEmptyText() {
         const dragging = this._dropping && this._helperAvailable;
-        // The same words as the helper's (crates/isle-shelf), which keeps its own see-through.
+        // The same words as the helper's (crates/notchfolk-shelf), which keeps its own see-through.
         let title = 'No files on the shelf', hint = 'Drop files here, then drag them into any app';
         if (!this._helperAvailable)
-            [title, hint] = ['No files on the shelf', 'Dropping files here isn’t set up; install Isle again to add it'];
+            [title, hint] = ['No files on the shelf', 'Dropping files here isn’t set up; install Notchfolk again to add it'];
         else if (dragging && this._dropOver && this._refusal === 'local')
             [title, hint] = ['Only files on this computer', 'Links and files online can’t be kept'];
         else if (dragging && this._dropOver && this._refusal)
@@ -335,25 +335,25 @@ export const FilesView = GObject.registerClass({
 
     /** One file: its preview, a × to take it off, and its name; the thumbnail comes in later. */
     _tile(item) {
-        const preview = new St.Bin({style_class: 'isle-shelf-preview', width: px(PREVIEW_SIZE), height: px(PREVIEW_SIZE)});
+        const preview = new St.Bin({style_class: 'notchfolk-shelf-preview', width: px(PREVIEW_SIZE), height: px(PREVIEW_SIZE)});
         // A plain file icon until the file's own one is known (or for good,
         // if the file is gone).
-        preview.child = new St.Icon({gicon: icon('isle-file'), icon_size: ICON_SIZE * 0.6, opacity: 160});
+        preview.child = new St.Icon({gicon: icon('notchfolk-file'), icon_size: ICON_SIZE * 0.6, opacity: 160});
 
         const copied = new St.Bin({
-            style_class: 'isle-shelf-copied',
+            style_class: 'notchfolk-shelf-copied',
             width: px(PREVIEW_SIZE),
             height: px(PREVIEW_SIZE),
             opacity: 0,
-            child: new St.Icon({gicon: icon('isle-check-symbolic'), icon_size: 18}),
+            child: new St.Icon({gicon: icon('notchfolk-check-symbolic'), icon_size: 18}),
         });
-        const remove = iconButton('isle-close-symbolic', 'isle-shelf-remove',
+        const remove = iconButton('notchfolk-close-symbolic', 'notchfolk-shelf-remove',
             () => this._daemon.call('shelf', 'Remove', item.uri), {size: 10, accessibleName: 'Remove from the shelf'});
         remove.set_size(px(REMOVE_DISC), px(REMOVE_DISC));
 
         // Files the Shelf keeps itself (sent from the phone, a clipboard picture): ↓ saves one into Downloads,
         // shown under the pointer, mirroring the ×.
-        const save = isShelfCopy(item.uri) ? iconButton('isle-save-symbolic', 'isle-shelf-remove isle-shelf-save',
+        const save = isShelfCopy(item.uri) ? iconButton('notchfolk-save-symbolic', 'notchfolk-shelf-remove notchfolk-shelf-save',
             () => this.emit('save', item.uri), {size: 10, accessibleName: 'Save to Downloads'}) : null;
         save?.set_size(px(REMOVE_DISC), px(REMOVE_DISC));
         save?.set({opacity: 0, reactive: false});
@@ -413,21 +413,21 @@ export const FilesView = GObject.registerClass({
 
     /** The frame over the file's name, as one button. */
     _tileBox(frame, name) {
-        const box = new St.BoxLayout({...VERTICAL, style_class: 'isle-shelf-tile-box'});
+        const box = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-shelf-tile-box'});
         box.add_child(frame);
-        const text = label(name, 'isle-shelf-name', {width: px(NAME_WIDTH), y_align: Clutter.ActorAlign.FILL});
+        const text = label(name, 'notchfolk-shelf-name', {width: px(NAME_WIDTH), y_align: Clutter.ActorAlign.FILL});
         // Two lines ("Alex Morgan / CV.pdf" whole); only a longer name loses its middle.
         text.clutter_text.set({line_wrap: true, line_wrap_mode: Pango.WrapMode.WORD_CHAR,
             line_alignment: Pango.Alignment.CENTER, ellipsize: Pango.EllipsizeMode.MIDDLE});
-        // Two lines' room, a shorter name in its middle, as the helper's (crates/isle-shelf).
+        // Two lines' room, a shorter name in its middle, as the helper's (crates/notchfolk-shelf).
         // The label is given its lines' height whole: on GNOME 50 and later it measures one, and a long name showed on
         // one line here but two in the helper's window.
-        const lines = new St.Widget({style_class: 'isle-shelf-name-lines', layout_manager: new Clutter.BinLayout()});
+        const lines = new St.Widget({style_class: 'notchfolk-shelf-name-lines', layout_manager: new Clutter.BinLayout()});
         lines.add_child(new Lines(text, 2, {x_expand: false, x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER}));
         box.add_child(lines);
         const button = new St.Button({
-            style_class: 'isle-shelf-tile',
+            style_class: 'notchfolk-shelf-tile',
             child: box,
             can_focus: true,
             width: px(TILE_WIDTH),
@@ -474,7 +474,7 @@ export const FilesView = GObject.registerClass({
                 clipboard.set_content(St.ClipboardType.CLIPBOARD, 'image/png', bytes);
                 return;
             } catch (e) {
-                console.warn(`Isle: could not read ${item.uri}: ${e.message}`);
+                console.warn(`Notchfolk: could not read ${item.uri}: ${e.message}`);
             }
         }
         clipboard.set_content(St.ClipboardType.CLIPBOARD, FILES_TYPE,

@@ -1,11 +1,11 @@
-# Isle product spec
+# Notchfolk product spec
 
 The single source of truth for how the island looks and behaves. Code that
 disagrees with this document is a bug in one or the other; fix both together.
 
 ## 1. Who it is for and what they need
 
-| As a user I want to… | So Isle must… |
+| As a user I want to… | So Notchfolk must… |
 |---|---|
 | see the time and what is running at a glance | show the clock in the closed island, with live activities beside it (timer ring, music) |
 | control music without switching windows | open on hover with cover, scrubber, controls; sing along with synced lyrics |
@@ -122,7 +122,7 @@ bar. In the settings the closed island can hang below
 the bar instead ("Compact, hanging"); Island height (24–40 px) then takes
 the place of the space below the island.
 
-Type is set in Inter (installed with Isle), semibold for titles, nothing heavier than bold, and slightly tighter
+Type is set in Inter (installed with Notchfolk), semibold for titles, nothing heavier than bold, and slightly tighter
 tracking on large figures. The island's text fields keep their own look
 when Blur my Shell restyles the shell's.
 
@@ -131,7 +131,7 @@ the way to black, bar and island read as one shape: the shoulders then curve
 out of the bar's lower edge instead of the screen's top. The installer sets glass (and the slim
 bar) on every install, turns off Blur my Shell's top bar blur (it darkens
 the bar), and turns off
-extensions that take the island's place. Isle's colour is one declaration
+extensions that take the island's place. Notchfolk's colour is one declaration
 in the bar's own style: it writes it only when it is not in effect (however
 another extension spells or orders the style), keeps other extensions'
 declarations as they are, puts its colour back if another extension takes
@@ -227,7 +227,7 @@ with the wheel or touchpad and never show a scrollbar.
   screen recording → a call → music (a song playing or paused, until its player closes; a browser's
   video or voice note until it is over, at its end or paused a minute; none with the Music page left out) → the timer (a session or break under way); with none, a white dot while
   notifications are unseen. Right, first that applies:
-  1. a warning (Isle's service stopped; a click offers to restart it);
+  1. a warning (Notchfolk's service stopped; a click offers to restart it);
   2. the bot, 18 px, in the look chosen, blinking and glancing every few seconds (the assistant works
      on a request or a command runs with the island closed; a click shows it);
   3. a red crossed-out microphone while a call is muted;
@@ -353,7 +353,7 @@ videos), the song is shown playing for up to 1.5 s, so the cover, bars and
 width do not drop out and back; a song paused by itself shows at once.
 
 The lyrics and the scrubber stay in time for the whole song. While the open
-island shows the music (the player or the lyrics, not the outputs), `isled`
+island shows the music (the player or the lyrics, not the outputs), `notchfolkd`
 reads the player's position at once and then once a second while it plays,
 since players don't reliably report stalls, ads or seeks made inside them;
 closed, or on another page, it reads nothing. A player that says it plays
@@ -399,7 +399,7 @@ moves as they change. No glows.
 
 While a focus session runs (paused part way included), Do Not Disturb is on,
 like a Focus mode; it goes off when the phase ends. A focus session waiting
-for Start after a break doesn't count. Isle only undoes what it did: if Do Not
+for Start after a break doesn't count. Notchfolk only undoes what it did: if Do Not
 Disturb was already on, it is left alone, and turned off mid-session it stays
 off until that session ends, past pauses and the lock screen. It stays on
 across the lock screen, and is turned off on the next start if the shell
@@ -442,7 +442,7 @@ with a phone.
   words and the helper's alike), how full it is ("3
   of 6 · click to copy, or drag into any app"; with a file of its own, "3 of
   6 · click to copy, ↓ to save, or drag out"), or "Full · remove a file to
-  add another". With `isle-shelf` installed, the helper draws this tab in a
+  add another". With `notchfolk-shelf` installed, the helper draws this tab in a
   see-through window placed exactly over it, tile for tile as the island
   draws it: drag a file out to any app (a chat, an email, a folder).
   Dragging copies; a drag that ends nowhere leaves the file on the shelf,
@@ -502,16 +502,16 @@ with a phone.
   both go. Files sent from the phone land on the Files tab, as dropped ones
   do (the shelf's six at most), in the shelf's own folder. Sharing stops by
   itself after 10 minutes without a download, an upload, a phone picking
-  files or an Allow (a page left open doesn't count), when the screen locks, when the computer sleeps, when Isle is
+  files or an Allow (a page left open doesn't count), when the screen locks, when the computer sleeps, when Notchfolk is
   turned off, and when this computer's address goes (another network, Wi-Fi
   off: then the alert "Phone sharing stopped · This computer's network
   changed"). A new start is a new code and a new address; the old one never
   works again (see SECURITY.md).
 
-  The phone's page (served by `isled`, one file, nothing from the internet):
+  The phone's page (served by `notchfolkd`, one file, nothing from the internet):
   black, rounded, the system's font, mobile first, one 20 px gutter with
   every card and button on the same edges, 12 px between a section's parts
-  and 36 px between sections. Isle's bot is on it, drawn on a canvas as the
+  and 36 px between sections. Notchfolk's bot is on it, drawn on a canvas as the
   island draws it (its white body lit from the top left, the violet, blue
   and cyan glow, eyes that blink and follow the finger): attentive by the
   code, a moment of joy as it is let in and as each file lands, sleepy when
@@ -536,7 +536,7 @@ with a phone.
   marked Stopped, every button off, nothing more asked): "Sharing stopped ·
   It was turned off on your computer." (sleepy); "Disconnected · This
   phone was removed on your computer." with "To connect again, scan a new
-  code from Isle." (sad, then calm); "Not allowed · Your computer said no."
+  code from Notchfolk." (sad, then calm); "Not allowed · Your computer said no."
   (sad). Then "No answer" (Ask again), "Too many phones" (Try again), "One
   moment · This phone asked a moment ago. Try again in 85 s." (another
   browser on the phone, or its cookies cleared, under 2 minutes after the
@@ -551,7 +551,7 @@ with a phone.
   while hidden.
 
 Clipboard history is event driven (GNOME tells the shell when the
-clipboard changes; nothing polls) and kept by `isled`: the 20 most recent
+clipboard changes; nothing polls) and kept by `notchfolkd`: the 20 most recent
 items plus up to 10 pinned ones ("Pins full · unpin one" past that), images
 with a thumbnail made for the card's shape, sharp at 1× and 2×; an image too
 small or thin to fill the card shows at its own pixels in the middle. The cards are only
@@ -591,21 +591,21 @@ it will be read ("8:00 PM", "All day"; nothing for a time alone). Finished event
 field at once and shows the event, faint, until its calendar lists it (or 30
 seconds at most), so a slow server never invites a second Enter. With the
 account's calendar out of reach (offline, its server down) the event is kept in
-Isle with a ring of that calendar's colour for its dot, the field says
-"Offline · syncs once online" a moment, and `isled` sends it there once in
+Notchfolk with a ring of that calendar's colour for its dot, the field says
+"Offline · syncs once online" a moment, and `notchfolkd` sends it there once in
 reach (then the ring gives way to the calendar's own event). Events come
 from the desktop's calendars (Evolution, and accounts added in Settings →
 Online Accounts such as Google; in each calendar's own colour; to read, not to
-click) and Isle's own (orange; × on hover to remove), kept by `isled` and
+click) and Notchfolk's own (orange; × on hover to remove), kept by `notchfolkd` and
 forgotten after 400 days. New events go to an account's calendar: a chip in
 the add field (its colour, its name, ⌄) shows which; clicking it lists every
 calendar that takes events (not a subscribed one, such as holidays) in the
 field's place (the header says "New events go
-to", with Done), a row each with its account in grey, then Isle on this
+to", with Done), a row each with its account in grey, then Notchfolk on this
 computer, a tick on the one in use. Until one is picked, the first
-account's calendar; with no account, Isle's own. The assistant adds to the
-same one. When the account can't be reached the event is kept in Isle and
-the field says "Saved in Isle instead" a moment.
+account's calendar; with no account, Notchfolk's own. The assistant adds to the
+same one. When the account can't be reached the event is kept in Notchfolk and
+the field says "Saved in Notchfolk instead" a moment.
 
 **Apps** (title "App Usage"): where the time went. Off until its switch in
 Settings → Pages is on; off, nothing is timed and the page has no tab. On the
@@ -619,10 +619,10 @@ timed, whether or not there is keyboard or pointer input; it stops when focus
 moves to another application, when no window is in front, when the screen
 locks, and after five minutes without input, unless a video or another
 program holds the session awake; the next input goes on timing. The
-extension keeps the stretches and sends them to `isled` at most once a
+extension keeps the stretches and sends them to `notchfolkd` at most once a
 minute, as the page opens, and when timing stops; nothing is asked while
 the page is closed. A stretch past local midnight counts for each day it
-spans. `isled` keeps 30 days in `~/.local/share/isle/app-usage.json`, and
+spans. `notchfolkd` keeps 30 days in `~/.local/share/notchfolk/app-usage.json`, and
 only GNOME Shell may report, read or clear them. Settings → App Usage
 clears them.
 
@@ -637,7 +637,7 @@ tokens, ok or error, "2m ago"). A health dot and its version once connected.
 While enabled, the page stays available and explains missing credentials, an
 unreachable gateway, or an outdated version. The gateway too old (the version
 whose usage endpoint leaked API keys) shows a permanent "Update your gateway
-first" and no numbers. isled polls only while the chip or the page is shown,
+first" and no numbers. notchfolkd polls only while the chip or the page is shown,
 backs off while the gateway fails, and recovers without a restart.
 
 ## 6. Alerts
@@ -667,14 +667,14 @@ banner does. Right-clicking an alert puts it away without opening it.
 | Screen recording started | red record icon | Recording screen | Stop | 2.6 s |
 | Notification (GNOME's sound) | app icon, large | title / first line (only who it is from while the screen is shared) | its first button ("Mark as read") | 4 s; passing (a screenshot taken) 2.5 s; critical 20 s, instant and sticky |
 | Reminder (+ chime) | bell | the reminder | – | 8 s, sticky |
-| Assistant done in the background (resting the pointer holds it; it opens no page) | mic | the answer / Isle Assistant (· Click to read more, when cut) | – | as long as it takes to read, at most 8 s |
-| Isle's service stopped | warning | Isle's service isn't running | Restart | 8 s |
+| Assistant done in the background (resting the pointer holds it; it opens no page) | mic | the answer / Notchfolk Assistant (· Click to read more, when cut) | – | as long as it takes to read, at most 8 s |
+| Notchfolk's service stopped | warning | Notchfolk's service isn't running | Restart | 8 s |
 | A phone asks to connect (sharing) | phone | Allow iPhone · Safari — code 4821? (on two lines if long) / its address · the same code on the phone? | Deny, Allow (for that phone) | sticky, instant; goes once answered (here or on the Phone tab) or after 2 min |
 | Files from a phone (opens the Shelf's Files) | phone, green | IMG_3307.jpg / From your phone · on the Shelf; "3 files from your phone" for more while it shows | – | 4 s |
 | Sharing stopped as the network changed | phone | Phone sharing stopped / This computer's network changed | – | 4 s |
 | A Shelf file saved (↓) | ↓, green | Saved to Downloads / its name in Downloads | Show | 4 s |
 | Saving it failed | warning, red | Couldn't save to Downloads / why | – | 4 s |
-| Newer Isle (once per version) | update | Isle 0.x is out | How | 8 s |
+| Newer Notchfolk (once per version) | update | Notchfolk 0.x is out | How | 8 s |
 | AI plan nearly used up | the plan's logo in a ring of its colour (Claude coral, ChatGPT green; red when nearly gone) | Claude / Weekly limit · resets Sat 09:30 | 86% | 8 s |
 | Event about to start (Settings: 1–60 min before, 5 by default) | video camera when it has a meeting link, else calendar | Weekly sync in 5 min / 17:30 – 18:00 · Google Meet | Join (blue), with a Meet, Zoom, Teams or Webex link | sticky |
 | Claude Code needs the user (off by default) | Claude's logo | Claude needs your OK / project · Allow Bash? (or "is waiting for you") | Show (its window) | sticky |
@@ -689,12 +689,12 @@ lighter under the pointer.
 
 While the event alert is on, GNOME's own calendar reminder (Evolution's
 `org.gnome.Evolution-alarm-notify`, which opens a window of its own when
-clicked) of an event Isle alerts of is taken away as it comes: one reminder
-per event, Isle's. It is matched by its calendar and event ids, for an event
-with a time from 15 minutes gone to 30 minutes before Isle's own alert.
-Reminders Isle doesn't give stay GNOME's: an all-day event, a task, one an
+clicked) of an event Notchfolk alerts of is taken away as it comes: one reminder
+per event, Notchfolk's. It is matched by its calendar and event ids, for an event
+with a time from 15 minutes gone to 30 minutes before Notchfolk's own alert.
+Reminders Notchfolk doesn't give stay GNOME's: an all-day event, a task, one an
 hour or a day ahead, a calendar GNOME doesn't show, and any while Do Not
-Disturb is on (Isle alerts of nothing then).
+Disturb is on (Notchfolk alerts of nothing then).
 
 When a window is fullscreen the island hides, alerts wait (see above) and
 GNOME's own volume pop-up is used. Charging, network, Bluetooth and Caps
@@ -704,21 +704,21 @@ pop-up shows there.
 
 **Events.** The reminder before an event comes from the same calendars as
 the Calendar page (GNOME Shell's, which reads Evolution Data Server), opened
-or not: Isle asks for this month and tomorrow, and plans one alarm for the
+or not: Notchfolk asks for this month and tomorrow, and plans one alarm for the
 next event with a time (all-day ones never alert). Its meeting link is read
 from the event itself, through Evolution Data Server, on this computer:
 Google's conference data first, then the URL, location and description. An
 alarm the computer slept through is dropped once the event has started.
 
-**AI agents.** Claude Code and Codex are connected as soon as Isle finds
+**AI agents.** Claude Code and Codex are connected as soon as Notchfolk finds
 them (installed later too), once announced by an alert; Settings → AI Usage
-→ AI Agents turns each off. Connecting adds Isle's hooks to the agent's own
+→ AI Agents turns each off. Connecting adds Notchfolk's hooks to the agent's own
 settings: `PermissionRequest` (timeout 600 s), `Notification` and `Stop` in
 Claude Code's `~/.claude/settings.json` (or `$CLAUDE_CONFIG_DIR`, as
-isled's service sees it); `PermissionRequest` and `Stop` in Codex's
+notchfolkd's service sees it); `PermissionRequest` and `Stop` in Codex's
 `~/.codex/hooks.json` (an older Codex: `notify` in its `config.toml`). The
 user's own hooks, keys, comments and order are kept; turning the switch
-off, or uninstalling, takes out Isle's entries only.
+off, or uninstalling, takes out Notchfolk's entries only.
 
 A permission comes as an alert that stays until answered: the bot (46 px)
 with an amber "!" badge, "‹project› needs permission", the agent's name,
@@ -813,17 +813,17 @@ hovering opens the Notifications page.
 ## 7. Data and reliability
 
 - Reminders, shelf, clipboard history (images in `clips/`) and timer settings
-  live in `~/.local/share/isle/*.json`,
+  live in `~/.local/share/notchfolk/*.json`,
   written atomically and flushed to disk (file and folder), so they survive
   reboots and power cuts. A corrupt file is set aside, never lost silently.
-- Lyrics and cover art are cached in `~/.cache/isle`.
-- `isled` restarts on failure (systemd); the extension reconnects on its own.
+- Lyrics and cover art are cached in `~/.cache/notchfolk`.
+- `notchfolkd` restarts on failure (systemd); the extension reconnects on its own.
 
 ## 8. Performance budget
 
 - Idle, nothing playing: one wake-up per minute (the clock, GNOME's own WallClock, which also catches
   waking from suspend and time-zone changes). No polling.
-- `isled` sleeps until its next real deadline (a timer phase, a reminder, midnight) and re-checks the
+- `notchfolkd` sleeps until its next real deadline (a timer phase, a reminder, midnight) and re-checks the
   clock on waking from suspend; AI usage asks nothing while it is off, nor Claude while the screen is
   locked.
 - Speech recognition runs only while a request is heard. The assistant's AI starts as the assistant
@@ -835,7 +835,7 @@ hovering opens the Notifications page.
 - Animations run on the display's frame clock only while a spring moves.
 - The open island ticks only the visible page (scrubber 4×/s, timer 1×/s); the closed island's timer
   time left ticks once a second, and its ring every 5 s, only while on screen.
-- MPRIS reports no progress, so `isled` reads the player's position only while the open island shows
+- MPRIS reports no progress, so `notchfolkd` reads the player's position only while the open island shows
   the music (player or lyrics): at once, then once a second while it plays (after 0.35 or 0.5 s to
   confirm a read that fell behind or to measure a new speed, 10 s after a read failed). Closed, it
   sets no timer at all, and it stops if GNOME Shell leaves the bus with the page open. Each read runs
@@ -843,8 +843,8 @@ hovering opens the Notifications page.
 - Calls are found from the shell's own audio events, never polled. The
   call's length ticks once a second only while it is on screen; the call
   preview reuses the window's picture and exists only while the Call page
-  is open. Isle never opens the camera or the microphone itself.
-- `isled` sleeps until a D-Bus signal arrives. The camera is watched with
+  is open. Notchfolk never opens the camera or the microphone itself.
+- `notchfolkd` sleeps until a D-Bus signal arrives. The camera is watched with
   inotify, so the kernel reports opens and closes; nothing is polled.
 - Sharing with a phone runs its web server only while sharing: off, nothing listens and nothing wakes.
   While on, it sleeps until a phone asks something, an ask runs out or the idle stop is due; a page

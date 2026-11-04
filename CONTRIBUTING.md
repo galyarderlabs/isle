@@ -1,4 +1,4 @@
-# Contributing to Isle
+# Contributing to Notchfolk
 
 Thanks for helping! This guide covers how to build, test and send changes.
 By taking part you agree to the [Code of Conduct](CODE_OF_CONDUCT.md).
@@ -16,29 +16,29 @@ Security problems go privately to the maintainer; see
 - **Stay light.** No polling, no timers that run while nothing is visible, and
   animations that stop when they settle.
 - **Logic goes in Rust.** The extension draws; rules that can be unit tested
-  belong in `crates/isle-core`.
+  belong in `crates/notchfolk-core`.
 - **Nothing goes online unasked.** A feature that uses the network says so in
   [SECURITY.md](SECURITY.md#what-leaves-your-computer) in the same pull
   request, and can be turned off.
-- **Isle's own words.** Describe Isle, its look and its settings in their own
+- **Notchfolk's own words.** Describe Notchfolk, its look and its settings in their own
   terms: no other operating system's names or comparisons in code, settings
   keys, UI text or docs.
 
 ## Building
 
 ```sh
-cargo build                     # isle-core and isled
-cargo build -p isle-shelf       # needs libgtk-4-dev
+cargo build                     # notchfolk-core and notchfolkd
+cargo build -p notchfolk-shelf       # needs libgtk-4-dev
 ./install.sh                    # build and install for your user
 ```
 
 ## Checks
 
 Run these before sending a pull request (CI runs the same). The workspace
-includes `isle-shelf` and `isle-whisper`, so they need GTK 4
+includes `notchfolk-shelf` and `notchfolk-whisper`, so they need GTK 4
 (`libgtk-4-dev`) and, for whisper.cpp, `cmake`, `g++`, `clang` with
 `libclang-dev`, the Vulkan headers (`libvulkan-dev`) and `glslc`. Without
-those, add `--exclude isle-shelf --exclude isle-whisper` to check the rest.
+those, add `--exclude notchfolk-shelf --exclude notchfolk-whisper` to check the rest.
 
 ```sh
 cargo fmt --all
@@ -48,18 +48,18 @@ npm ci && npx eslint                                  # the extension (eslint.co
 node --test tests/extension/*.test.js                 # its parts that need no GNOME Shell
 gjs -m tests/extension/format.gjs.js                  # and those that need GLib
 glib-compile-schemas --strict --dry-run gnome-extension/schemas
-shellcheck get.sh install.sh uninstall.sh scripts/*.sh scripts/isle-charge-limit scripts/ci/*.sh packaging/aur/update.sh
+shellcheck get.sh install.sh uninstall.sh scripts/*.sh scripts/notchfolk-charge-limit scripts/ci/*.sh packaging/aur/update.sh
 cargo deny check                                      # advisories and licences (deny.toml)
 ```
 
 CI also checks the code on the oldest Rust it supports (`rust-version` in
-`Cargo.toml`: 1.88 for isle-core and isled, 1.92 for isle-shelf), builds the
+`Cargo.toml`: 1.88 for notchfolk-core and notchfolkd, 1.92 for notchfolk-shelf), builds the
 release packages, and installs each into a headless GNOME Shell on Ubuntu
-24.04 and Fedora 42, failing on any `JS ERROR` or if `isled` never starts.
+24.04 and Fedora 42, failing on any `JS ERROR` or if `notchfolkd` never starts.
 Run that smoke test locally with Docker after `scripts/package.sh`:
 
 ```sh
-docker run --rm -v "$PWD:/src:ro" ubuntu:24.04 /src/scripts/ci/smoke-test.sh /src/dist/isle-<version>-x86_64-linux.tar.gz
+docker run --rm -v "$PWD:/src:ro" ubuntu:24.04 /src/scripts/ci/smoke-test.sh /src/dist/notchfolk-<version>-x86_64-linux.tar.gz
 ```
 
 ## Trying the extension without logging out
@@ -71,7 +71,7 @@ dbus-run-session -- gnome-shell --nested --wayland     # GNOME 46 to 48
 dbus-run-session -- gnome-shell --devkit --wayland     # GNOME 49 and newer
 ```
 
-Isle supports GNOME Shell 46 to 51. Where they differ (see the porting
+Notchfolk supports GNOME Shell 46 to 51. Where they differ (see the porting
 guides on [gjs.guide](https://gjs.guide/extensions/upgrading/)), the
 difference goes in `src/compat.js` so the rest of the code reads the same on
 all of them; check a change on the oldest and the newest.
@@ -80,8 +80,8 @@ GNOME Shell caches extension code, so restart the nested shell after each
 change. Logs:
 
 ```sh
-journalctl --user -u isled -f                        # the daemon
-journalctl -f /usr/bin/gnome-shell | grep -i isle    # the extension
+journalctl --user -u notchfolkd -f                        # the daemon
+journalctl -f /usr/bin/gnome-shell | grep -i notchfolk    # the extension
 ```
 
 ## Code style
@@ -104,23 +104,23 @@ journalctl -f /usr/bin/gnome-shell | grep -i isle    # the extension
   ("Thanks to @you") and you are listed under
   [Contributors](README.md#contributors) in the README.
 - By contributing you agree that your work is licensed under the
-  GPL-3.0-or-later, like the rest of Isle.
+  GPL-3.0-or-later, like the rest of Notchfolk.
 
 ## Releasing
 
 1. Move the `[Unreleased]` notes in `CHANGELOG.md` under a new version and
    date, and set that version in `Cargo.toml` and in
    `gnome-extension/metadata.json` (`version-name`).
-2. Commit, then tag and push: `git tag -a v1.2.3 -m "Isle 1.2.3"` and
+2. Commit, then tag and push: `git tag -a v1.2.3 -m "Notchfolk 1.2.3"` and
    `git push origin main v1.2.3`.
-3. The Release workflow builds `isle-1.2.3-x86_64-linux.tar.gz` with the
-   programs ready-built, and from it `isle_1.2.3_amd64.deb` and
-   `isle-1.2.3-1.x86_64.rpm`, each with a build provenance attestation. It
+3. The Release workflow builds `notchfolk-1.2.3-x86_64-linux.tar.gz` with the
+   programs ready-built, and from it `notchfolk_1.2.3_amd64.deb` and
+   `notchfolk-1.2.3-1.x86_64.rpm`, each with a build provenance attestation. It
    attaches them and their checksums to the tag's GitHub release, which
    `get.sh` installs from, with the changelog's section as the notes.
 4. Point the AUR package at the release: `packaging/aur/update.sh 1.2.3`,
-   then commit and push `PKGBUILD` and `.SRCINFO` to the AUR's `isle-bin`.
+   then commit and push `PKGBUILD` and `.SRCINFO` to the AUR's `notchfolk-bin`.
 
 `scripts/package.sh` builds the tarball locally, in `dist/`, and
-`scripts/package-system.sh dist/isle-….tar.gz` the .deb and .rpm from it
+`scripts/package-system.sh dist/notchfolk-….tar.gz` the .deb and .rpm from it
 (it needs `dpkg-dev`, `rpm` and `file`).

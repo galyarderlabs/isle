@@ -28,7 +28,7 @@ const CRITICAL_DURATION = 20000;
 
 /** A battery on its side; the ring around it shows the level. */
 function batteryIcon(percent) {
-    return percent <= 20 ? 'isle-battery-low-symbolic' : 'isle-battery-symbolic';
+    return percent <= 20 ? 'notchfolk-battery-low-symbolic' : 'notchfolk-battery-symbolic';
 }
 
 /** "42%", rounded. */
@@ -94,7 +94,7 @@ export function capsLock(on) {
         key: 'keyboard',
         priority: 'instant',
         transient: true,
-        icon: 'isle-capslock-symbolic',
+        icon: 'notchfolk-capslock-symbolic',
         motion: on ? 'rise' : undefined,
         title: 'Caps Lock',
         status: on ? 'On' : 'Off',
@@ -111,7 +111,7 @@ export function system(event) {
     case 'power':
         return {
             key: 'power',
-            icon: event.plugged ? 'isle-bolt' : batteryIcon(event.percent),
+            icon: event.plugged ? 'notchfolk-bolt' : batteryIcon(event.percent),
             motion: event.plugged ? 'pulse' : undefined,
             ringIconSize: event.plugged ? undefined : 14,
             ring: event.percent / 100,
@@ -136,7 +136,7 @@ export function system(event) {
     case 'battery_full':
         return {
             key: 'power',
-            icon: 'isle-bolt',
+            icon: 'notchfolk-bolt',
             motion: 'pulse',
             ring: 1,
             title: 'Fully charged',
@@ -163,8 +163,8 @@ export function system(event) {
         const battery = event.connected ? device.battery ?? null : null;
         return {
             key: `bluetooth:${device.path}`,
-            // A kind Isle has no icon of its own for (a printer, a watch): Bluetooth's, in Isle's style.
-            icon: hasOwnIcon(device.icon) ? device.icon : 'isle-bluetooth-symbolic',
+            // A kind Notchfolk has no icon of its own for (a printer, a watch): Bluetooth's, in Notchfolk's style.
+            icon: hasOwnIcon(device.icon) ? device.icon : 'notchfolk-bluetooth-symbolic',
             ring: battery !== null ? battery / 100 : null,
             title: device.name,
             subtitle: event.connected ? 'Connected' : 'Disconnected',
@@ -174,10 +174,10 @@ export function system(event) {
         };
     }
     case 'device':
-        // A GSConnect device (a phone) came or went; the phone's icon, as Isle's own.
+        // A GSConnect device (a phone) came or went; the phone's icon, as Notchfolk's own.
         return {
             key: `device:${event.name}`,
-            icon: 'isle-phone-symbolic',
+            icon: 'notchfolk-phone-symbolic',
             title: event.name,
             subtitle: event.connected ? 'Connected' : 'Disconnected',
             tone: event.connected ? 'good' : 'neutral',
@@ -186,7 +186,7 @@ export function system(event) {
     case 'device_battery':
         return {
             key: `device-battery:${event.name}`,
-            icon: event.low ? 'isle-battery-low-symbolic' : 'isle-bolt',
+            icon: event.low ? 'notchfolk-battery-low-symbolic' : 'notchfolk-bolt',
             motion: event.low ? undefined : 'pulse',
             ring: event.percent / 100,
             ringIconSize: 14,
@@ -208,7 +208,7 @@ export function pomodoroFinished(finished, next, state, daemon) {
     if (finished === 'focus') {
         return {
             key: 'pomodoro',
-            icon: 'isle-timer-symbolic',
+            icon: 'notchfolk-timer-symbolic',
             motion: 'bounce',
             title: 'Focus session done',
             subtitle: waiting ? 'Take a break when you’re ready' : `Enjoy a ${minutes}-minute break`,
@@ -220,7 +220,7 @@ export function pomodoroFinished(finished, next, state, daemon) {
     }
     return {
         key: 'pomodoro',
-        icon: 'isle-timer-symbolic',
+        icon: 'notchfolk-timer-symbolic',
         motion: 'bounce',
         title: next === 'focus' ? 'Break is over' : Format.phaseName(next),
         subtitle: waiting ? 'Ready for another focus session?' : `${minutes} minutes of focus`,
@@ -246,7 +246,7 @@ export function track(nowPlaying) {
 
 /** Notifications already watched (each with what to do once it is withdrawn), and those since withdrawn. */
 const watched = new WeakMap();
-/** Each watched notification's `destroy` handler, undone by `stopWatching` as Isle stops. */
+/** Each watched notification's `destroy` handler, undone by `stopWatching` as Notchfolk stops. */
 const watchIds = new Map();
 const withdrawn = new WeakSet();
 /** Each notification's own number, so alerts for different ones never replace each other. */
@@ -269,7 +269,7 @@ function watchWithdrawal(item, onWithdrawn) {
     watchIds.set(item, id);
 }
 
-/** Stops watching notifications, so none calls back into an Isle that stopped. */
+/** Stops watching notifications, so none calls back into an Notchfolk that stopped. */
 export function stopWatching() {
     for (const [item, id] of watchIds) {
         item.disconnect(id);
@@ -386,9 +386,9 @@ export function usage(provider, window, percent, resetsAt, critical) {
     const name = provider.toLowerCase();
     return {
         key: `usage:${provider}:${window}`,
-        icon: name.includes('claude') ? 'isle-claude'
-            : name.includes('grok') ? 'isle-grok'
-            : name.includes('gpt') || name.includes('codex') ? 'isle-openai' : 'isle-gauge',
+        icon: name.includes('claude') ? 'notchfolk-claude'
+            : name.includes('grok') ? 'notchfolk-grok'
+            : name.includes('gpt') || name.includes('codex') ? 'notchfolk-openai' : 'notchfolk-gauge',
         ring: Math.min(1, percent / 100),
         title: provider,
         subtitle: resetsAt > 0 ? `${limitName(window)} · resets ${when}` : limitName(window),
@@ -408,7 +408,7 @@ export function reminder({id, text}, onShown) {
     return {
         // Its own key, so reminders due together queue instead of replacing each other.
         key: `reminder:${id}`,
-        icon: 'isle-bell',
+        icon: 'notchfolk-bell',
         motion: 'ring',
         title: text,
         // Its words are the point: two lines, as a meeting's title.
@@ -431,7 +431,7 @@ export function wellbeingMilestone({kind, percent, total, goal, date}) {
         : `${Math.round(value).toLocaleString()} kcal`;
     return {
         key: `goal:${kind}:${percent}:${date}`,
-        icon: water ? 'isle-water-blue' : 'isle-flame',
+        icon: water ? 'notchfolk-water-blue' : 'notchfolk-flame',
         motion: reached ? 'pulse' : 'rise',
         title: water
             ? reached ? 'Water goal reached' : 'Halfway to your water goal'
@@ -449,7 +449,7 @@ export function prayerTime({id, prayer, time, city}) {
     const name = {Fajr: 'Subuh', Dhuhr: 'Dzuhur', Asr: 'Ashar', Isha: 'Isya'}[prayer] ?? prayer ?? 'Prayer';
     return {
         key: `prayer:${id}`,
-        icon: 'isle-prayer',
+        icon: 'notchfolk-prayer',
         motion: 'rise',
         title: name,
         subtitle: city ? `It’s time to pray · ${city}` : 'It’s time to pray',
@@ -484,7 +484,7 @@ export function meeting(event, link, join, onShown) {
     const service = link ? meetingService(link) : null;
     const alert = {
         key: `meeting:${event.id ?? event.title}:${event.start_ms}`,
-        icon: link ? 'isle-video-symbolic' : 'isle-calendar',
+        icon: link ? 'notchfolk-video-symbolic' : 'notchfolk-calendar',
         motion: 'bounce',
         title: minutes > 0 ? `${event.title} in ${minutes} min` : `${event.title} now`,
         subtitle: service ? `${span} · ${service}` : span,
@@ -511,7 +511,7 @@ export function meeting(event, link, join, onShown) {
 const AGENT_NAMES = {claude: 'Claude', codex: 'Codex', grok: 'Grok', omp: 'Oh My Pi', hermes: 'Hermes'};
 const AGENT_APPS = {claude: 'Claude Code', codex: 'Codex', grok: 'Grok', omp: 'Oh My Pi', hermes: 'Hermes'};
 /** The agent's icon and accent colour; Claude's for anything unknown. */
-const agentIcon = provider => provider === 'codex' ? 'isle-openai' : provider === 'grok' ? 'isle-grok' : 'isle-claude';
+const agentIcon = provider => provider === 'codex' ? 'notchfolk-openai' : provider === 'grok' ? 'notchfolk-grok' : 'notchfolk-claude';
 const agentTone = provider => provider === 'codex' ? 'codex' : provider === 'grok' ? 'grok' : 'claude';
 
 /** An AI agent needs the user, or is done ({provider, kind, project, message}); `show` brings its window up. */
@@ -545,7 +545,7 @@ const GLASS_ASKING_GLOW = [[0.99, 0.48, 0.06], [0.93, 0.62, 0.07], [0.86, 0.75, 
 const GLASS_DONE_GLOW = [[0.21, 0.64, 0.05], [0.07, 0.72, 0.45], [0.31, 0.86, 0.74]];
 
 /** What a tool call asks to do, on one line: a shell command as it is, else the tool and what it touches
- * (isled sends that as a line; see agents/hook.rs `request`). */
+ * (notchfolkd sends that as a line; see agents/hook.rs `request`). */
 function toolLine(tool, input) {
     const line = String(typeof input === 'string' ? input
         : input?.command ?? input?.file_path ?? input?.path ?? input?.url ?? input?.pattern ?? '').split('\n')[0];
@@ -558,7 +558,7 @@ function toolLine(tool, input) {
 export function savedToDownloads(name, show) {
     return {
         key: 'shelf-saved',
-        icon: 'isle-save-symbolic',
+        icon: 'notchfolk-save-symbolic',
         motion: 'bounce',
         title: 'Saved to Downloads',
         subtitle: name,
@@ -572,7 +572,7 @@ export function savedToDownloads(name, show) {
 export function saveFailed(why) {
     return {
         key: 'shelf-saved',
-        icon: 'isle-warning-symbolic',
+        icon: 'notchfolk-warning-symbolic',
         title: 'Couldn’t save to Downloads',
         subtitle: why,
         tone: 'bad',
@@ -584,7 +584,7 @@ export function saveFailed(why) {
 export function sharingStopped() {
     return {
         key: 'phone-stopped',
-        icon: 'isle-smartphone-symbolic',
+        icon: 'notchfolk-smartphone-symbolic',
         title: 'Phone sharing stopped',
         subtitle: 'This computer’s network changed',
         tone: 'neutral',
@@ -592,12 +592,12 @@ export function sharingStopped() {
     };
 }
 
-/** A phone asks to connect while sharing ({id, device, address, code}); `answer(allow)` tells isled about
+/** A phone asks to connect while sharing ({id, device, address, code}); `answer(allow)` tells notchfolkd about
  * that phone, whatever else asks meanwhile. */
 export function phoneAsks(ask, answer) {
     return {
         key: `phone-ask:${ask.id}`,
-        icon: 'isle-smartphone-symbolic',
+        icon: 'notchfolk-smartphone-symbolic',
         motion: 'bounce',
         // The code is the phone's own, shown big on its screen: only the phone showing it gets in.
         title: `Allow ${ask.device} — code ${ask.code}?`,
@@ -609,7 +609,7 @@ export function phoneAsks(ask, answer) {
             {label: 'Deny', answer: 'deny', callback: () => answer(false)},
             {label: 'Allow', answer: 'allow', primary: true, callback: () => answer(true)},
         ],
-        // It waits on the user, as long as the phone waits (isled gives up after two minutes).
+        // It waits on the user, as long as the phone waits (notchfolkd gives up after two minutes).
         sticky: true,
         duration: 120000,
         priority: 'instant',
@@ -621,7 +621,7 @@ export function phoneReceived(names, onShown) {
     const one = names.length === 1;
     return {
         key: 'phone-received',
-        icon: 'isle-smartphone-symbolic',
+        icon: 'notchfolk-smartphone-symbolic',
         motion: 'bounce',
         title: one ? names[0] : `${names.length} files from your phone`,
         subtitle: one ? 'From your phone · on the Shelf' : 'On the Shelf',
@@ -698,13 +698,13 @@ function firstSentence(text) {
     return first.length > 140 ? `${first.slice(0, 139).trimEnd()}…` : first;
 }
 
-/** Isle's assistant wants to run `card.command` while the island is closed; `answer(run)` decides. */
+/** Notchfolk's assistant wants to run `card.command` while the island is closed; `answer(run)` decides. */
 export function taskAsks(card, look, answer) {
     return {
         key: `task-ask:${card.id}`,
         bot: {look, glyph: '!'},
         title: card.why,
-        subtitle: card.risks?.includes('root') ? 'Isle wants to run this · asks for your password' : 'Isle wants to run this',
+        subtitle: card.risks?.includes('root') ? 'Notchfolk wants to run this · asks for your password' : 'Notchfolk wants to run this',
         code: card.command,
         tone: 'warn',
         glow: look.palette.glow,
@@ -718,13 +718,13 @@ export function taskAsks(card, look, answer) {
     };
 }
 
-/** Isle connected to `provider` for the first time; `settings` opens where it can be turned off. */
+/** Notchfolk connected to `provider` for the first time; `settings` opens where it can be turned off. */
 export function agentConnected(provider, look, settings) {
     return {
         key: `agent-connected:${provider}`,
         bot: {look, glyph: 'check', form: 'success'},
         title: `${AGENT_APPS[provider]} is connected`,
-        subtitle: provider === 'codex' ? 'In Codex, type /hooks once and allow Isle' : 'Answer it from here when it asks',
+        subtitle: provider === 'codex' ? 'In Codex, type /hooks once and allow Notchfolk' : 'Answer it from here when it asks',
         tone: 'good',
         actions: [
             {label: 'Settings', callback: settings},
@@ -740,7 +740,7 @@ export function modelSwitched(provider, plan, picked, used) {
         'Your AI';
     return {
         key: `model-switched:${provider}`,
-        icon: {claude: 'isle-claude', codex: 'isle-openai', grok: 'isle-grok'}[provider] ?? 'isle-sparkle-symbolic',
+        icon: {claude: 'notchfolk-claude', codex: 'notchfolk-openai', grok: 'notchfolk-grok'}[provider] ?? 'notchfolk-sparkle-symbolic',
         title: plan ? `${name} ${plan} doesn’t include ${picked}` : `${picked} isn’t available`,
         // A long model name ("Claude Opus 4.6 (Thinking)") wraps rather than being cut.
         titleLines: 2,
@@ -751,7 +751,7 @@ export function modelSwitched(provider, plan, picked, used) {
     };
 }
 
-/** The alerts from `provider` could not be turned on; `reason` is isled's. */
+/** The alerts from `provider` could not be turned on; `reason` is notchfolkd's. */
 export function agentRefused(provider, reason) {
     const name = AGENT_NAMES[provider] ?? 'Your AI';
     return {
@@ -765,13 +765,13 @@ export function agentRefused(provider, reason) {
     };
 }
 
-/** A newer Isle is out; `open` shows Settings' Update. `packaged`: installed system-wide (.deb, .rpm, AUR). */
+/** A newer Notchfolk is out; `open` shows Settings' Update. `packaged`: installed system-wide (.deb, .rpm, AUR). */
 export function update(version, open, packaged = false) {
     return {
         key: 'update',
         icon: 'software-update-available-symbolic',
         motion: 'bounce',
-        title: `Isle ${version} is out`,
+        title: `Notchfolk ${version} is out`,
         subtitle: packaged ? 'Update its package to get it' : 'Update in a click; your things stay',
         tone: 'good',
         action: {label: 'Update', callback: open},
@@ -779,13 +779,13 @@ export function update(version, open, packaged = false) {
     };
 }
 
-/** isled is not running: the island's music, timer, reminders and assistant wait for it. */
+/** notchfolkd is not running: the island's music, timer, reminders and assistant wait for it. */
 export function serviceDown(restart) {
     return {
         key: 'service-down',
         icon: 'dialog-warning-symbolic',
         motion: 'shake',
-        title: 'Isle’s service isn’t running',
+        title: 'Notchfolk’s service isn’t running',
         subtitle: 'Music, timer and reminders need it',
         tone: 'bad',
         action: {label: 'Restart', callback: restart},
@@ -799,7 +799,7 @@ export function notificationsSummary(items) {
     const alert = {
         key: 'notifications-summary',
         items,
-        icon: 'isle-bell',
+        icon: 'notchfolk-bell',
         motion: 'bounce',
         title: count === 1 ? '1 new notification' : `${count} new notifications`,
         subtitle: count === 1 ? 'Open the island to read it' : 'Open the island to read them',
@@ -824,13 +824,13 @@ export function assistant(state, open) {
     const text = failed ? state.error || 'Something went wrong' : Format.answerPlain(state.reply ?? '') || 'Done';
     return {
         key: 'assistant',
-        icon: failed ? 'dialog-warning-symbolic' : 'isle-mic-symbolic',
+        icon: failed ? 'dialog-warning-symbolic' : 'notchfolk-mic-symbolic',
         motion: failed ? 'shake' : 'bounce',
         title: text,
         // An answer may take three lines, so a question at its end still shows.
         titleLines: 3,
-        subtitle: failed ? state.hint ?? '' : 'Isle Assistant',
-        cutSubtitle: failed ? undefined : 'Isle Assistant · Click to read more',
+        subtitle: failed ? state.hint ?? '' : 'Notchfolk Assistant',
+        cutSubtitle: failed ? undefined : 'Notchfolk Assistant · Click to read more',
         tone: failed ? 'bad' : 'good',
         // Long enough to read, as the open island gives it.
         duration: Math.min(ANSWER_MAX_DURATION, STATUS_DURATION + 45 * text.length),

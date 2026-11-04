@@ -22,7 +22,7 @@ export const WaterPage = GObject.registerClass(
 class WaterPage extends Page {
     _init(daemon, settings, {height}) {
         super._init(daemon, {
-            style_class: 'isle-page isle-water',
+            style_class: 'notchfolk-page notchfolk-water',
             layout_manager: new Clutter.BinLayout(),
             height,
         });
@@ -30,31 +30,31 @@ class WaterPage extends Page {
         this._settings = settings;
         this._entries = [];
 
-        const layout = new St.BoxLayout({style_class: 'isle-water-layout', x_expand: true, y_expand: true});
-        const summary = new St.BoxLayout({...VERTICAL, style_class: 'isle-water-summary', y_align: Clutter.ActorAlign.CENTER});
+        const layout = new St.BoxLayout({style_class: 'notchfolk-water-layout', x_expand: true, y_expand: true});
+        const summary = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-water-summary', y_align: Clutter.ActorAlign.CENTER});
 
-        const heading = new St.BoxLayout({style_class: 'isle-water-heading'});
-        heading.add_child(new St.Icon({gicon: icon('isle-water-blue'), icon_size: 16}));
-        heading.add_child(label('Water Reminder', 'isle-water-title'));
+        const heading = new St.BoxLayout({style_class: 'notchfolk-water-heading'});
+        heading.add_child(new St.Icon({gicon: icon('notchfolk-water-blue'), icon_size: 16}));
+        heading.add_child(label('Water Reminder', 'notchfolk-water-title'));
         summary.add_child(heading);
 
-        const amount = new St.BoxLayout({style_class: 'isle-water-amount', y_align: Clutter.ActorAlign.CENTER});
-        this._total = label('0.0', 'isle-water-total');
-        this._goal = label('/ 2.0 L', 'isle-water-goal');
+        const amount = new St.BoxLayout({style_class: 'notchfolk-water-amount', y_align: Clutter.ActorAlign.CENTER});
+        this._total = label('0.0', 'notchfolk-water-total');
+        this._goal = label('/ 2.0 L', 'notchfolk-water-goal');
         amount.add_child(this._total);
         amount.add_child(this._goal);
         summary.add_child(amount);
 
-        this._status = label('Today · 0% · 2.0 L left', 'isle-water-status');
+        this._status = label('Today · 0% · 2.0 L left', 'notchfolk-water-status');
         summary.add_child(this._status);
 
         this._progressTrack = new St.Widget({
             layout_manager: new Clutter.BinLayout(),
-            style_class: 'isle-water-progress-track',
+            style_class: 'notchfolk-water-progress-track',
             x_expand: true,
         });
         this._progressFill = new St.Widget({
-            style_class: 'isle-water-progress-fill',
+            style_class: 'notchfolk-water-progress-fill',
             x_align: Clutter.ActorAlign.START,
             y_expand: true,
         });
@@ -62,13 +62,13 @@ class WaterPage extends Page {
         this._progressTrack.connect('notify::width', () => this._syncProgress());
         summary.add_child(this._progressTrack);
 
-        const actions = new St.BoxLayout({style_class: 'isle-water-actions'});
-        const drinkContents = new St.BoxLayout({style_class: 'isle-water-button-contents'});
-        drinkContents.add_child(new St.Icon({gicon: icon('isle-water-fill'), icon_size: 13}));
-        this._drinkLabel = label('', 'isle-water-button-label');
+        const actions = new St.BoxLayout({style_class: 'notchfolk-water-actions'});
+        const drinkContents = new St.BoxLayout({style_class: 'notchfolk-water-button-contents'});
+        drinkContents.add_child(new St.Icon({gicon: icon('notchfolk-water-fill'), icon_size: 13}));
+        this._drinkLabel = label('', 'notchfolk-water-button-label');
         drinkContents.add_child(this._drinkLabel);
         this._drinkButton = new St.Button({
-            style_class: 'isle-water-button isle-water-drink',
+            style_class: 'notchfolk-water-button notchfolk-water-drink',
             child: drinkContents,
             can_focus: true,
             accessible_name: 'Log a drink of water',
@@ -76,11 +76,11 @@ class WaterPage extends Page {
         this._drinkButton.connect('clicked', () => this._drink());
         actions.add_child(this._drinkButton);
 
-        const settingsContents = new St.BoxLayout({style_class: 'isle-water-button-contents'});
-        settingsContents.add_child(new St.Icon({gicon: icon('isle-settings'), icon_size: 13}));
-        settingsContents.add_child(label('Settings', 'isle-water-button-label'));
+        const settingsContents = new St.BoxLayout({style_class: 'notchfolk-water-button-contents'});
+        settingsContents.add_child(new St.Icon({gicon: icon('notchfolk-settings'), icon_size: 13}));
+        settingsContents.add_child(label('Settings', 'notchfolk-water-button-label'));
         const settingsButton = new St.Button({
-            style_class: 'isle-water-button isle-water-settings',
+            style_class: 'notchfolk-water-button notchfolk-water-settings',
             child: settingsContents,
             can_focus: true,
             accessible_name: 'Water tracker settings',
@@ -90,7 +90,7 @@ class WaterPage extends Page {
         summary.add_child(actions);
         layout.add_child(summary);
 
-        this._chart = new St.DrawingArea({style_class: 'isle-water-chart', x_expand: true, y_expand: true});
+        this._chart = new St.DrawingArea({style_class: 'notchfolk-water-chart', x_expand: true, y_expand: true});
         this._chart.connect('repaint', area => this._paintChart(area));
         layout.add_child(this._chart);
         this.add_child(layout);

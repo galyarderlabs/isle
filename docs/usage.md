@@ -65,17 +65,17 @@ Click the gear right of the clock in the open island (or Notchfolk's gear in the
   installed (on by default; none listed when neither is).
 - **About:** the version and whether it is up to date (with how to update,
   and the switch for asking GitHub once a day), help, a bug report to copy
-  (`isled --report`), and resetting every setting.
+  (`notchfolkd --report`), and resetting every setting.
 
 ## Troubleshooting
 
 **The island does not appear after installing.** Log out and back in (on
 Wayland this is required once). Then check that it is enabled:
-`gnome-extensions info isle@zickrian.github.io`.
+`gnome-extensions info io.galyarderlabs.notchfolk`.
 
 **Music or lyrics do not show.** Check that the background service runs:
-`systemctl --user status isled`, and read its log with
-`journalctl --user -u isled -f`. Songs LRCLIB does not know show "No lyrics
+`systemctl --user status notchfolkd`, and read its log with
+`journalctl --user -u notchfolkd -f`. Songs LRCLIB does not know show "No lyrics
 found"; a busy service retries on its own.
 
 **Files cannot be dragged in or out.** The release package includes the
@@ -94,20 +94,20 @@ Notchfolk never changes the firewall itself, and listens only while you share.
 top bar (Dash to Panel, Hide Top Bar, other islands) can get in the way;
 turn them off in the Extensions app.
 
-**The voice assistant does not answer.** Run `~/.local/bin/isled --doctor`: it says what
+**The voice assistant does not answer.** Run `~/.local/bin/notchfolkd --doctor`: it says what
 is missing (speech recognition, an AI, or its sign-in) and what to run.
 
-**Something else.** Run `~/.local/bin/isled --report` (or Settings → About → Copy a bug
+**Something else.** Run `~/.local/bin/notchfolkd --report` (or Settings → About → Copy a bug
 report): it gathers the versions, what works and recent logs, without your
 data. Please [open an issue](../../issues) and paste it there.
 
 With a .deb, .rpm or AUR package, Notchfolk's commands are in `/usr/bin`: run
-them by name alone (`isled --doctor`, `isled --report`).
+them by name alone (`notchfolkd --doctor`, `notchfolkd --report`).
 
 ## Uninstalling
 
 ```sh
-~/.local/bin/isle-uninstall
+~/.local/bin/notchfolk-uninstall
 ```
 
 (or `./uninstall.sh` from the release package or the source folder). This
@@ -115,11 +115,11 @@ removes the extension, the programs, the service, the font, the voice
 assistant's speech recognition and Notchfolk's caches, and lifts a battery charge
 limit Notchfolk set; it also takes Notchfolk's hooks out of Claude Code's and Codex's
 settings. Your tasks, calendar events, clipboard history, shelf and
-timer settings stay in `~/.local/share/isle` until you delete them.
+timer settings stay in `~/.local/share/notchfolk` until you delete them.
 
 Remove Notchfolk this way, not with the Extensions app's Remove button, which
-deletes only the extension and leaves `isled` and its hooks behind. For a
-system-wide package, each user runs `isled --unhook-all` first (and
-`isle-charge-limit 100` if the assistant set a battery charge limit), then
-remove it with `sudo apt remove isle`, `sudo dnf remove isle` or
-`sudo pacman -R isle-bin`.
+deletes only the extension and leaves `notchfolkd` and its hooks behind. For a
+system-wide package, each user runs `notchfolkd --unhook-all` first (and
+`notchfolk-charge-limit 100` if the assistant set a battery charge limit), then
+remove it with `sudo apt remove notchfolk`, `sudo dnf remove notchfolk` or
+`sudo pacman -R notchfolk-bin`.

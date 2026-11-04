@@ -28,7 +28,7 @@ export function watchClock(callback) {
     };
 }
 
-/** Shows every clock again now: Isle's own 12/24-hour setting changed. */
+/** Shows every clock again now: Notchfolk's own 12/24-hour setting changed. */
 export function refreshClocks() {
     [...callbacks].forEach(callback => callback());
 }

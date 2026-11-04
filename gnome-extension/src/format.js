@@ -7,21 +7,21 @@ import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 
 let interfaceSettings = null;
-// Isle's own choice (Settings → Appearance → Clock): 'system', '24h' or '12h'.
+// Notchfolk's own choice (Settings → Appearance → Clock): 'system', '24h' or '12h'.
 let clockFormat = 'system';
 
-/** Lets go of GNOME's settings once Isle is turned off; they are read again when needed. */
+/** Lets go of GNOME's settings once Notchfolk is turned off; they are read again when needed. */
 export function release() {
     interfaceSettings = null;
     clockFormat = 'system';
 }
 
-/** Isle's clock setting, as controller.js reads it. */
+/** Notchfolk's clock setting, as controller.js reads it. */
 export function setClockFormat(format) {
     clockFormat = format;
 }
 
-/** Whether times show with a 12-hour clock: as Isle's setting says, else as GNOME's. */
+/** Whether times show with a 12-hour clock: as Notchfolk's setting says, else as GNOME's. */
 export function uses12Hour() {
     if (clockFormat === '24h' || clockFormat === '12h')
         return clockFormat === '12h';

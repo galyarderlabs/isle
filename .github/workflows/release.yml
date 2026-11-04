@@ -30,7 +30,7 @@ jobs:
           grep -q "\"version-name\": \"$version\"" gnome-extension/metadata.json ||
             { echo "metadata.json is not at $version"; exit 1; }
           grep -q "^## \[$version\]" CHANGELOG.md || { echo "CHANGELOG.md has no $version"; exit 1; }
-      # GTK 4 for isle-shelf, rpmbuild for the .rpm; cmake, libclang, the Vulkan headers and glslc for isle-whisper.
+      # GTK 4 for notchfolk-shelf, rpmbuild for the .rpm; cmake, libclang, the Vulkan headers and glslc for notchfolk-whisper.
       - name: Install build dependencies
         run: |
           # man-db's index rebuild can stall apt for many minutes on the runners; nothing here needs it.
@@ -60,7 +60,7 @@ jobs:
             dist/*.rpm
       - uses: actions/upload-artifact@v4
         with:
-          name: isle-package
+          name: notchfolk-package
           path: dist/*
       - name: Attach to the release
         if: github.ref_type == 'tag'
@@ -75,5 +75,5 @@ jobs:
             gh release upload "$tag" "${files[@]}" --clobber
           else
             # Made with its files in one go: get.sh never finds a release without them.
-            gh release create "$tag" "${files[@]}" --title "Isle ${tag#v}" --notes-file notes.md
+            gh release create "$tag" "${files[@]}" --title "Notchfolk ${tag#v}" --notes-file notes.md
           fi

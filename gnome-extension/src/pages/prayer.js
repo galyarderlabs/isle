@@ -33,12 +33,12 @@ export const PrayerPage = GObject.registerClass(
 class PrayerPage extends Page {
     _init(daemon, {height}) {
         super._init(daemon, {
-            style_class: 'isle-page isle-prayer',
+            style_class: 'notchfolk-page notchfolk-prayer',
             layout_manager: new Clutter.BinLayout(),
             height,
         });
         this.name = 'prayer';
-        this._column = new St.BoxLayout({...VERTICAL, x_expand: true, y_expand: true, style_class: 'isle-prayer-column'});
+        this._column = new St.BoxLayout({...VERTICAL, x_expand: true, y_expand: true, style_class: 'notchfolk-prayer-column'});
         this.add_child(this._column);
         this.watch(['prayer'], () => this._update());
         this._update();
@@ -89,10 +89,10 @@ class PrayerPage extends Page {
     }
 
     _heading(city = '') {
-        const heading = new St.BoxLayout({style_class: 'isle-prayer-heading'});
-        heading.add_child(new St.Icon({gicon: icon('isle-prayer'), icon_size: 15, style_class: 'isle-prayer-heading-icon'}));
-        heading.add_child(label('Prayer', 'isle-prayer-title', {x_expand: true}));
-        heading.add_child(label([city, Format.longDate()].filter(Boolean).join(' · '), 'isle-prayer-date'));
+        const heading = new St.BoxLayout({style_class: 'notchfolk-prayer-heading'});
+        heading.add_child(new St.Icon({gicon: icon('notchfolk-prayer'), icon_size: 15, style_class: 'notchfolk-prayer-heading-icon'}));
+        heading.add_child(label('Prayer', 'notchfolk-prayer-title', {x_expand: true}));
+        heading.add_child(label([city, Format.longDate()].filter(Boolean).join(' · '), 'notchfolk-prayer-date'));
         return heading;
     }
 
@@ -113,7 +113,7 @@ class PrayerPage extends Page {
             const text = schedule?.status === 'error'
                 ? 'Could not load prayer times. Check your connection.'
                 : 'Set a city in Settings → Island → Daily Life';
-            this._column.add_child(label(text, 'isle-prayer-empty', {
+            this._column.add_child(label(text, 'notchfolk-prayer-empty', {
                 x_align: Clutter.ActorAlign.CENTER,
                 y_expand: true,
             }));
@@ -123,27 +123,27 @@ class PrayerPage extends Page {
         const info = this._prayerStatus(schedule.prayers);
         const prayers = schedule.prayers ?? [];
         this._column.add_child(this._heading(schedule.city));
-        const row = new St.BoxLayout({style_class: 'isle-prayer-row', x_expand: true, y_expand: true});
+        const row = new St.BoxLayout({style_class: 'notchfolk-prayer-row', x_expand: true, y_expand: true});
 
-        const hero = new St.BoxLayout({...VERTICAL, style_class: 'isle-prayer-hero', y_align: Clutter.ActorAlign.CENTER});
-        const heroTop = new St.BoxLayout({style_class: 'isle-prayer-hero-top'});
-        heroTop.add_child(label('UP NEXT', 'isle-prayer-eyebrow'));
+        const hero = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-prayer-hero', y_align: Clutter.ActorAlign.CENTER});
+        const heroTop = new St.BoxLayout({style_class: 'notchfolk-prayer-hero-top'});
+        heroTop.add_child(label('UP NEXT', 'notchfolk-prayer-eyebrow'));
         hero.add_child(heroTop);
-        hero.add_child(label(info ? prayerName(info.nextName) : 'Prayer times', 'isle-prayer-next-name'));
-        const nextDetails = new St.BoxLayout({style_class: 'isle-prayer-next-details', y_align: Clutter.ActorAlign.CENTER});
-        nextDetails.add_child(label(info ? prayers[info.nextIndex].time : '—', 'isle-prayer-next-time'));
-        this._nextCountdown = label(info ? this._countdownText(info) : 'No upcoming time', 'isle-prayer-next-countdown', {
+        hero.add_child(label(info ? prayerName(info.nextName) : 'Prayer times', 'notchfolk-prayer-next-name'));
+        const nextDetails = new St.BoxLayout({style_class: 'notchfolk-prayer-next-details', y_align: Clutter.ActorAlign.CENTER});
+        nextDetails.add_child(label(info ? prayers[info.nextIndex].time : '—', 'notchfolk-prayer-next-time'));
+        this._nextCountdown = label(info ? this._countdownText(info) : 'No upcoming time', 'notchfolk-prayer-next-countdown', {
             y_align: Clutter.ActorAlign.CENTER,
         });
         nextDetails.add_child(this._nextCountdown);
         hero.add_child(nextDetails);
         this._progressTrack = new St.Widget({
             layout_manager: new Clutter.BinLayout(),
-            style_class: 'isle-prayer-progress-track',
+            style_class: 'notchfolk-prayer-progress-track',
             x_expand: true,
         });
         this._progressFill = new St.Widget({
-            style_class: 'isle-prayer-progress-fill',
+            style_class: 'notchfolk-prayer-progress-fill',
             x_align: Clutter.ActorAlign.START,
             y_expand: true,
         });
@@ -153,23 +153,23 @@ class PrayerPage extends Page {
         row.add_child(hero);
 
         this._arcData = {prayers, nextIndex: info?.nextIndex ?? -1, isTomorrow: Boolean(info?.isTomorrow)};
-        this._arc = new St.DrawingArea({style_class: 'isle-prayer-arc', x_expand: true});
+        this._arc = new St.DrawingArea({style_class: 'notchfolk-prayer-arc', x_expand: true});
         this._arc.connect('repaint', area => this._paintArc(area));
-        const timeline = new St.BoxLayout({...VERTICAL, style_class: 'isle-prayer-timeline', x_expand: true, y_expand: true});
+        const timeline = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-prayer-timeline', x_expand: true, y_expand: true});
         timeline.add_child(this._arc);
-        const labels = new St.BoxLayout({style_class: 'isle-prayer-labels', x_expand: true});
+        const labels = new St.BoxLayout({style_class: 'notchfolk-prayer-labels', x_expand: true});
         for (let i = 0; i < prayers.length; i++) {
             const prayer = prayers[i];
             const isNext = Boolean(info && i === info.nextIndex);
             const isPast = Boolean(info && (info.isTomorrow ? i !== info.nextIndex : i < info.nextIndex));
-            let markClass = 'isle-prayer-mark';
+            let markClass = 'notchfolk-prayer-mark';
             if (isNext)
                 markClass += ' next';
             else if (isPast)
                 markClass += ' past';
             const mark = new St.BoxLayout({...VERTICAL, x_expand: true, style_class: markClass});
-            mark.add_child(label(prayerName(prayer.name), 'isle-prayer-mark-name', {x_align: Clutter.ActorAlign.CENTER}));
-            mark.add_child(label(prayer.time, 'isle-prayer-mark-time', {x_align: Clutter.ActorAlign.CENTER}));
+            mark.add_child(label(prayerName(prayer.name), 'notchfolk-prayer-mark-name', {x_align: Clutter.ActorAlign.CENTER}));
+            mark.add_child(label(prayer.time, 'notchfolk-prayer-mark-time', {x_align: Clutter.ActorAlign.CENTER}));
             labels.add_child(mark);
         }
         timeline.add_child(labels);
@@ -178,8 +178,8 @@ class PrayerPage extends Page {
         this._arc.queue_repaint();
         this._syncProgress(info?.progress ?? 0);
 
-        const footer = new St.BoxLayout({style_class: 'isle-prayer-footer'});
-        footer.add_child(label(`Kemenag · ${schedule.timezone}`, 'isle-prayer-source', {
+        const footer = new St.BoxLayout({style_class: 'notchfolk-prayer-footer'});
+        footer.add_child(label(`Kemenag · ${schedule.timezone}`, 'notchfolk-prayer-source', {
             x_expand: true,
             x_align: Clutter.ActorAlign.CENTER,
         }));

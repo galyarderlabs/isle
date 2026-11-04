@@ -52,5 +52,6 @@ is left behind under the old names, skips anything whose target already exists
 `~/.local/state/notchfolk-migration-backup-<timestamp>` as the rollback path —
 putting one back and `systemctl --user daemon-reload` restores it.
 
-The env var names inside `mcp.env` (`ISLE_MCP_*`) are the runtime rebrand's to
-rename; the script moves the file as it is.
+The env var names inside `mcp.env` are rewritten to the rebranded service's
+(`ISLE_MCP_*` to `NOTCHFOLK_MCP_*`), with the file's values kept as they are and a
+copy in the backup folder.

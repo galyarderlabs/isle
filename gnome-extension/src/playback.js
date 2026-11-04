@@ -21,7 +21,7 @@ export function showsClosed(nowPlaying) {
     return hasTrack(nowPlaying) && !nowPlaying.resting;
 }
 
-/** The speed it plays at; 0 while isled sees it buffering, though the player says it plays. */
+/** The speed it plays at; 0 while notchfolkd sees it buffering, though the player says it plays. */
 function rateOf(nowPlaying) {
     return nowPlaying.rate ?? 1;
 }
