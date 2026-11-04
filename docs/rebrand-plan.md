@@ -41,21 +41,48 @@ been changed by this plan.
 - The README identifies components under separate licenses, including Inter
   (OFL-1.1), bloub (MIT), Lucide (ISC), and the demo video (CC BY-SA 4.0).
 
+## Settled decisions
+
+- **Product name:** Notchfolk (lowercase slug `notchfolk`). The name reads as a
+  group of small companions living in the notch, which matches the intended
+  playful, always-with-you product direction rather than a single bot.
+- **Tagline:** "A little world in your notch."
+- **Repository description:** "A living desktop notch: music with synced
+  lyrics, tasks, reminders, calendar, AI agents (Hermes, Claude Code, Codex,
+  OMP), a built-in MCP server, AI router analytics, and subscription usage
+  quota tracking. GNOME today — Windows and macOS coming."
+- **Namespace:** `io.galyarderlabs.notchfolk` for the application ID and GNOME
+  extension UUID, with identifiers on other platforms derived from the same
+  namespace as support is added.
+- **Platform direction:** GNOME first, with Windows and macOS support planned
+  later. The brand and namespace are platform-neutral; GNOME-specific
+  identifiers are implementation details of the GNOME build.
+- **Install model:** in-place replacement of the current Isle installation
+  with a one-time migration. Side-by-side installs are out of scope for the
+  first release; they would require fully separate settings, data, services,
+  and D-Bus names.
+- **Public D-Bus API:** rename D-Bus well-known names, object paths, and
+  interfaces together with the rest of the runtime identity. The D-Bus API is
+  a Linux implementation detail, no external consumers have committed to the
+  current names, and a future Windows build would not use D-Bus at all;
+  `docs/dbus-api.md` is updated with the new names instead of being kept as a
+  frozen compatibility surface.
+- **Version policy:** start a fresh version sequence independent of upstream
+  Isle releases, beginning at `1.0.0` for the first rebranded release, so the
+  update check never treats the new release as a downgrade from an Isle
+  version number.
+- **Repository rename timing:** keep `galyarderlabs/isle` until a trademark
+  and domain check on "Notchfolk" passes, then rename the repository before
+  the first public rebranded release so that clone URLs, package recipes, and
+  the update feed reference the final slug from day one.
+
+A quick product search found no notch app named "Notchfolk", but that is not
+a trademark clearance: a formal trademark search and domain availability check
+are still required before public release (Task 1).
+
 ## Rebrand decisions to settle
 
-1. **Product name and spelling:** display name, capitalization, short name, and
-   a pronounceable CLI/package slug.
-2. **Namespace:** a stable reverse-DNS application ID and GNOME extension UUID
-   controlled by Galyarder Labs.
-3. **Install model:** replace the current Isle installation in place, or allow
-   the new app to run beside upstream Isle. The recommended first release is an
-   in-place replacement with a one-time migration; side-by-side installs need
-   fully separate settings, data, services, and D-Bus names.
-4. **Repository and release identity:** final GitHub slug, homepage, issue
-   tracker, release tag sequence, package names, and update feed. The existing
-   `galyarderlabs/isle` repository can be renamed after the product slug is
-   chosen.
-5. **Attribution wording:** how the About page and README state that the
+1. **Attribution wording:** how the About page and README state that the
    project is a modified derivative of Isle by zickrian.
 
 ## License, provenance, and marks
@@ -101,7 +128,10 @@ The first implementation must define how the current installation upgrades.
 Copy settings without losing key types or values; retain reminders, tasks,
 calendar entries, water/calorie history, credentials, and MCP configuration;
 disable/remove only the old extension instance owned by this installation;
-and avoid two daemons or duplicate notches during transition. Keep data paths
+and avoid two daemons or duplicate notches during transition. Keyring entries
+are often bound to their service attribute: if the keyring service name
+changes, the migration must explicitly copy or relabel existing items under
+the new service name, not merely assume they will be found. Keep data paths
 unchanged unless a separate migration is necessary and tested.
 
 ## Delivery phases

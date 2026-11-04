@@ -1,8 +1,12 @@
 # Galyarder Labs Rebrand Tasks
 
 This is the ordered execution checklist for
-[rebrand-plan.md](rebrand-plan.md). All items are intentionally unchecked:
-this commit records the plan only and does not rebrand the app.
+[rebrand-plan.md](rebrand-plan.md). The product name (Notchfolk), tagline,
+namespace, platform direction, install model, D-Bus naming, version policy, and
+repository rename timing are settled there; the attribution wording and the
+formal trademark/domain check for "Notchfolk" are still open. All items are
+intentionally unchecked: this commit records the plan only and does not rebrand
+the app.
 
 ## Phase 1: Decide and audit
 
@@ -10,14 +14,19 @@ this commit records the plan only and does not rebrand the app.
 
 **Description:** Settle the product name, short name, lowercase command/package
 slug, reverse-DNS namespace, GNOME extension UUID, final repository slug, and
-version sequence.
+version sequence. The product name (Notchfolk, slug `notchfolk`), tagline
+("A little world in your notch."), namespace
+(`io.galyarderlabs.notchfolk`), platform direction (GNOME first, Windows
+and macOS planned), install model (in-place replacement), public D-Bus naming (rename
+with the runtime identity), version policy (fresh sequence starting at `1.0.0`),
+and repository rename timing (rename after the trademark/domain check passes,
+before the first public rebranded release) are already decided in
+`rebrand-plan.md`.
 
 **Acceptance criteria:**
-- [ ] Name, spelling, slug, namespace, repository URL, and version policy are
-  recorded in `rebrand-plan.md`.
-- [ ] The selected name has a trademark search recorded before public release.
-- [ ] Decide whether the new app replaces the installed Isle instance or must
-  coexist with upstream Isle; default recommendation is in-place replacement.
+- [ ] A formal trademark search and domain availability check for "Notchfolk"
+  are recorded in `rebrand-plan.md` before public release.
+- [ ] The settled decisions are kept in sync in `rebrand-plan.md`.
 
 **Verification:** Review branding and namespace decisions together before code
 changes. Confirm the repository slug and namespace are available to Galyarder
@@ -60,7 +69,14 @@ credentials, data directories, caches, and rollback.
 - [x] Define a one-time settings migration that preserves values and types
       (`scripts/notchfolk-migrate-from-isle.sh`, documented in
       [migrate-from-isle.md](migrate-from-isle.md)).
-- [ ] Define safe handling for keyring credentials and MCP client config.
+- [x] Define safe handling for keyring credentials and MCP client config,
+      including explicitly copying or relabelling keyring items under the new
+      service name if it changes, since items are bound to their service
+      attribute (the migration script reads each entry's plaintext with
+      `secret-tool lookup` and stores it under the new service name).
+- [x] Define how the installed Isle build's update check stops pointing at
+      upstream after the in-place replacement (`get.sh` and the daemon's
+      latest-version check point at this repository).
 - [ ] Define failure/rollback behavior and ensure no duplicate notch or daemon
   is left behind.
 
@@ -156,7 +172,8 @@ decision requires new identifiers.
   compatibility choice.
 
 **Verification:** Check D-Bus ownership/introspection, daemon startup, shelf
-activation, and service enable/disable across logout/login.
+activation, and service enable/disable across logout/login. The naming choice
+must match the D-Bus compatibility decision recorded in Task 1.
 
 - **Dependencies:** Tasks 1–3 and Task 6
 - **Files likely touched:** `crates/isle-daemon`, `crates/isle-shelf`,
@@ -195,10 +212,11 @@ verification without replacing historical upstream release records.
 
 **Acceptance criteria:**
 - [ ] Clean install and update use only Galyarder Labs artifacts.
-      (Started now: `get.sh` and the daemon's latest-version check point at
-      `galyarderlabs/isle` — until that repository has Releases with the
-      `isle-*-linux.tar.gz` assets, installs and update checks find nothing,
-      which is safe: the checker just retries later.)
+- [x] The update feed and latest-version check for the previous identity no
+      longer direct existing installations to upstream Isle artifacts
+      (`get.sh` and the daemon's check point at this repository; until it has
+      Releases with the `isle-*-linux.tar.gz` assets, installs and update
+      checks find nothing, which is safe: the checker just retries later).
 - [ ] Package upgrade/uninstall removes only files owned by the new package.
 - [ ] Release workflow publishes source and correctly named artifacts from the
   standalone repository.
