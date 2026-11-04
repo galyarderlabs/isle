@@ -1,7 +1,9 @@
 # Galyarder Labs Rebrand Plan
 
-This plan covers the future product rebrand of the standalone public repository
-[`galyarderlabs/isle`](https://github.com/galyarderlabs/isle). The repository
+This plan covers the product rebrand of the standalone public repository
+`galyarderlabs/isle`, whose settled final slug is `galyarderlabs/notchfolk`: the
+rename is pending the formal trademark and domain check, and GitHub will
+redirect the old name once it happens. The repository
 is no longer a GitHub fork, but the app, docs, and runtime identifiers still
 use Isle's original identity. The work is tracked in
 [rebrand-tasks.md](rebrand-tasks.md).
@@ -29,8 +31,8 @@ been changed by this plan.
 
 ## Current baseline
 
-- Repository: public, standalone `galyarderlabs/isle`; local `origin` points to
-  this repository.
+- Repository: public, standalone `galyarderlabs/isle` until the rename to the
+  settled slug `galyarderlabs/notchfolk`; local `origin` points to it.
 - Source lineage: based on [zickrian/isle](https://github.com/zickrian/isle),
   with the fork's accumulated UI, feature, and integration changes.
 - License: `GPL-3.0-or-later` in `Cargo.toml` and the root `LICENSE`.
@@ -169,5 +171,5 @@ unchanged unless a separate migration is necessary and tested.
 - The existing local installation upgrades without losing settings, credentials,
   or Isle-owned data, and no duplicate extension/daemon remains.
 - Upstream attribution, GPL-3.0-or-later, and third-party notices remain intact.
-- The new release is reproducible from `galyarderlabs/isle` and its source is
-  available under the declared license.
+- The new release is reproducible from `galyarderlabs/notchfolk` and its source
+  is available under the declared license.

@@ -214,9 +214,10 @@ verification without replacing historical upstream release records.
 - [ ] Clean install and update use only Galyarder Labs artifacts.
 - [x] The update feed and latest-version check for the previous identity no
       longer direct existing installations to upstream Isle artifacts
-      (`get.sh` and the daemon's check point at this repository; until it has
-      Releases with the `isle-*-linux.tar.gz` assets, installs and update
-      checks find nothing, which is safe: the checker just retries later).
+      (`get.sh` and the daemon's check point at the repository's final slug,
+      `galyarderlabs/notchfolk`; until that repository exists and has Releases
+      with the `isle-*-linux.tar.gz` assets, installs and update checks find
+      nothing, which is safe: the checker just retries later).
 - [ ] Package upgrade/uninstall removes only files owned by the new package.
 - [ ] Release workflow publishes source and correctly named artifacts from the
   standalone repository.

@@ -11,7 +11,7 @@ on:
 
 permissions:
   contents: write
-  # For the provenance attestations: `gh attestation verify <file> --repo zickrian/isle`.
+  # For the provenance attestations: `gh attestation verify <file> --repo galyarderlabs/notchfolk`.
   id-token: write
   attestations: write
 
