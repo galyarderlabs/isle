@@ -15,7 +15,7 @@ cd "$(dirname "$0")/.."
 umask 022
 UUID="isle@zickrian.github.io"
 MAINTAINER="zickrian <espejodaniel50@gmail.com>"
-SUMMARY="A notch-style island for the GNOME Shell top bar"
+SUMMARY="Notchfolk: Living desktop notch and AI companion for GNOME Shell with MCP"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
