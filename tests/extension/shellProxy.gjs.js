@@ -16,16 +16,14 @@ function check(what, actual, expected) {
     printerr(`FAIL ${what}: ${JSON.stringify(actual)}, wanted ${JSON.stringify(expected)}`);
 }
 
-/** A bus that only counts what a proxy registers and unregisters. */
+/** A bus that only counts what a proxy exports and unexports. */
 const bus = {
-    register_object: (path, iface, handler) => {
+    export: (path) => {
         check('the object path', path, '/io/github/zickrian/isle/Shell');
-        check('the interface name', iface.get_name(), 'io.github.zickrian.isle.Shell1');
-        bus.handler = handler;
-        return 7;
+        return true;
     },
-    unregister_object: id => {
-        bus.unregistered = id;
+    unexport: () => {
+        bus.unexported = true;
     },
 };
 
@@ -40,24 +38,23 @@ const daemon = {
 };
 
 const proxy = new ShellProxy(daemon, bus);
-const handler = bus.handler;
-check('a registered handler with the three methods',
-    ['GetAppStats', 'SearchClipboard', 'GetClipboardText'].every(name => typeof handler[name] === 'function'),
+check('a proxy with the three methods',
+    ['GetAppStats', 'SearchClipboard', 'GetClipboardText'].every(name => typeof proxy[name] === 'function'),
     true);
 
 daemon.answers = {GetStats: {result: ['{"today":[]}']}};
-check('app stats as isled wrote them', await handler.GetAppStats(), '{"today":[]}');
+check('app stats as isled wrote them', await proxy.GetAppStats(), '{"today":[]}');
 
 daemon.answers = {Search: {result: [[3, 1]]}};
-check('clipboard ids in the list order', await handler.SearchClipboard('report'), [3, 1]);
+check('clipboard ids in the list order', await proxy.SearchClipboard('report'), [3, 1]);
 
 daemon.answers = {GetText: {result: ['quarterly report.txt']}};
-check('a clipboard item text', await handler.GetClipboardText(3), 'quarterly report.txt');
+check('a clipboard item text', await proxy.GetClipboardText(3), 'quarterly report.txt');
 
 daemon.answers = {GetText: {result: null, error: 'only GNOME Shell may call this'}};
 let refused = null;
 try {
-    await handler.GetClipboardText(3);
+    await proxy.GetClipboardText(3);
 } catch (e) {
     refused = e.message;
 }
@@ -66,14 +63,14 @@ check("isled's refusal in the caller's answer", refused, 'only GNOME Shell may c
 daemon.answers = {Search: {result: null, error: null}};
 let silent = null;
 try {
-    await handler.SearchClipboard('gone');
+    await proxy.SearchClipboard('gone');
 } catch (e) {
     silent = e.message;
 }
 check('silence named as such', silent, 'isled did not answer');
 
 proxy.destroy();
-check('unregistered what it registered', bus.unregistered, 7);
+check('unexported what it exported', bus.unexported, true);
 
 if (failures) {
     printerr(`${failures} failed`);
