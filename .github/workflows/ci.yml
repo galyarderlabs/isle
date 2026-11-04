@@ -156,7 +156,9 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: Package
         run: |
+          ls -l data/
           tarball="$(scripts/package.sh | tail -n1)"
+          tar -tzf "$tarball" | grep 'data/' || true
           scripts/package-system.sh "$tarball"
       - uses: actions/upload-artifact@v4
         with:
