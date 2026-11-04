@@ -166,11 +166,10 @@ async def read(tool: str, interface: str, prop: str):
 
 async def write(tool: str):
     await authorize(tool, write_access=True)
-    if tool not in WRITE_TOOLS:
-        token = get_access_token() if auth else None
-        LOG.warning("MCP write denied: client=%s tool=%s", token.client_id if token else "loopback", tool)
-        raise PermissionError(f"{tool} is disabled; add it to ISLE_MCP_WRITE_TOOLS to allow it")
     token = get_access_token() if auth else None
+    if token is None and tool not in WRITE_TOOLS:
+        LOG.warning("MCP write denied: client=loopback tool=%s", tool)
+        raise PermissionError(f"{tool} is disabled; add it to ISLE_MCP_WRITE_TOOLS to allow it")
     LOG.info("MCP write tool called: client=%s tool=%s", token.client_id if token else "loopback", tool)
 
 

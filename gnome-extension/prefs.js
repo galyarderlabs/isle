@@ -474,8 +474,7 @@ export default class IslePreferences extends ExtensionPreferences {
             readAccess.add_row(row);
             return [scope, row];
         });
-        const writeAccess = new Adw.ExpanderRow({title: 'Write actions',
-            subtitle: 'Off · server allowlist also required'});
+        const writeAccess = new Adw.ExpanderRow({title: 'Write actions', subtitle: 'Off'});
         const writeRows = writeScopes.map(([scope, title]) => {
             const row = new Adw.SwitchRow({title});
             writeAccess.add_row(row);
@@ -488,8 +487,8 @@ export default class IslePreferences extends ExtensionPreferences {
             readAccess.subtitle = allRead.active ? 'All Isle data, read only'
                 : selectedReads ? `${selectedReads} data ${selectedReads === 1 ? 'area' : 'areas'}` : 'None selected';
             writeAccess.subtitle = selectedWrites
-                ? `${selectedWrites} action ${selectedWrites === 1 ? 'area' : 'areas'} · server allowlist also required`
-                : 'Off · server allowlist also required';
+                ? `${selectedWrites} action ${selectedWrites === 1 ? 'area' : 'areas'}`
+                : 'Off';
         };
         allRead.connect('notify::active', () => {
             if (allRead.active)
