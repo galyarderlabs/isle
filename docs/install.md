@@ -308,7 +308,7 @@ one-line install above:
 ```sh
 sudo pacman -S --needed base-devel git
 git clone --depth 1 https://github.com/galyarderlabs/notchfolk.git
-cd isle/packaging/aur
+cd notchfolk/packaging/aur
 makepkg -si
 # Log out and back in, then:
 gnome-extensions enable isle@zickrian.github.io
@@ -347,7 +347,7 @@ sudo apt install git build-essential pkg-config libgtk-4-dev cmake libclang-dev 
 # Fedora: git gcc-c++ pkgconf gtk4-devel cmake clang-devel vulkan-loader-devel glslc
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 git clone https://github.com/galyarderlabs/notchfolk.git
-cd isle
+cd notchfolk
 ./install.sh
 ```
 
