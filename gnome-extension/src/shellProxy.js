@@ -9,7 +9,7 @@
 import Gio from 'gi://Gio';
 
 const NAME = 'io.galyarderlabs.notchfolk.Shell1';
-const PATH = '/io/github/galyarderlabs/notchfolk/Shell';
+const PATH = '/io/galyarderlabs/notchfolk/Shell';
 
 const XML = `<node><interface name="${NAME}">
     <method name="GetAppStats"><arg type="s" direction="out"/></method>

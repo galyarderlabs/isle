@@ -43,7 +43,7 @@ const daemon = {
 
 const proxy = new ShellProxy(daemon, bus);
 check('exported once, on the given bus and path',
-    exported.map(({connection, path}) => [connection === bus, path]), [[true, '/io/github/galyarderlabs/notchfolk/Shell']]);
+    exported.map(({connection, path}) => [connection === bus, path]), [[true, '/io/galyarderlabs/notchfolk/Shell']]);
 check('the exported implementation is the proxy itself', exported[0].impl === proxy, true);
 check('a proxy with the three methods',
     ['GetAppStats', 'SearchClipboard', 'GetClipboardText'].every(name => typeof proxy[name] === 'function'),

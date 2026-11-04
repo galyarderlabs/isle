@@ -21,7 +21,7 @@ import {paintRim} from './src/glow.js';
 import * as WorldClocks from './src/worldClocks.js';
 
 const DAEMON = 'io.galyarderlabs.notchfolk.Daemon';
-const DAEMON_PATH = '/io/github/galyarderlabs/notchfolk/Daemon';
+const DAEMON_PATH = '/io/galyarderlabs/notchfolk/Daemon';
 const POMODORO_INTERFACE = 'io.galyarderlabs.notchfolk.Pomodoro1';
 const CLIPBOARD_INTERFACE = 'io.galyarderlabs.notchfolk.Clipboard1';
 const AGENTS_INTERFACE = 'io.galyarderlabs.notchfolk.Agents1';

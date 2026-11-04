@@ -15,7 +15,7 @@ import * as Signals from 'resource:///org/gnome/shell/misc/signals.js';
 import {px, uiScale} from './compat.js';
 
 const BUS_NAME = 'io.galyarderlabs.notchfolk.ShelfWindow';
-const OBJECT_PATH = '/io/github/galyarderlabs/notchfolk/ShelfWindow';
+const OBJECT_PATH = '/io/galyarderlabs/notchfolk/ShelfWindow';
 const ShelfWindowProxy = Gio.DBusProxy.makeProxyWrapper(`
 <node><interface name="io.galyarderlabs.notchfolk.ShelfWindow1">
   <method name="Show">

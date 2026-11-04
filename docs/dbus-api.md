@@ -1,7 +1,7 @@
 # notchfolkd D-Bus API
 
 `notchfolkd` owns `io.galyarderlabs.notchfolk.Daemon` on the session bus and serves every
-interface at `/io/github/galyarderlabs/notchfolk/Daemon`. State is exposed as read-only string
+interface at `/io/galyarderlabs/notchfolk/Daemon`. State is exposed as read-only string
 properties holding JSON, with `PropertiesChanged` emitted on every change.
 Timestamps are milliseconds since the Unix epoch; durations are
 milliseconds unless the name says `_us` (microseconds).
@@ -435,7 +435,7 @@ Whether a newer Notchfolk is out: GitHub's latest release, looked up at most onc
 ## io.galyarderlabs.notchfolk.ShelfWindow1
 
 Served by `notchfolk-shelf` (not `notchfolkd`) as `io.galyarderlabs.notchfolk.ShelfWindow` at
-`/io/github/galyarderlabs/notchfolk/ShelfWindow`.
+`/io/galyarderlabs/notchfolk/ShelfWindow`.
 
 | Member | | |
 |---|---|---|

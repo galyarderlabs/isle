@@ -61,7 +61,7 @@ use crate::usage::UsageService;
 use crate::water::WaterService;
 
 const BUS_NAME: &str = "io.galyarderlabs.notchfolk.Daemon";
-const OBJECT_PATH: &str = "/io/github/galyarderlabs/notchfolk/Daemon";
+const OBJECT_PATH: &str = "/io/galyarderlabs/notchfolk/Daemon";
 /// Songs whose cover and lyrics stay cached.
 const CACHED_SONGS: usize = 500;
 

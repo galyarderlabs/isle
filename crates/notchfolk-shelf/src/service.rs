@@ -82,7 +82,7 @@ const INTERFACE: &str = r#"
 
 /// The largest scale `SetScale` takes.
 const MAX_SCALE: i32 = 4;
-const OBJECT_PATH: &str = "/io/github/galyarderlabs/notchfolk/ShelfWindow";
+const OBJECT_PATH: &str = "/io/galyarderlabs/notchfolk/ShelfWindow";
 const INTERFACE_NAME: &str = "io.galyarderlabs.notchfolk.ShelfWindow1";
 
 /// Exports the interface on `connection`.

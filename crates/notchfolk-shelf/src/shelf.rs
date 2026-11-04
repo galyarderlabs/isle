@@ -15,7 +15,7 @@ use serde::Deserialize;
 use crate::{service, tile, x11};
 
 const DAEMON: &str = "io.galyarderlabs.notchfolk.Daemon";
-const DAEMON_PATH: &str = "/io/github/galyarderlabs/notchfolk/Daemon";
+const DAEMON_PATH: &str = "/io/galyarderlabs/notchfolk/Daemon";
 const SHELF_INTERFACE: &str = "io.galyarderlabs.notchfolk.Shelf1";
 /// The island's own shelf icon, so the empty shelf looks the same in both, whatever the icon theme.
 const SHELF_ICON: &[u8] = include_bytes!("../../../gnome-extension/icons/notchfolk-shelf.svg");

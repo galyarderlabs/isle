@@ -10,7 +10,7 @@ import GLib from 'gi://GLib';
 import * as Signals from 'resource:///org/gnome/shell/misc/signals.js';
 
 const BUS_NAME = 'io.galyarderlabs.notchfolk.Daemon';
-const OBJECT_PATH = '/io/github/galyarderlabs/notchfolk/Daemon';
+const OBJECT_PATH = '/io/galyarderlabs/notchfolk/Daemon';
 
 // One notchfolkd interface's introspection XML.
 const node = (name, body) =>

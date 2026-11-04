@@ -18,9 +18,9 @@ from dbus_next.aio import MessageBus
 from notchfolk_oauth import NotchfolkOAuthProvider
 
 BUS = "io.galyarderlabs.notchfolk.Daemon"
-PATH = "/io/github/galyarderlabs/notchfolk/Daemon"
+PATH = "/io/galyarderlabs/notchfolk/Daemon"
 SHELL_BUS = "org.gnome.Shell"
-SHELL_PATH = "/io/github/galyarderlabs/notchfolk/Shell"
+SHELL_PATH = "/io/galyarderlabs/notchfolk/Shell"
 SHELL_INTERFACE = "io.galyarderlabs.notchfolk.Shell1"
 WRITE_TOOLS = {item.strip() for item in os.getenv("NOTCHFOLK_MCP_WRITE_TOOLS", "").split(",") if item.strip()}
 HOST = os.getenv("NOTCHFOLK_MCP_HOST", "127.0.0.1")
