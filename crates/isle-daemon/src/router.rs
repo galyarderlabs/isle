@@ -446,11 +446,9 @@ pub async fn run(iface: InterfaceRef<RouterService>, refresh: Arc<Notify>) {
         if login_attempted {
             last_password_login = Some(tokio::time::Instant::now());
         }
-        if store_session {
-            if let Some(cookie) = session_cookie {
-                let key = session_key(&config.base_url);
-                let _ = tokio::task::spawn_blocking(move || write_credential(&key, &cookie)).await;
-            }
+        if store_session && let Some(cookie) = session_cookie {
+            let key = session_key(&config.base_url);
+            let _ = tokio::task::spawn_blocking(move || write_credential(&key, &cookie)).await;
         }
         let state = match result {
             Ok(state) => {
