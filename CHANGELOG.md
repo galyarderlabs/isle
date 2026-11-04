@@ -24,8 +24,8 @@ the clipboard, and installs and updates come from this repository.
 
 ### Changed
 
-- **Installs and update checks come from `galyarderlabs/isle`.** An upstream release no longer shows up as an update
-  that would overwrite this build.
+- **Installs and update checks come from this repository (`galyarderlabs/notchfolk`).** An upstream release no longer
+  shows up as an update that would overwrite this build.
 
 ## [1.6.0] - 2026-11-03
 

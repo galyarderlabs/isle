@@ -150,7 +150,7 @@ your windows uncovered.
 1. Run this in a terminal:
 
    ```sh
-   curl -fsSL https://raw.githubusercontent.com/galyarderlabs/isle/main/get.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/galyarderlabs/notchfolk/main/get.sh | bash
    ```
 
 2. **Log out and back in**: GNOME Shell on Wayland only loads a new

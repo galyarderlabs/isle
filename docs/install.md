@@ -307,7 +307,7 @@ one-line install above:
 
 ```sh
 sudo pacman -S --needed base-devel git
-git clone --depth 1 https://github.com/galyarderlabs/isle.git
+git clone --depth 1 https://github.com/galyarderlabs/notchfolk.git
 cd isle/packaging/aur
 makepkg -si
 # Log out and back in, then:
@@ -321,7 +321,7 @@ above, which would add a second copy in your home folder.
 A copy installed with the command above, in your home folder, takes
 precedence over a system-wide package; `isle-uninstall` removes it and the
 package's takes over. Releases can be checked with
-`gh attestation verify <file> --repo galyarderlabs/isle` (see
+`gh attestation verify <file> --repo galyarderlabs/notchfolk` (see
 [SECURITY.md](../SECURITY.md#verifying-a-release)).
 
 <details>
@@ -346,7 +346,7 @@ the GPU the Vulkan headers and glslc:
 sudo apt install git build-essential pkg-config libgtk-4-dev cmake libclang-dev libvulkan-dev glslc
 # Fedora: git gcc-c++ pkgconf gtk4-devel cmake clang-devel vulkan-loader-devel glslc
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-git clone https://github.com/galyarderlabs/isle.git
+git clone https://github.com/galyarderlabs/notchfolk.git
 cd isle
 ./install.sh
 ```

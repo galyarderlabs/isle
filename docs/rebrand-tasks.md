@@ -195,10 +195,10 @@ verification without replacing historical upstream release records.
 
 **Acceptance criteria:**
 - [ ] Clean install and update use only Galyarder Labs artifacts.
-      (Started now: `get.sh` and the daemon's latest-version check point at
-      `galyarderlabs/isle` — until that repository has Releases with the
-      `isle-*-linux.tar.gz` assets, installs and update checks find nothing,
-      which is safe: the checker just retries later.)
+      (Started: `get.sh` and the daemon's latest-version check point at the
+      repository's final slug, `galyarderlabs/notchfolk` — until it has Releases
+      with the `isle-*-linux.tar.gz` assets, installs and update checks find
+      nothing, which is safe: the checker just retries later.)
 - [ ] Package upgrade/uninstall removes only files owned by the new package.
 - [ ] Release workflow publishes source and correctly named artifacts from the
   standalone repository.

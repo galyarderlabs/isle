@@ -11,10 +11,10 @@ runtime rebrand must match them (and any change there is a one-line edit here):
 
 | | Isle | Notchfolk |
 |---|---|---|
-| Extension UUID | `isle@zickrian.github.io` | `notchfolk@galyarderlabs.github.io` |
+| Extension UUID | `isle@zickrian.github.io` | `io.galyarderlabs.notchfolk` |
 | Settings schema | `org.gnome.shell.extensions.isle` | `org.gnome.shell.extensions.notchfolk` |
-| D-Bus names | `io.github.zickrian.isle.*` | `io.github.galyarderlabs.notchfolk.*` |
-| Keyring service | `io.github.zickrian.isle` | `io.github.galyarderlabs.notchfolk` |
+| D-Bus names | `io.github.zickrian.isle.*` | `io.galyarderlabs.notchfolk.*` |
+| Keyring service | `io.github.zickrian.isle` | `io.galyarderlabs.notchfolk` |
 | Services | `isled.service`, `isle-mcp.service` | `notchfolkd.service`, `notchfolk-mcp.service` |
 | Folders | `~/.local/share/isle`, `~/.config/isle`, `~/.cache/isle`, `~/.local/state/isle` | the same with `notchfolk` |
 

@@ -1,7 +1,9 @@
 # Galyarder Labs Rebrand Plan
 
-This plan covers the future product rebrand of the standalone public repository
-[`galyarderlabs/isle`](https://github.com/galyarderlabs/isle). The repository
+This plan covers the product rebrand of the standalone public repository
+[`galyarderlabs/notchfolk`](https://github.com/galyarderlabs/notchfolk) (renamed
+from `galyarderlabs/isle` on 2026-11-04, ahead of the formal trademark check,
+by the owner's call; GitHub redirects the old name in the meantime). The repository
 is no longer a GitHub fork, but the app, docs, and runtime identifiers still
 use Isle's original identity. The work is tracked in
 [rebrand-tasks.md](rebrand-tasks.md).
@@ -29,8 +31,8 @@ been changed by this plan.
 
 ## Current baseline
 
-- Repository: public, standalone `galyarderlabs/isle`; local `origin` points to
-  this repository.
+- Repository: public, standalone `galyarderlabs/notchfolk`; local `origin` points
+  to this repository.
 - Source lineage: based on [zickrian/isle](https://github.com/zickrian/isle),
   with the fork's accumulated UI, feature, and integration changes.
 - License: `GPL-3.0-or-later` in `Cargo.toml` and the root `LICENSE`.
@@ -52,9 +54,10 @@ been changed by this plan.
    in-place replacement with a one-time migration; side-by-side installs need
    fully separate settings, data, services, and D-Bus names.
 4. **Repository and release identity:** final GitHub slug, homepage, issue
-   tracker, release tag sequence, package names, and update feed. The existing
-   `galyarderlabs/isle` repository can be renamed after the product slug is
-   chosen.
+   tracker, release tag sequence, package names, and update feed. The repository
+   is renamed to the settled slug `galyarderlabs/notchfolk`; the formal
+   trademark and domain check on "Notchfolk" still gates the first public
+   rebranded release.
 5. **Attribution wording:** how the About page and README state that the
    project is a modified derivative of Isle by zickrian.
 
@@ -139,5 +142,5 @@ unchanged unless a separate migration is necessary and tested.
 - The existing local installation upgrades without losing settings, credentials,
   or Isle-owned data, and no duplicate extension/daemon remains.
 - Upstream attribution, GPL-3.0-or-later, and third-party notices remain intact.
-- The new release is reproducible from `galyarderlabs/isle` and its source is
-  available under the declared license.
+- The new release is reproducible from `galyarderlabs/notchfolk` and its source
+  is available under the declared license.

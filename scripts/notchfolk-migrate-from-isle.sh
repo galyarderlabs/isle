@@ -8,11 +8,11 @@ set -euo pipefail
 OLD_APP=isle
 NEW_APP=notchfolk
 OLD_UUID="isle@zickrian.github.io"
-NEW_UUID="notchfolk@galyarderlabs.github.io"
+NEW_UUID="io.galyarderlabs.notchfolk"
 OLD_SCHEMA="org.gnome.shell.extensions.isle"
 NEW_SCHEMA="org.gnome.shell.extensions.notchfolk"
 OLD_BUS="io.github.zickrian.isle"
-NEW_BUS="io.github.galyarderlabs.notchfolk"
+NEW_BUS="io.galyarderlabs.notchfolk"
 NEW_DAEMON=notchfolkd
 OLD_UNITS=(isled.service isle-mcp.service)
 NEW_UNITS=(notchfolkd.service notchfolk-mcp.service)
