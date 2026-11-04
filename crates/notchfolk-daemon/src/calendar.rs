@@ -423,7 +423,7 @@ fn new_uid(now: DateTime<Utc>) -> String {
 }
 
 /// One of Notchfolk's own events as iCalendar with `uid`, as `ical_event` makes it from its line of text.
-fn ical_of(event: &Event, uid: &str) -> Option<String> {
+fn ical_of(event: &Event, event_id: &str) -> Option<String> {
     let day = NaiveDate::parse_from_str(&event.date, "%Y-%m-%d").ok()?;
     let minutes = |time: &String| {
         let (hours, minutes) = time.split_once(':')?;
@@ -434,7 +434,7 @@ fn ical_of(event: &Event, uid: &str) -> Option<String> {
         start: event.start.as_ref().and_then(minutes),
         end: event.end.as_ref().and_then(minutes),
     };
-    ical_event(day, &parsed, &Local, Utc::now(), uid)
+    ical_event(day, &parsed, &Local, Utc::now(), event_id)
 }
 
 /// An event as iCalendar for a desktop calendar: all day, or from its start in `zone` to its end (an
