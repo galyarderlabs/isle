@@ -123,6 +123,9 @@ install -Dm755 scripts/notchfolk-mcp "$BINDIR/notchfolk-mcp"
 install -Dm755 scripts/notchfolk-mcp-keygen "$BINDIR/notchfolk-mcp-keygen"
 install -Dm755 scripts/notchfolk-mcp-tunnel "$BINDIR/notchfolk-mcp-tunnel"
 install_service notchfolk-mcp.service "$CONFIG/systemd/user"
+# Replaced, not merged into: an Isle-era copy left here (a hand move can put one back)
+# would keep running as the MCP server under the old bus name.
+rm -rf "$DATA/notchfolk/mcp"
 mkdir -p "$DATA/notchfolk/mcp"
 cp -r mcp/. "$DATA/notchfolk/mcp/"
 # Sets a lasting battery charge limit; the assistant types it into a terminal when asked.
