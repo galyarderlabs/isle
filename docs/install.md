@@ -183,14 +183,14 @@ assistant is set up per user as above, with `notchfolk-setup-voice`.
 
 ### Arch Linux
 
-Notchfolk is not in the AUR yet, so `yay -S isle-bin` or `paru -S isle-bin` finds nothing. Either use
-the one-line install (step 2), or build the `isle-bin` package from the `PKGBUILD` in
-[`packaging/aur`](../packaging/aur), made from the release tarball:
+On Arch, `yay -S notchfolk-bin` or `paru -S notchfolk-bin` installs the AUR package, built from the
+release tarball by the `PKGBUILD` in [`packaging/aur`](../packaging/aur). Building it straight from
+this repository works too:
 
 ```sh
 sudo pacman -S --needed base-devel git
-git clone --depth 1 https://github.com/zickrian/isle.git
-cd isle/packaging/aur
+git clone --depth 1 https://github.com/galyarderlabs/notchfolk.git
+cd notchfolk/packaging/aur
 makepkg -si
 # Log out and back in, then:
 gnome-extensions enable io.galyarderlabs.notchfolk

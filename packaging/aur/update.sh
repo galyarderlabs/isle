@@ -7,7 +7,7 @@ set -euo pipefail
 
 VERSION="${1:?usage: $0 <version>}"
 cd "$(dirname "$0")"
-URL="https://github.com/zickrian/isle/releases/download/v$VERSION/isle-$VERSION-x86_64-linux.tar.gz"
+URL="https://github.com/galyarderlabs/notchfolk/releases/download/v$VERSION/notchfolk-$VERSION-x86_64-linux.tar.gz"
 SUM="$(curl -fsSL "$URL.sha256" | cut -d' ' -f1)"
 [[ "$SUM" =~ ^[0-9a-f]{64}$ ]] || { echo "No checksum found at $URL.sha256" >&2; exit 1; }
 
