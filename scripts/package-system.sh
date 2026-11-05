@@ -14,7 +14,7 @@ FORMATS=("$@")
 cd "$(dirname "$0")/.."
 umask 022
 UUID="io.galyarderlabs.notchfolk"
-MAINTAINER="zickrian <espejodaniel50@gmail.com>"
+MAINTAINER="Galyarder Labs <contact@galyarderlabs.com>"
 SUMMARY="Notchfolk: Living desktop notch and AI companion for GNOME Shell with MCP"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT

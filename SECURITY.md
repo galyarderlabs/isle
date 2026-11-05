@@ -15,9 +15,8 @@ reporting.
 Please do not report security problems in public issues.
 
 Report them privately instead, through **Security → Report a vulnerability**
-on this repository, or by contacting the maintainer,
-[@zickrian](https://github.com/zickrian), through the contact details on that
-GitHub profile.
+on this repository, or by contacting the maintainer, Galyarder Labs, at
+contact@galyarderlabs.com.
 
 Include what you found, how to reproduce it, and what an attacker could do
 with it. You will get a reply within 7 days. Once a fix is released, you are
