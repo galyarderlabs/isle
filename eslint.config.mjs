@@ -71,7 +71,7 @@ export default [
     {ignores: ['target/', 'dist/']},
     {
         files: ['gnome-extension/**/*.js'],
-        plugins: {isle: {rules: {'no-shadow-global': noShadowGlobal}}},
+        plugins: {notchfolk: {rules: {'no-shadow-global': noShadowGlobal}}},
         languageOptions: {
             ecmaVersion: 'latest',
             sourceType: 'module',
@@ -89,7 +89,7 @@ export default [
                 caughtErrors: 'none',
             }],
             'no-empty': ['error', {allowEmptyCatch: true}],
-            'isle/no-shadow-global': 'error',
+            'notchfolk/no-shadow-global': 'error',
             'no-redeclare': ['error', {builtinGlobals: true}],
             'no-self-compare': 'error',
             'no-template-curly-in-string': 'error',
