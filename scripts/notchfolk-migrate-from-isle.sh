@@ -62,10 +62,18 @@ move_dir() {
             run cp -a "$from/." "$to/" && run rm -rf "$from"
             return 0
         fi
-        if [ -z "$(ls -A "$to" | grep -vFx -e install.lock -e README.md -e mcp.md)" ]; then
+        local only_installers=true entry
+        for entry in "$to"/*; do
+            [ -e "$entry" ] || continue
+            case "${entry##*/}" in
+                install.lock | README.md | mcp.md) ;;
+                *) only_installers=false; break ;;
+            esac
+        done
+        if $only_installers; then
             say "note: $to only holds the installer's own files; setting them aside for the move"
             if ! $DRY_RUN; then mkdir -p "$BACKUP"; fi
-            for entry in "$to"/install.lock "$to"/README.md "$to"/mcp.md; do
+            for entry in "$to"/*; do
                 [ -e "$entry" ] && run mv "$entry" "$BACKUP/"
             done
             run rmdir "$to"
