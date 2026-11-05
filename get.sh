@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2026 zickrian
+# Copyright (C) 2026 Galyarder Labs
 # Installs the latest ready-built Notchfolk release into the user's home folder, usually piped from curl.
 # NOTCHFOLK_VERSION=1.0.5 picks a release, NOTCHFOLK_PACKAGE=<tarball> installs a downloaded one, NOTCHFOLK_FORCE=1 any GNOME.
 set -euo pipefail

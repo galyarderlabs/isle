@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // The Shelf page: Clipboard (copy history; Super+V to search, ← → Enter to paste),
 // Files (dropped files to drag or copy into any app) and, while sharing, Phone (a QR code to scan).

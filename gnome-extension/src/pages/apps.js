@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // App usage: time in each application today, or over the last seven or 30 days, most used first.
 // The extension times focus changes and notchfolkd keeps the days (see appUsage.js and AppUsage1).

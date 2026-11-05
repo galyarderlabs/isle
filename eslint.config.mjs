@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // ESLint for the GNOME Shell extension: `npm ci && npx eslint`. Correctness rules only,
 // after gnome-shell's own lint/eslintrc-gjs.yml; formatting is left to review.

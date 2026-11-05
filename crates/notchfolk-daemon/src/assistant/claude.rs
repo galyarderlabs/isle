@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Claude Code (`claude`) in stream-json print mode, with the user's own sign-in: one process per
 //! conversation, kept to the web tools, without the user's settings, hooks, memory or MCP servers.

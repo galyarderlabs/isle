@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // World clocks: the cities of GNOME's World Clocks (the calendar menu's, kept in step with the Clocks app).
 

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // The island itself: a black shape hanging from the top bar that springs between sizes and
 // cross-fades views. On a bar that is not black it hangs from the screen's top edge, like a notch.

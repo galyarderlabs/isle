@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Battery, network and Bluetooth status from the system bus, and events
 //! when they change (charger plugged in, Wi-Fi lost, earbuds connected...).

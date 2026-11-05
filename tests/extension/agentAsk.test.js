@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // The agent ask's card rules, which need no GNOME: `node --test tests/extension/*.test.js`.
 

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! "Remind me in ten minutes": reminders kept until shown, so one due while the
 //! screen was locked still shows afterwards.

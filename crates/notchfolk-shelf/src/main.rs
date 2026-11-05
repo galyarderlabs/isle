@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! `notchfolk-shelf`: the shelf's drag-and-drop window, as Shell widgets can't DnD with apps.
 //! An X11 override-redirect window: the only kind GNOME Shell stacks above the island.

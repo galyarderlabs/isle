@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Evolution Data Server, where GNOME keeps the desktop's calendars (its own and those of Online Accounts
 //! such as Google): opening one for notchfolkd, and the calendars a new event can go to.

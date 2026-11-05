@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Mic, camera (from notchfolkd), screen sharing and recording; all event driven.
 // Mic streams that only meter input (sound settings) are ignored, as GNOME does, and so are those that record

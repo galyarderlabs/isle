@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Decides when a spoken request ends: speech starts above the room's noise,
 //! and a pause after it (or a long silence before it) ends the recording.

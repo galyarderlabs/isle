@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! The conversation the island shows: what the user said, the commands that ran, and the answers. Only the
 //! current one is kept (chat.json), deleted with the AI's copy at midnight or once quiet as long as Settings says.

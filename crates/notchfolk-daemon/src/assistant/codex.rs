@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Codex as an app server with the user's sign-in: one process per conversation, kept up between turns so a
 //! reply needs no start-up. Read-only with web search, in a home of its own apart from the user's chats.

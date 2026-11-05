@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Short-lived alerts the island grows to show. An alert has a key (same key replaces), an icon, art, ring or bot, a
 // title and subtitle, tone, a value or level, actions, duration and priority; `setAlert` reads the rest.

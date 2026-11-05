@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! The Devices1 D-Bus object: what the island asks of a GSConnect device —
 //! ring it, send it the clipboard, send it a file. Each call goes to the

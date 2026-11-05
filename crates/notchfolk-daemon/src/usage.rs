@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! AI plan usage for the island: Claude's, ChatGPT's and Grok's limits, read where each CLI's /usage or
 //! /status reads them (Codex's session logs fill in). Warns once as a limit nears.

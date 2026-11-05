@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Codex: `notchfolkd --agent-hook codex` hooks in hooks.json for approvals and done. A Codex before 0.124 gets
 //! a `notify` in config.toml instead (done alone), and only when no other program has it.

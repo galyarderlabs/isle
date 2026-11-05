@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Notifications: a heading with Do Not Disturb and Clear (and, while it is on, what still gets through),
 // over a list of cards, newest first. Click one to open it. See docs/product-spec.md.

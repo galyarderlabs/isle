@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // The few places GNOME Shell 46 to 51 differ for Notchfolk, so the rest of the
 // code reads the same on all of them.

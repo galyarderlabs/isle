@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Square previews and colours for shelf files, decoded on a worker thread and
 // cached as small PNGs in ~/.cache/notchfolk/shelf.

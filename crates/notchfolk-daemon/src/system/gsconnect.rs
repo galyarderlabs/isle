@@ -1,4 +1,5 @@
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! GSConnect's paired devices on the session bus: their battery, read when
 //! GSConnect says a device changed, never on a timer. With GSConnect missing

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Now-playing information and playback control for whichever MPRIS player
 //! (Spotify, browsers, mpv, ...) is currently active, plus its lyrics.

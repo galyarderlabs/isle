@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Whether a camera is in use, counted from inotify opens and closes of `/dev/video*`.
 //! A change only counts after [`SETTLE`], to ignore quick probes by udev or PipeWire.

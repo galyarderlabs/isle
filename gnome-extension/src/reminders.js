@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Shows notchfolkd's reminders when they are due. notchfolkd keeps them until shown, so one that fell due
 // while the screen was locked (and Notchfolk was off) shows as soon as Notchfolk is back.

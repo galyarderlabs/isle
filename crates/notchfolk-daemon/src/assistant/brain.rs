@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! The assistant's "brain": whichever AI provider the user has and picked, behind one face. Each CLI runs with
 //! the user's own sign-in, kept to answering; notchfolkd runs the tools and actions itself.

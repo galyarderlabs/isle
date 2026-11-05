@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Usage: how much of each AI plan's limits is used (Claude, ChatGPT as Codex saw it, Grok), a bar per
 // limit. One provider at a time, scrolled through like a widget stack; no tab without any.

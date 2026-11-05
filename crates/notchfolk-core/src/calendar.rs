@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Notchfolk's own calendar events, written in one line ("Dinner 8:00 pm").
 //! Times are local wall-clock times; desktop calendars come from GNOME Shell.

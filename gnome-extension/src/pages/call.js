@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // The call going on, with round controls: a live preview of the call's window (you and
 // whoever you call), its app and duration, mute, and a way back. It only has a tab during a call.

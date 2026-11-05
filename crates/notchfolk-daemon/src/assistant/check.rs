@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! `check`: commands that only look (packages, battery, network, sound, logs, hardware), run for the AI without
 //! asking. Only the shapes listed here run, never through a shell, so none can chain, write or change anything.

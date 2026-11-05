@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! A file's tile, one size for all, as in pages/files.js: drag it out, click to copy,
 //! double-click to open, × to remove, ↓ (on a file the shelf keeps itself) to save into Downloads.

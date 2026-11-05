@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! LLM router usage for the island: what an AI gateway running here or over the network reports —
 //! requests, tokens in and out, and the cost it estimates. Everything behind one trait, so another

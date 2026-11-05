@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2026 zickrian
+# Copyright (C) 2026 Galyarder Labs
 # Makes system-wide .deb and .rpm packages in dist/ from a release tarball (scripts/package.sh's output).
 # Usage: scripts/package-system.sh <tarball> [deb] [rpm]; the .deb needs dpkg-dev, the .rpm rpmbuild and file.
 set -euo pipefail

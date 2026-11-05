@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2026 zickrian
+# Copyright (C) 2026 Galyarder Labs
 # Run as root in a throwaway container: installs an Notchfolk package (tarball, .deb, .rpm or Arch) and a headless
 # GNOME Shell as "tester", failing on any "JS ERROR", the extension not loading, or notchfolkd never on the bus.
 set -euo pipefail

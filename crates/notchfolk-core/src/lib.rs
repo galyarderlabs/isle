@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Platform-independent core of Notchfolk: no D-Bus, GTK or network, so every rule that decides
 //! what the island shows can be unit tested in isolation.

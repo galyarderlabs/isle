@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Browsers report nothing for a moment between videos; a short gap after a playing
 //! song is shown as still playing, so the island stays steady. Real pauses show at once.

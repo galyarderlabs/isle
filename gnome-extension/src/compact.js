@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // The resting island: live statuses spread either side of the clock and the rest date, which flank
 // the assistant's attentive face so it stays centred. Disabled pages do not leave their status behind.

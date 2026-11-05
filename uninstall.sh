@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2026 zickrian
+# Copyright (C) 2026 Galyarder Labs
 # Removes everything install.sh and notchfolk-setup-voice put in place. Your shelf, clipboard history,
 # tasks, timer settings and app usage in ~/.local/share/notchfolk are kept; delete that folder to remove them.
 set -uo pipefail

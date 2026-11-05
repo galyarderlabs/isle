@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! The helpers notchfolkd starts for the assistant (AI CLIs, speech recognition): each leads its own process
 //! group at a lower priority, so the desktop stays smooth and nothing they start outlives them.

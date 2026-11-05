@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! The Antigravity CLI (`agy`) in stream-json print mode: one process per voice session,
 //! started while the user speaks so its start-up is hidden, and one turn per request.

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Notchfolk's colour in the top bar's inline style beside other extensions': `node --experimental-default-type=module --test tests/extension/*.test.js`.
 

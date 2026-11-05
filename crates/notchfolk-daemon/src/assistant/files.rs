@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! The assistant's file tools: search by name, a folder's contents, recent files, a small text file
 //! and Chrome's profiles. Bounded in time, depth and size, so none loads the computer for long.

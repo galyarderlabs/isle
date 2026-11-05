@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Lyrics from LRCLIB (<https://lrclib.net>), a free database of synced lyrics,
 //! cached on disk so each song is only looked up once (a song without any, once a week).

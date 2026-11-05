@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Notchfolk's hooks in a JSON hooks file of the shape Claude Code's settings.json and Codex's hooks.json share.
 //! Everything else in the file is left as it was, in its order.

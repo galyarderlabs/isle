@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Cards for the Shelf page's Clipboard tab, pinned first, then newest. Click to copy; on hover: pin,
 // a hand-off (text to Tasks, images and files to Files) and ×. The keyboard can select and paste.

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Clipboard history: hands each copy to notchfolkd, which keeps the list (Clipboard1 in docs/dbus-api.md),
 // and puts items back or pastes them. Lives here: only GNOME Shell can read every app's clipboard on Wayland.

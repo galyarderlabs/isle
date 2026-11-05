@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! AI agent alerts: Claude Code and Codex, once the user turns them on, run `notchfolkd --agent-hook` when
 //! they need the user or finish, and the island shows it. The hooks live in each AI's own config.

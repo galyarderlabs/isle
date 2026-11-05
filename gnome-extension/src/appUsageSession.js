@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // The rules of an app usage session, apart from GNOME: which app is timed and for how long. The
 // extension wires this to focus signals and notchfolkd (see appUsage.js); `node --test` checks it here.

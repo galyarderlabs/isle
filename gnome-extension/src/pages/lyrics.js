@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Synced lyrics: the sung line large and bright, the rest dimmer,
 // pauses as breathing dots. Click a line to jump there.

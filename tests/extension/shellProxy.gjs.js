@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // The Shell-side proxy for the three notchfolkd methods the MCP tools need, against a stub
 // exporter and daemon: `gjs -m tests/extension/shellProxy.gjs.js`.

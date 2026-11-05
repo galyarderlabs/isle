@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! `notchfolkd`: the Notchfolk background service, on the session bus as `io.galyarderlabs.notchfolk.Daemon`.
 //! See `docs/dbus-api.md` for the interfaces.

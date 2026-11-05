@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Turns Do Not Disturb on for focus sessions, and only ever undoes what it did (see focusRules.js).
 // That is saved, so it survives the lock screen (DND stays on) and shell crashes.

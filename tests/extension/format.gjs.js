@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Formatting that needs GLib but not GNOME Shell: `gjs -m tests/extension/format.gjs.js`.
 

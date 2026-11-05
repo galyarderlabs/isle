@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! opencode (`opencode run`) with the user's own providers: one run per turn, resumed, every tool but web
 //! search denied, in folders of its own so its chats never mix with the user's. Its words come as each step ends.

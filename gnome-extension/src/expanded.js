@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // The open island: a header row inside the top bar (clock left, tabs centred,
 // live activity right) above one page at a time. See docs/product-spec.md, section 5.

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2026 zickrian
+# Copyright (C) 2026 Galyarder Labs
 # Sets up speech recognition for Notchfolk's voice assistant: downloads the whisper.cpp model, checking its SHA-256.
 # Usage: notchfolk-setup-voice [tiny|base|small|medium] [--remove-old]
 #   The model given (then also chosen in Settings → Assistant), else the one chosen there, else small.

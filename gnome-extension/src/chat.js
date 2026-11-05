@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // The conversation above the assistant's pill (what you said in bubbles, its answers, the commands it ran),
 // and the card that asks before a command that changes the system runs.

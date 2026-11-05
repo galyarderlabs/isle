@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Who may call what: the methods that read the user's clipboard or steer the assistant (which can type
 //! and open things) answer GNOME Shell, where the extension runs, and no other program on the bus.

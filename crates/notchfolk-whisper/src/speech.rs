@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Speech to text with whisper.cpp: Silero finds where someone speaks, Whisper writes it down in
 //! the language it sounds most like among those allowed, and phrases made up from noise are dropped.

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Notchfolk: a notch-style island for the GNOME top bar. The extension only draws;
 // notchfolkd (the Rust daemon) tracks media, timers and system state over D-Bus.

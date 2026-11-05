@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // A call in any app (WhatsApp, Telegram, Meet in a browser…): a call app, or a browser on a call's page,
 // holding the microphone; the window it runs in, and the microphone's mute. Event driven, like privacy.js.

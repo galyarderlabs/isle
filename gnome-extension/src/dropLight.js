@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // The shelf's light while a file is dragged in: dark until the file is over the drop zone, it rises from
 // the island's bottom edge, flares in the file's own colour as it lands, then sinks away.

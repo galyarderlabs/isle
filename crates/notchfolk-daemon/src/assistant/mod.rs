@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! The voice assistant: turns a request into text and lets the AI the user picked answer it step by step,
 //! also once the island closes. Nothing runs between requests.

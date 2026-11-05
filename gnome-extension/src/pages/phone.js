@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // The Shelf's Phone tab while sharing with a phone: the QR code notchfolkd made, what to do with it, the phones
 // that ask to connect (Allow or Deny here too) and what to know about the network.

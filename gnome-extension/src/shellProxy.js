@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // notchfolkd answers only GNOME Shell for app usage and the clipboard's full texts (see
 // crates/notchfolk-daemon/src/caller.rs), and the MCP server is a program of its own. This exports

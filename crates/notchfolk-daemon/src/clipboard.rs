@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Clipboard history over D-Bus: the shell reports copies, notchfolkd keeps the list and images.
 //! Images are stored once per hash in `~/.local/share/notchfolk/clips`, each with a thumbnail.

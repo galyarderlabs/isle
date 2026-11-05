@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // App usage: times the application in front and sends its stretches to notchfolkd, which keeps the days.
 // Event driven: focus changes, the five-minute idle pause and its wake, and the Apps page asking move

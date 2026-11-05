@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 caffeinepx
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Grok (`grok`) in headless print mode, with the user's own sign-in: one run per turn, resumed, kept to
 //! the web tools, in a home of its own so its chats never mix with the user's. Its words stream as they come.

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Decides what the island shows and when (compact, peek or expanded); see docs/product-spec.md.
 // Alerts show one at a time; "instant" ones (volume, brightness, critical...) replace what is showing.

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Keeps the Vulkan functions src/vulkan.rs defines private to the program: exported, they would
 //! stand in for the loader's and drivers' own once those are loaded.

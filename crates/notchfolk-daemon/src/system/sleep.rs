@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Waking from suspend, from logind, so the clock's waits can sleep to their deadline (see `clock::resumed`),
 //! and whether the screen is locked, for work nobody would see meanwhile (see `locked`).

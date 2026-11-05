@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Vulkan loaded only when there: defining ggml's three direct calls here keeps libvulkan.so.1 off the
 //! needed libraries. Without it (or with `--cpu`) it answers like a loader with no driver, so ggml uses the CPU.

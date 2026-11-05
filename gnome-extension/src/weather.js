@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Current conditions for the compact island. GWeather fetches asynchronously; this watcher
 // only updates while the closed island is mapped, then stops its timer and request when hidden.

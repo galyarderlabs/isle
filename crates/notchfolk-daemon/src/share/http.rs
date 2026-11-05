@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Just enough HTTP/1.1 for phone sharing: one request per connection, read with `httparse`, bodies only
 //! by `Content-Length` (no chunks), and every answer with the same strict headers.

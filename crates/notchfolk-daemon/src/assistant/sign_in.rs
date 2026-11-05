@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! The user's sign-in, linked into Notchfolk's home for a CLI (Codex, agy). A token the CLI renews there goes
 //! back over the user's, so neither side is left holding one the server has since replaced.

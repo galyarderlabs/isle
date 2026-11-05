@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Meeting links of the desktop's calendar events (Google Meet, Zoom, Teams, Webex), read from Evolution
 //! Data Server, where GNOME Shell's calendar gets them, so the island can offer to join.

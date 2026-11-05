@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Notchfolk's Settings window: GSettings for the island and the assistant, plus what notchfolkd keeps itself
 // (timer lengths, clipboard history, AI models), over D-Bus.

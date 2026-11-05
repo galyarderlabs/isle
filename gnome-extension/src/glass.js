@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // The glass theme's backdrop: copies of what lies under the island (wallpaper, windows, top bar), each redrawn
 // only there, blurred by GNOME Shell's blur and cut to the island's shape by a shader.

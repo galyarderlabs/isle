@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // A small copy of the assistant (see bot.js) for alerts and the closed island, with a status badge on its
 // corner. It holds still between blinks, glances, pointer tracking and brief gestures.

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Cleaning up track metadata so lyric lookups find a match, e.g. YouTube's
 //! "Artist - Song (Official Video)" by "ArtistVEVO" becomes "Song" by "Artist".

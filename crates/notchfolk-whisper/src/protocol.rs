@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! What notchfolkd and the helper say to each other, one JSON object a line: `{"ready", "device"}` once
 //! the model is loaded, then for each request `{"audio": path}` a `{"text"}` or an `{"error"}`.

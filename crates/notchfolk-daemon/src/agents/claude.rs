@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Claude Code: hooks in its settings.json running `notchfolkd --agent-hook claude`: `PermissionRequest` (its
 //! permission prompt, answered from the island), `Notification` (it waits for the user) and `Stop` (done).

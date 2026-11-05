@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // The stretches waiting to go to notchfolkd, apart from GNOME: merge those of one app that touch, and drop
 // flicks too short to be a row. `node --test` checks it; appUsage.js sends them once a minute.

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! What every AI answers with, whichever the user picked: a JSON object of what to say, the actions
 //! Notchfolk runs, whether it is done or wants to see what they did first, and whether to listen again.

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 // Saving a Shelf file the Shelf keeps itself (from the phone, a clipboard picture) into Downloads, and
 // showing it there. Copied by GIO off the shell's thread, so a big video never holds the island up.

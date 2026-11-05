@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! Which models each AI's plan allows, by their own names, and the plan: Claude Code's cached catalog,
 //! Codex's `model/list`, `agy models`, `grok models`, `opencode models`. Looked at only when due (see `due`);

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 zickrian
+// Copyright (C) 2026 Galyarder Labs
 
 //! `notchfolk-whisper`: speech to text for notchfolkd. Says `{"ready": true, "device": …}` once loaded, then
 //! answers each `{"audio": path}` line (raw 16 kHz mono s16le) with `{"text"}` or `{"error"}`.
