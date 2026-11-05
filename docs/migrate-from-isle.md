@@ -20,9 +20,9 @@ runtime rebrand must match them (and any change there is a one-line edit here):
 
 ## What it does, in order
 
-1. **Settings.** Every key of the old schema is read and written to the new one,
-   only when the new schema has the same key with the same type; anything
-   renamed or dropped stays with the old schema's file instead of guessing.
+1. **Settings.** `dconf dump` of the old schema's path is loaded into the new one,
+   carrying every key and value even after the old extension (and its schema) is gone;
+   the new schema's defaults stand in where the old path had nothing.
 2. **Services.** The old user units are stopped, disabled and removed (backed
    up), so no two daemons answer at once; the new units start only if the
    rebranded build already installed them.
@@ -31,7 +31,9 @@ runtime rebrand must match them (and any change there is a one-line edit here):
 4. **State.** The data, config, cache, state and doc folders move (rename, not
    copy): tasks, calendar entries, reminders, water and calorie history, app
    usage, clipboard history with its images, the shelf, `mcp.env`,
-   `mcp-clients.json` and the MCP OAuth database all go with them.
+   `mcp-clients.json` and the MCP OAuth database all go with them. The MCP
+   Python venv cannot survive the move (it holds its own absolute paths), so it
+   is rebuilt with `notchfolk-setup-mcp` and the MCP service restarted.
 5. **Keyring.** The router's password, proxy key and session cookies are read
    from the old service name and stored under the new one (`secret-tool`;
    without it they stay put and signing in again replaces them).

@@ -9,8 +9,9 @@ OLD_APP=isle
 NEW_APP=notchfolk
 OLD_UUID="isle@zickrian.github.io"
 NEW_UUID="io.galyarderlabs.notchfolk"
-OLD_SCHEMA="org.gnome.shell.extensions.isle"
 NEW_SCHEMA="org.gnome.shell.extensions.notchfolk"
+OLD_DCONF="/org/gnome/shell/extensions/isle/"
+NEW_DCONF="/org/gnome/shell/extensions/notchfolk/"
 OLD_BUS="io.github.zickrian.isle"
 NEW_BUS="io.galyarderlabs.notchfolk"
 NEW_DAEMON=notchfolkd
@@ -93,23 +94,16 @@ if ! $DRY_RUN; then
     fi
 fi
 
-# Settings: every key's value and type, read before write, never touching keys Notchfolk dropped.
-if gsettings list-schemas 2>/dev/null | grep -Fxq "$NEW_SCHEMA" \
-    && gsettings list-schemas 2>/dev/null | grep -Fxq "$OLD_SCHEMA"; then
-    new_types=$(gsettings list-recursively "$NEW_SCHEMA")
-    while IFS=' ' read -r key type value; do
-        [ -n "$key" ] || continue
-        want=$(printf '%s\n' "$new_types" | awk -v k="$key" '$1 == k {print $2}')
-        if [ "$want" = "$type" ]; then
-            run gsettings set "$NEW_SCHEMA" "$key" "$value"
-        else
-            say "skip: $key is ${want:-absent} in $NEW_SCHEMA; its value stays with the old schema"
-        fi
-    done <<EOF
-$(gsettings list-recursively "$OLD_SCHEMA")
-EOF
+# Settings: dconf carries them even after the old extension (and its schema) is gone, so
+# the values are read from the old schema's dconf path and written to the new one - every
+# key and value, whatever schemas are installed. The new schema's defaults stay where the
+# old path had nothing.
+old_settings=$(dconf dump "$OLD_DCONF" 2>/dev/null)
+if [ -n "$old_settings" ]; then
+    printf '%s' "$old_settings" | run dconf load "$NEW_DCONF"
+    say "settings copied from $OLD_DCONF to $NEW_DCONF"
 else
-    say "skip: settings need both schemas present ($OLD_SCHEMA and $NEW_SCHEMA)"
+    say "no settings found at $OLD_DCONF (a fresh install, or they were already carried over)"
 fi
 
 # Services: the old names stop first, so no two daemons answer at once; the new
@@ -160,6 +154,19 @@ if [ -f "$env_file" ]; then
         cp -p "$env_file" "$BACKUP/"
     fi
     run sed -i -e 's/ISLE_MCP_/NOTCHFOLK_MCP_/g' "$env_file"
+fi
+
+# The MCP runtime is a Python venv, and a venv holds its own absolute paths inside itself:
+# moved with the data folder, its interpreter no longer points anywhere. It is rebuilt
+# where it now lives, and the service restarted on it.
+if [ -d "$DATA_HOME/$NEW_APP/mcp-venv" ] && command -v notchfolk-setup-mcp >/dev/null; then
+    run notchfolk-setup-mcp
+    if [ -f "$CONFIG_HOME/systemd/user/notchfolk-mcp.service" ]; then
+        run systemctl --user restart notchfolk-mcp.service
+    fi
+else
+    say "note: the MCP runtime was not rebuilt (no venv found, or notchfolk-setup-mcp missing);"
+    say "      if MCP tools fail, run notchfolk-setup-mcp and restart notchfolk-mcp.service"
 fi
 
 # Keyring: the router's password, proxy key and session cookies, read from the old
