@@ -13,6 +13,8 @@ Your desktop notch, alive — GNOME today, Windows and macOS next. Music with sy
 [![Whisper AI](https://img.shields.io/badge/AI-Whisper%20Local-success.svg)](https://github.com/ggerganov/whisper.cpp)
 [![Sponsor](https://img.shields.io/badge/sponsor-support-ff69b4?logo=githubsponsors)](https://github.com/sponsors/galyarderlabs)
 
+![Notchfolk — a little world in your notch](docs/images/banner.png)
+
 </div>
 
 Notchfolk turns the centre of the top bar into a black notch.
