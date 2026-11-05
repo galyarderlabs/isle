@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Galyarder Labs
 
 //! A small local food log. No account or nutrition service is needed.
 

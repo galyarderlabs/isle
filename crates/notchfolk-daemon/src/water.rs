@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Galyarder Labs
 
 use notchfolk_core::water::{MAX_DRINK_ML, MIN_DRINK_ML, WaterLog};
 use zbus::object_server::SignalEmitter;

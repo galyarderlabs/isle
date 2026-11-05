@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Galyarder Labs
 
 //! OpenAI-compatible chat completions used for Hermes' local API and user-configured endpoints.
 //!

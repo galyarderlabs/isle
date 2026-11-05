@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Galyarder Labs
 """OAuth authorization for MCP clients that cannot send static bearer keys."""
 
 from __future__ import annotations

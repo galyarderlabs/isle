@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Galyarder Labs
 
 //! Oh My Pi's newline-delimited RPC runtime. OMP's native coding tools stay enabled; Notchfolk executes its
 //! separate desktop actions from the assistant's answer/action format.

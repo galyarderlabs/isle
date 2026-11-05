@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Galyarder Labs
 
 // A local water log with a daily goal and an hourly view of today's drinks.
 

@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Galyarder Labs
 """MCP tools for Notchfolk's local D-Bus services."""
 
 import asyncio
