@@ -227,3 +227,11 @@ Jérémy Perret, under the MIT License
 from [Lucide](https://lucide.dev)'s "calendar-days", under the ISC License
 ([notice](gnome-extension/NOTICE-lucide.txt)).
 
+---
+
+<div align="center">
+
+[![Give Notchfolk a star](docs/images/footer.png)](https://github.com/galyarderlabs/notchfolk)
+
+</div>
+
