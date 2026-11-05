@@ -6,6 +6,14 @@ All notable changes to Notchfolk are listed here. The format follows
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-05
+
+### Fixed
+
+- **The MCP service in the .deb and .rpm packages** carried a literal `@BINDIR@` path, so it
+  could not start; the unit is now written with the real path. The tarball install was never
+  affected. The AUR package, new in 1.0.1, installs it correctly from the start.
+
 ## [1.0.0] - 2026-11-04
 
 The first Notchfolk release, on a fresh version sequence. Upgrading from an Isle

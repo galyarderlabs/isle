@@ -1295,7 +1295,7 @@ dependencies = [
 
 [[package]]
 name = "notchfolk-core"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "serde",
  "serde_json",
@@ -1303,7 +1303,7 @@ dependencies = [
 
 [[package]]
 name = "notchfolk-daemon"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1331,7 +1331,7 @@ dependencies = [
 
 [[package]]
 name = "notchfolk-shelf"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "env_logger",
  "gdk4-x11",
@@ -1344,7 +1344,7 @@ dependencies = [
 
 [[package]]
 name = "notchfolk-whisper"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "libc",
  "notchfolk-core",
