@@ -40,7 +40,7 @@ stage() {
     install -Dm755 "$SRC/scripts/setup-voice.sh" "$root/usr/bin/notchfolk-setup-voice"
     install -Dm755 "$SRC/scripts/setup-mcp.sh" "$root/usr/bin/notchfolk-setup-mcp"
     install -Dm755 "$SRC/scripts/notchfolk-mcp" "$root/usr/bin/notchfolk-mcp"
-    install -Dm644 "$SRC/data/notchfolk-mcp.service" "$root/usr/lib/systemd/user/notchfolk-mcp.service"
+    service notchfolk-mcp.service "$root/usr/lib/systemd/user"
     install -Dm644 "$SRC/mcp/server.py" "$root/usr/lib/notchfolk/mcp/server.py"
     install -Dm644 "$SRC/mcp/notchfolk_oauth.py" "$root/usr/lib/notchfolk/mcp/notchfolk_oauth.py"
     install -Dm644 "$SRC/mcp/requirements.txt" "$root/usr/share/notchfolk/mcp/requirements.txt"

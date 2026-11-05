@@ -40,13 +40,13 @@ package() {
   chmod -R u=rwX,go=rX "$ext"
 
   local service
-  for service in io.galyarderlabs.notchfolk.Daemon.service io.galyarderlabs.notchfolk.ShelfWindow.service notchfolkd.service; do
+  for service in io.galyarderlabs.notchfolk.Daemon.service io.galyarderlabs.notchfolk.ShelfWindow.service notchfolkd.service notchfolk-mcp.service; do
     sed -e 's|@BINDIR@|/usr/bin|' -e 's|file://%h/.local/share/doc/notchfolk|file:///usr/share/doc/notchfolk|' \
       "data/$service" > "$srcdir/$service"
   done
   install -Dm644 -t "$pkgdir/usr/share/dbus-1/services" \
     "$srcdir/io.galyarderlabs.notchfolk.Daemon.service" "$srcdir/io.galyarderlabs.notchfolk.ShelfWindow.service"
-  install -Dm644 -t "$pkgdir/usr/lib/systemd/user" "$srcdir/notchfolkd.service" data/notchfolk-mcp.service
+  install -Dm644 -t "$pkgdir/usr/lib/systemd/user" "$srcdir/notchfolkd.service" "$srcdir/notchfolk-mcp.service"
 
   install -Dm644 -t "$pkgdir/usr/lib/notchfolk/mcp" mcp/server.py mcp/notchfolk_oauth.py
   install -Dm644 -t "$pkgdir/usr/share/notchfolk/mcp" mcp/requirements.txt
