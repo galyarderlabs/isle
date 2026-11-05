@@ -8,7 +8,7 @@ Your desktop notch, alive — GNOME today, Windows and macOS next. Music with sy
 ![GNOME Shell 46–51](https://img.shields.io/badge/GNOME%20Shell-46%E2%80%9351-4a86cf.svg)
 ![Rust 1.92+](https://img.shields.io/badge/Rust-1.92%2B-orange.svg)
 [![MCP Enabled](https://img.shields.io/badge/MCP-Enabled-8A2BE2.svg)](https://modelcontextprotocol.io)
-[![Whisper AI](https://img.shields.io/badge/AI-Whisper%20Local-success.svg)](https://github.com/ggerganov/whisper.cpp)
+[![Voice](https://img.shields.io/badge/Voice-Local%20Whisper-success.svg)](https://github.com/ggerganov/whisper.cpp)
 [![Sponsor](https://img.shields.io/badge/sponsor-support-ff69b4?logo=githubsponsors)](https://github.com/sponsors/galyarderlabs)
 
 </div>
