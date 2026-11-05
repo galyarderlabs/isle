@@ -183,9 +183,10 @@ assistant is set up per user as above, with `notchfolk-setup-voice`.
 
 ### Arch Linux
 
-On Arch, `yay -S notchfolk-bin` or `paru -S notchfolk-bin` installs the AUR package, built from the
-release tarball by the `PKGBUILD` in [`packaging/aur`](../packaging/aur). Building it straight from
-this repository works too:
+The AUR package (`notchfolk-bin`) is prepared — see the `PKGBUILD` in
+[`packaging/aur`](../packaging/aur) — but it is not published yet, so
+`yay -S notchfolk-bin` finds nothing for now. Build it straight from this
+repository instead:
 
 ```sh
 sudo pacman -S --needed base-devel git

@@ -22,7 +22,10 @@ runtime rebrand must match them (and any change there is a one-line edit here):
 
 1. **Settings.** Every key of the old schema is read and written to the new one,
    only when the new schema has the same key with the same type; anything
-   renamed or dropped stays with the old schema's file instead of guessing.
+   renamed or dropped stays with the old schema's file instead of guessing. If
+   the old schema is already gone (the installer removed the old extension
+   folder), it falls back to copying the values straight from dconf, which
+   needs no schema.
 2. **Services.** The old user units are stopped, disabled and removed (backed
    up), so no two daemons answer at once; the new units start only if the
    rebranded build already installed them.
@@ -31,10 +34,16 @@ runtime rebrand must match them (and any change there is a one-line edit here):
 4. **State.** The data, config, cache, state and doc folders move (rename, not
    copy): tasks, calendar entries, reminders, water and calorie history, app
    usage, clipboard history with its images, the shelf, `mcp.env`,
-   `mcp-clients.json` and the MCP OAuth database all go with them.
+   `mcp-clients.json` and the MCP OAuth database all go with them. The data
+   folder merges when the new install already created it: the new install's
+   code and venv (`mcp/`, `mcp-venv/`) stay put, and an old file only replaces
+   a fresh copy of the same name.
 5. **Keyring.** The router's password, proxy key and session cookies are read
    from the old service name and stored under the new one (`secret-tool`;
-   without it they stay put and signing in again replaces them).
+   without it they stay put and signing in again replaces them). An entry is
+   only cleared from the old service once the new one reads back with the same
+   value, and the run reports how many entries it found, so a silent miss is
+   visible.
 6. **The old extension.** Only reported: the rebranded installer owns disabling
    and removing it, so the script never touches another installation's files.
 
@@ -45,10 +54,13 @@ notchfolk-migrate-from-isle.sh --dry-run   # report what would happen
 notchfolk-migrate-from-isle.sh              # migrate
 ```
 
-It refuses to run before the rebranded build is installed (its compiled settings
+The installer puts the script in `~/.local/bin`, so the bare name works. It
+refuses to run before the rebranded build is installed (its compiled settings
 schema or its daemon is the check), moves state instead of copying it so nothing
-is left behind under the old names, skips anything whose target already exists
-(`--force` overrides, after checking both), and keeps removed service files in
+is left behind under the old names, merges a target the installer already
+created (its own files, or the new MCP code) instead of blocking the move, skips
+anything else whose target already holds data (`--force` merges, after checking
+both), and keeps removed service files in
 `~/.local/state/notchfolk-migration-backup-<timestamp>` as the rollback path —
 putting one back and `systemctl --user daemon-reload` restores it.
 

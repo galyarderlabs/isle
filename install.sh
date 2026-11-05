@@ -127,6 +127,8 @@ mkdir -p "$DATA/notchfolk/mcp"
 cp -r mcp/. "$DATA/notchfolk/mcp/"
 # Sets a lasting battery charge limit; the assistant types it into a terminal when asked.
 install -Dm755 scripts/notchfolk-charge-limit "$BINDIR/notchfolk-charge-limit"
+# One-time migration from Isle; the migration doc tells the user to run it by name.
+install -Dm755 scripts/notchfolk-migrate-from-isle.sh "$BINDIR/notchfolk-migrate-from-isle"
 
 step "Installing the Inter font"
 # The island is set in Inter.
