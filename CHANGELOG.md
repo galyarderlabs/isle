@@ -6,6 +6,16 @@ All notable changes to Notchfolk are listed here. The format follows
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-05
+
+### Fixed
+
+- **The installer replaces the MCP folder outright**, so an Isle-era `server.py` that reaches the
+  data folder can no longer keep serving under the old bus name.
+- **The migration now stops and replaces the Cloudflare tunnel service too**, and drops the saved
+  update-check state, which names Isle's version sequence and would otherwise offer a
+  downgrade-looking "Notchfolk 1.6.0 is out" until the next check.
+
 ## [1.0.1] - 2026-11-05
 
 ### Fixed

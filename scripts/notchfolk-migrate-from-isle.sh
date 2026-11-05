@@ -251,6 +251,13 @@ move_dir "$CACHE_HOME/$OLD_APP" "$CACHE_HOME/$NEW_APP"
 move_dir "$STATE_HOME/$OLD_APP" "$STATE_HOME/$NEW_APP"
 move_dir "$DATA_HOME/doc/$OLD_APP" "$DATA_HOME/doc/$NEW_APP"
 
+# The update check's saved state names Isle's version sequence (upstream releases); kept, it
+# would offer a downgrade-looking "update" until the next daily check. It is written fresh.
+updates="$DATA_HOME/$NEW_APP/updates.json"
+if [ -f "$updates" ]; then
+    run rm "$updates"
+fi
+
 # The MCP env file's variable names belonged to the old name; the rebranded service reads
 # NOTCHFOLK_MCP_*. Its values are kept as they are.
 env_file="$CONFIG_HOME/$NEW_APP/mcp.env"
