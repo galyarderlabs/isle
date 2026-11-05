@@ -26,7 +26,7 @@ before the first public rebranded release) are already decided in
 **Acceptance criteria:**
 - [ ] A formal trademark search and domain availability check for "Notchfolk"
   are recorded in `rebrand-plan.md` before public release.
-- [ ] The settled decisions are kept in sync in `rebrand-plan.md`.
+- [x] The settled decisions are kept in sync in `rebrand-plan.md`.
 
 **Verification:** Review branding and namespace decisions together before code
 changes. Confirm the repository slug and namespace are available to Galyarder
@@ -43,11 +43,11 @@ assets, service files, and history. Classify references as replace, preserve
 for attribution/history, third-party mark, or unrelated match.
 
 **Acceptance criteria:**
-- [ ] Inventory covers display strings, identifiers, URLs, binaries, services,
+- [x] Inventory covers display strings, identifiers, URLs, binaries, services,
   settings/data paths, release tooling, docs, and artwork.
-- [ ] Every upstream copyright/license notice and bundled asset notice has a
+- [x] Every upstream copyright/license notice and bundled asset notice has a
   keep/replace decision.
-- [ ] Historical changelog and source-lineage references are distinguished
+- [x] Historical changelog and source-lineage references are distinguished
   from current product links.
 
 **Verification:** Review the inventory against `git grep` searches for `Isle`,
@@ -64,7 +64,7 @@ extension UUID and namespace, including old extension shutdown, settings,
 credentials, data directories, caches, and rollback.
 
 **Acceptance criteria:**
-- [ ] List every user state store and whether it stays at its current path or
+- [x] List every user state store and whether it stays at its current path or
   migrates.
 - [x] Define a one-time settings migration that preserves values and types
       (`scripts/notchfolk-migrate-from-isle.sh`, documented in
@@ -77,7 +77,7 @@ credentials, data directories, caches, and rollback.
 - [x] Define how the installed Isle build's update check stops pointing at
       upstream after the in-place replacement (`get.sh` and the daemon's
       latest-version check point at this repository).
-- [ ] Define failure/rollback behavior and ensure no duplicate notch or daemon
+- [x] Define failure/rollback behavior and ensure no duplicate notch or daemon
   is left behind.
 
 **Verification:** Walk through fresh install, upgrade from current Isle,
@@ -89,9 +89,9 @@ interrupted upgrade, and uninstall scenarios on paper before implementation.
 
 ### Checkpoint: Decisions and audit
 
-- [ ] Product name and namespace are approved.
-- [ ] Identity inventory and license/provenance map are complete.
-- [ ] Upgrade/migration strategy is approved before changing runtime IDs.
+- [x] Product name and namespace are approved.
+- [x] Identity inventory and license/provenance map are complete.
+- [x] Upgrade/migration strategy is approved before changing runtime IDs.
 
 ## Phase 2: Product-facing brand and docs
 
@@ -146,9 +146,9 @@ and icon names according to the approved namespace, with an in-place settings
 migration.
 
 **Acceptance criteria:**
-- [ ] GNOME installs exactly one active branded extension after upgrade.
-- [ ] Previous settings are copied with their original types and values.
-- [ ] Reinstall, disable, and uninstall affect only the branded extension.
+- [x] GNOME installs exactly one active branded extension after upgrade.
+- [x] Previous settings are copied with their original types and values.
+- [x] Reinstall, disable, and uninstall affect only the branded extension.
 
 **Verification:** Install over the current version, compare all settings before
 and after, log out/in, then disable/uninstall and confirm no orphaned extension.
@@ -165,9 +165,9 @@ service activation files, and systemd units where the approved coexistence
 decision requires new identifiers.
 
 **Acceptance criteria:**
-- [ ] Extension, daemon, shelf, MCP, and installed services agree on the new
+- [x] Extension, daemon, shelf, MCP, and installed services agree on the new
   names.
-- [ ] Startup, restart, shutdown, and service activation work after upgrade.
+- [x] Startup, restart, shutdown, and service activation work after upgrade.
 - [ ] Any intentionally retained public D-Bus API is documented as a
   compatibility choice.
 
@@ -187,9 +187,9 @@ keyring service IDs, command names, MCP client config, and any scripts that
 refer to the old project.
 
 **Acceptance criteria:**
-- [ ] Tasks, reminders, calendar data, water/calorie history, router keys,
+- [x] Tasks, reminders, calendar data, water/calorie history, router keys,
   assistant history, and MCP clients remain available after upgrade.
-- [ ] Credentials remain in the keyring and are never copied into plaintext
+- [x] Credentials remain in the keyring and are never copied into plaintext
   files or logs.
 - [ ] Old commands either have a compatibility wrapper or produce a clear
   migration message.
@@ -211,15 +211,15 @@ workflow paths, latest-version checks, shell install commands, and attestation
 verification without replacing historical upstream release records.
 
 **Acceptance criteria:**
-- [ ] Clean install and update use only Galyarder Labs artifacts.
+- [x] Clean install and update use only Galyarder Labs artifacts.
 - [x] The update feed and latest-version check for the previous identity no
       longer direct existing installations to upstream Isle artifacts
       (`get.sh` and the daemon's check point at the repository's final slug,
       `galyarderlabs/notchfolk`; until that repository exists and has Releases
       with the `isle-*-linux.tar.gz` assets, installs and update checks find
       nothing, which is safe: the checker just retries later).
-- [ ] Package upgrade/uninstall removes only files owned by the new package.
-- [ ] Release workflow publishes source and correctly named artifacts from the
+- [x] Package upgrade/uninstall removes only files owned by the new package.
+- [x] Release workflow publishes source and correctly named artifacts from the
   standalone repository.
 
 **Verification:** Run packaging and install/uninstall checks in a clean test
@@ -236,8 +236,8 @@ environment; verify GitHub release links and update notifications.
 verify all notices, and complete a real upgrade/release-candidate review.
 
 **Acceptance criteria:**
-- [ ] Every remaining old name/URL is intentionally retained and classified.
-- [ ] GPL and third-party notices are intact; changed files clearly identify
+- [x] Every remaining old name/URL is intentionally retained and classified.
+- [x] GPL and third-party notices are intact; changed files clearly identify
   the modified project where required.
 - [ ] Upgrade, settings migration, data access, rollback, and uninstall pass.
 - [ ] New README and release identify the project as independent and preserve
