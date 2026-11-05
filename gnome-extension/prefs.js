@@ -66,7 +66,7 @@ export default class NotchfolkPreferences extends ExtensionPreferences {
     _aboutPage(settings, window) {
         const page = new Adw.PreferencesPage({title: 'About', name: 'about', icon_name: 'help-about-symbolic'});
         const about = new Adw.PreferencesGroup({title: `Notchfolk ${this.metadata['version-name'] ?? ''}`.trim(),
-            description: 'A notch-style island for GNOME. © 2026 zickrian, free software under the GPL.'});
+            description: 'A modified version of Isle by zickrian; © 2026 zickrian and Galyarder Labs, free software under the GPL.'});
         const link = (title, subtitle, url) => {
             const row = new Adw.ActionRow({title, subtitle, activatable: true});
             row.add_suffix(new Gtk.Image({icon_name: 'adw-external-link-symbolic'}));
