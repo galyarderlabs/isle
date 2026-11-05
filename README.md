@@ -13,13 +13,10 @@ Your desktop notch, alive — GNOME today, Windows and macOS next. Music with sy
 
 </div>
 
-Notchfolk turns the centre of the top bar into a black notch.
-At rest, the clock sits in the middle, with what's running beside it:
-music, a focus timer, a call, recording, or unread notifications. Rest the
-pointer on it and it opens with spring physics into a small panel with tabs
-for each page; passing over it on the way elsewhere leaves it closed. Alerts
-for volume, charging, Caps Lock and notifications appear in the same place
-instead of in the middle of the screen.
+Notchfolk turns the centre of the top bar into a black notch. At rest, the
+clock sits in the middle with what's running beside it — a song, a call, a
+timer. Rest the pointer on it and it springs open into a small panel with
+tabs for each page.
 
 > [!NOTE]
 > Notchfolk was formerly Isle. If you are upgrading from an Isle installation, run
