@@ -1,0 +1,11 @@
+post_install() {
+  echo 'Log out and back in, then turn Notchfolk on once as each user (in the Extensions app, or):'
+  echo '  gnome-extensions enable io.galyarderlabs.notchfolk'
+  echo 'For the voice assistant, each user also runs notchfolk-setup-voice once.'
+  echo 'Upgrading from Isle? Run notchfolk-migrate-from-isle once to carry settings and data over.'
+}
+
+post_upgrade() {
+  echo 'Log out and back in so GNOME Shell loads the new Notchfolk.'
+}
+

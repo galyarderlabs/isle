@@ -1,29 +1,35 @@
-# Maintainer: zickrian <espejodaniel50@gmail.com>
-# Isle from its release tarball, with the programs GitHub Actions built. After a release,
+# Maintainer: Galyarder Labs
+# Notchfolk from its release tarball, with the programs GitHub Actions built. After a release,
 # `./update.sh <version>` sets the version and checksum here and in .SRCINFO.
 
-pkgname=isle-bin
-pkgver=1.6.0
+pkgname=notchfolk-bin
+pkgver=1.0.0
 pkgrel=1
-pkgdesc='A notch-style island for the GNOME Shell top bar: music with synced lyrics, calls, a focus timer, a calendar, a file shelf, app usage and a voice assistant'
+pkgdesc='Notchfolk (formerly Isle): a living dynamic island and AI companion for the GNOME Shell top bar, with a built-in MCP server and local Whisper voice'
 arch=('x86_64')
-url='https://github.com/zickrian/isle'
+url='https://github.com/galyarderlabs/notchfolk'
 license=('GPL-3.0-or-later' 'OFL-1.1')
 depends=('gnome-shell>=1:46' 'dconf' 'gtk4' 'glib2' 'pango' 'gdk-pixbuf2' 'gcc-libs' 'glibc' 'bash')
-optdepends=('vulkan-icd-loader: speech recognition on the graphics card, else on the processor')
-provides=('isle')
-conflicts=('isle')
+optdepends=('vulkan-icd-loader: speech recognition on the graphics card, else on the processor'
+            'python>=3.11: the optional MCP server for AI agents')
+provides=('notchfolk')
+conflicts=('notchfolk' 'isle-bin')
 options=('!strip' '!debug')
-install=isle-bin.install
-source_x86_64=("https://github.com/zickrian/isle/releases/download/v$pkgver/isle-$pkgver-$CARCH-linux.tar.gz")
-sha256sums_x86_64=('fe5a61a0f24b9850f377c1e58e7dd9c8a692ca303a7b81f716ed08f56846c529')
+install=notchfolk-bin.install
+source_x86_64=("https://github.com/galyarderlabs/notchfolk/releases/download/v$pkgver/notchfolk-$pkgver-$CARCH-linux.tar.gz")
+sha256sums_x86_64=('41074f0efec1bb6b37d94152871d1a21540a6ef3a00e0aaeb9bcc6ce10bb31de')
 
 package() {
-  cd "isle-$pkgver-$CARCH-linux"
-  local uuid=isle@zickrian.github.io
+  cd "notchfolk-$pkgver-$CARCH-linux"
+  local uuid=io.galyarderlabs.notchfolk
 
-  install -Dm755 -t "$pkgdir/usr/bin" bin/isled bin/isle-shelf bin/isle-whisper scripts/isle-charge-limit
-  install -Dm755 scripts/setup-voice.sh "$pkgdir/usr/bin/isle-setup-voice"
+  install -Dm755 -t "$pkgdir/usr/bin" bin/notchfolkd bin/notchfolk-shelf bin/notchfolk-whisper scripts/notchfolk-charge-limit
+  install -Dm755 scripts/setup-voice.sh "$pkgdir/usr/bin/notchfolk-setup-voice"
+  install -Dm755 scripts/setup-mcp.sh "$pkgdir/usr/bin/notchfolk-setup-mcp"
+  install -Dm755 scripts/notchfolk-mcp "$pkgdir/usr/bin/notchfolk-mcp"
+  install -Dm755 scripts/notchfolk-mcp-keygen "$pkgdir/usr/bin/notchfolk-mcp-keygen"
+  install -Dm755 scripts/notchfolk-mcp-tunnel "$pkgdir/usr/bin/notchfolk-mcp-tunnel"
+  install -Dm755 scripts/notchfolk-migrate-from-isle.sh "$pkgdir/usr/bin/notchfolk-migrate-from-isle"
 
   local ext="$pkgdir/usr/share/gnome-shell/extensions/$uuid"
   install -d "$ext"
@@ -34,15 +40,18 @@ package() {
   chmod -R u=rwX,go=rX "$ext"
 
   local service
-  for service in io.github.zickrian.isle.Daemon.service io.github.zickrian.isle.ShelfWindow.service isled.service; do
-    sed -e 's|@BINDIR@|/usr/bin|' -e 's|file://%h/.local/share/doc/isle|file:///usr/share/doc/isle|' \
+  for service in io.galyarderlabs.notchfolk.Daemon.service io.galyarderlabs.notchfolk.ShelfWindow.service notchfolkd.service notchfolk-mcp.service; do
+    sed -e 's|@BINDIR@|/usr/bin|' -e 's|file://%h/.local/share/doc/notchfolk|file:///usr/share/doc/notchfolk|' \
       "data/$service" > "$srcdir/$service"
   done
   install -Dm644 -t "$pkgdir/usr/share/dbus-1/services" \
-    "$srcdir/io.github.zickrian.isle.Daemon.service" "$srcdir/io.github.zickrian.isle.ShelfWindow.service"
-  install -Dm644 -t "$pkgdir/usr/lib/systemd/user" "$srcdir/isled.service"
+    "$srcdir/io.galyarderlabs.notchfolk.Daemon.service" "$srcdir/io.galyarderlabs.notchfolk.ShelfWindow.service"
+  install -Dm644 -t "$pkgdir/usr/lib/systemd/user" "$srcdir/notchfolkd.service" "$srcdir/notchfolk-mcp.service"
 
-  install -Dm644 -t "$pkgdir/usr/share/fonts/isle" data/fonts/InterVariable.ttf
+  install -Dm644 -t "$pkgdir/usr/lib/notchfolk/mcp" mcp/server.py mcp/notchfolk_oauth.py
+  install -Dm644 -t "$pkgdir/usr/share/notchfolk/mcp" mcp/requirements.txt
+
+  install -Dm644 -t "$pkgdir/usr/share/fonts/notchfolk" data/fonts/InterVariable.ttf
   install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE data/fonts/Inter-LICENSE.txt
-  install -Dm644 -t "$pkgdir/usr/share/doc/isle" README.md CHANGELOG.md
+  install -Dm644 -t "$pkgdir/usr/share/doc/notchfolk" README.md CHANGELOG.md
 }
