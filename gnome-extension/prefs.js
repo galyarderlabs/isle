@@ -2163,13 +2163,13 @@ function confirm(window, {heading, body, action}, onYes) {
 
 /** Where updating is explained, and the command that updates a one-line install. */
 const UPDATE_HELP = 'https://github.com/galyarderlabs/notchfolk/blob/main/docs/install.md#updating';
-const INSTALL_COMMAND = 'curl -fsSL https://raw.githubusercontent.com/zickrian/notchfolk/main/get.sh | bash';
+const INSTALL_COMMAND = 'curl -fsSL https://raw.githubusercontent.com/galyarderlabs/notchfolk/main/get.sh | bash';
 const RELEASES = 'https://github.com/galyarderlabs/notchfolk/releases/latest';
 /** Installs version `$1` with that release's own get.sh (no sudo), appending to the log `$2`: first who runs
  * it ("notchfolk-update-pid <pid> <boot id>"), last "notchfolk-update-done <exit status>". */
 const UPDATE_SCRIPT = 'exec >>"$2" 2>&1 </dev/null; ' +
     'echo "notchfolk-update-pid $$ $(cat /proc/sys/kernel/random/boot_id 2>/dev/null)"; set -o pipefail; ' +
-    'curl -fsSL --retry 2 "https://raw.githubusercontent.com/zickrian/notchfolk/v$1/get.sh" | NOTCHFOLK_VERSION="$1" bash; ' +
+    'curl -fsSL --retry 2 "https://raw.githubusercontent.com/galyarderlabs/notchfolk/v$1/get.sh" | NOTCHFOLK_VERSION="$1" bash; ' +
     'echo "notchfolk-update-done $?"';
 /** The update's log; its first line names the version ("notchfolk-update 1.5.0"). */
 const UPDATE_LOG = GLib.build_filenamev([GLib.get_user_cache_dir(), 'notchfolk', 'update.log']);

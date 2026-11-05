@@ -397,7 +397,7 @@ async fn report() {
     );
     let notchfolk_lines: Vec<&str> = shell_log
         .lines()
-        .filter(|line| line.contains("Notchfolk") || line.contains("notchfolk@zickrian"))
+        .filter(|line| line.contains("Notchfolk") || line.contains("io.galyarderlabs.notchfolk"))
         .collect();
     let recent = &notchfolk_lines[notchfolk_lines.len().saturating_sub(40)..];
     println!(

@@ -30,7 +30,7 @@ the tagged source and carry a build provenance attestation. With the
 [GitHub CLI](https://cli.github.com):
 
 ```sh
-gh attestation verify notchfolk-<version>-x86_64-linux.tar.gz --repo zickrian/notchfolk
+gh attestation verify notchfolk-<version>-x86_64-linux.tar.gz --repo galyarderlabs/notchfolk
 ```
 
 `get.sh` also checks each download against the release's `.sha256`, and the

@@ -140,9 +140,6 @@ your windows uncovered.
    curl -fsSL https://raw.githubusercontent.com/galyarderlabs/notchfolk/main/get.sh | bash
    ```
 
-   On Arch Linux, use the AUR package instead: `yay -S notchfolk-bin`
-   (or `paru -S notchfolk-bin`).
-
 2. **Log out and back in**: GNOME Shell on Wayland only loads a new
    extension at login (on GNOME 46 to 48 with X11, press Alt+F2, type `r`
    and press Enter instead).

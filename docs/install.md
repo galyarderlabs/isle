@@ -34,7 +34,7 @@ programs.
 Paste this into a terminal and press Enter:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/zickrian/notchfolk/main/get.sh | bash
+curl -fsSL https://raw.githubusercontent.com/galyarderlabs/notchfolk/main/get.sh | bash
 ```
 
 (`curl: command not found`? Install it first: `sudo apt install curl`.)
@@ -113,11 +113,11 @@ Your tasks, calendar events, clipboard history and settings stay.
 press Enter, then log out and back in:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/zickrian/notchfolk/main/get.sh | bash
+curl -fsSL https://raw.githubusercontent.com/galyarderlabs/notchfolk/main/get.sh | bash
 ```
 
 **Installed from a package?** Update it the way you installed it: download
-the new `.deb` or `.rpm` from [Releases](https://github.com/zickrian/notchfolk/releases/latest)
+the new `.deb` or `.rpm` from [Releases](https://github.com/galyarderlabs/notchfolk/releases/latest)
 and open it, or on Arch run `git pull` and `makepkg -si` again in
 `packaging/aur`. Then log out and back in. Don't also run the command above: it would add a second copy (see
 [below](#both-a-package-and-the-one-line-install)).
@@ -146,7 +146,7 @@ A system-wide package is removed as [below](#both-a-package-and-the-one-line-ins
 ## Without internet on the computer
 
 Download `notchfolk-<version>-x86_64-linux.tar.gz` from
-[Releases](https://github.com/zickrian/notchfolk/releases) on another computer,
+[Releases](https://github.com/galyarderlabs/notchfolk/releases) on another computer,
 copy it over, then:
 
 ```sh
@@ -159,7 +159,7 @@ cd notchfolk-*-x86_64-linux
 
 ### Ubuntu and Debian (.deb), Fedora (.rpm)
 
-Each [release](https://github.com/zickrian/notchfolk/releases) also has
+Each [release](https://github.com/galyarderlabs/notchfolk/releases) also has
 system-wide packages, installed for every user of the computer with the
 system's package manager (so they update and uninstall with it):
 
@@ -222,7 +222,7 @@ Release files are built by GitHub Actions from the tagged source, with a
 build provenance attestation. With the [GitHub CLI](https://cli.github.com):
 
 ```sh
-gh attestation verify notchfolk-*-x86_64-linux.tar.gz --repo zickrian/notchfolk
+gh attestation verify notchfolk-*-x86_64-linux.tar.gz --repo galyarderlabs/notchfolk
 ```
 
 `get.sh` checks each download against its `.sha256` already.
@@ -265,7 +265,7 @@ gnome-extensions info io.galyarderlabs.notchfolk   # State: ACTIVE (or ENABLED)
 
 If it says `OUT OF DATE`, your GNOME Shell version is outside 46 to 51. If
 it says `ERROR`, that is most likely a bug in Notchfolk: please
-[open an issue](https://github.com/zickrian/notchfolk/issues) with GNOME Shell's
+[open an issue](https://github.com/galyarderlabs/notchfolk/issues) with GNOME Shell's
 log (see **Anything else** below).
 
 **A phone can't open the Shelf.** It must be on the same Wi-Fi as the
@@ -281,7 +281,7 @@ sign-in) and what to run.
 
 **Anything else.** GNOME Shell's log shows extension errors:
 `journalctl -b -o cat /usr/bin/gnome-shell | grep -i notchfolk`. Please
-[open an issue](https://github.com/zickrian/notchfolk/issues) with what it says
+[open an issue](https://github.com/galyarderlabs/notchfolk/issues) with what it says
 and the output of `gnome-shell --version`.
 
 # Other ways to install

@@ -474,10 +474,10 @@ mod tests {
 
     #[test]
     fn shows_a_tools_input_readably() {
-        let input = json!({"owner": "zickrian", "repo": "notchfolk", "draft": false});
+        let input = json!({"owner": "galyarderlabs", "repo": "notchfolk", "draft": false});
         assert_eq!(
             readable(&input),
-            "owner: zickrian, repo: notchfolk, draft: false"
+            "owner: galyarderlabs, repo: notchfolk, draft: false"
         );
         assert_eq!(readable(&Value::Null), "");
     }
