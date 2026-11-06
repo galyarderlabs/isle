@@ -133,6 +133,7 @@ tabs for each page.
 </td>
 <td width="50%" valign="top">
 <img src="docs/images/more-ais.png" alt="The AI picker: Claude Code, Codex, Hermes Agent, OpenAI-compatible API, Oh My Pi, opencode, Antigravity" width="100%"><br>
+<img src="docs/images/more-ais-omp.png" alt="Oh My Pi selected, with Custom instructions for its identity" width="100%"><br>
 <b>More AIs.</b> The assistant also runs Hermes and Oh My Pi with the providers they are configured for, plus any OpenAI-compatible API.
 </td>
 </tr>
