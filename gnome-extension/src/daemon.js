@@ -137,8 +137,9 @@ const INTERFACES = {
         xml: node('Reminders1', `
             <method name="Add"><arg name="delay_ms" type="t" direction="in"/><arg name="text" type="s" direction="in"/><arg type="t" direction="out"/></method>
             <method name="Dismiss"><arg name="id" type="t" direction="in"/></method>
-            <property name="Items" type="s" access="read"/>`),
-        properties: {Items: 'reminders'},
+            <property name="Items" type="s" access="read"/>
+            <property name="History" type="s" access="read"/>`),
+        properties: {Items: 'reminders', History: 'reminderHistory'},
     },
     appUsage: {
         xml: node('AppUsage1', `

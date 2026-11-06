@@ -82,6 +82,7 @@ async def shell_call(member: str, signature: str = "", *args):
 
 READ_SCOPES = {
     "list_tasks": "tasks:read", "list_calendar_events": "calendar:read", "list_reminders": "reminders:read",
+    "list_reminder_history": "reminders:read",
     "list_food_entries": "calories:read", "get_water_entries": "water:read", "prayer_schedule": "prayer:read",
     "now_playing": "media:read", "focus_state": "focus:read", "get_app_usage": "apps:read",
     "get_system_state": "system:read", "list_shelf_items": "shelf:read", "search_clipboard": "clipboard:read",
@@ -318,6 +319,12 @@ async def parse_event_text(text: str) -> dict:
 async def list_reminders() -> list:
     """List scheduled Notchfolk reminders."""
     return await read("list_reminders", "io.galyarderlabs.notchfolk.Reminders1", "Items")
+
+
+@mcp.tool
+async def list_reminder_history() -> list:
+    """List the reminders shown in the last 7 days, newest first, with their due and shown times."""
+    return await read("list_reminder_history", "io.galyarderlabs.notchfolk.Reminders1", "History")
 
 
 @mcp.tool
