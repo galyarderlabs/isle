@@ -74,8 +74,12 @@ pub async fn transcribe(
     let language = language.to_owned();
     tokio::task::spawn_blocking(move || {
         let mut form = Form::new().text("model", &model);
-        if !language.trim().is_empty() {
-            form = form.text("language", &language);
+        // Settings' language is a list for local whisper ("id,en" tells the two apart); a router
+        // takes one code, so only a list of one is sent, and a longer one is left to the router to
+        // detect — better than a code it refuses.
+        let language = language.split(',').next().unwrap_or_default().trim();
+        if !language.is_empty() {
+            form = form.text("language", language);
         }
         let form = form.part(
             "file",
