@@ -1603,7 +1603,12 @@ async fn turn(
             } else {
                 tokio::task::spawn_blocking(cloud::key).await.ok().flatten()
             };
-            let key = key.filter(|_| !session.context.router_url.trim().is_empty());
+            // The cloud router, when its engine is picked and Settings filled it in; anything unset
+            // (an older extension that sends no speech settings) falls to local whisper.
+            let key = key.filter(|_| {
+                !session.context.router_url.trim().is_empty()
+                    && !session.context.speech_model.trim().is_empty()
+            });
             if key.is_none() {
                 if !whisper::installed() {
                     return fail(iface, set_up(NOT_SET_UP, &model)).await;
@@ -2156,7 +2161,7 @@ async fn transcribed(
     if let Some(key) = key {
         let url = session.context.router_url.clone();
         let path = or(&session.context.stt_path, "audio/transcriptions").to_owned();
-        let model = or(&session.context.speech_model, "dg/nova-3").to_owned();
+        let model = session.context.speech_model.trim().to_owned();
         let language = session.context.language.clone();
         let asked = tokio::time::timeout(
             TRANSCRIBE_TIMEOUT,
@@ -2221,8 +2226,14 @@ async fn speak(session: &Session, said: &str) {
         return;
     }
     let path = or(&session.context.tts_path, "audio/speech").to_owned();
-    let model = or(&session.context.tts_model, "tts-1").to_owned();
-    let voice = or(&session.context.tts_voice, "alloy").to_owned();
+    // Settings alone names the model and the voice: either unset means there is nothing to speak
+    // with, so nothing is spoken rather than a model the user never picked.
+    let model = session.context.tts_model.trim().to_owned();
+    let voice = session.context.tts_voice.trim().to_owned();
+    if model.is_empty() || voice.is_empty() {
+        warn!("the reply is not spoken: no text-to-speech model or voice in Settings");
+        return;
+    }
     let said = said.to_owned();
     tokio::spawn(async move {
         let Some(key) = tokio::task::spawn_blocking(cloud::key).await.ok().flatten() else {
