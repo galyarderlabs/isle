@@ -1,7 +1,7 @@
 {
   "uuid": "io.galyarderlabs.notchfolk",
   "name": "Notchfolk",
-  "description": "Notchfolk (formerly Isle): A living dynamic island and AI companion for the GNOME Shell top bar. Features interactive desktop notch, voice assistant with local Whisper, Model Context Protocol (MCP) server, synced lyrics, call monitoring, focus timer, calendar, file shelf, and system HUD.",
+  "description": "Notchfolk (formerly Isle): A living dynamic island and AI companion for the GNOME Shell top bar. Features interactive desktop notch, voice assistant with cloud or local Whisper, Model Context Protocol (MCP) server, synced lyrics, call monitoring, focus timer, calendar, file shelf, and system HUD.",
   "shell-version": [
     "46",
     "47",

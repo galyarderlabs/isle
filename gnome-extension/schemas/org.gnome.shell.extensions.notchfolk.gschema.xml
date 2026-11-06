@@ -331,6 +331,50 @@
       <summary>Extra instructions for coding-agent backends</summary>
       <description>Added to Notchfolk's instructions for Claude Code and Codex. Antigravity manages its own personality.</description>
     </key>
+    <key name="voice-speech-engine" type="s">
+      <choices>
+        <choice value="cloud"/>
+        <choice value="local"/>
+      </choices>
+      <default>'cloud'</default>
+      <summary>What turns speech into text</summary>
+      <description>An OpenAI-compatible speech router over the network, or local whisper.cpp offline. Local also takes over when the router cannot be reached.</description>
+    </key>
+    <key name="voice-router-url" type="s">
+      <default>'https://router.niyatna.com/v1'</default>
+      <summary>The speech router's base URL</summary>
+      <description>Speech recognition and spoken replies go to its /v1/audio/transcriptions and /v1/audio/speech.</description>
+    </key>
+    <key name="voice-speech-cloud-model" type="s">
+      <default>'dg/nova-3'</default>
+      <summary>The speech router's speech-to-text model</summary>
+      <description>As the router names it, sent with each recording ("dg/nova-3").</description>
+    </key>
+    <key name="voice-stt-path" type="s">
+      <default>'audio/transcriptions'</default>
+      <summary>The speech router's speech-to-text path</summary>
+      <description>Added to the base URL, without a leading slash. The OpenAI-compatible path is audio/transcriptions; another router names its own.</description>
+    </key>
+    <key name="voice-tts-path" type="s">
+      <default>'audio/speech'</default>
+      <summary>The speech router's text-to-speech path</summary>
+      <description>Added to the base URL, without a leading slash. The OpenAI-compatible path is audio/speech; another router names its own.</description>
+    </key>
+    <key name="voice-speak-replies" type="b">
+      <default>false</default>
+      <summary>Speak the replies</summary>
+      <description>The reply is spoken through the speech router's /v1/audio/speech as well as shown.</description>
+    </key>
+    <key name="voice-tts-model" type="s">
+      <default>'tts-1'</default>
+      <summary>The speech router's text-to-speech model</summary>
+      <description>As the router names it ("tts-1").</description>
+    </key>
+    <key name="voice-tts-voice" type="s">
+      <default>'alloy'</default>
+      <summary>The voice replies are spoken with</summary>
+      <description>As the router names it ("alloy").</description>
+    </key>
     <key name="voice-speech-model" type="s">
       <default>'small'</default>
       <summary>Speech recognition model</summary>
