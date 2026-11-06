@@ -111,6 +111,7 @@ tabs for each page.
 <b>Router.</b> What your AI gateway reports: requests, tokens in and out, its cost estimate, the top models as bars, and the last ten requests. A health dot once connected; off by default.
 </td>
 <td width="50%" valign="top">
+<img src="docs/images/calories.png" alt="Calories: today's intake 650 of 2,000 kcal, with a meal logged" width="100%"><br>
 <b>Everyday tools.</b> Water and calories logged through the day, and prayer times for your city, all kept on this computer.
 </td>
 </tr>
