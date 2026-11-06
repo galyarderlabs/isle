@@ -47,7 +47,7 @@ export function timeOfDay(dateTime) {
 export function shortcutLabel(accelerator) {
     const names = {super: 'Super', primary: 'Ctrl', control: 'Ctrl', ctrl: 'Ctrl', alt: 'Alt', shift: 'Shift', meta: 'Meta'};
     const modifiers = [...(accelerator ?? '').matchAll(/<(\w+)>/g)].map(([, name]) => names[name.toLowerCase()] ?? name);
-    const key = (accelerator ?? '').replace(/<\w+>/g, '');
+    const key = (accelerator ?? '').replace(/<[^>]*>?/g, '');
     if (!key)
         return '';
     return [...modifiers, key.length === 1 ? key.toUpperCase() : key[0].toUpperCase() + key.slice(1)].join('+');

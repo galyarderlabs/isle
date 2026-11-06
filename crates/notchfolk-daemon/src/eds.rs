@@ -106,9 +106,9 @@ pub async fn open_calendar(bus: &Connection, source: &str) -> zbus::Result<(Stri
 }
 
 /// Lets go of notchfolkd's hold on an opened calendar, however using it went; GNOME Shell keeps its own.
-pub async fn close_calendar(bus: &Connection, path: &str, name: &str, source: &str) {
+pub async fn close_calendar(bus: &Connection, path: &str, name: &str, _source: &str) {
     if let Err(err) = timed(bus.call_method(Some(name), path, Some(CALENDAR), "Close", &())).await {
-        debug!("could not close calendar {source}: {err}");
+        debug!("could not close calendar: {err}");
     }
 }
 
@@ -224,7 +224,7 @@ pub async fn remove_event(bus: &Connection, source: &str, uid: &str) {
     match removed.await {
         Ok(()) => {}
         Err(err) if is_cal_error(&err, CalError::NotFound) => {}
-        Err(err) => warn!("could not take event {uid} out of calendar {source}: {err}"),
+        Err(err) => warn!("could not take event out of calendar {source}: {err}"),
     }
 }
 

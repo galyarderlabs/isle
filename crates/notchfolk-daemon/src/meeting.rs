@@ -47,7 +47,7 @@ impl MeetingLinks {
                 link
             }
             Err(err) => {
-                debug!("could not read calendar event {event}: {err}");
+                debug!("could not read calendar event: {err}");
                 String::new()
             }
         }

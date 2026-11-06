@@ -188,9 +188,10 @@ fn interfaces() -> Vec<Lan> {
         return found;
     }
     let mut entry = list;
-    while !entry.is_null() {
-        // SAFETY: `entry` is a node of the list getifaddrs returned, alive until freeifaddrs.
-        let ifa = unsafe { &*entry };
+    // SAFETY: `entry` starts as the list getifaddrs returned and advances only to
+    // `ifa_next` of a node of that list, so it is always null or a live node;
+    // `as_ref` turns the null case into `None` instead of dereferencing it.
+    while let Some(ifa) = unsafe { entry.as_ref() } {
         entry = ifa.ifa_next;
         let up = ifa.ifa_flags & (libc::IFF_UP as u32) != 0;
         if !up || ifa.ifa_addr.is_null() || ifa.ifa_netmask.is_null() || ifa.ifa_name.is_null() {

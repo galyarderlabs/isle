@@ -364,7 +364,7 @@ where
             }
             // Read only, signed out: the next, or Notchfolk's own.
             eds::Created::No(err) => {
-                warn!("could not add the event to calendar {}: {err}", target.uid)
+                warn!("could not add the event to calendar: {err}")
             }
         }
     }
@@ -398,7 +398,7 @@ where
                     // Its uid makes the next try say whether it got there.
                     eds::Created::Offline | eds::Created::Unsure => None,
                     eds::Created::No(err) => {
-                        warn!("could not send event {} to {}: {err}", event.id, target.uid);
+                        warn!("could not send event {}: {err}", event.id);
                         let refused = refusals.entry(event.id).or_default();
                         *refused += 1;
                         (*refused >= MAX_REFUSALS).then_some(false)

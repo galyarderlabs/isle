@@ -1322,10 +1322,9 @@ mod tests {
     #[ignore = "asks Grok's server with this computer's sign-in"]
     fn reads_the_real_grok_usage() {
         match grok_billing() {
-            Ok(response) => println!(
-                "grok billing: {response}\ngrok: {:?}",
-                grok_live(&response, now_ms())
-            ),
+            // The raw billing reply stays out of the output: only the usage
+            // parsed from it is shown.
+            Ok(response) => println!("grok: {:?}", grok_live(&response, now_ms())),
             Err(err) => println!("grok: {err:?}"),
         }
     }

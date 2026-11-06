@@ -470,7 +470,7 @@ function meetingService(link) {
         return 'Zoom';
     if (host.startsWith('teams.'))
         return 'Microsoft Teams';
-    if (host.endsWith('webex.com'))
+    if (host === 'webex.com' || host.endsWith('.webex.com'))
         return 'Webex';
     return null;
 }
