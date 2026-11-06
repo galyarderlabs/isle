@@ -129,6 +129,7 @@ tabs for each page.
 <b>MCP server.</b> An optional MCP server for agents outside Notchfolk: read tools for your data and actions, writes only what you list in <code>~/.config/notchfolk/mcp.env</code>, on loopback by default and remote access through an authenticated tunnel.
 </td>
 <td width="50%" valign="top">
+<img src="docs/images/more-ais.png" alt="The AI picker: Claude Code, Codex, Hermes Agent, OpenAI-compatible API, Oh My Pi, opencode, Antigravity" width="100%"><br>
 <b>More AIs.</b> The assistant also runs Hermes and Oh My Pi with the providers they are configured for, plus any OpenAI-compatible API.
 </td>
 </tr>
