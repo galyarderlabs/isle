@@ -82,6 +82,7 @@ tabs for each page.
 </tr>
 <tr>
 <td width="50%" valign="top">
+<img src="docs/images/alerts.png" alt="The closed island at rest: a song playing, the focus timer at 47:51, battery at 1%, and 33,0 °C" width="100%"><br>
 <b>Alerts</b> for volume, brightness, Caps Lock, charging, low battery, Bluetooth battery, going offline, reminders, meetings about to start, AI plan limits and GNOME notifications with their buttons — in the same place instead of the middle of the screen. Hold the pointer on one to keep it; × or swipe up to put it away.
 </td>
 <td width="50%" valign="top">
