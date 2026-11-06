@@ -78,6 +78,7 @@ tabs for each page.
 </td>
 <td width="50%" valign="top">
 <img src="docs/images/conversation.png" alt="The conversation: install vlc, the command that ran with its time, and the answer" width="100%"><br>
+<img src="docs/images/ai-chat.png" alt="Chatting with the AI: asking where Notchfolk runs" width="100%"><br>
 <b>Speak or type, and talk it through.</b> It listens as soon as it opens; start typing to type instead. Scroll up for the conversation so far; select text to copy it, + for a new one. The bot turns to the pointer, blinks, and bounces as you speak; close the island and it carries on in the background.
 </td>
 </tr>
