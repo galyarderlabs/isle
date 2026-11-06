@@ -11,12 +11,12 @@ Your desktop notch, alive — GNOME today, Windows and macOS next. Music with sy
 [![Voice](https://img.shields.io/badge/Voice-Local%20Whisper-success.svg)](https://github.com/ggerganov/whisper.cpp)
 [![Sponsor](https://img.shields.io/badge/sponsor-support-ff69b4?logo=githubsponsors)](https://github.com/sponsors/galyarderlabs)
 
-</div>
-
 Notchfolk turns the centre of the top bar into a black notch. At rest, the
 clock sits in the middle with what's running beside it — a song, a call, a
 timer. Rest the pointer on it and it springs open into a small panel with
 tabs for each page.
+
+</div>
 
 ## Features
 
