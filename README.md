@@ -37,6 +37,7 @@ tabs for each page.
 <b>Calls</b> in WhatsApp, Telegram, Zoom, Meet and other call apps, or call pages in a browser: a green phone in the closed island, the call's length on the Call page. Open it to watch live while you work elsewhere, mute, or jump back to the call.
 </td>
 <td width="50%" valign="top">
+<img src="docs/images/timer.png" alt="Timer page: the ring at 40:42, Work 60 and Break 15, with Pause" width="100%"><br>
 <b>Timer.</b> A Pomodoro timer with breaks and Do Not Disturb while you focus: a ring with the time left, work and break lengths to type or step with − and + (locked from Start until Reset). Its time left stays in the closed island; beside a song or a call it shows as a small ring.
 </td>
 </tr>
