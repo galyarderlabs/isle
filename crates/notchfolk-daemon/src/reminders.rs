@@ -19,10 +19,13 @@ pub struct RemindersService {
 }
 
 impl RemindersService {
-    /// Reads the saved reminders, or starts with none.
+    /// Reads the saved reminders, or starts with none; the history is pruned of
+    /// what its week has passed.
     pub fn load() -> Self {
         let mut store = Store::new("reminders");
-        let reminders = store.load();
+        let mut reminders: Reminders = store.load();
+        reminders.prune_history(now_ms());
+        store.save(&reminders);
         Self { reminders, store }
     }
 
@@ -55,13 +58,13 @@ impl RemindersService {
         Ok(id)
     }
 
-    /// Forgets a reminder once it has been shown.
+    /// Forgets a reminder once it has been shown; it stays in the history for a week.
     async fn dismiss(
         &mut self,
         id: u64,
         #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
     ) -> fdo::Result<()> {
-        if self.reminders.dismiss(id) {
+        if self.reminders.dismiss(id, now_ms()) {
             self.store.save(&self.reminders);
             self.items_changed(&emitter).await?;
         }
@@ -72,5 +75,12 @@ impl RemindersService {
     #[zbus(property)]
     fn items(&self) -> String {
         serde_json::to_string(self.reminders.items()).unwrap_or_default()
+    }
+
+    /// JSON array of `{id, text, due_ms, shown_at_ms}`, newest first: the reminders
+    /// shown in the last week.
+    #[zbus(property)]
+    fn history(&self) -> String {
+        serde_json::to_string(self.reminders.history()).unwrap_or_default()
     }
 }

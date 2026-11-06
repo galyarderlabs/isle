@@ -211,7 +211,7 @@ record exact versions and results in
    refused).
 2. **Tools/list**: with an external MCP client (Claude Code: `claude mcp add
    --transport http notchfolk http://127.0.0.1:8765/mcp`), `tools/list` returns all
-   54 tools with their scopes in the descriptions.
+   55 tools with their scopes in the descriptions.
 3. **Reads**: `list_tasks`, `list_calendar_events`, `list_reminders`,
    `get_water_entries`, `prayer_schedule`, `now_playing`, `focus_state`,
    `get_app_usage`, `get_system_state`, `get_router_stats`, `get_usage_quota`,

@@ -111,6 +111,16 @@ class TasksPage extends Page {
         this._scheduled.add_child(this._scheduledRows);
         this._scheduled.visible = false;
         contents.add_child(this._scheduled);
+        this._recent = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-reminders-scheduled'});
+        this._recentHeading = new St.BoxLayout({style_class: 'notchfolk-reminders-scheduled-heading'});
+        this._recentHeading.add_child(label('Last 7 days', 'notchfolk-reminders-scheduled-title'));
+        this._recentCount = label('', 'notchfolk-reminders-scheduled-count');
+        this._recentHeading.add_child(this._recentCount);
+        this._recent.add_child(this._recentHeading);
+        this._recentRows = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-reminders-scheduled-list'});
+        this._recent.add_child(this._recentRows);
+        this._recent.visible = false;
+        contents.add_child(this._recent);
         this._scroll = new St.ScrollView({
             style_class: 'notchfolk-reminder-scroll',
             hscrollbar_policy: St.PolicyType.NEVER,
@@ -131,7 +141,7 @@ class TasksPage extends Page {
         layout.add_child(column);
         this.add_child(layout);
 
-        this.watch(['tasks', 'reminders'], () => this._update());
+        this.watch(['tasks', 'reminders', 'reminderHistory'], () => this._update());
         this._update();
     }
 
@@ -330,6 +340,28 @@ class TasksPage extends Page {
         this._scheduledRows.destroy_all_children();
         for (const item of scheduled)
             this._scheduledRows.add_child(this._scheduledRow(item));
+
+        const history = this.daemon.state.reminderHistory ?? [];
+        this._recent.visible = history.length > 0;
+        this._recentCount.text = `${history.length}`;
+        this._recentRows.destroy_all_children();
+        for (const item of history)
+            this._recentRows.add_child(this._historyRow(item));
+    }
+
+    /** A shown reminder, kept for a week: what it said and when it was due. */
+    _historyRow(item) {
+        const row = new St.BoxLayout({style_class: 'notchfolk-reminder-scheduled-row'});
+        row.add_child(new St.Widget({style_class: 'notchfolk-reminder-scheduled-marker', y_align: Clutter.ActorAlign.CENTER}));
+
+        const details = new St.BoxLayout({...VERTICAL, style_class: 'notchfolk-reminder-scheduled-details', x_expand: true});
+        const title = label(item.text, 'notchfolk-reminder-scheduled-text', {x_expand: true});
+        wrapLines(title);
+        details.add_child(title);
+        const when = this._scheduledTime(item.due_ms);
+        details.add_child(label(when, 'notchfolk-reminder-scheduled-time'));
+        row.add_child(details);
+        return row;
     }
 
     /** A timed reminder stays visible here until it is dismissed or shown. */
