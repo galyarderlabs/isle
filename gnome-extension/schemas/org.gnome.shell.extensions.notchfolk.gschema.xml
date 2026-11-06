@@ -348,7 +348,7 @@
     <key name="voice-speech-cloud-model" type="s">
       <default>''</default>
       <summary>The speech router's speech-to-text model</summary>
-      <description>As the router names it, sent with each recording ("dg/nova-3").</description>
+      <description>As the router names it, sent with each recording.</description>
     </key>
     <key name="voice-stt-path" type="s">
       <default>'audio/transcriptions'</default>
@@ -368,12 +368,12 @@
     <key name="voice-tts-model" type="s">
       <default>''</default>
       <summary>The speech router's text-to-speech model</summary>
-      <description>As the router names it ("tts-1").</description>
+      <description>As the router names it.</description>
     </key>
     <key name="voice-tts-voice" type="s">
       <default>''</default>
       <summary>The voice replies are spoken with</summary>
-      <description>As the router names it ("alloy").</description>
+      <description>As the router names it.</description>
     </key>
     <key name="voice-speech-model" type="s">
       <default>'small'</default>
