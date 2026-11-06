@@ -2,663 +2,1808 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
-<title>Notchfolk — A little world in your notch.</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Notchfolk: a living notch for GNOME</title>
+<meta name="description" content="Notchfolk turns the top edge of your GNOME desktop into a small, living notch for music, synced lyrics, tasks, calendar and AI.">
+<meta property="og:title" content="Notchfolk: a living notch for GNOME">
+<meta property="og:description" content="Music, synced lyrics, tasks, calendar, AI assistant and a file shelf, tucked into the top of your screen.">
+<meta property="og:image" content="https://galyarderlabs.github.io/notchfolk/images/banner.png">
+<meta property="og:url" content="https://galyarderlabs.github.io/notchfolk/">
+<meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" href="images/icon.png">
-<meta name="description" content="Notchfolk is a charming GNOME extension that lives in your desktop notch. Play music, manage tasks, check your calendar, chat with AI — all inside a tiny cozy world.">
-<meta property="og:title" content="Notchfolk — A little world in your notch.">
-<meta property="og:description" content="A charming GNOME extension that lives in your desktop notch. Music, tasks, calendar, AI — all inside a tiny cozy world.">
-<meta property="og:image" content="images/banner.png">
-<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --page:#fdfcf8; --surface:#ffffff; --surface-soft:#f6f4ec; --ink:#1a2233; --body:#404a5c; --muted:#6f7a8c; --muted-2:#8a94a6;
-    --line:#e9e6db; --line-2:#ddd9cb;
-    --mint:#7dd8ae; --mint-soft:#dcf5e8; --mint-deep:#1f7a54;
-    --sky:#8ecdf0; --sky-soft:#dff0fb; --sky-deep:#1f6fb8;
-    --peach:#ffc890; --peach-soft:#ffedd6; --peach-deep:#c96a1e;
-    --lilac:#c4b5fd; --lilac-soft:#ece3fd; --lilac-deep:#6d28d9;
-    --navy:#101828; --panel:#0b0b0c; --panel-2:#131315; --panel-line:#232326; --panel-copy:#dfdfe2; --panel-muted:#85858a;
-    --shadow-soft:0 2px 16px rgba(26,34,51,.06); --shadow-demo:0 30px 80px -30px rgba(26,34,51,.35);
-    --radius-card:20px; --radius-frame:26px;
-  }
-  * { box-sizing:border-box; }
-  html { scroll-behavior:smooth; }
-  body { margin:0; min-width:320px; background:var(--page); color:var(--body); font-family:Geist,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; line-height:1.6; }
-  a { color:inherit; text-decoration:none; }
-  img { display:block; max-width:100%; }
-  button, input { font:inherit; }
-  button { cursor:pointer; }
-  code { font-family:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; }
-  .container { max-width:1080px; margin:0 auto; padding:0 24px; }
-  /* header */
-  .site-header { position:sticky; top:0; z-index:20; padding:14px 0; background:rgba(253,252,248,.92); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); }
-  .site-header__bar { display:flex; align-items:center; justify-content:space-between; }
-  .site-header__left, .site-header__right { display:flex; align-items:center; gap:20px; }
-  .brand { display:flex; align-items:center; gap:10px; font-size:21px; font-weight:600; letter-spacing:-.02em; color:var(--ink); }
-  .brand img { width:34px; height:34px; border-radius:9px; }
-  .site-nav a { margin-left:20px; font-size:15px; color:var(--body); }
-  .site-nav a:hover { color:var(--ink); }
-  .star-pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); background:#fff; min-height:42px; border-radius:14px; padding:0 16px; color:#525252; font-size:14px; box-shadow:var(--shadow-soft); }
-  .star-pill:hover { color:var(--ink); }
-  /* buttons */
-  .button { display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:48px; padding:0 22px; border-radius:14px; border:1px solid transparent; font-size:16px; font-weight:500; transition:transform 180ms ease, box-shadow 180ms ease; }
-  .button:hover { transform:translateY(-1px); }
-  .button--primary { background:#111827; color:#fff; box-shadow:0 2px 10px rgba(17,24,39,.25); }
-  .button--primary:hover { box-shadow:0 10px 28px rgba(17,24,39,.28); }
-  .button--secondary { background:#fff; border-color:var(--line); color:#525252; box-shadow:var(--shadow-soft); }
-  .button--small { min-height:40px; padding:0 16px; font-size:14px; }
-  /* hero */
-  .hero { padding:64px 0 0; text-align:center; }
-  .hero__chip { display:inline-block; border:1px solid var(--line); border-radius:999px; background:#fff; padding:7px 16px; color:var(--muted); font-size:13.5px; font-weight:500; box-shadow:var(--shadow-soft); }
-  .hero h1 { max-width:900px; margin:26px auto 0; color:var(--ink); font-size:clamp(2.75rem,7vw,62px); line-height:1.05; font-weight:600; letter-spacing:-.02em; }
-  .hero h1 .grad { background:linear-gradient(90deg,var(--mint-deep),var(--sky-deep) 50%,var(--peach-deep)); -webkit-background-clip:text; background-clip:text; color:transparent; }
-  .lead { max-width:640px; margin:22px auto 0; color:var(--muted); font-size:19px; line-height:1.55; }
-  .hero__actions { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; max-width:560px; margin:34px auto 0; }
-  .hero__actions .button { flex:1 1 0; }
-  .hero__status { margin-top:18px; font-size:14px; color:var(--muted); }
-  /* desktop mockup: the little world inside the notch (interactive preview) */
-  .desk-wrap { margin-top:52px; }
-  .desk { position:relative; width:100%; aspect-ratio:16/9.5; overflow:hidden; border:1px solid var(--line-2); border-radius:var(--radius-frame); background:linear-gradient(135deg,#d8f3e3 0%,#d5ecfa 48%,#ffe9cf 100%); box-shadow:var(--shadow-demo); }
-  .desk__bar { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; color:#3c465a; font-size:13px; font-weight:500; }
-  .desk__bar span { display:flex; align-items:center; gap:8px; }
-  .desk__bar .dot { width:8px; height:8px; border-radius:999px; background:#3c465a; opacity:.35; }
-  .notch { position:absolute; top:44px; left:50%; transform:translateX(-50%); width:min(560px,86%); display:flex; flex-direction:column; align-items:center; }
-  .notch__pill { display:flex; align-items:center; gap:10px; border:0; border-radius:999px; background:#0b0b0c; color:#f1f1f2; padding:9px 18px; font-size:13.5px; font-weight:500; box-shadow:0 10px 30px rgba(0,0,0,.35); white-space:nowrap; font-family:inherit; }
-  .notch__pill:hover { background:#1a1a1d; }
-  .notch__pill .eq { display:inline-flex; align-items:flex-end; gap:2px; height:14px; }
-  .notch__pill .eq i { display:block; width:3px; border-radius:2px; background:#7dd8ae; animation:eq 1s ease-in-out infinite; }
-  .notch__pill .eq i:nth-child(1) { height:6px; }
-  .notch__pill .eq i:nth-child(2) { height:12px; animation-delay:.2s; }
-  .notch__pill .eq i:nth-child(3) { height:8px; animation-delay:.4s; }
-  .notch__pill.paused .eq i { animation-play-state:paused; transform:scaleY(.5); }
-  .notch__pill .eq.hidden { display:none; }
-  @keyframes eq { 0%,100% { transform:scaleY(.5); } 50% { transform:scaleY(1); } }
-  .notch__pill .time { color:#9a9aa0; font-weight:400; }
-  .notch__pill .hint { color:#6d6d72; font-weight:400; font-size:12px; }
-  .notch__world { width:100%; min-height:168px; margin-top:10px; border-radius:18px; background:rgba(255,255,255,.82); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,.9); box-shadow:0 18px 44px rgba(26,34,51,.18); padding:16px 18px; text-align:left; }
-  .notch[data-open="false"] .notch__world { display:none; }
-  .pv-view { display:none; }
-  .notch[data-view="music"] .pv-view--music { display:block; }
-  .notch[data-view="tasks"] .pv-view--tasks { display:block; }
-  .notch[data-view="calendar"] .pv-view--calendar { display:block; }
-  .notch[data-view="ai"] .pv-view--ai { display:block; }
-  .pv-view h3 { margin:0 0 4px; color:var(--ink); font-size:15px; font-weight:600; }
-  .pv-view p { margin:0; color:var(--muted); font-size:13px; line-height:1.5; }
-  .pv-music__top { display:flex; align-items:center; gap:12px; }
-  .pv-music__art { flex:none; width:52px; height:52px; border-radius:12px; background:linear-gradient(135deg,var(--mint),var(--sky)); display:grid; place-items:center; color:#fff; font-size:22px; }
-  .pv-music__meta { min-width:0; }
-  .pv-music__meta b { display:block; color:var(--ink); font-size:15px; }
-  .pv-music__meta span { display:block; color:var(--muted); font-size:12.5px; }
-  .pv-music__controls { margin-left:auto; display:flex; align-items:center; gap:6px; }
-  .pv-ctl { width:34px; height:34px; border-radius:999px; border:1px solid var(--line); background:#fff; color:var(--ink); font-size:13px; display:grid; place-items:center; }
-  .pv-ctl:hover { background:var(--surface-soft); }
-  .pv-progress { display:flex; align-items:center; gap:10px; margin-top:12px; color:var(--muted); font-size:12px; }
-  .pv-progress .bar { flex:1; height:5px; border-radius:3px; background:var(--line-2); overflow:hidden; }
-  .pv-progress .bar i { display:block; width:47%; height:100%; border-radius:3px; background:linear-gradient(90deg,var(--mint-deep),var(--sky-deep)); }
-  .pv-lyric { margin-top:12px; color:var(--ink); font-size:14px; }
-  .pv-lyric span { color:var(--muted); }
-  .pv-tasks { display:grid; gap:8px; margin-top:10px; }
-  .pv-task { display:flex; align-items:center; gap:10px; width:100%; border:1px solid var(--line); border-radius:12px; background:#fff; padding:9px 12px; color:var(--ink); font-size:14px; text-align:left; }
-  .pv-task:hover { background:var(--surface-soft); }
-  .pv-task .tick { flex:none; width:20px; height:20px; border-radius:999px; border:2px solid var(--line-2); display:grid; place-items:center; color:#fff; font-size:12px; }
-  .pv-task.done { color:var(--muted); }
-  .pv-task.done .tick { border-color:var(--mint-deep); background:var(--mint-deep); }
-  .pv-task.done .label { text-decoration:line-through; }
-  .pv-task .when { margin-left:auto; color:var(--muted); font-size:12px; white-space:nowrap; }
-  .pv-events { display:grid; gap:8px; margin-top:10px; }
-  .pv-event { display:flex; align-items:center; gap:12px; border:1px solid var(--line); border-radius:12px; background:#fff; padding:9px 12px; }
-  .pv-event .t { flex:none; color:var(--ink); font-size:13.5px; font-weight:600; }
-  .pv-event .what { color:var(--ink); font-size:14px; }
-  .pv-event .where { color:var(--muted); font-size:12px; }
-  .pv-chat { display:grid; gap:10px; margin-top:10px; }
-  .pv-msg { max-width:92%; border-radius:14px; padding:10px 13px; font-size:13.5px; line-height:1.5; }
-  .pv-msg--user { justify-self:end; background:var(--sky-soft); color:var(--ink); }
-  .pv-msg--ai { justify-self:start; background:#fff; border:1px solid var(--line); color:var(--body); }
-  .pv-msg b { color:var(--ink); }
-  .pv-tabs { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:18px; }
-  .pv-tab { border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--body); padding:8px 16px; font-size:14px; font-weight:500; box-shadow:var(--shadow-soft); transition:background 150ms ease, color 150ms ease; }
-  .pv-tab:hover { color:var(--ink); }
-  .pv-tab[aria-pressed="true"] { background:var(--navy); border-color:var(--navy); color:#fff; }
-  .pv-hint { margin-top:12px; color:var(--muted); font-size:13px; }
-  .desk__dock { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); display:flex; gap:8px; border:1px solid rgba(255,255,255,.7); border-radius:999px; background:rgba(255,255,255,.55); backdrop-filter:blur(8px); padding:7px 10px; }
-  .desk__dock i { display:block; width:26px; height:26px; border-radius:8px; }
-  .desk__dock i:nth-child(1) { background:var(--mint); }
-  .desk__dock i:nth-child(2) { background:var(--sky); }
-  .desk__dock i:nth-child(3) { background:var(--peach); }
-  .desk__dock i:nth-child(4) { background:var(--lilac); }
-  .hero__trio { width:min(340px,80%); margin:28px auto 0; border-radius:22px; box-shadow:var(--shadow-demo); }
-  /* sections */
-  .section { padding-top:110px; }
-  .section-intro { max-width:660px; }
-  .section-intro--center { margin:0 auto; text-align:center; }
-  .eyebrow { margin:0 0 12px; color:var(--mint-deep); font-size:13px; font-weight:600; letter-spacing:.02em; }
-  .section-heading { margin:0; color:var(--ink); font-size:clamp(2.25rem,5vw,42px); line-height:1.1; font-weight:600; letter-spacing:-.02em; }
-  .section-copy { margin-top:16px; color:var(--muted); font-size:18px; line-height:1.55; overflow-wrap:anywhere; }
-  .card-grid-3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; margin-top:44px; }
-  .card-grid-2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; margin-top:44px; }
-  .feature-card { overflow:hidden; border:1px solid var(--line); border-radius:var(--radius-card); background:var(--surface); padding:26px; box-shadow:var(--shadow-soft); transition:transform 180ms ease, box-shadow 180ms ease; }
-  .feature-card:hover { transform:translateY(-2px); box-shadow:0 12px 28px rgba(26,34,51,.08); }
-  .feature-card h3 { margin:0; color:var(--ink); font-size:20px; font-weight:600; letter-spacing:-.02em; }
-  .feature-card p { margin:10px 0 0; font-size:15px; line-height:1.6; }
-  .feature-card .tag { display:inline-block; margin-bottom:12px; border-radius:999px; background:var(--mint-soft); color:var(--mint-deep); padding:4px 12px; font-size:12.5px; font-weight:600; }
-  .feature-icon { display:grid; place-items:center; width:46px; height:46px; margin-bottom:18px; border-radius:13px; }
-  .feature-icon svg { width:24px; height:24px; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
-  .feature-icon--mint { background:var(--mint-soft); color:var(--mint-deep); }
-  .feature-icon--sky { background:var(--sky-soft); color:var(--sky-deep); }
-  .feature-icon--peach { background:var(--peach-soft); color:var(--peach-deep); }
-  .feature-icon--lilac { background:var(--lilac-soft); color:var(--lilac-deep); }
-  /* stats */
-  .stat-row { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; margin-top:44px; }
-  .stat { border:1px solid var(--line); border-radius:var(--radius-card); background:var(--surface); padding:26px; box-shadow:var(--shadow-soft); text-align:center; }
-  .stat b { display:block; color:var(--ink); font-size:30px; font-weight:600; letter-spacing:-.02em; }
-  .stat span { display:block; margin-top:6px; color:var(--muted); font-size:14px; line-height:1.5; }
-  /* customize demo */
-  .custom-wrap { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; align-items:center; margin-top:44px; }
-  .custom-copy p { margin:0 0 14px; color:var(--muted); font-size:17px; line-height:1.6; }
-  .custom-copy p b { color:var(--ink); }
-  .custom-toggle { display:inline-flex; gap:6px; border:1px solid var(--line); border-radius:999px; background:#fff; padding:5px; box-shadow:var(--shadow-soft); }
-  .custom-toggle button { border:0; border-radius:999px; background:transparent; color:var(--body); padding:8px 18px; font-size:14px; font-weight:500; }
-  .custom-toggle button[aria-pressed="true"] { background:var(--navy); color:#fff; }
-  .custom-demo { border:1px solid var(--line-2); border-radius:var(--radius-frame); background:linear-gradient(135deg,#d8f3e3 0%,#d5ecfa 48%,#ffe9cf 100%); padding:28px 22px; box-shadow:var(--shadow-demo); }
-  .demo-island { max-width:340px; margin:0 auto; display:flex; flex-direction:column; align-items:center; }
-  .demo-pill { border-radius:999px; background:#0b0b0c; color:#f1f1f2; padding:10px 20px; font-size:13.5px; font-weight:500; box-shadow:0 10px 30px rgba(0,0,0,.35); }
-  .demo-panel { width:100%; margin-top:10px; border-radius:18px; background:rgba(255,255,255,.9); border:1px solid rgba(255,255,255,.95); box-shadow:0 18px 44px rgba(26,34,51,.18); padding:16px 18px; }
-  .demo-panel b { display:block; color:var(--ink); font-size:14px; }
-  .demo-panel span { display:block; margin-top:3px; color:var(--muted); font-size:12.5px; line-height:1.5; }
-  .demo-island.glass .demo-pill { background:rgba(20,20,24,.72); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.22); }
-  .demo-island.glass .demo-panel { background:rgba(255,255,255,.45); backdrop-filter:blur(14px); }
-  .custom-caption { margin-top:14px; text-align:center; color:var(--muted); font-size:13px; }
-  /* install */
-  .install-panel { margin-top:44px; overflow:hidden; border-radius:var(--radius-frame); background:var(--navy); color:#e6e8ec; box-shadow:var(--shadow-demo); }
-  .install-panel__head { display:flex; align-items:center; gap:8px; padding:16px 22px 0; }
-  .install-panel__head span { width:11px; height:11px; border-radius:999px; background:#3a4152; }
-  .install-panel__head span:nth-child(1) { background:#ff5f57; }
-  .install-panel__head span:nth-child(2) { background:#febc2e; }
-  .install-panel__head span:nth-child(3) { background:#28c840; }
-  .install-panel__body { display:flex; align-items:center; gap:14px; padding:18px 22px 22px; }
-  .install-panel__body code { flex:1; min-width:0; overflow-x:auto; font-size:15px; line-height:1.5; white-space:nowrap; color:#f1f1f2; }
-  .copy-btn { flex:none; border:1px solid #2b3346; border-radius:10px; background:#1a2233; color:#e6e8ec; padding:9px 16px; font-size:14px; font-weight:500; transition:background 150ms ease; }
-  .copy-btn:hover { background:#232c42; }
-  .install-note { margin-top:18px; color:var(--muted); font-size:15px; }
-  /* faq */
-  .faq-list { margin-top:36px; display:grid; gap:14px; }
-  .faq-item { border:1px solid var(--line); border-radius:16px; background:var(--surface); box-shadow:var(--shadow-soft); overflow:hidden; }
-  .faq-item summary { cursor:pointer; padding:18px 22px; color:var(--ink); font-size:17px; font-weight:600; list-style:none; }
-  .faq-item summary::-webkit-details-marker { display:none; }
-  .faq-item summary:hover { color:#000; }
-  .faq-item p { margin:0; padding:0 22px 20px; color:var(--body); font-size:15.5px; line-height:1.65; }
-  .faq-item p code { font-size:14px; background:var(--surface-soft); border-radius:6px; padding:1px 6px; }
-  /* honest note */
-  .note-box { margin-top:36px; border:1px solid var(--line); border-left:4px solid var(--peach); border-radius:16px; background:var(--surface); padding:26px 28px; box-shadow:var(--shadow-soft); }
-  .note-box p { margin:0; color:var(--body); font-size:17px; line-height:1.65; }
-  .note-box p b { color:var(--ink); }
-  /* footer */
-  .site-footer { margin-top:110px; border-radius:26px; background:var(--navy); color:rgba(255,255,255,.72); padding:64px 54px 48px; }
-  .site-footer__top { display:flex; justify-content:space-between; gap:48px; }
-  .site-footer__brand { display:flex; flex-direction:column; align-items:flex-start; gap:16px; max-width:300px; }
-  .site-footer .brand { color:#fff; }
-  .site-footer__tag { font-size:15px; line-height:1.55; }
-  .site-footer__legal { display:flex; flex-wrap:wrap; gap:4px 16px; color:rgba(255,255,255,.55); font-size:13.5px; }
-  .site-footer__columns { display:grid; grid-template-columns:repeat(3,minmax(140px,auto)); gap:48px; }
-  .site-footer__column h2 { margin:0 0 14px; color:#fff; font-size:14px; font-weight:600; }
-  .site-footer__column ul { display:grid; gap:10px; margin:0; padding:0; list-style:none; font-size:14px; }
-  .site-footer__column a:hover { color:#fff; }
-  /* hamburger menu */
-  .nav-toggle { display:none; width:42px; height:42px; place-items:center; border:1px solid var(--line); border-radius:12px; background:#fff; color:var(--ink); font-size:20px; }
-  .site-menu-panel { display:none; }
-  .site-header.menu-open .site-menu-panel { display:flex; flex-direction:column; gap:4px; position:absolute; top:100%; left:0; right:0; background:var(--page); border-bottom:1px solid var(--line); padding:12px 24px 16px; }
-  .site-menu-panel a { padding:10px 4px; font-size:16px; color:var(--body); }
-  .site-menu-panel .button { margin-top:8px; }
-  @media (max-width: 960px) {
-    .site-footer__top { flex-direction:column; }
-    .custom-wrap { grid-template-columns:1fr; gap:28px; }
-  }
-  @media (max-width: 900px) {
-    .site-header__right { gap:10px; }
-    .hero h1 { font-size:40px; }
-    .card-grid-3, .card-grid-2, .stat-row { grid-template-columns:1fr; }
-    .site-nav, .site-header__right > .star-pill { display:none; }
-    .nav-toggle { display:grid; }
-    .site-header__bar { flex-wrap:wrap; }
-  }
-  @media (max-width: 720px) {
-    .section { padding-top:72px; }
-    .site-footer { padding:48px 24px 40px; }
-    .site-footer__columns { grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
-    .install-panel__body { flex-direction:column; align-items:stretch; }
-    .install-panel__body code { white-space:normal; overflow-wrap:anywhere; }
-    .desk { aspect-ratio:16/13; }
-    .notch { width:min(520px,94%); top:36px; }
-    .notch__world { min-height:190px; padding:14px; }
-    .notch__pill .hint { display:none; }
-    .pv-tabs { gap:6px; }
-    .pv-tab { padding:7px 12px; font-size:13px; }
-  }
+/* ===== Tokens ================================================================ */
+:root {
+  color-scheme: light;
+  --void: #fdfcf8;
+  --panel: #ffffff;
+  --ink: #1a2233;
+  --mist: #6f7a8c;
+  --line: #e9e6db;
+  --cyan: #1f6fb8;
+  --indigo: #1f7a54;
+  --violet: #c96a1e;
+  --glow: linear-gradient(90deg, #7dd8ae, #8ecdf0 50%, #ffc890);
+  --font: "Bricolage Grotesque", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --ui: "Cantarell", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif; /* huruf di dalam notch = huruf aplikasinya */
+  --spring: cubic-bezier(0.34, 1.32, 0.5, 1);
+  --u: 1.3; /* skala notch di layar laptop: 1 dp = --u px (diatur JS) */
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--void); color: var(--ink);
+  font-family: var(--font); font-size: 18px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 6px; }
+.wrap { width: min(1080px, 100% - 48px); margin-inline: auto; }
+
+/* ===== Bilah atas + notch maskot di tepi halaman ================================= */
+.bar {
+  position: absolute; inset: 0 0 auto 0; z-index: 5;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 24px 0; font-size: 15px;
+}
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; }
+.brand img { width: 26px; height: 26px; }
+.bar nav { display: flex; gap: 22px; }
+.bar nav a { text-decoration: none; color: var(--mist); }
+.bar nav a:hover { color: var(--ink); }
+
+
+.ambient {
+  position: absolute; inset: auto 0 0 0; height: 90%; pointer-events: none;
+  background: var(--glow);
+  -webkit-mask: linear-gradient(to top, #000, rgba(0,0,0,.55) 30%, rgba(0,0,0,.12) 70%, transparent);
+          mask: linear-gradient(to top, #000, rgba(0,0,0,.55) 30%, rgba(0,0,0,.12) 70%, transparent);
+}
+.eyes { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; }
+.eye {
+  border-radius: 50%; background: #fff;
+  box-shadow: 0 0 6px 1px rgba(120,190,255,.6), 0 0 14px 4px rgba(80,140,255,.28);
+  animation: blink 4.2s infinite;
+}
+@keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+
+/* ===== Hero ======================================================================= */
+.hero { text-align: center; padding: 150px 0 30px; }
+.hero h1 { margin: 0 auto; max-width: 13ch; font-size: clamp(44px, 8vw, 92px); line-height: .98; font-weight: 800; letter-spacing: -.035em; }
+.hero .lede { margin: 26px auto 0; max-width: 34em; color: var(--mist); font-size: 19px; }
+.cta { margin-top: 34px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.btn {
+  position: relative; display: inline-flex; align-items: center; gap: 12px;
+  padding: 16px 28px; border-radius: 999px; background: #101828; color: #fff;
+  font-weight: 700; font-size: 17px; text-decoration: none; transition: transform .25s var(--spring);
+}
+.btn::before { content: ""; position: absolute; inset: 40% 8% -14px; z-index: -1; border-radius: 999px; background: var(--glow); filter: blur(18px); opacity: .75; }
+.btn:hover { transform: translateY(-2px); }
+.btn svg { width: 18px; height: 18px; }
+.cta small { color: var(--mist); font-size: 14px; }
+
+/* ===== Waitlist =================================================================== */
+.wl { margin-top: 34px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.wl form {
+  position: relative; display: flex; align-items: center; gap: 6px;
+  width: min(460px, 100%); padding: 6px; border-radius: 999px;
+  background: rgba(26,34,51,.05); border: 1px solid var(--line);
+  transition: border-color .2s;
+}
+.wl form:focus-within { border-color: rgba(26,34,51,.3); }
+.wl form::before { /* cahaya maskot di bawah formulir */
+  content: ""; position: absolute; inset: 55% 10% -16px; z-index: -1; border-radius: 999px;
+  background: var(--glow); filter: blur(20px); opacity: .55;
+}
+.wl input[type=email] {
+  flex: 1; min-width: 0; height: 46px; padding: 0 18px; border: 0; outline: 0;
+  background: transparent; color: var(--ink); font: inherit; font-size: 16px;
+}
+.wl input::placeholder { color: var(--mist); }
+.wl button {
+  height: 46px; padding: 0 22px; border: 0; border-radius: 999px; cursor: pointer;
+  background: #101828; color: #fff; font: inherit; font-size: 16px; font-weight: 700; white-space: nowrap;
+  transition: transform .25s var(--spring), opacity .2s;
+}
+.wl button:hover { transform: translateY(-1px); }
+.wl button:disabled { opacity: .6; cursor: default; transform: none; }
+.wl .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; } /* jebakan bot */
+.wl .count { color: var(--mist); font-size: 15px; min-height: 1.6em; }
+.wl .count b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.wl .msg { font-size: 15px; min-height: 1.6em; color: var(--mist); }
+.wl .msg:empty { display: none; }
+.wl .msg.err { color: #ff8f8f; }
+.wl .done { display: none; align-items: center; gap: 10px; padding: 14px 22px; border-radius: 999px; background: rgba(51,224,122,.12); color: #8ff0b6; font-weight: 600; text-align: left; }
+.wl.joined form { display: none; }
+.wl.joined .done { display: inline-flex; }
+.soon { display: inline-block; margin-bottom: 18px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); color: var(--mist); font-size: 14px; }
+@media (max-width: 480px) {
+  .wl form { flex-direction: column; border-radius: 22px; padding: 8px; }
+  .wl input[type=email] { width: 100%; text-align: center; }
+  .wl button { width: 100%; }
+}
+
+/* ===== Laptop pratinjau ============================================================== */
+.preview { padding-top: 90px; }
+.laptop {
+  position: relative; margin-inline: auto; overflow: hidden;
+  height: calc(var(--u) * 260px + 30px);
+  -webkit-mask: linear-gradient(#000 72%, transparent);
+          mask: linear-gradient(#000 72%, transparent);
+}
+.lid {
+  position: absolute; left: 50%; top: 24px; transform: translateX(-50%);
+  width: calc(var(--u) * 1180px); height: 900px;
+  border-radius: calc(var(--u) * 24px) calc(var(--u) * 24px) 0 0;
+  background: linear-gradient(#3a3d45, #24262c 14px);
+  padding: 2px; /* tepi aluminium tipis */
+}
+.bezel {
+  position: absolute; inset: 2px; border-radius: inherit; background: #050506;
+  padding: calc(var(--u) * 9px); /* bezel tipis */
+}
+.cam { position: absolute; top: calc(var(--u) * 3.3px); left: 50%; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, #2b3a55, #0b0f18); }
+.screen {
+  position: absolute; inset: calc(var(--u) * 9px); bottom: 0; overflow: hidden;
+  border-radius: calc(var(--u) * 15px) calc(var(--u) * 15px) 0 0;
+  background: #1b2a6b; /* cadangan sebelum wallpaper tergambar */
+}
+
+/* Wallpaper: "bunga" cahaya berwarna maskot di atas langit terang.
+   Bagian atas sengaja terang supaya notch hitam tampak menonjol. Gambar statis = ringan. */
+.wall {
+  position: absolute; left: 0; right: 0; top: 0; height: calc(var(--u) * 320px); overflow: hidden;
+  background:
+    radial-gradient(70% 60% at 50% -12%, #ffffff 0%, rgba(255,255,255,.65) 30%, transparent 62%),
+    linear-gradient(180deg, #fdfcf8 0%, #e6f4ec 30%, #dff0fb 60%, #ece3fd 100%);
+}
+.petal {
+  position: absolute; left: 50%; top: calc(var(--u) * 430px);
+  width: calc(var(--u) * 175px); height: calc(var(--u) * 420px); margin-left: calc(var(--u) * -87.5px);
+  transform-origin: 50% 0; transform: rotate(calc(var(--r) + 180deg));
+  border-radius: 50% 50% 46% 46% / 64% 64% 36% 36%;
+  background: linear-gradient(0deg, rgba(255,200,144,.95) 0%, rgba(142,205,240,.92) 38%, rgba(125,216,174,.88) 72%, rgba(255,255,255,.95) 100%);
+  box-shadow: inset 0 calc(var(--u) * -18px) calc(var(--u) * 40px) rgba(255,255,255,.35), 0 0 calc(var(--u) * 30px) rgba(26,34,51,.15);
+  opacity: .9;
+}
+.petal.back { width: calc(var(--u) * 260px); margin-left: calc(var(--u) * -130px); height: calc(var(--u) * 380px); opacity: .5; filter: blur(calc(var(--u) * 3px)); }
+.wall .shine { position: absolute; inset: 0; background: radial-gradient(45% 40% at 50% 30%, rgba(255,255,255,.35), transparent 70%); mix-blend-mode: soft-light; }
+
+/* ===== Notch tiruan (ukuran dalam dp, diskalakan --u) ================================== */
+.mn-holder { position: absolute; top: 0; left: 50%; transform: translateX(-50%) scale(var(--u)); transform-origin: top center; }
+.mn {
+  --w: 150px; --h: 30px; --r: 14px; --e: 10px;
+  position: relative; width: var(--w); height: var(--h); transform-origin: 50% 0;
+  background: #000; border-radius: 0 0 var(--r) var(--r);
+  transition: width .62s var(--spring), height .62s var(--spring), border-radius .45s ease;
+  font-family: var(--ui); color: #fff; font-size: 13px; line-height: 1;
+  box-shadow: 0 14px 34px -16px rgba(0,0,0,.95);
+}
+.mn::before, .mn::after { content: ""; position: absolute; top: 0; width: var(--e); height: var(--e); transition: width .45s, height .45s; }
+.mn::before { right: 100%; background: radial-gradient(circle at 0 100%, transparent calc(var(--e) - .5px), #000 var(--e)); }
+.mn::after { left: 100%; background: radial-gradient(circle at 100% 100%, transparent calc(var(--e) - .5px), #000 var(--e)); }
+.mn[data-s="music"], .mn[data-s="pomo"], .mn[data-s="water"], .mn[data-s="shelf"], .mn[data-s="todo"], .mn[data-s="prayer"], .mn[data-s="clip"], .mn[data-s="ai"], .mn[data-s="cal"] { --w: 420px; --h: 140px; --r: 32px; --e: 22px; }
+.mn[data-s="lyrics"] { --w: 520px; --h: 140px; --r: 32px; --e: 22px; }
+.mn[data-s="remind"], .mn[data-s="notif"] { --w: 310px; --h: 60px; --r: 19px; --e: 13px; }
+
+.ly { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; opacity: 0; pointer-events: none;
+  transform: scale(.86, .9); transform-origin: 50% 0; transition: opacity .16s ease, transform .2s ease; } /* isi melebar dari tengah atas & memudar masuk (seperti aplikasi) */
+.mn[data-s="pet"] .l-pet, .mn[data-s="idle"] .l-idle, .mn[data-s="music"] .l-music,
+.mn[data-s="lyrics"] .l-lyrics, .mn[data-s="pomo"] .l-pomo, .mn[data-s="water"] .l-water,
+.mn[data-s="shelf"] .l-shelf, .mn[data-s="todo"] .l-todo,
+.mn[data-s="prayer"] .l-prayer, .mn[data-s="remind"] .l-remind, .mn[data-s="notif"] .l-notif, .mn[data-s="ai"] .l-ai, .mn[data-s="cal"] .l-cal, .mn[data-s="clip"] .l-clip,
+.mn:is([data-s="music"], [data-s="pomo"], [data-s="water"], [data-s="shelf"], [data-s="todo"], [data-s="prayer"], [data-s="clip"], [data-s="ai"], [data-s="cal"]) :is(.l-hdr, .l-dots) {
+  opacity: 1; transform: none; transition: opacity .55s ease .1s, transform .5s cubic-bezier(.2,.85,.25,1) .05s;
+}
+.a { position: absolute; }
+.vc { transform: translateY(-50%); }
+.hc { transform: translateX(-50%); }
+.c { transform: translate(-50%, -50%); }
+.dim { color: rgba(255,255,255,.5); }
+.sb { font-weight: 600; }
+.b { font-weight: 700; }
+
+/* Baris status */
+.ring {
+  width: 15px; height: 15px; border-radius: 50%;
+  background: conic-gradient(#33e07a 0 var(--p, 72%), rgba(51,224,122,.28) 0);
+  -webkit-mask: radial-gradient(circle, transparent 4.6px, #000 5px); mask: radial-gradient(circle, transparent 4.6px, #000 5px);
+}
+.bars { display: flex; gap: 2px; align-items: center; height: 14px; }
+.bars i { width: 2.2px; border-radius: 2px; background: #fff; height: 30%; animation: eq .9s ease-in-out infinite alternate; }
+.bars i:nth-child(2) { animation-delay: -.3s; } .bars i:nth-child(3) { animation-delay: -.6s; }
+.bars i:nth-child(4) { animation-delay: -.15s; } .bars i:nth-child(5) { animation-delay: -.45s; }
+@keyframes eq { to { height: 100%; } }
+.ttl { left: 15px; top: 19px; font-size: 15px; font-weight: 600; }
+
+/* Panah & titik halaman */
+.arw { width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,.28); display: grid; place-items: center; }
+.arw svg { width: 9px; height: 9px; stroke: #fff; stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.dots { left: 210px; top: 133px; transform: translate(-50%, -50%); display: flex; gap: 4.5px; align-items: center; }
+.dots i { width: 3.6px; height: 3.6px; border-radius: 2px; background: rgba(255,255,255,.45); transition: width .4s var(--spring), background .3s; }
+.mn[data-s="music"] .dots i:nth-child(1), .mn[data-s="pomo"] .dots i:nth-child(2), .mn[data-s="water"] .dots i:nth-child(3),
+.mn[data-s="shelf"] .dots i:nth-child(4), .mn[data-s="todo"] .dots i:nth-child(5) { width: 15px; background: #fff; }
+
+/* Pemutar */
+.art {
+  border-radius: 10px; overflow: hidden;
+  background:
+    linear-gradient(115deg, transparent 0 46%, rgba(255,255,255,.75) 46% 48%, transparent 48%),
+    radial-gradient(circle at 34% 58%, #2e7fe0 0 22%, transparent 23%),
+    radial-gradient(circle at 34% 58%, transparent 0 30%, #5aa6f2 31% 33%, transparent 34%),
+    repeating-linear-gradient(0deg, rgba(46,127,224,.18) 0 2px, transparent 2px 7px),
+    linear-gradient(160deg, #eef5ff, #cfe2fb);
+}
+.prog { height: 4px; border-radius: 2px; background: rgba(255,255,255,.22); overflow: hidden; }
+.prog i { display: block; height: 100%; background: #fff; border-radius: 2px; width: 70%; animation: play 40s linear infinite; }
+@keyframes play { from { width: 52%; } to { width: 100%; } }
+svg.ctl { width: 17px; height: 17px; fill: #fff; } /* tombol prev / play / next */
+.bub { width: 17px; height: 15px; }
+
+/* Lirik */
+.l-lyrics .ambient { background: linear-gradient(90deg, #2c64b8, #3a7ad0 50%, #2a5aa8); height: 82%; opacity: .95; }
+.lyr { left: 264px; width: 234px; top: 16px; bottom: 4px; overflow: hidden;
+  -webkit-mask: linear-gradient(transparent, #000 22%, #000 78%, transparent); mask: linear-gradient(transparent, #000 22%, #000 78%, transparent); }
+.lyr ol { list-style: none; margin: 0; padding: 0; transition: transform .7s var(--spring); }
+.lyr li { font-weight: 700; font-size: 16px; line-height: 1.25; padding: 4.5px 0; color: rgba(255,255,255,.3); transform: scale(.93); transform-origin: left center; transition: color .5s, transform .5s; }
+.lyr li.on { color: #fff; transform: scale(1); }
+
+/* Pomodoro */
+.pring { left: 80px; top: 74px; width: 64px; height: 64px; border-radius: 50%; transform: translate(-50%, -50%);
+  background: conic-gradient(from 200deg, #ff5a6e, #ff3a3a, #ff6b5f, #ff5a6e);
+  -webkit-mask: radial-gradient(circle, transparent 25.4px, #000 25.8px); mask: radial-gradient(circle, transparent 25.4px, #000 25.8px);
+  box-shadow: 0 0 18px rgba(255,70,70,.35); }
+.pglow { left: 80px; top: 74px; width: 88px; height: 88px; border-radius: 50%; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(255,60,60,.32), transparent 65%); }
+.pill { height: 28px; border-radius: 14px; background: rgba(255,255,255,.12); display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; }
+.pill svg { width: 13px; height: 13px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Water */
+.sw { left: 162px; top: 37px; width: 34px; height: 20px; border-radius: 10px; background: #2699ff; }
+.sw i { position: absolute; right: 2px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 1px 2px rgba(0,0,0,.35); }
+.sw svg { width: 9px; height: 9px; fill: #2699ff; }
+.wbar { left: 44px; top: 82.5px; width: 152px; height: 5px; border-radius: 3px; background: linear-gradient(90deg, #66dbff, #2d6bff); }
+.wbtn { height: 26px; border-radius: 13px; display: flex; align-items: center; gap: 6px; padding: 0 11px 0 9px; font-size: 12px; }
+.wbtn svg { width: 13px; height: 13px; }
+.wbar-col { width: 7px; border-radius: 3.5px; position: absolute; bottom: 0; }
+.wgrow { transition: height .8s cubic-bezier(.34,1.5,.5,1); }
+.wbar { transition: width 1s cubic-bezier(.3,1.2,.5,1) .15s; }
+.chart { left: 220px; top: 56px; width: 112px; height: 50px; }
+.grid-dot { position: absolute; left: 0; right: -6px; height: 0; border-top: 1.2px dotted rgba(255,255,255,.22); }
+.axl { font-size: 9.5px; color: rgba(255,255,255,.5); }
+
+/* Shelf */
+.zone { left: 44px; top: 33px; width: 336px; height: 90px; border-radius: 16px; border: 1.4px dashed rgba(255,255,255,.3); background: rgba(255,255,255,.03); }
+
+/* To-do */
+.trow { left: 202px; width: 176px; height: 28px; border-radius: 9px; background: rgba(40,120,60,.38); display: flex; align-items: center; gap: 7px; padding-left: 7px; font-size: 12px; color: rgba(255,255,255,.75); }
+.trow s { text-decoration-thickness: 1.2px; }
+.chk { width: 16px; height: 16px; border-radius: 50%; background: #2fd06b; display: grid; place-items: center; flex: none; }
+.chk svg { width: 9px; height: 9px; stroke: #fff; stroke-width: 2.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Peek */
+.pk-ring { left: 35px; top: 30px; width: 30px; height: 30px; transform: translate(-50%, -50%); }
+.pk-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.pk-ring .arc { transition: stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1) .35s; }
+
+/* Shelf: zona drop, kartu file, dan file yang diseret (pratinjau) */
+.sh-zone { left: 44px; top: 33px; width: 336px; height: 90px; transition: opacity .35s ease; }
+.sh-zone .zone { left: 0; top: 0; transition: border-color .3s, background .3s, transform .4s var(--spring); }
+.sh-icon .sh-arrow { transition: transform .45s var(--spring); }
+.sh-t1, .sh-t2, .sh-sub { transition: opacity .3s, transform .35s; white-space: nowrap; }
+.sh-t2 { opacity: 0; transform: translate(-50%, calc(-50% + 5px)); }
+.l-shelf.hover .zone { border-color: rgba(255,255,255,.8); background: rgba(255,255,255,.08); transform: scale(1.02); }
+.l-shelf.hover .sh-arrow { transform: translateY(6px); animation: bob .7s ease-in-out .45s infinite alternate; }
+.l-shelf.hover .sh-t1 { opacity: 0; transform: translate(-50%, calc(-50% - 5px)); }
+.l-shelf.hover .sh-t2 { opacity: 1; transform: translate(-50%, -50%); }
+.l-shelf.hover .sh-sub { opacity: 0; }
+@keyframes bob { to { transform: translateY(9px); } }
+/* Ada kartu: zona hilang, kecuali saat file baru melayang (jadi lapisan gelap di atas kartu) */
+.l-shelf.has .sh-zone { opacity: 0; }
+.l-shelf.has.hover .sh-zone { opacity: 1; }
+.l-shelf.has .sh-zone .zone { background: rgba(0,0,0,.72); }
+.l-shelf.has.hover .sh-zone .zone { background: rgba(10,14,24,.82); }
+.sh-clear { left: 62px; top: 19px; height: 16px; padding: 0 9px; border-radius: 8px; background: rgba(255,255,255,.13); font-size: 9.5px; display: flex; align-items: center; opacity: 0; transition: opacity .3s; }
+.l-shelf.has .sh-clear { opacity: .85; }
+.sh-card { top: 31px; width: 62px; display: flex; flex-direction: column; align-items: center; opacity: 0; }
+.sh-card.in { opacity: 1; animation: fall .75s cubic-bezier(.34,1.6,.5,1) both; }
+@keyframes fall { from { transform: translateY(-34px) scale(.7); opacity: 0; } 35% { opacity: 1; } to { transform: none; opacity: 1; } }
+.sh-thumb { width: 44px; height: 44px; margin-top: 6px; border-radius: 9px; overflow: hidden; display: block; }
+.sh-thumb svg { width: 100%; height: 100%; display: block; }
+.t-img { background: radial-gradient(circle at 72% 30%, #fff3c4 0 12%, transparent 13%), linear-gradient(180deg, #56c2ff 0 55%, #f3d38f 55% 70%, #2e9bd6 70%); }
+.sh-name { margin-top: 10px; font-size: 10.5px; font-weight: 600; max-width: 62px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sh-size { margin-top: 4px; font-size: 9.5px; color: rgba(255,255,255,.5); }
+/* File yang sedang diseret di layar (kursor + pratinjau) */
+.ghost { position: absolute; z-index: 3; left: 30%; top: 0; width: 0; height: 0; opacity: 0; pointer-events: none;
+  transition: left 1.25s cubic-bezier(.45,.05,.25,1), top 1.25s cubic-bezier(.45,.05,.25,1), opacity .3s, transform .35s ease; }
+.ghost .g-thumb { position: absolute; left: calc(var(--u) * -6px); top: calc(var(--u) * -40px); width: calc(var(--u) * 46px); height: calc(var(--u) * 46px); border-radius: calc(var(--u) * 9px); opacity: .85; box-shadow: 0 8px 24px rgba(0,0,0,.45); overflow: hidden; }
+.ghost .g-thumb svg { width: 100%; height: 100%; display: block; }
+.ghost .g-cur { position: absolute; left: 0; top: 0; width: calc(var(--u) * 15px); height: calc(var(--u) * 22px); filter: drop-shadow(0 1px 1px rgba(0,0,0,.5)); }
+.ghost .g-badge { position: absolute; left: calc(var(--u) * 14px); top: calc(var(--u) * 18px); padding: 2px 7px; border-radius: 4px; background: #fff; color: #1b1f2a; font: 600 calc(var(--u) * 9px)/1.5 var(--ui); white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+.ghost.in { opacity: 1; }
+.ghost.drop { opacity: 0; transform: scale(.4); }
+
+/* Shelf: cahaya gradasi maskot di dalam notch saat file melayang / dilepas */
+.sh-amb { opacity: 0; transition: opacity .7s ease; background: linear-gradient(90deg, #7dd8ae, #8ecdf0 50%, #ffc890) !important; height: 85% !important; }
+.mn-holder.near .sh-amb { opacity: .45; }
+.mn-holder.swell .sh-amb { opacity: .8; transition: opacity .45s ease; }
+
+/* ===== Kustomisasi (menu tray) ======================================================== */
+.custom { display: grid; grid-template-columns: minmax(0, 360px) 1fr; gap: 56px; align-items: center; }
+.tray-wrap { position: relative; padding: 28px; border-radius: 22px; background:
+  radial-gradient(70% 80% at 30% 100%, rgba(125,216,174,.45), transparent 70%),
+  radial-gradient(60% 70% at 85% 100%, rgba(255,200,144,.45), transparent 70%),
+  linear-gradient(180deg, #dff0fb, #c9e4f7); }
+.tray-menu { font-family: var(--ui); background: #f9f9fb; color: #1b1b1f; border-radius: 10px; padding: 6px;
+  box-shadow: 0 18px 40px -12px rgba(16,24,64,.45), 0 0 0 1px rgba(0,0,0,.06); font-size: 15px; }
+.tray-menu .it { display: grid; grid-template-columns: 28px 1fr; align-items: center; padding: 9px 12px 9px 6px; border-radius: 6px; transition: background .2s; }
+.tray-menu .it.on { background: rgba(0,0,0,.05); }
+.tray-menu .it svg { width: 15px; height: 15px; margin-left: 6px; }
+.tray-menu hr { border: 0; border-top: 1px solid rgba(0,0,0,.1); margin: 6px 4px; }
+.tray-hint { margin: 14px 2px 0; font-size: 13px; color: #1a2233; opacity: .8; display: flex; align-items: center; gap: 8px; }
+.tray-hint img { width: 20px; height: 20px; }
+.opts { display: grid; gap: 4px; }
+.opt { padding: 18px 0; border-top: 1px solid var(--line); cursor: default; }
+.opt:first-child { border-top: 0; padding-top: 0; }
+.opt h3 { margin: 0 0 4px; font-size: 19px; }
+.opt p { margin: 0; color: var(--mist); font-size: 16px; }
+
+/* ===== Peringatan saat download ======================================================== */
+.trust { text-align: left; max-width: 760px; margin: 70px auto 0; }
+.trust h3 { font-size: 22px; margin: 0 0 8px; letter-spacing: -.01em; }
+.trust > p { color: var(--mist); margin: 0 0 22px; font-size: 16px; }
+.warn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.warn { padding: 22px 24px; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); }
+.warn .tag { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--cyan); margin-bottom: 8px; }
+.warn h4 { margin: 0 0 10px; font-size: 17px; }
+.warn ol { margin: 0; padding-left: 20px; font-size: 15px; }
+.warn li { padding: 3px 0; }
+.warn li::marker { color: var(--mist); }
+.why { margin-top: 16px; padding: 22px 24px; border-radius: 18px; background: rgba(31,111,184,.06); border: 1px solid rgba(31,111,184,.18); }
+.why h4 { margin: 0 0 10px; font-size: 17px; }
+.why ul { margin: 0; padding-left: 20px; color: var(--mist); font-size: 15px; }
+.why li { padding: 3px 0; }
+.why li b { color: var(--ink); font-weight: 600; }
+.why a { color: var(--ink); }
+.hash { margin: 16px 0 0; font-size: 13px; color: var(--mist); }
+.hash code { font-size: 11.5px; word-break: break-all; color: var(--ink); opacity: .8; }
+.dl-count { color: var(--mist); font-size: 14px; min-height: 1.4em; }
+.dl-count b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* ===== Dukungan & masukan ================================================================ */
+.support { text-align: center; }
+.support .sec-title, .support .sec-lede { margin-left: auto; margin-right: auto; }
+.donate { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.donate a { display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; border-radius: 999px; text-decoration: none; font-weight: 700; font-size: 16px;
+  border: 1px solid var(--line); background: rgba(26,34,51,.04); transition: transform .25s var(--spring), border-color .2s; }
+.donate a:hover { transform: translateY(-2px); border-color: rgba(26,34,51,.25); }
+.donate a span { font-weight: 400; color: var(--mist); font-size: 14px; }
+.donate a i { font-style: normal; font-size: 18px; }
+/* Dua tombol dukungan (Yapp & PayPal): sama-sama putih dan sama ukurannya */
+.donate a.primary { min-width: 280px; justify-content: center; }
+.donate a .pp-img { height: 24px; width: auto; display: block; }
+.donate a { white-space: nowrap; }
+@media (max-width: 560px) {
+  /* Layar kecil: tombol dukungan bertumpuk dengan lebar sama, isi di tengah */
+  .donate { flex-direction: column; align-items: stretch; max-width: 320px; margin: 0 auto; }
+  .donate a, .donate a.primary { justify-content: center; padding: 15px 20px; font-size: 16px; }
+}
+.fb { max-width: 620px; margin: 0 auto; text-align: left; }
+.fb form { display: grid; gap: 12px; }
+.fb textarea, .fb input[type=text] {
+  width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); outline: 0;
+  background: rgba(26,34,51,.04); color: var(--ink); font: inherit; font-size: 16px; resize: vertical; transition: border-color .2s; }
+.fb textarea { min-height: 130px; }
+.fb textarea:focus, .fb input[type=text]:focus { border-color: rgba(26,34,51,.3); }
+.fb ::placeholder { color: var(--mist); }
+.fb .row { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.fb button { height: 48px; padding: 0 24px; border: 0; border-radius: 999px; cursor: pointer; background: #101828; color: #fff; font: inherit; font-weight: 700; font-size: 16px; }
+.fb button:disabled { opacity: .6; cursor: default; }
+.fb .msg { font-size: 15px; color: var(--mist); }
+.fb .msg.ok { color: #8ff0b6; }
+.fb .msg.err { color: #ff8f8f; }
+.fb .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+@media (max-width: 760px) {
+  .custom, .warn-grid { grid-template-columns: 1fr; }
+  .custom { gap: 32px; }
+}
+
+/* ===== Ringan (pemakaian RAM) =========================================================== */
+.light { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+.tm { font-family: var(--ui); background: #ffffff; border-radius: 14px; overflow: hidden; border: 1px solid var(--line);
+  box-shadow: 0 30px 60px -30px rgba(26,34,51,.25); }
+.tm-title { padding: 14px 18px; font-size: 15px; font-weight: 600; color: #1a2233; border-bottom: 1px solid var(--line); }
+.tm-grid { display: grid; grid-template-columns: 1.6fr repeat(4, 1fr); font-size: 13px; }
+.tm-grid > div { padding: 10px 12px; text-align: right; color: #1a2233; }
+.tm-grid .h { color: var(--muted); border-bottom: 1px solid var(--line); }
+.tm-grid .h b { display: block; font-size: 20px; font-weight: 400; color: #1a2233; }
+.tm-grid .nm { text-align: left; display: flex; align-items: center; gap: 10px; }
+.tm-grid .nm img { width: 20px; height: 20px; }
+.tm-grid .v { background: rgba(31,111,184,.08); font-variant-numeric: tabular-nums; }
+.tm-grid .v.hi { background: rgba(31,111,184,.16); }
+.tm-note { padding: 10px 18px 14px; font-size: 12px; color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 28px 0 26px; }
+.stat b { display: block; font-size: clamp(30px, 4vw, 44px); font-weight: 800; letter-spacing: -.03em; line-height: 1;
+  background: linear-gradient(90deg, #1f7a54, #1f6fb8 55%, #c96a1e); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.stat span { display: block; margin-top: 8px; color: var(--mist); font-size: 14px; }
+.why-light { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.why-light li { color: var(--mist); font-size: 16px; padding-left: 26px; position: relative; }
+.why-light li::before { content: ""; position: absolute; left: 0; top: .55em; width: 10px; height: 10px; border-radius: 50%; background: var(--glow); }
+.why-light li b { color: var(--ink); font-weight: 600; }
+@media (max-width: 760px) {
+  .light { grid-template-columns: 1fr; gap: 32px; }
+  .tm-grid { font-size: 12px; } .tm-grid .h b { font-size: 16px; }
+}
+
+/* ===== Sorotan donasi ==================================================================== */
+.support-card { position: relative; max-width: 760px; margin: 0 auto; padding: 56px 32px 48px; border-radius: 28px; overflow: hidden;
+  background:
+    radial-gradient(60% 90% at 20% 110%, rgba(125,216,174,.4), transparent 70%),
+    radial-gradient(60% 90% at 85% 110%, rgba(255,200,144,.4), transparent 70%),
+    var(--panel); }
+.support-card::before { /* garis tepi bergradasi warna maskot */
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none;
+  background: linear-gradient(120deg, rgba(125,216,174,.9), rgba(142,205,240,.6), rgba(255,200,144,.9));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+.support-card .mascot-mini { width: 64px; height: 64px; margin: 0 auto 18px; display: block; filter: drop-shadow(0 12px 24px rgba(31,111,184,.3)); }
+.support-card .sec-lede { margin-bottom: 30px; }
+.donate a.primary { background: #101828; color: #fff; border-color: #101828; padding: 16px 28px; font-size: 17px; position: relative; }
+.donate a.primary span { color: #c7cdd9; }
+.donate a.primary::before { content: ""; position: absolute; inset: 40% 8% -14px; z-index: -1; border-radius: 999px; background: var(--glow); filter: blur(18px); opacity: .8; }
+.support-note { margin: 18px 0 0; font-size: 13px; color: var(--mist); }
+.bar nav a.nav-support { color: var(--ink); padding: 5px 12px; border-radius: 999px; margin: -5px 0;
+  background: linear-gradient(var(--void), var(--void)) padding-box, var(--glow) border-box; border: 1px solid transparent; }
+.support-nudge { display: inline-flex; align-items: center; gap: 8px; margin-top: 4px; font-size: 14px; color: var(--ink); text-decoration: none;
+  padding: 8px 14px; border-radius: 999px; background: rgba(255,200,144,.25); border: 1px solid rgba(255,200,144,.45); transition: background .2s; }
+.support-nudge:hover { background: rgba(255,200,144,.35); }
+
+/* ===== Catatan jujur ======================================================================= */
+.note { max-width: 760px; margin: 0 auto; padding: 40px 36px; border-radius: 24px; border: 1px solid var(--line); background: var(--panel); }
+.note h2 { margin: 0 0 6px; font-size: clamp(26px, 3.4vw, 34px); letter-spacing: -.02em; }
+.note .from { margin: 0 0 22px; color: var(--mist); font-size: 14px; }
+.note p { margin: 0 0 14px; color: var(--mist); font-size: 16px; }
+.note p b { color: var(--ink); font-weight: 600; }
+.note .legal { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; }
+.note a { color: var(--ink); }
+
+/* ===== Intro pratinjau: maskot melayang di depan, mundur ke layar, menjadi notch ===============
+   Lapisan ini menutupi seluruh laptop (termasuk bezel) dengan warna latar halaman, jadi awalnya benar-benar gelap.
+   Maskot dan cahayanya berada DI LUAR layar; laptop baru terlihat lewat transisi lingkaran. */
+.preview { position: relative; }
+.intro { position: absolute; left: 0; right: 0; z-index: 6; pointer-events: none; display: none; overflow: visible; }
+.intro-shade { position: absolute; inset: 0; background: var(--void); will-change: clip-path; }
+.intro-glow { position: absolute; left: 0; top: 0; border-radius: 50%; opacity: 0; will-change: transform, opacity;
+  background: radial-gradient(closest-side, rgba(142,205,240,.55), rgba(255,200,144,.25) 55%, transparent); }
+.intro svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.intro .eyes-g { filter: drop-shadow(0 0 3px rgba(142,205,240,.9)) drop-shadow(0 0 9px rgba(142,205,240,.45)); }
+.preview.pre .intro { display: block; }
+.preview.pre .mn-holder { opacity: 0; }
+
+/* ===== Dukungan lebih terlihat: tombol di hero + ucapan terima kasih setelah download ========== */
+/* Dua tombol setara: Download (putih) dan Support (gradasi maskot), sama ukuran, sejajar */
+.cta-row { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.cta-row .btn { width: 300px; max-width: 86vw; justify-content: center; box-sizing: border-box; white-space: nowrap; }
+/* Support: gaya garis tepi bergradasi (seperti awal), ukuran sama dengan tombol Download */
+.btn-coffee { background: linear-gradient(var(--void), var(--void)) padding-box, var(--glow) border-box; border: 1.5px solid transparent;
+  color: var(--ink); padding: 14.5px 26.5px; }
+.btn-coffee::before { opacity: .35; }
+.btn-coffee svg { stroke: currentColor; }
+
+.btn-support { display: inline-flex; align-items: center; gap: 10px; padding: 15px 24px; border-radius: 999px; color: var(--ink);
+  font-weight: 700; font-size: 17px; text-decoration: none; border: 1.5px solid transparent;
+  background: linear-gradient(var(--void), var(--void)) padding-box, var(--glow) border-box; transition: transform .25s var(--spring), box-shadow .25s; }
+.btn-support:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -12px rgba(91,77,255,.6); }
+.btn-support i { font-style: normal; }
+.ty { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 60; width: min(460px, calc(100% - 28px));
+  display: flex; align-items: center; gap: 14px; padding: 16px 16px 16px 18px; border-radius: 20px; background: #101828; color: #eceff7; border: 1px solid #232326;
+  box-shadow: 0 30px 70px -24px rgba(0,0,0,.8); opacity: 0; pointer-events: none; transform: translate(-50%, 24px) scale(.98);
+  transition: opacity .35s ease, transform .55s var(--spring); }
+.ty.show { opacity: 1; pointer-events: auto; transform: translate(-50%, 0) scale(1); }
+.ty img { width: 42px; height: 42px; flex: none; }
+.ty .ty-t { flex: 1; min-width: 0; }
+.ty .ty-t b { display: block; font-size: 15px; }
+.ty .ty-t span { display: block; font-size: 13.5px; color: rgba(236,239,247,.65); margin-top: 2px; }
+.ty .ty-go { flex: none; padding: 10px 16px; border-radius: 999px; background: #fff; color: #05060c; font-weight: 700; font-size: 14px; text-decoration: none; white-space: nowrap; }
+.ty .ty-x { flex: none; width: 30px; height: 30px; border-radius: 50%; border: 0; background: rgba(236,239,247,.08); color: rgba(236,239,247,.7); font-size: 18px; line-height: 1; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .ty { transition: opacity .2s; } }
+
+/* ===== Pilihan bahasa (EN / ID) ============================================================ */
+.bar-r { display: flex; align-items: center; gap: 22px; }
+.lang { position: relative; display: inline-grid; grid-template-columns: 1fr 1fr; padding: 3px; border-radius: 999px;
+  background: rgba(26,34,51,.06); border: 1px solid var(--line); }
+.lang button { position: relative; z-index: 1; border: 0; background: none; color: var(--mist); font: inherit; font-size: 13px;
+  font-weight: 700; letter-spacing: .04em; padding: 6px 13px; cursor: pointer; border-radius: 999px; transition: color .25s; }
+.lang button[aria-pressed="true"] { color: #fff; }
+.lang button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.lang-thumb { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); border-radius: 999px; background: #101828;
+  box-shadow: 0 4px 14px -6px rgba(0,0,0,.6); transition: transform .45s var(--spring); }
+.lang[data-l="id"] .lang-thumb { transform: translateX(100%); }
+@media (prefers-reduced-motion: reduce) { .lang-thumb { transition: none; } }
+
+/* Tombol pratinjau */
+.try { margin-top: 26px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.try button {
+  font: inherit; font-size: 15px; color: var(--ink); background: transparent;
+  border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; cursor: pointer;
+  transition: background .2s, border-color .2s, color .2s;
+}
+.try button:hover { border-color: rgba(26,34,51,.3); }
+.try button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.cap { text-align: center; color: var(--mist); font-size: 15px; margin: 14px 0 0; min-height: 1.6em; }
+
+/* ===== Fitur ======================================================================== */
+section { padding: 110px 0 0; }
+.sec-title { font-size: clamp(32px, 4.4vw, 52px); line-height: 1.05; letter-spacing: -.03em; font-weight: 800; margin: 0 0 14px; max-width: 16ch; }
+.sec-lede { color: var(--mist); max-width: 36em; margin: 0 0 54px; }
+.features { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 64px; }
+.feature { display: grid; grid-template-columns: 52px 1fr; gap: 20px; padding: 26px 0; border-top: 1px solid var(--line); align-items: start; }
+.feature h3 { margin: 2px 0 4px; font-size: 20px; letter-spacing: -.01em; }
+.feature p { margin: 0; color: var(--mist); font-size: 16px; }
+
+/* Ikon gaya aplikasi: squircle bergradasi, kilap halus di atas, bayangan berwarna */
+.app {
+  position: relative; width: 52px; height: 52px; border-radius: 14px;
+  display: grid; place-items: center;
+  background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,0) 55%), var(--c);
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,.22), 0 1px 2px rgba(0,0,0,.2);
+}
+.app::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(180deg, rgba(255,255,255,.22), transparent 48%); pointer-events: none; }
+.app svg { position: relative; z-index: 1; width: 28px; height: 28px; fill: #fff; stroke: none; }
+.app svg .cut { fill: none; stroke: var(--c); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.app svg .ln { fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.app .fill { fill: var(--g, #fff); stroke: none; }
+
+.quiet { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+.quiet h3 { font-size: 20px; margin: 0 0 6px; }
+.quiet p { margin: 0; color: var(--mist); font-size: 16px; }
+
+/* ===== Yang baru di 1.1 ================================================================= */
+.news { display: grid; grid-template-columns: 1.25fr 1fr; gap: 56px; align-items: start; }
+.news h3 { margin: 0 0 8px; font-size: 19px; }
+.news ul { list-style: none; margin: 0; padding: 0; }
+.news li { padding: 14px 0; border-top: 1px solid var(--line); }
+.news li:first-child { border-top: 0; padding-top: 6px; }
+.news li b { display: block; margin-bottom: 3px; font-size: 17px; }
+.news li span { color: var(--mist); font-size: 16px; }
+.news-note { margin-top: 34px; padding: 22px 24px; border-radius: 18px; border: 1px solid var(--line); background: var(--panel); }
+.news-note p { margin: 0 0 8px; color: var(--mist); font-size: 15px; }
+.news-note p:last-child { margin-bottom: 0; }
+@media (max-width: 760px) { .news { grid-template-columns: 1fr; gap: 36px; } }
+
+
+/* ===== Mockup 1.2: notch menyusut tanpa pantulan, adegan baru ===== */
+.mn[data-s="clip"] .l-hdr .bars { opacity: 0; }
+.mn.shrink { transition: width .5s cubic-bezier(.3,0,.15,1), height .5s cubic-bezier(.3,0,.15,1), border-radius .45s ease; }
+.mn[data-s="clip"] .dots i:nth-child(4), .mn[data-s="prayer"] .dots i:nth-child(6), .mn[data-s="ai"] .dots i:nth-child(7), .mn[data-s="cal"] .dots i:nth-child(8) { width: 15px; background: #fff; }
+.pm-bar { width: 38px; } .ly.play .pm-bar { animation: pmBar 9s linear forwards; }
+@keyframes pmBar { from { width: 38px; } to { width: 54px; } }
+.pm-run { width: 4px; } .ly.play .pm-run { animation: pmRun 9s linear forwards; }
+@keyframes pmRun { from { width: 4px; } to { width: 12px; } }
+.pm-head { transform: translateX(250.4px); } .ly.play .pm-head { animation: pmHead 9s linear forwards; }
+@keyframes pmHead { from { transform: translateX(250.4px); } to { transform: translateX(258.4px); } }
+.pm-lab { color: rgba(255,255,255,.4); } .pm-lab.past { color: rgba(255,255,255,.75); } .pm-lab.on { color: #fff; font-weight: 700; }
+.pr-bar { width: 0; } .ly.play .pr-bar { animation: prBar 1.4s cubic-bezier(.3,.7,.2,1) .2s forwards; }
+@keyframes prBar { to { width: 96px; } }
+.pr-arc { stroke-dasharray: .7 1; stroke-dashoffset: .7; } .ly.play .pr-arc { animation: prArc 1.6s cubic-bezier(.45,.05,.25,1) .25s forwards; }
+@keyframes prArc { to { stroke-dashoffset: 0; } }
+.pr-sun { opacity: 0; transform: scale(.3); } .ly.play .pr-sun { animation: prSun 2.6s cubic-bezier(.3,1.4,.5,1) 1.6s forwards; }
+@keyframes prSun { 0% { opacity: 0; transform: scale(.3); } 30% { opacity: 1; transform: scale(1.12); } 55% { transform: scale(.98); } 100% { opacity: 1; transform: scale(1); } }
+.rm-moon { opacity: 0; transform: rotate(-150deg) scale(.5); } .ly.play .rm-moon { animation: rmMoon 1.1s cubic-bezier(.2,.8,.2,1) .25s forwards; }
+@keyframes rmMoon { to { opacity: 1; transform: none; } }
+.rm-wave { left: 24px; right: 24px; bottom: 3px; height: 5px; border-radius: 3px; background: linear-gradient(90deg, #19b8ff, #2d5bff, #7b4bff); opacity: 0; }
+.ly.play .rm-wave { animation: rmWave 3.2s ease-in-out .5s infinite alternate; }
+@keyframes rmWave { from { opacity: .35; } to { opacity: .75; } }
+.cb-card { top: 34px; width: 74px; height: 80px; border-radius: 12px; background: rgba(255,255,255,.07); padding: 9px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; }
+.cb-t { font-size: 9.5px; line-height: 1.3; color: #fff; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.cb-s { font-size: 8.2px; color: rgba(255,255,255,.45); }
+.ly.play .cb-card { animation: cbShift .6s cubic-bezier(.2,.85,.25,1) .9s backwards; }
+.ly.play .cb-new { animation: cbDrop .6s cubic-bezier(.3,1.25,.5,1) .9s backwards; box-shadow: 0 0 0 1.5px rgba(124,122,255,.7); }
+@keyframes cbShift { from { transform: translateX(-82px); } }
+@keyframes cbDrop { from { opacity: 0; transform: translateY(-26px) scale(.88); } }
+.ly.play.l-notif .a:first-child { animation: nfPop .55s cubic-bezier(.3,1.6,.5,1) .15s backwards; }
+@keyframes nfPop { from { transform: scale(0); } }
+
+/* ===== Download, FAQ, footer ============================================================= */
+.download { text-align: center; padding-top: 140px; }
+.download .icon { width: 132px; height: 132px; filter: drop-shadow(0 24px 40px rgba(31,111,184,.3)); }
+.download h2 { font-size: clamp(36px, 5vw, 60px); line-height: 1.02; letter-spacing: -.03em; margin: 28px 0 10px; font-weight: 800; }
+.download > p { color: var(--mist); margin: 0 auto; max-width: 30em; }
+.steps { text-align: left; max-width: 620px; margin: 70px auto 0; padding: 30px 34px; border: 1px solid var(--line); border-radius: 22px; background: var(--panel); }
+.steps h3 { margin: 0 0 6px; font-size: 19px; }
+.steps > p { margin: 0 0 16px; color: var(--mist); font-size: 15px; }
+.steps ol { margin: 0; padding-left: 22px; font-size: 16px; }
+.steps li { padding: 4px 0; }
+.steps li::marker { color: var(--mist); }
+.steps .hash { margin: 18px 0 0; font-size: 13px; color: var(--mist); }
+.steps .hash code { font-size: 11.5px; word-break: break-all; color: var(--ink); opacity: .8; }
+.faq { max-width: 760px; }
+details { border-top: 1px solid var(--line); padding: 20px 0; }
+details:last-of-type { border-bottom: 1px solid var(--line); }
+summary { cursor: pointer; font-weight: 700; font-size: 19px; list-style: none; display: flex; justify-content: space-between; gap: 20px; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; color: var(--mist); font-weight: 400; transition: transform .25s; }
+details[open] summary::after { transform: rotate(45deg); }
+details p { margin: 12px 0 0; color: var(--mist); font-size: 16px; max-width: 40em; }
+#privacy p { color: var(--mist); max-width: 40em; font-size: 16px; }
+footer { margin-top: 140px; padding: 36px 0 50px; border-top: 1px solid var(--line); color: var(--mist); font-size: 14px; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+footer a { text-decoration: none; }
+footer a:hover { color: var(--ink); }
+
+@media (max-width: 760px) {
+  body { font-size: 17px; }
+  .bar nav { display: none; }
+  .hero { padding-top: 120px; }
+  .features, .quiet { grid-template-columns: 1fr; }
+  .quiet { gap: 28px; }
+  section { padding-top: 80px; }
+  .steps { padding: 24px 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+}
+
+/* ===== Notchfolk: mini island demo (Customize) ======================================= */
+.set-wrap { position: relative; padding: 28px; border-radius: 22px; background:
+  radial-gradient(70% 80% at 30% 100%, rgba(125,216,174,.45), transparent 70%),
+  radial-gradient(60% 70% at 85% 100%, rgba(255,200,144,.45), transparent 70%),
+  linear-gradient(180deg, #dff0fb, #c9e4f7); }
+.mini-stage { height: 150px; border-radius: 16px; overflow: hidden; position: relative;
+  background: linear-gradient(180deg, #fdfcf8 0%, #e6f4ec 45%, #dff0fb 100%); }
+.mini-island { position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 150px; height: 30px; background: #000; border-radius: 0 0 14px 14px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  color: #fff; font-family: var(--ui); font-size: 13px; font-weight: 600;
+  transition: background .3s, box-shadow .3s; }
+.mini-island.glass { background: rgba(10,12,20,.55); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  box-shadow: inset 0 0 0 1px rgba(125,216,174,.55), inset 0 0 0 1px rgba(255,200,144,.25), 0 0 18px rgba(142,205,240,.35); }
+.mini-island .mi-ring { width: 12px; height: 12px; border-radius: 50%;
+  background: conic-gradient(#33e07a 0 72%, rgba(51,224,122,.28) 0);
+  -webkit-mask: radial-gradient(circle, transparent 3.6px, #000 4px); mask: radial-gradient(circle, transparent 3.6px, #000 4px); }
+.set-ctl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 16px; }
+.set-ctl .seg { display: inline-grid; grid-template-columns: 1fr 1fr; padding: 3px; border-radius: 999px;
+  background: rgba(26,34,51,.08); border: 1px solid var(--line); }
+.set-ctl .seg button { border: 0; background: none; color: var(--muted); font: inherit; font-size: 13px; font-weight: 700;
+  padding: 7px 16px; cursor: pointer; border-radius: 999px; transition: background .2s, color .2s; }
+.set-ctl .seg button[aria-pressed="true"] { background: #101828; color: #fff; }
+.set-ctl label { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.set-ctl input[type=range] { accent-color: #1f6fb8; width: 130px; }
+.set-hint { margin: 14px 2px 0; font-size: 13px; color: #1a2233; opacity: .8; display: flex; align-items: center; gap: 8px; }
+.set-hint img { width: 20px; height: 20px; }
+/* ===== Notchfolk: install command block ============================================== */
+.cmd { position: relative; text-align: left; background: #101828; color: #e6f0ff; border-radius: 14px;
+  padding: 18px 20px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14.5px;
+  line-height: 1.55; overflow-x: auto; white-space: nowrap; }
+.cmd code { font: inherit; color: inherit; }
+.cmd .copy { position: absolute; top: 10px; right: 10px; border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.08);
+  color: #fff; font: inherit; font-size: 12.5px; font-weight: 700; padding: 7px 14px; border-radius: 999px; cursor: pointer;
+  transition: background .2s, border-color .2s; }
+.cmd .copy:hover { background: rgba(255,255,255,.16); }
+/* ===== Notchfolk: AI + Calendar preview layers ======================================= */
+.ai-q { left: 44px; top: 34px; max-width: 240px; padding: 9px 13px; border-radius: 13px 13px 4px 13px;
+  background: rgba(255,255,255,.12); font-size: 12.5px; line-height: 1.35; }
+.ai-a { left: 44px; top: 76px; max-width: 330px; font-size: 12.5px; line-height: 1.4; color: rgba(255,255,255,.85); }
+.ai-a b { color: #fff; }
+.cal-row { left: 44px; width: 332px; height: 26px; border-radius: 8px; background: rgba(255,255,255,.07);
+  display: flex; align-items: center; gap: 9px; padding: 0 11px; font-size: 12px; }
+.cal-row .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.cal-row b { font-weight: 600; }
+.cal-row span { color: rgba(255,255,255,.55); margin-left: auto; font-size: 11px; }
+
+.download .why { text-align: left; max-width: 760px; margin: 16px auto 0; }
 </style>
 </head>
 <body>
-<header class="site-header" id="siteHeader">
-  <div class="container site-header__bar">
-    <div class="site-header__left">
-      <a class="brand" href="#"><img src="images/icon.png" alt="Notchfolk icon"> Notchfolk</a>
-      <nav class="site-nav" aria-label="Primary">
-        <a href="#preview">Preview</a>
-        <a href="#features">Features</a>
-        <a href="#new">What&rsquo;s new</a>
-        <a href="#install">Install</a>
-        <a href="#faq">FAQ</a>
-        <a href="https://github.com/galyarderlabs/notchfolk">GitHub</a>
-      </nav>
-    </div>
-    <div class="site-header__right">
-      <a class="star-pill" href="https://github.com/galyarderlabs/notchfolk">★ Star on GitHub</a>
-      <a class="button button--primary button--small" href="#install">Install</a>
-      <button class="nav-toggle" id="navToggle" type="button" aria-label="Menu">☰</button>
-    </div>
-  </div>
-  <div class="site-menu-panel" id="siteMenuPanel">
+
+<header class="bar">
+  <a class="brand" href="#top"><img src="images/icon.png" alt="">Notchfolk</a>
+  <div class="bar-r">
+  <nav aria-label="Main">
     <a href="#preview">Preview</a>
     <a href="#features">Features</a>
-    <a href="#new">What&rsquo;s new</a>
-    <a href="#install">Install</a>
-    <a href="#faq">FAQ</a>
-    <a href="https://github.com/galyarderlabs/notchfolk">GitHub</a>
-    <a class="button button--primary" href="#install">Install</a>
+    <a href="#light">Lightweight</a>
+    <a href="#customize">Customize</a>
+    <a href="#new">What's new</a>
+    <a href="#download">Download</a>
+    <a class="nav-support" href="#support">&#9749; Support</a>
+  </nav>
+  <div class="lang" role="group" aria-label="Language" data-l="en">
+    <i class="lang-thumb" aria-hidden="true"></i>
+    <button type="button" data-l="en" aria-pressed="true">EN</button>
+    <button type="button" data-l="id" aria-pressed="false">ID</button>
+  </div>
   </div>
 </header>
-<div class="container">
 
-  <main id="main">
-    <section class="hero">
-      <span class="hero__chip">GNOME 46–51 &nbsp;•&nbsp; Free &amp; open source</span>
-      <h1>A <span class="grad">little world</span> in your notch.</h1>
-      <p class="lead">A charming GNOME extension that lives in your desktop notch. Play music, manage tasks, check your calendar, chat with AI — all inside a tiny cozy world.</p>
-      <div class="hero__actions">
-        <a class="button button--primary" href="#install">Install</a>
-        <a class="button button--secondary" href="https://github.com/galyarderlabs/notchfolk">View on GitHub</a>
-      </div>
-      <p class="hero__status">GPL-3.0 &nbsp;•&nbsp; No account &nbsp;•&nbsp; Your data stays on your machine</p>
-      <div class="desk-wrap" id="preview">
-        <div class="desk" role="img" aria-label="A GNOME desktop with the Notchfolk notch open, showing music, tasks, calendar and AI">
-          <div class="desk__bar"><span><span class="dot"></span> Activities</span><span>09:41</span><span>GNOME</span></div>
-          <div class="notch" id="notch" data-view="music" data-open="true">
-            <button class="notch__pill" id="notchPill" type="button" aria-expanded="true" aria-controls="notchWorld" title="Click to close or open the notch"><span class="eq" id="pillEq"><i></i><i></i><i></i></span><span id="pillLabel">Now playing • Lo-Fi Focus</span> <span class="time">02:14 / 04:30</span> <span class="hint">click to close</span></button>
-            <div class="notch__world" id="notchWorld">
-              <div class="pv-view pv-view--music" data-view="music">
-                <div class="pv-music__top">
-                  <span class="pv-music__art" aria-hidden="true">♪</span>
-                  <div class="pv-music__meta"><b>Lo-Fi Focus</b><span>breathe in, focus in — Lumen Coast</span></div>
-                  <div class="pv-music__controls">
-                    <button class="pv-ctl" type="button" aria-label="Previous track">⏮</button>
-                    <button class="pv-ctl" id="playBtn" type="button" aria-label="Pause">❚❚</button>
-                    <button class="pv-ctl" type="button" aria-label="Next track">⏭</button>
-                  </div>
-                </div>
-                <div class="pv-progress"><span>02:14</span><span class="bar"><i></i></span><span>04:30</span></div>
-                <p class="pv-lyric">♪ “breathe in, focus in, tasks aligned” <span>— synced with the song</span></p>
-              </div>
-              <div class="pv-view pv-view--tasks" data-view="tasks">
-                <h3>Today&rsquo;s tasks</h3>
-                <p>Tap a task to tick it off — the notch keeps the count.</p>
-                <div class="pv-tasks" id="taskList">
-                  <button class="pv-task" type="button"><span class="tick">✓</span><span class="label">Finish report</span><span class="when">Today</span></button>
-                  <button class="pv-task" type="button"><span class="tick">✓</span><span class="label">Review PR</span><span class="when">14:00</span></button>
-                  <button class="pv-task done" type="button"><span class="tick">✓</span><span class="label">Walk 20min</span><span class="when">Done</span></button>
-                </div>
-              </div>
-              <div class="pv-view pv-view--calendar" data-view="calendar">
-                <h3>Today — 3 events</h3>
-                <p>Your day at a glance, from your real calendar.</p>
-                <div class="pv-events">
-                  <div class="pv-event"><span class="t">14:00</span><span><span class="what">Team standup</span><br><span class="where">Work calendar</span></span></div>
-                  <div class="pv-event"><span class="t">16:00</span><span><span class="what">Focus block</span><br><span class="where">Notchfolk</span></span></div>
-                  <div class="pv-event"><span class="t">18:30</span><span><span class="what">Dinner with family</span><br><span class="where">Personal calendar</span></span></div>
-                </div>
-              </div>
-              <div class="pv-view pv-view--ai" data-view="ai">
-                <h3>AI assistant</h3>
-                <p>Ask, and it works through the steps — then shows what it did.</p>
-                <div class="pv-chat">
-                  <div class="pv-msg pv-msg--user">Draft an email to the team about Friday&rsquo;s release</div>
-                  <div class="pv-msg pv-msg--ai"><b>Draft ready.</b> “Friday&rsquo;s release is on track — here&rsquo;s what&rsquo;s in it…” Want me to send it?</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="desk__dock" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-        </div>
-        <div class="pv-tabs" role="group" aria-label="Notch preview views">
-          <button class="pv-tab" type="button" data-view="music" aria-pressed="true">♪ Music</button>
-          <button class="pv-tab" type="button" data-view="tasks" aria-pressed="false">✓ Tasks</button>
-          <button class="pv-tab" type="button" data-view="calendar" aria-pressed="false">▦ Calendar</button>
-          <button class="pv-tab" type="button" data-view="ai" aria-pressed="false">✦ AI assistant</button>
-        </div>
-        <p class="pv-hint">A live sketch of the notch — click the black pill to close or open it, or switch views above. The real island does all of this, on your desktop.</p>
-        <img class="hero__trio" src="images/logo.png" alt="Notchfolk — three clay blob mascots: mint with a leaf sprout, blue with headphones, peach holding a glowing star" loading="lazy" decoding="async">
-      </div>
-    </section>
 
-    <section id="features" class="section">
-      <div class="section-intro section-intro--center">
-        <p class="eyebrow">What lives in the notch</p>
-        <h2 class="section-heading">Your whole day, in one little world</h2>
-        <p class="section-copy">Everything you need lives right in your GNOME notch. Lightweight, private, and beautifully simple.</p>
+<main id="top">
+  <div class="wrap hero">
+    <span class="soon">Now available for GNOME 46–51</span>
+    <h1>A little world in your notch.</h1>
+    <p class="lede">Notchfolk turns the top edge of your GNOME desktop into a small notch that shows your music, synced lyrics, tasks, calendar and AI — then quietly gets out of the way.</p>
+    <div class="cta">
+      <div class="cta-row">
+        <a class="btn" href="#download">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+          Install Notchfolk
+        </a>
+        <a class="btn btn-coffee js-support" href="https://github.com/galyarderlabs/notchfolk" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 16.9 6.6 19.8l1.1-6.1L3.2 9.4l6.1-.8z"/></svg>
+          Star on GitHub
+        </a>
       </div>
-      <div class="card-grid-3">
-        <article class="feature-card">
-          <span class="feature-icon feature-icon--mint"><svg viewBox="0 0 24 24"><path d="M9 18V5l10-2v11"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg></span>
-          <h3>Music with synced lyrics</h3>
-          <p>Listen and follow along with real-time lyric sync.</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-icon feature-icon--peach"><svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg></span>
-          <h3>Tasks and reminders</h3>
-          <p>Create tasks, set reminders, and stay on track.</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-icon feature-icon--sky"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4M17 3v4M3 11h18"/></svg></span>
-          <h3>Calendar</h3>
-          <p>View your day and upcoming events at a glance.</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-icon feature-icon--lilac"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9l-4.7 1.8L12 15.5l-1.8-4.7L5.5 9l4.7-1.3z"/><path d="M18.5 15l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></svg></span>
-          <h3>AI assistant</h3>
-          <p>Ask questions and get help right from your notch.</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-icon feature-icon--mint"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
-          <h3>Voice control</h3>
-          <p>Use your voice to control tasks and apps hands-free.</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-icon feature-icon--sky"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/><path d="M7 7h.01M7 17h.01"/></svg></span>
-          <h3>MCP server</h3>
-          <p>Connect and extend with the built-in MCP server.</p>
-        </article>
-      </div>
-    </section>
-
-    <section id="light" class="section">
-      <div class="section-intro">
-        <p class="eyebrow">Lightweight</p>
-        <h2 class="section-heading">Light enough to forget</h2>
-        <p class="section-copy">The island sits in your top bar all day, so it has to cost almost nothing. The daemon sleeps while nothing needs it, the closed island barely redraws, and nothing leaks over time.</p>
-      </div>
-      <div class="stat-row">
-        <div class="stat"><b>0 wake-ups / min</b><span>The daemon (isled) at rest, doing nothing until something needs it.</span></div>
-        <div class="stat"><b>4–9 MB</b><span>Memory the daemon holds at rest.</span></div>
-        <div class="stat"><b>4–6 frames / min</b><span>How often the closed island redraws while it shows the clock.</span></div>
-      </div>
-      <p class="section-copy" style="margin-top:22px; font-size:15px;">Measured on GNOME 51 with an Intel GPU, same 22 actions — opening and closing the island, tabs, lyrics, the assistant, alerts and the Shelf. Memory after 100 opens and closes: no leak.</p>
-    </section>
-
-    <section id="customize" class="section">
-      <div class="section-intro">
-        <p class="eyebrow">Customize</p>
-        <h2 class="section-heading">Yours, down to the glass</h2>
-        <p class="section-copy">The island follows your system — and you can shape it further in Settings → Appearance.</p>
-      </div>
-      <div class="custom-wrap">
-        <div class="custom-copy">
-          <p><b>Black or Glass.</b> The closed island is a solid black notch. The Glass look turns the island into clear dark glass instead, showing what is behind it, blurred, as you work — with a slider from clear glass to dark smoked glass.</p>
-          <p><b>Your colours, your size.</b> Toggles that are on take your accent colour, and the text size is yours to pick — the island, its pages and its alerts follow both.</p>
-          <p><b>Your clock, your mascots.</b> A 24-hour or 12-hour clock, and the island&rsquo;s own trio of clay mascots keeping you company.</p>
-          <div class="custom-toggle" role="group" aria-label="Island look">
-            <button type="button" id="lookBlack" aria-pressed="true">Black</button>
-            <button type="button" id="lookGlass" aria-pressed="false">Glass</button>
-          </div>
-        </div>
-        <div>
-          <div class="custom-demo">
-            <div class="demo-island" id="demoIsland">
-              <div class="demo-pill">♪ Now playing • Lo-Fi Focus</div>
-              <div class="demo-panel"><b>Lo-Fi Focus</b><span>breathe in, focus in — lyrics in time with the song, the desktop showing through behind the glass.</span></div>
-            </div>
-          </div>
-          <p class="custom-caption">Try it — Black is the default, Glass is the see-through look.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="new" class="section">
-      <div class="section-intro">
-        <p class="eyebrow">What&rsquo;s new</p>
-        <h2 class="section-heading">New in Notchfolk 1.1.0</h2>
-        <p class="section-copy">The latest release, from the <a href="https://github.com/galyarderlabs/notchfolk/blob/main/CHANGELOG.md" style="text-decoration:underline;">changelog</a>.</p>
-      </div>
-      <div class="card-grid-2">
-        <article class="feature-card">
-          <span class="tag">Added</span>
-          <h3>Reminder history — the last 7 days</h3>
-          <p>A reminder that fired while you were away, or that you simply missed, no longer vanishes: the Reminders page has a “Last 7 days” section, and agents can read it with the new <code>list_reminder_history</code> tool (56 tools now). The one-shot island alert is unchanged.</p>
-        </article>
-        <article class="feature-card">
-          <span class="tag">Fixed</span>
-          <h3>opencode 2 works again</h3>
-          <p>The model list fills and requests answer, with the <code>--standalone</code> and plain <code>opencode models</code> output that 2.x uses — while opencode 1.x keeps its own flags. From upstream Isle&rsquo;s PR #45, by AlphaBeast97.</p>
-        </article>
-      </div>
-    </section>
-
-    <section id="install" class="section">
-      <div class="section-intro">
-        <p class="eyebrow">Install</p>
-        <h2 class="section-heading">One command, and the notch is yours</h2>
-        <p class="section-copy">Install Notchfolk and its daemon straight from the repo. Settings are preserved when you update.</p>
-      </div>
-      <div class="install-panel">
-        <div class="install-panel__head" aria-hidden="true"><span></span><span></span><span></span></div>
-        <div class="install-panel__body">
-          <code id="installCmd">curl -fsSL https://raw.githubusercontent.com/galyarderlabs/notchfolk/main/get.sh | bash</code>
-          <button class="copy-btn" id="copyBtn" type="button">Copy</button>
-        </div>
-      </div>
-      <p class="install-note">Then log out and back in so GNOME Shell loads the new extension. Requires GNOME 46–51 on Linux.</p>
-      <p class="install-note">Arch Linux: the AUR package (<code>notchfolk-bin</code>) is prepared in <code>packaging/aur</code> but not published yet, so <code>yay</code> won&rsquo;t find it — use the command above for now.</p>
-    </section>
-
-    <section id="faq" class="section">
-      <div class="section-intro">
-        <p class="eyebrow">FAQ</p>
-        <h2 class="section-heading">Questions</h2>
-        <p class="section-copy">The things people ask first, answered plainly.</p>
-      </div>
-      <div class="faq-list">
-        <details class="faq-item">
-          <summary>Which desktops does it run on?</summary>
-          <p>GNOME Shell 46 to 51, on a 64-bit Intel or AMD PC. Other desktops (KDE Plasma, Cinnamon, XFCE, COSMIC) can&rsquo;t load GNOME Shell extensions, so Notchfolk doesn&rsquo;t run there — and it doesn&rsquo;t run on ARM computers like the Raspberry Pi, for which there are no ready-built programs.</p>
-        </details>
-        <details class="faq-item">
-          <summary>How do I install it?</summary>
-          <p>Paste <code>curl -fsSL https://raw.githubusercontent.com/galyarderlabs/notchfolk/main/get.sh | bash</code> into a terminal and press Enter — no root, nothing to compile. Then log out and back in once, so GNOME Shell loads the new extension.</p>
-        </details>
-        <details class="faq-item">
-          <summary>Where does my data live?</summary>
-          <p>On your own computer: data in <code>~/.local/share/notchfolk</code>, settings in <code>~/.config/notchfolk</code>. Your tasks, calendar, chats and files stay there unless you connect an AI or the MCP server yourself — nothing is sent anywhere on its own.</p>
-        </details>
-        <details class="faq-item">
-          <summary>How does voice work?</summary>
-          <p>Press Super+I (or the mic in the open island) and speak. Your words are turned into text on this computer with Whisper, then the AI you picked answers — and it works as an agent, doing multi-step requests one step at a time. Set it up with <code>notchfolk-setup-voice</code> and check it with <code>notchfolkd --doctor</code>.</p>
-        </details>
-        <details class="faq-item">
-          <summary>Is there an AUR package?</summary>
-          <p>Not yet. The package (<code>notchfolk-bin</code>) is prepared in <code>packaging/aur</code> but not published — AUR registration is paused — so <code>yay -S notchfolk-bin</code> finds nothing for now. Use the install command above, or build the package from <code>packaging/aur</code>.</p>
-        </details>
-      </div>
-    </section>
-
-    <section id="note" class="section">
-      <div class="section-intro">
-        <p class="eyebrow">An honest note</p>
-        <h2 class="section-heading">What it is, and what it isn&rsquo;t</h2>
-      </div>
-      <div class="note-box">
-        <p><b>Notchfolk is a GNOME extension and a small Rust daemon that lives on your computer.</b> It is not a cloud service, it does not replace your desktop, and it does not think for you. It just puts the things you glance at — music, tasks, calendar, a chat with an AI — into the notch at the top of your screen, so they are one hover away instead of a window away. Your data stays on your machine, the AIs you pick run where you signed in to them, and nothing leaves unless you ask it to. If you want a new desktop, this is not it. If you want the top of your screen to be useful, it is.</p>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="site-footer__top">
-      <div class="site-footer__brand">
-        <a class="brand" href="#"><img src="images/icon.png" alt="Notchfolk icon" loading="lazy" decoding="async"> Notchfolk</a>
-        <p class="site-footer__tag">A little world in your notch.</p>
-        <span class="site-footer__legal"><span>© 2026 Galyarder Labs</span><span>GPL-3.0</span><span>GNOME 46–51</span></span>
-      </div>
-      <nav class="site-footer__columns" aria-label="Footer">
-        <div class="site-footer__column"><h2>Product</h2><ul><li><a href="#install">Install</a></li><li><a href="#features">Features</a></li><li><a href="#new">What&rsquo;s new</a></li><li><a href="https://github.com/galyarderlabs/notchfolk">GitHub</a></li><li><a href="https://github.com/galyarderlabs/notchfolk/releases">Releases</a></li></ul></div>
-        <div class="site-footer__column"><h2>Docs</h2><ul><li><a href="https://github.com/galyarderlabs/notchfolk/blob/main/docs/install.md">Install guide</a></li><li><a href="https://github.com/galyarderlabs/notchfolk/blob/main/docs/usage.md">Usage</a></li><li><a href="https://github.com/galyarderlabs/notchfolk/blob/main/docs/mcp.md">MCP server</a></li><li><a href="https://github.com/galyarderlabs/notchfolk/blob/main/README.md">README</a></li></ul></div>
-        <div class="site-footer__column"><h2>Project</h2><ul><li><a href="https://github.com/galyarderlabs/notchfolk/blob/main/LICENSE">License</a></li><li><a href="https://github.com/galyarderlabs/notchfolk/blob/main/CHANGELOG.md">Changelog</a></li><li><a href="#faq">FAQ</a></li><li><a href="https://github.com/galyarderlabs/notchfolk/issues">Issues</a></li></ul></div>
-      </nav>
+      <small>Version <span class="js-ver">1.1.0</span> · GPL-3.0 · GNOME 46–51</small>
+      <span class="dl-count js-dlcount"></span>
     </div>
-  </footer>
-</div>
-<script>
-  // Hamburger menu (mobile): nav + actions hide, panel drops down.
-  (function () {
-    var header = document.getElementById('siteHeader');
-    var toggle = document.getElementById('navToggle');
-    var panel = document.getElementById('siteMenuPanel');
-    if (!header || !toggle || !panel) return;
-    toggle.addEventListener('click', function () {
-      header.classList.toggle('menu-open');
-    });
-    panel.addEventListener('click', function (e) {
-      if (e.target.closest('a')) header.classList.remove('menu-open');
-    });
-  })();
-  // Copy the install command.
-  (function () {
-    var btn = document.getElementById('copyBtn');
-    var cmd = document.getElementById('installCmd');
-    if (!btn || !cmd) return;
-    btn.addEventListener('click', function () {
-      var text = cmd.textContent;
-      function done(ok) { btn.textContent = ok ? 'Copied ✓' : 'Copy failed'; setTimeout(function () { btn.textContent = 'Copy'; }, 2000); }
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
-      } else {
-        var ta = document.createElement('textarea');
-        ta.value = text; document.body.appendChild(ta); ta.select();
-        var ok = false;
-        try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
-        document.body.removeChild(ta); done(ok);
-      }
-    });
-  })();
-  // Interactive notch preview: tabs switch the view, the pill opens/closes
-  // the panel, tasks tick off, play/pause stops the equaliser.
-  (function () {
-    var notch = document.getElementById('notch');
-    var pill = document.getElementById('notchPill');
-    var pillLabel = document.getElementById('pillLabel');
-    var pillEq = document.getElementById('pillEq');
-    var tabs = Array.prototype.slice.call(document.querySelectorAll('.pv-tab'));
-    if (!notch || !pill || !tabs.length) return;
-    var views = ['music', 'tasks', 'calendar', 'ai'];
-    var labels = {
-      music: 'Now playing • Lo-Fi Focus',
-      tasks: 'Tasks • 1 of 3 done',
-      calendar: 'Next: Team standup 14:00',
-      ai: '✦ Assistant is ready'
-    };
-    var autoTimer = null;
-    var autoStopped = false;
-    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  </div>
 
-    function taskCount() {
-      var tasks = document.querySelectorAll('#taskList .pv-task');
-      var done = document.querySelectorAll('#taskList .pv-task.done').length;
-      return done + ' of ' + tasks.length + ' done';
+  <!-- ================= Pratinjau di laptop ================= -->
+  <section id="preview" class="preview">
+    <div class="intro" id="intro" aria-hidden="true">
+      <div class="intro-shade"></div>
+      <div class="intro-glow"></div>
+      <svg><defs><linearGradient id="introRim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7dd8ae"/><stop offset="1" stop-color="#ffc890"/></linearGradient></defs>
+        <path class="intro-body" fill="#000" stroke="url(#introRim)" stroke-width="2.4"/>
+        <g class="eyes-g"><ellipse class="intro-eye" fill="#fff"/><ellipse class="intro-eye" fill="#fff"/></g></svg>
+    </div>
+    <div class="laptop" id="laptop">
+      <div class="lid"><i class="lid-shade" aria-hidden="true"></i><div class="bezel"><span class="cam"></span>
+        <div class="screen">
+          <div class="wall" aria-hidden="true">
+            <i class="petal back" style="--r:-76deg"></i><i class="petal back" style="--r:76deg"></i>
+            <i class="petal back" style="--r:-48deg"></i><i class="petal back" style="--r:48deg"></i>
+            <i class="petal back" style="--r:-22deg"></i><i class="petal back" style="--r:22deg"></i>
+            <i class="petal" style="--r:-60deg"></i><i class="petal" style="--r:60deg"></i>
+            <i class="petal" style="--r:-36deg"></i><i class="petal" style="--r:36deg"></i>
+            <i class="petal" style="--r:-14deg"></i><i class="petal" style="--r:14deg"></i>
+            <i class="petal" style="--r:0deg"></i>
+            <span class="shine"></span>
+          </div>
+          <div class="ghost" id="ghost" aria-hidden="true"><span class="g-thumb"></span><svg class="g-cur" viewBox="0 0 15 22"><path d="M1 1v17l4.4-4.2 3 6.8 3-1.3-3-6.6H14z" fill="#fff" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/></svg><span class="g-badge">+ Copy</span></div>
+          <div class="mn-holder" id="mnHolder">
+            <div class="mn" id="mn" data-s="pet" role="img" aria-label="Notchfolk notch preview">
+
+              <!-- Istirahat: maskot -->
+              <div class="ly l-pet"><div class="ambient"></div><div class="eyes" style="gap:15px"><i class="eye" style="width:8.4px;height:12.4px"></i><i class="eye" style="width:8.4px;height:12.4px"></i></div></div>
+
+              <!-- Tertutup -->
+              <div class="ly l-idle">
+                <span class="a ring c" style="left:20px;top:15px"></span>
+                <span class="a b c js-time" style="left:75px;top:15px;font-size:16px">18:55</span>
+                <span class="a bars c" style="left:131px;top:15px"><i></i><i></i><i></i><i></i><i></i></span>
+              </div>
+
+              <!-- Baris status & titik halaman (dipakai beberapa halaman) -->
+              <div class="ly l-hdr">
+                <span class="a ring c" style="left:146px;top:18px"></span>
+                <span class="a vc" style="left:163px;top:18px"><span class="js-date">Thu 15 Oct 2026</span>&nbsp; <b class="js-time">18:55</b></span>
+                <span class="a bars c" style="left:396px;top:18px"><i></i><i></i><i></i><i></i><i></i></span>
+              </div>
+              <div class="ly l-dots"><span class="a dots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+
+              <!-- Musik -->
+              <div class="ly l-music">
+                <span class="a art" style="left:22px;top:12px;width:62px;height:62px"></span>
+                <span class="a vc sb" style="left:100px;top:47px;font-size:15px">Paper Sky</span>
+                <span class="a vc dim" style="left:100px;top:63px;font-size:11.5px">Lumen Coast - Summer Flows</span>
+                <span class="a arw c" style="left:395px;top:70px"><svg viewBox="0 0 10 10"><path d="M3.5 1.5 7 5l-3.5 3.5"/></svg></span>
+                <span class="a vc" style="left:25px;top:91px">03:13</span>
+                <span class="a prog vc" style="left:77px;top:91px;width:260px"><i></i></span>
+                <span class="a vc" style="right:25px;top:91px">-01:03</span>
+                <svg class="a bub c" style="left:53px;top:118px" viewBox="0 0 18 16"><path d="M4 .8h10a3.2 3.2 0 0 1 3.2 3.2v4.6a3.2 3.2 0 0 1-3.2 3.2H8.4L4.6 15l.5-3.2H4A3.2 3.2 0 0 1 .8 8.6V4A3.2 3.2 0 0 1 4 .8z" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="1.3"/><circle cx="6.3" cy="5.4" r="1.3" fill="rgba(255,255,255,.75)"/><circle cx="11.3" cy="5.4" r="1.3" fill="rgba(255,255,255,.75)"/></svg>
+                <svg class="a ctl c" style="left:162.5px;top:118px" viewBox="0 0 24 24"><path d="M11 6 3 12l8 6zM21 6l-8 6 8 6z"/></svg>
+                <svg class="a ctl c" style="left:210px;top:118px" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+                <svg class="a ctl c" style="left:257.5px;top:118px" viewBox="0 0 24 24"><path d="m13 6 8 6-8 6zM3 6l8 6-8 6z"/></svg>
+              </div>
+
+              <!-- Lirik -->
+              <div class="ly l-lyrics">
+                <div class="ambient"></div>
+                <span class="a art" style="left:22px;top:12px;width:62px;height:62px"></span>
+                <span class="a vc sb" style="left:100px;top:47px;font-size:15px">Paper Sky</span>
+                <span class="a vc dim" style="left:100px;top:63px;font-size:11.5px">Lumen Coast - Summ…</span>
+                <span class="a vc" style="left:25px;top:91px">02:59</span>
+                <span class="a prog vc" style="left:76px;top:91px;width:108px"><i></i></span>
+                <span class="a vc" style="right:284px;top:91px">-01:17</span>
+                <svg class="a bub c" style="left:53px;top:118px" viewBox="0 0 18 16"><path d="M4 .8h10a3.2 3.2 0 0 1 3.2 3.2v4.6a3.2 3.2 0 0 1-3.2 3.2H8.4L4.6 15l.5-3.2H4A3.2 3.2 0 0 1 .8 8.6V4A3.2 3.2 0 0 1 4 .8z" fill="#fff"/><circle cx="6.3" cy="5.4" r="1.3" fill="#000"/><circle cx="11.3" cy="5.4" r="1.3" fill="#000"/></svg>
+                <svg class="a ctl c" style="left:91px;top:118px" viewBox="0 0 24 24"><path d="M11 6 3 12l8 6zM21 6l-8 6 8 6z"/></svg>
+                <svg class="a ctl c" style="left:131px;top:118px" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+                <svg class="a ctl c" style="left:171px;top:118px" viewBox="0 0 24 24"><path d="m13 6 8 6-8 6zM3 6l8 6-8 6z"/></svg>
+                <span class="a" style="left:252px;top:22px;width:1px;height:102px;background:rgba(255,255,255,.12)"></span>
+                <div class="a lyr"><ol id="lyr">
+                  <li>we fold the summer light</li>
+                  <li>into paper birds tonight</li>
+                  <li>and send them through the sky</li>
+                  <li>to find you by the sea</li>
+                  <li>every wing a little song</li>
+                  <li>that carries us along</li>
+                </ol></div>
+              </div>
+
+              <!-- Pomodoro (Aurora, 1.2) -->
+              <div class="ly l-pomo">
+                <span class="a ttl vc">Pomodoro</span><span class="a arw c" style="left:22px;top:70px"><svg viewBox="0 0 10 10"><path d="M6.5 1.5 3 5l3.5 3.5"/></svg></span><span class="a arw c" style="left:395px;top:70px"><svg viewBox="0 0 10 10"><path d="M3.5 1.5 7 5l-3.5 3.5"/></svg></span><span class="a dim" style="left:46px;top:30px;font-size:10.5px">Focus · 2 of 4</span><span class="a b" style="left:45px;top:41px;font-size:28px;line-height:34px;font-variant-numeric:tabular-nums">18:42</span><span class="a sb" style="left:46px;top:79px;font-size:14px">10:27</span><span class="a sb" style="left:92px;top:80.5px;font-size:12px;color:#a855f7">until done</span><i class="a" style="left:46px;top:106px;width:128px;height:4px;border-radius:2px;background:rgba(255,255,255,.14)"></i><i class="a pm-bar" style="left:46px;top:106px;height:4px;border-radius:2px;background:linear-gradient(90deg,#5B6CFF,#A855F7)"></i><i class="a" style="left:192px;top:30px;width:1px;height:88px;background:rgba(255,255,255,.1)"></i><span class="a dim" style="left:206px;top:30px;font-size:10.5px">This round</span><span class="a" style="left:292px;top:30px;width:60px;height:20px;border-radius:10px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:10.5px;font-weight:700">Pause</span><span class="a" style="left:358px;top:31px;width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center"><svg viewBox="0 0 24 24" style="width:11px;height:11px" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12a7 7 0 1 0 2-5"/><path d="M4 3.5v4.5h4.5"/></svg></span><svg class="a" style="left:0;top:0;width:420px;height:140px;overflow:visible" viewBox="0 0 420 140"><defs><linearGradient id="mpf" x1="0" x2="1"><stop offset="0" stop-color="#5B6CFF"/><stop offset="1" stop-color="#A855F7"/></linearGradient><linearGradient id="mps" x1="0" x2="1"><stop offset="0" stop-color="#22D3EE"/><stop offset="1" stop-color="#34D399"/></linearGradient><radialGradient id="mph"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".4" stop-color="#A855F7" stop-opacity=".55"/><stop offset="1" stop-color="#A855F7" stop-opacity="0"/></radialGradient></defs><rect x="206" y="71" width="28.65" height="6" rx="3" fill="rgba(255,255,255,.12)"/><rect x="206" y="71" width="28.65" height="6" rx="3" fill="url(#mpf)"/><rect x="237.65" y="71" width="5.73" height="6" rx="3" fill="rgba(255,255,255,.12)"/><rect x="237.65" y="71" width="5.73" height="6" rx="3" fill="url(#mps)"/><rect x="246.38" y="71" width="28.65" height="6" rx="3" fill="rgba(255,255,255,.12)"/><rect x="278.03" y="71" width="5.73" height="6" rx="3" fill="rgba(255,255,255,.12)"/><rect x="286.76" y="71" width="28.65" height="6" rx="3" fill="rgba(255,255,255,.12)"/><rect x="318.41" y="71" width="5.73" height="6" rx="3" fill="rgba(255,255,255,.12)"/><rect x="327.14" y="71" width="28.65" height="6" rx="3" fill="rgba(255,255,255,.12)"/><rect x="358.79" y="71" width="17.19" height="6" rx="3" fill="rgba(255,255,255,.12)"/><rect class="pm-run" x="246.38" y="71" height="6" rx="3" fill="url(#mpf)"/><g class="pm-head"><circle cx="0" cy="74" r="10" fill="url(#mph)"/><circle cx="0" cy="74" r="3.4" fill="#fff"/></g></svg><span class="a hc pm-lab past" style="left:220.33px;top:87px;font-size:8.6px;font-weight:600">1</span><span class="a hc pm-lab on" style="left:260.71px;top:87px;font-size:8.6px;font-weight:600">2</span><span class="a hc pm-lab" style="left:301.08px;top:87px;font-size:8.6px;font-weight:600">3</span><span class="a hc pm-lab" style="left:341.46px;top:87px;font-size:8.6px;font-weight:600">4</span><span class="a hc pm-lab" style="left:367.39px;top:87px;font-size:8.6px;font-weight:600">Long</span><span class="a dim" style="left:206px;top:102px;font-size:9.5px">2 h 10 min · 4 sessions</span>
+              </div>
+
+              <!-- Reminder -->
+              <div class="ly l-notif"><span class="a" style="left:16px;top:14px;width:32px;height:32px;border-radius:8.5px;background:#1f6fb8"></span><svg class="a" style="left:22px;top:20px;width:20px;height:20px" viewBox="0 0 24 24"><path d="M12 3a6.3 6.3 0 0 1 6.3 6.3v5.4l1.7 2.3c.4.5 0 1.3-.7 1.3H4.7c-.7 0-1.1-.8-.7-1.3l1.7-2.3V9.5A6.3 6.3 0 0 1 12 3.2z" fill="#fff"/><path d="M9.6 19.6h4.8a2.4 2.4 0 0 1-4.8 0z" fill="#fff"/></svg><span class="a dim" style="left:58px;top:9px;font-size:9.5px">Reminder</span><span class="a b" style="left:58px;top:21px;font-size:13px">Notchfolk</span><span class="a" style="left:58px;top:38px;font-size:11px;color:rgba(255,255,255,.66)">Team standup in 10 minutes</span><span class="a dim" style="right:20px;top:9px;font-size:9.5px">now</span></div>
+<!-- Prayer (1.2) -->
+              <div class="ly l-prayer">
+                <span class="a ttl vc">Prayer</span><span class="a dim vc" style="left:84px;top:19.5px;font-size:11px">Jakarta</span><span class="a arw c" style="left:22px;top:70px"><svg viewBox="0 0 10 10"><path d="M6.5 1.5 3 5l3.5 3.5"/></svg></span><span class="a arw c" style="left:395px;top:70px"><svg viewBox="0 0 10 10"><path d="M3.5 1.5 7 5l-3.5 3.5"/></svg></span><span class="a dim" style="left:46px;top:30px;font-size:10.5px">Next</span><span class="a b" style="left:45px;top:41px;font-size:26px;line-height:32px">Maghrib</span><span class="a sb" style="left:46px;top:79px;font-size:14px">17:48</span><span class="a sb" style="left:92px;top:80.5px;font-size:12px;color:#64b5ff">in 1 h 8 min</span><i class="a" style="left:46px;top:106px;width:128px;height:4px;border-radius:2px;background:rgba(255,255,255,.14)"></i><i class="a pr-bar" style="left:46px;top:106px;height:4px;border-radius:2px;background:linear-gradient(90deg,#19b8ff,#2d5bff,#7b4bff)"></i><i class="a" style="left:192px;top:30px;width:1px;height:88px;background:rgba(255,255,255,.1)"></i><svg class="a" style="left:0;top:0;width:420px;height:140px;overflow:visible" viewBox="0 0 420 140"><defs><linearGradient id="mpa" x1="212" x2="370" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#19b8ff"/><stop offset=".55" stop-color="#2d5bff"/><stop offset="1" stop-color="#7b4bff"/></linearGradient><radialGradient id="mpsun"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="#ffe9a8" stop-opacity=".85"/><stop offset="1" stop-color="#ffb84d" stop-opacity="0"/></radialGradient></defs><line x1="206" y1="92" x2="376" y2="92" stroke="rgba(255,255,255,.12)"/><path d="M212.0 92.0 L215.9 88.4 L219.9 84.8 L223.8 81.3 L227.8 77.8 L231.8 74.4 L235.7 71.1 L239.7 68.0 L243.6 65.0 L247.6 62.1 L251.5 59.5 L255.4 57.0 L259.4 54.8 L263.4 52.8 L267.3 51.0 L271.2 49.5 L275.2 48.3 L279.1 47.3 L283.1 46.6 L287.1 46.1 L291.0 46.0 L294.9 46.1 L298.9 46.6 L302.9 47.3 L306.8 48.3 L310.8 49.5 L314.7 51.0 L318.6 52.8 L322.6 54.8 L326.6 57.0 L330.5 59.5 L334.4 62.1 L338.4 65.0 L342.4 68.0 L346.3 71.1 L350.2 74.4 L354.2 77.8 L358.1 81.3 L362.1 84.8 L366.0 88.4 L370.0 92.0" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="1.8" stroke-linecap="round"/><path class="pr-arc" d="M212.0 92.0 L215.9 88.4 L219.9 84.8 L223.8 81.3 L227.8 77.8 L231.8 74.4 L235.7 71.1 L239.7 68.0 L243.6 65.0 L247.6 62.1 L251.5 59.5 L255.4 57.0 L259.4 54.8 L263.4 52.8 L267.3 51.0 L271.2 49.5 L275.2 48.3 L279.1 47.3 L283.1 46.6 L287.1 46.1 L291.0 46.0 L294.9 46.1 L298.9 46.6 L302.9 47.3 L306.8 48.3 L310.8 49.5 L314.7 51.0 L318.6 52.8 L322.6 54.8 L326.6 57.0 L330.5 59.5 L334.4 62.1 L338.4 65.0 L342.4 68.0 L346.3 71.1 L350.2 74.4 L354.2 77.8 L358.1 81.3 L362.1 84.8 L366.0 88.4 L370.0 92.0" pathLength="1" fill="none" stroke="url(#mpa)" stroke-width="2.4" stroke-linecap="round"/><circle cx="221.5" cy="83.4" r="2.2" fill="rgba(255,255,255,.45)"/><circle cx="268.9" cy="50.4" r="2.2" fill="rgba(255,255,255,.45)"/><circle cx="302.1" cy="47.1" r="2.2" fill="rgba(255,255,255,.45)"/><circle cx="335.2" cy="62.7" r="2.2" fill="#fff"/><circle cx="365.3" cy="87.7" r="2.2" fill="rgba(255,255,255,.45)"/><g class="pr-sun" style="transform-origin:322.6px 54.8px"><circle cx="322.6" cy="54.8" r="11" fill="url(#mpsun)"/><circle cx="322.6" cy="54.8" r="3.6" fill="#fff"/></g></svg><span class="a hc dim" style="left:221.5px;top:100px;font-size:7px">Subuh</span><span class="a hc dim" style="left:221.5px;top:110px;font-size:7px">04:32</span><span class="a hc dim" style="left:268.9px;top:100px;font-size:7px">Dzuhur</span><span class="a hc dim" style="left:268.9px;top:110px;font-size:7px">11:52</span><span class="a hc dim" style="left:302.1px;top:100px;font-size:7px">Ashar</span><span class="a hc dim" style="left:302.1px;top:110px;font-size:7px">15:12</span><span class="a hc sb" style="left:335.2px;top:100px;font-size:7px">Maghrib</span><span class="a hc dim" style="left:335.2px;top:110px;font-size:7px">17:48</span><span class="a hc dim" style="left:365.3px;top:100px;font-size:7px">Isya</span><span class="a hc dim" style="left:365.3px;top:110px;font-size:7px">19:01</span>
+              </div>
+
+              <!-- Pengingat Maghrib (pil) -->
+              <div class="ly l-remind"><i class="a rm-wave"></i><svg class="a rm-moon" style="left:17px;top:17px;width:26px;height:26px" viewBox="0 0 24 24"><path d="M15.2 3.4a8.6 8.6 0 1 0 5.4 15.3A7.1 7.1 0 0 1 15.2 3.4z" fill="#fff"/></svg><span class="a b" style="left:56px;top:13px;font-size:15px">Maghrib</span><span class="a dim" style="left:56px;top:33px;font-size:11px">It's time to pray</span><span class="a sb vc" style="right:20px;top:30px;font-size:13px">17:48</span></div>
+
+              <!-- Water -->
+              <div class="ly l-water">
+                <span class="a ttl vc">Water <span style="color:#56c8ff">Reminder</span></span>
+                <span class="a arw c" style="left:22px;top:70px"><svg viewBox="0 0 10 10"><path d="M6.5 1.5 3 5l3.5 3.5"/></svg></span>
+                <span class="a arw c" style="left:395px;top:70px"><svg viewBox="0 0 10 10"><path d="M3.5 1.5 7 5l-3.5 3.5"/></svg></span>
+                <span class="a vc" style="left:44px;top:47px"><b style="font-size:30px">1.5</b> <span class="dim sb" style="font-size:13px">/ 1.5 L</span></span>
+                <span class="a sw"><i><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0-6 6v4l-2 3h16l-2-3V9a6 6 0 0 0-6-6zM10 19a2 2 0 0 0 4 0z"/></svg></i></span>
+                <span class="a vc dim" style="left:44px;top:71px;font-size:11.5px">Today · <b style="color:#4fc0ff">100%</b> · Goal reached</span>
+                <span class="a wbar"></span>
+                <span class="a wbtn" style="left:44px;top:98px;background:#0e4a86"><svg viewBox="0 0 24 24" fill="#7fd0ff"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>Drink</span>
+                <span class="a wbtn" style="left:113px;top:98px;background:rgba(255,255,255,.12)"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M4 8h16M4 16h16"/><circle cx="9" cy="8" r="2" fill="#000"/><circle cx="15" cy="16" r="2" fill="#000"/></svg>Settings</span>
+                <span class="a" style="left:208px;top:22px;width:1px;height:102px;background:rgba(255,255,255,.12)"></span>
+                <span class="a" style="left:360px;top:41px;width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);transform:translate(-50%,-50%)"></span>
+                <span class="a" style="left:368px;top:41px;width:5px;height:5px;border-radius:50%;background:#fff;transform:translate(-50%,-50%)"></span>
+                <div class="a chart" id="chart">
+                  <span class="grid-dot" style="top:0"></span><span class="grid-dot" style="top:25px"></span>
+                </div>
+                <span class="a" style="left:216px;top:106px;width:122px;height:1px;background:rgba(80,180,255,.45)"></span>
+                <span class="a" style="left:338px;top:50px;width:1px;height:56px;background:rgba(255,255,255,.18)"></span>
+                <span class="a vc axl" style="left:344px;top:56px">400</span>
+                <span class="a vc axl" style="left:344px;top:81px">200</span>
+                <span class="a vc axl" style="left:344px;top:106px">0 ml</span>
+                <span class="a c axl" style="left:227px;top:117px">09</span>
+                <span class="a c axl" style="left:269px;top:117px">12</span>
+                <span class="a c axl" style="left:311px;top:117px">15</span>
+              </div>
+
+              <!-- Shelf -->
+              <div class="ly l-shelf" id="shelf">
+                <canvas class="a" id="shCv" width="840" height="280" style="left:0;top:0;width:420px;height:140px" aria-hidden="true"></canvas>
+                <span class="a ttl vc">Shelf</span>
+                <span class="a sh-clear vc">Clear</span>
+                <span class="a arw c" style="left:22px;top:70px"><svg viewBox="0 0 10 10"><path d="M6.5 1.5 3 5l3.5 3.5"/></svg></span>
+                <span class="a arw c" style="left:395px;top:70px"><svg viewBox="0 0 10 10"><path d="M3.5 1.5 7 5l-3.5 3.5"/></svg></span>
+                <!-- Kartu file (jatuh masuk satu per satu) -->
+                <div class="a sh-card" style="left:44px"><span class="sh-thumb t-img"></span><span class="sh-name">beach.jpg</span><span class="sh-size">2.4 MB</span></div>
+                <div class="a sh-card" style="left:112px"><span class="sh-thumb t-folder"><svg viewBox="0 0 44 44"><path d="M4 11a3 3 0 0 1 3-3h10l4 4h16a3 3 0 0 1 3 3v19a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z" fill="#e8a720"/><path d="M4 16h36v18a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z" fill="#ffc94d"/></svg></span><span class="sh-name">Project files</span><span class="sh-size">Folder</span></div>
+                <!-- Zona drop: tampil penuh saat kosong, menyala di atas kartu saat file melayang -->
+                <div class="a sh-zone">
+                  <span class="a zone"></span>
+                  <svg class="a c sh-icon" style="left:168px;top:28px;width:30px;height:30px" viewBox="-15 -22 30 32"><path d="M-10.2-8h20.4l3.2 7.8h-26.8z" fill="rgba(255,255,255,.28)"/><path class="sh-arrow" d="M-1.7-21h3.4v6.5h3.5L0-8.5l-5.2-6H-1.7z" fill="rgba(255,255,255,.5)"/><path d="M-14 1h8.8l1.6 3.2h7.2L5.2 1H14v8h-28z" fill="rgba(255,255,255,.85)"/></svg>
+                  <span class="a c sh-t1" style="left:168px;top:58px;font-size:13px">Drop files here</span>
+                  <span class="a c sh-t2" style="left:168px;top:58px;font-size:13px">Release to add</span>
+                  <span class="a c dim sh-sub" style="left:168px;top:73px;font-size:9.5px">Drag out anytime · click to open</span>
+                </div>
+              </div>
+
+              <!-- Clipboard (1.2) -->
+              <div class="ly l-clip">
+                <span class="a ttl vc">Clipboard</span><span class="a arw c" style="left:22px;top:70px"><svg viewBox="0 0 10 10"><path d="M6.5 1.5 3 5l3.5 3.5"/></svg></span><span class="a arw c" style="left:395px;top:70px"><svg viewBox="0 0 10 10"><path d="M3.5 1.5 7 5l-3.5 3.5"/></svg></span><span class="a" style="left:334px;top:10px;width:64px;height:18px;border-radius:9px;background:rgba(255,255,255,.1)"></span><span class="a" style="left:368px;top:12px;width:28px;height:14px;border-radius:7px;background:#5c54ff"></span><svg class="a" style="left:0;top:0;width:420px;height:140px" viewBox="0 0 420 140"><rect x="344" y="15.5" width="12" height="8" rx="1.8" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.3"/><path d="M344 15.5h4.5" stroke="rgba(255,255,255,.6)" stroke-width="2.2" stroke-linecap="round"/><rect x="377" y="14" width="10" height="10.5" rx="1.8" fill="none" stroke="#fff" stroke-width="1.3"/><rect x="379.5" y="12.8" width="5" height="2.6" rx="1" fill="#fff"/></svg><div class="a cb-card cb-new" style="left:44px"><span class="cb-t">Meeting moved to 3 PM, see you in room B</span><span class="cb-s">Just now</span></div><div class="a cb-card" style="left:126px"><span class="cb-t">github.com/galyarderlabs/notchfolk</span><span class="cb-s">2 min ago</span></div><div class="a cb-card" style="left:208px"><span class="cb-t">Order #48213 shipped</span><span class="cb-s">10 min ago</span></div><div class="a cb-card" style="left:290px"><span class="cb-t">Kopi susu 2, roti bakar 1</span><span class="cb-s">1 h ago</span></div><span class="a dim" style="left:46px;top:121px;font-size:9.5px">4 items · click to copy</span>
+              </div>
+
+              <!-- To-do -->
+              <div class="ly l-todo">
+                <span class="a ttl vc">Todo<span style="color:#38d36f">List</span></span>
+                <span class="a arw c" style="left:22px;top:70px"><svg viewBox="0 0 10 10"><path d="M6.5 1.5 3 5l3.5 3.5"/></svg></span>
+                <span class="a b vc" style="left:44px;top:48px;font-size:32px">4/5</span>
+                <span class="a vc dim" style="left:44px;top:76px;font-size:11.5px">Task Done Today</span>
+                <span class="a pill" style="left:41px;top:93px;width:69px;font-size:11.5px;gap:5px"><svg viewBox="0 0 24 24" style="fill:#fff;stroke:none"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 5v4h4v2h-4v4h-2v-4H7v-2h4V7z"/></svg>Add Task</span>
+                <span class="a pill" style="left:116px;top:93px;width:68px;font-size:11.5px;gap:5px"><svg viewBox="0 0 24 24"><path d="M4 20h7M14 5l5 5-9 9H5v-5z"/></svg>Edit Task</span>
+                <span class="a trow" style="top:34px"><span class="chk"><svg viewBox="0 0 10 10"><path d="m2 5.2 2 2 4-4.4"/></svg></span><s>Revise the report</s></span>
+                <span class="a trow" style="top:65px"><span class="chk"><svg viewBox="0 0 10 10"><path d="m2 5.2 2 2 4-4.4"/></svg></span><s>Reply to Dina</s></span>
+                <span class="a trow" style="top:96px"><span class="chk"><svg viewBox="0 0 10 10"><path d="m2 5.2 2 2 4-4.4"/></svg></span><s>Post weekly update</s></span>
+                <span class="a" style="left:384px;top:36px;width:3px;height:34px;border-radius:2px;background:rgba(255,255,255,.4)"></span>
+              </div>
+
+                            <!-- AI assistant -->
+              <div class="ly l-ai">
+                <span class="a ttl vc">AI Assistant</span>
+                <span class="a arw c" style="left:22px;top:70px"><svg viewBox="0 0 10 10"><path d="M6.5 1.5 3 5l3.5 3.5"/></svg></span>
+                <span class="a arw c" style="left:395px;top:70px"><svg viewBox="0 0 10 10"><path d="M3.5 1.5 7 5l-3.5 3.5"/></svg></span>
+                <span class="a ai-q">What&apos;s on my calendar today?</span>
+                <span class="a ai-a"><b>Notchfolk:</b> Two meetings — standup at 10:00, design review at 14:30. And a reminder at 17:48.</span>
+              </div>
+
+              <!-- Calendar -->
+              <div class="ly l-cal">
+                <span class="a ttl vc">Calendar</span>
+                <span class="a arw c" style="left:22px;top:70px"><svg viewBox="0 0 10 10"><path d="M6.5 1.5 3 5l3.5 3.5"/></svg></span>
+                <span class="a arw c" style="left:395px;top:70px"><svg viewBox="0 0 10 10"><path d="M3.5 1.5 7 5l-3.5 3.5"/></svg></span>
+                <span class="a vc dim" style="left:44px;top:19px;font-size:11px"><span class="js-date">Fri 6 Nov 2026</span></span>
+                <span class="a cal-row" style="top:36px"><i class="dot" style="background:#8ecdf0"></i><b>Team standup</b><span>10:00</span></span>
+                <span class="a cal-row" style="top:68px"><i class="dot" style="background:#7dd8ae"></i><b>Design review</b><span>14:30</span></span>
+                <span class="a cal-row" style="top:100px"><i class="dot" style="background:#ffc890"></i><b>Maghrib reminder</b><span>17:48</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="wrap">
+      <div class="try" role="group" aria-label="Preview the notch">
+        <button type="button" data-s="pet" aria-pressed="true">Resting</button>
+        <button type="button" data-s="idle" aria-pressed="false">Closed</button>
+        <button type="button" data-s="music" aria-pressed="false">Music</button>
+        <button type="button" data-s="lyrics" aria-pressed="false">Lyrics</button>
+        <button type="button" data-s="pomo" aria-pressed="false">Focus timer</button>
+        <button type="button" data-s="notif" aria-pressed="false">Reminder</button>
+        <button type="button" data-s="prayer" aria-pressed="false">Prayer</button>
+        <button type="button" data-s="water" aria-pressed="false">Water</button>
+        <button type="button" data-s="shelf" aria-pressed="false">Shelf</button>
+        <button type="button" data-s="clip" aria-pressed="false">Clipboard</button>
+        <button type="button" data-s="todo" aria-pressed="false">To-do</button>
+        <button type="button" data-s="ai" aria-pressed="false">AI assistant</button>
+        <button type="button" data-s="cal" aria-pressed="false">Calendar</button>
+      </div>
+      <p class="cap" id="cap" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <!-- ================= Fitur ================= -->
+    <section id="features" class="wrap">
+    <h2 class="sec-title">Everything you glance at, in one place.</h2>
+    <p class="sec-lede">Hover the notch to open it. Move away and it closes. Nothing to arrange, nothing to pin.</p>
+    <div class="features">
+      <div class="feature">
+        <span class="app" style="--c:#ff385f"><svg viewBox="0 0 24 24"><circle cx="6.9" cy="17.3" r="2.8"/><circle cx="16.7" cy="15.3" r="2.8"/><path d="M8.6 6.9c0-.6.4-1.1 1-1.2l8.6-1.9c.8-.2 1.5.4 1.5 1.2v10.4h-2.2V8.2l-6.7 1.5v7.6H8.6z"/></svg></span>
+        <div><h3>Music</h3><p>See what&apos;s playing, skip, pause and seek &mdash; from Spotify, your browser, or any MPRIS player &mdash; without switching windows.</p></div>
+      </div>
+      <div class="feature">
+        <span class="app" style="--c:#ff385f"><svg viewBox="0 0 24 24"><path d="M5.6 4.6h12.8A2.7 2.7 0 0 1 21.1 7.3v7.2a2.7 2.7 0 0 1-2.7 2.7h-6.1l-4.5 3.2c-.5.3-1.1 0-1.1-.6v-2.6H5.6a2.7 2.7 0 0 1-2.7-2.7V7.3a2.7 2.7 0 0 1 2.7-2.7z"/><path class="cut" d="M7.6 9.5h8.8M7.6 12.5h5.2"/></svg></span>
+        <div><h3>Synced lyrics</h3><p>The island widens and takes the cover&apos;s colour, each line lighting up as it&apos;s sung. Click a line to jump there. Lyrics from LRCLIB.</p></div>
+      </div>
+      <div class="feature">
+        <span class="app" style="--c:#30c759"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.9"/><path class="cut" d="m8.2 12.2 2.6 2.6 5-5.1"/></svg></span>
+        <div><h3>Tasks &amp; reminders</h3><p>Jot a task, give it a time, and the notch taps you when it&apos;s due. Missed ones stay in the last 7 days, so nothing is lost.</p></div>
+      </div>
+      <div class="feature">
+        <span class="app" style="--c:#0a84ff"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path class="cut" d="M3.5 10h17M8 3v4M16 3v4"/><rect x="7" y="13.5" width="3" height="3" rx="1" class="fill" style="--g:var(--c)"/><rect x="14" y="13.5" width="3" height="3" rx="1" class="fill" style="--g:var(--c)"/></svg></span>
+        <div><h3>Calendar</h3><p>Today&apos;s events at a glance, with a gentle nudge before each one starts.</p></div>
+      </div>
+      <div class="feature">
+        <span class="app" style="--c:#7d66fa"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M18.5 15.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z"/></svg></span>
+        <div><h3>AI assistant</h3><p>Ask in plain words and get an answer in the island. Claude, Codex, Hermes, OpenAI, and more &mdash; the provider you chose in Settings.</p></div>
+      </div>
+      <div class="feature">
+        <span class="app" style="--c:#30abdb"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path class="ln" d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></span>
+        <div><h3>Voice control</h3><p>Press Super+I and talk. On-device Whisper turns your words into text &mdash; nothing you say leaves your computer.</p></div>
+      </div>
+      <div class="feature">
+        <span class="app" style="--c:#2d5bff"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path class="ln" d="M7.5 8 10.8 15.8M16.5 8 13.2 15.8M8.5 6h7"/></svg></span>
+        <div><h3>MCP server</h3><p>56 tools your AI can use &mdash; tasks, calendar, reminders, files, and more &mdash; over a local server on your computer.</p></div>
+      </div>
+      <div class="feature">
+        <span class="app" style="--c:#7d66fa"><svg viewBox="0 0 24 24"><rect x="9.8" y="2.4" width="4.4" height="2.4" rx="1.1"/><path d="M17.6 6.9l1.4-1.4a1 1 0 0 1 1.4 1.4L19 8.3z"/><circle cx="12" cy="13.6" r="7.8"/><path class="cut" d="M12 13.6V9.8"/></svg></span>
+        <div><h3>Focus timer</h3><p>A calm Pomodoro with the whole round at a glance, a breathing Live Activity in the notch and gentle reminders.</p></div>
+      </div>
+      <div class="feature">
+        <span class="app" style="--c:#0a84ff"><svg viewBox="0 0 24 24"><path d="M12 2.9c.4 0 6.7 6.6 6.7 11.6a6.7 6.7 0 0 1-13.4 0c0-5 6.3-11.6 6.7-11.6z"/></svg></span>
+        <div><h3>Water &amp; calories</h3><p>Set your bottle size and daily goal, log meals, and see today&apos;s progress in the notch.</p></div>
+      </div>
+      <div class="feature">
+        <span class="app" style="--c:#ffb233"><svg viewBox="0 0 24 24"><path d="M7.1 4.8h9.8c.6 0 1.1.4 1.3.9l2.1 6.6h-5.1l-1.2 2.2h-4l-1.2-2.2H3.7l2.1-6.6c.2-.5.7-.9 1.3-.9z" opacity=".6"/><path d="M3.2 13.6h5.5l1.2 2.2h4.2l1.2-2.2h5.5v4.2a2.6 2.6 0 0 1-2.6 2.6H5.8a2.6 2.6 0 0 1-2.6-2.6z"/></svg></span>
+        <div><h3>File shelf</h3><p>Drag files onto the notch to keep them close, then drag them out into a chat, an email or another folder.</p></div>
+      </div>
+      <div class="feature">
+        <span class="app" style="--c:#2bb6a3"><svg viewBox="0 0 24 24"><path d="M15.4 3.6a8.6 8.6 0 1 0 5.2 14.6A7 7 0 0 1 15.4 3.6z"/></svg></span>
+        <div><h3>Prayer times</h3><p>An optional page with today&apos;s prayers on a sun arc, gentle reminders, and music that can pause by itself. Calculated on your PC.</p></div>
+      </div>
+      <div class="feature">
+        <span class="app" style="--c:#ffb233"><svg viewBox="0 0 24 24"><rect x="5" y="4.4" width="14" height="16.4" rx="2.8"/><rect class="cut" x="9.4" y="3" width="5.2" height="3" rx="1.2" style="fill:#fff"/><path class="cut" d="M8.6 11.2h6.8M8.6 14.8h4.4"/></svg></span>
+        <div><h3>Clipboard history</h3><p>What you copy waits beside your Shelf. Click to copy it again, or drag it straight into a chat.</p></div>
+      </div>
+    </div>
+  </section>
+
+    <section class="wrap">
+    <h2 class="sec-title">A small companion that knows when to rest.</h2>
+    <p class="sec-lede">When nothing is happening, the clock fades and a pair of eyes appears. They doze off after a while, and wave hello when you come back.</p>
+    <div class="quiet">
+      <div><h3>Light on your PC</h3><p>Notchfolk draws only while something moves. When it&apos;s idle it uses no CPU at all, even with music in the background.</p></div>
+      <div><h3>Your data stays here</h3><p>Tasks, water logs and shelf items are stored on your computer. There are no accounts and no tracking.</p></div>
+      <div><h3>Made for GNOME</h3><p>Built natively for GNOME 46&ndash;51, sharp on every display scale, and it steps aside for full-screen apps.</p></div>
+    </div>
+  </section>
+
+    <section id="light" class="wrap">
+    <h2 class="sec-title">So light, you&apos;ll forget it&apos;s there.</h2>
+    <p class="sec-lede">Notchfolk is built natively for GNOME, not on a hidden web browser. It sits quietly until something happens, then gets out of the way again.</p>
+    <div class="light">
+      <div class="tm" role="img" aria-label="GNOME System Monitor showing notchfolkd using about 9 MB of memory and almost no CPU">
+        <div class="tm-title">System Monitor</div>
+        <div class="tm-grid">
+          <div class="h nm">Name</div>
+          <div class="h"><b>CPU</b></div>
+          <div class="h"><b>Memory</b></div>
+          <div class="h"><b>Disk</b></div>
+          <div class="h"><b>Network</b></div>
+          <div class="nm"><img src="images/icon.png" alt="">notchfolkd</div>
+          <div class="v">0%</div>
+          <div class="v hi js-ram" data-to="9">9 MB</div>
+          <div class="v">0 MB/s</div>
+          <div class="v">0 Mbps</div>
+        </div>
+        <div class="tm-note">GNOME System Monitor during everyday use. 4&ndash;9 MB at rest, no leak after 100 opens and closes.</div>
+      </div>
+      <div>
+        <div class="stats">
+          <div class="stat"><b>4&ndash;9 MB</b><span>typical memory use</span></div>
+          <div class="stat"><b>0</b><span>wake-ups a minute at rest</span></div>
+          <div class="stat"><b>4&ndash;6</b><span>frames a minute, closed island</span></div>
+        </div>
+        <ul class="why-light">
+          <li><b>Native code.</b> Written in Rust and drawn by your graphics card, with no web engine running in the background.</li>
+          <li><b>Draws only when something moves.</b> When the notch is still, Notchfolk stops drawing completely.</li>
+          <li><b>Waits instead of checking.</b> The system tells Notchfolk when a song changes, so it never polls.</li>
+          <li><b>Files stay where they are.</b> The shelf remembers where your files live instead of copying them into memory.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+    <section id="customize" class="wrap">
+    <h2 class="sec-title">Make it yours.</h2>
+    <p class="sec-lede">Open Settings &rarr; Appearance. A few switches decide how Notchfolk behaves on your screen.</p>
+    <div class="custom">
+      <div class="set-wrap">
+        <div class="mini-stage" aria-hidden="true">
+          <div class="mini-island" id="miniIsland"><span class="mi-ring"></span><span class="js-time">18:55</span><span class="bars"><i></i><i></i><i></i><i></i><i></i></span></div>
+        </div>
+        <div class="set-ctl">
+          <span class="seg" role="group" aria-label="Island look">
+            <button type="button" data-island="black" aria-pressed="true">Black</button>
+            <button type="button" data-island="glass" aria-pressed="false">Glass</button>
+          </span>
+          <label>Glass tint <input type="range" id="tintRange" min="0" max="100" value="55" aria-label="Glass tint"></label>
+        </div>
+        <p class="set-hint"><img src="images/icon.png" alt="">Settings &rarr; Appearance &rarr; Island</p>
+      </div>
+      <div class="opts">
+        <div class="opt"><h3>Black or Glass island</h3><p>Notchfolk&apos;s own black island, or clear dark glass over what is behind it, blurred, with a lit rim. The slider sets how dark the glass is.</p></div>
+        <div class="opt"><h3>Your clock, your format</h3><p>24-hour or 12-hour, following your GNOME clock. The island&apos;s clock always matches.</p></div>
+        <div class="opt"><h3>Notch size</h3><p>Adjust it yourself. It&apos;s automatically larger on wide monitors.</p></div>
+        <div class="opt"><h3>Follows GNOME</h3><p>Accent colour and text size come from your GNOME settings &mdash; change them there and the island restyles itself.</p></div>
+      </div>
+    </div>
+  </section>
+
+    <section id="new" class="wrap">
+    <h2 class="sec-title">New in Notchfolk 1.1.0.</h2>
+    <p class="sec-lede">Reminder history, opencode 2 fixed, and everything a little smoother.</p>
+    <div class="news">
+      <div>
+        <h3>What&apos;s new</h3>
+        <ul>
+          <li><b>Reminder history</b><span>A reminder that fired while you were away, or that you simply missed, can still be looked up: the Reminders page has a &ldquo;Last 7 days&rdquo; section, and agents can read it with the new list_reminder_history tool (56 tools now).</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Fixes</h3>
+        <ul>
+          <li><b>opencode 2 works again</b><span>From upstream Isle&apos;s PR #45, by AlphaBeast97: the model list fills and requests answer, with --standalone and the plain opencode models output 2.x uses, while opencode 1.x keeps its own flags.</span></li>
+        </ul>
+        <div class="news-note">
+          <h3>Good to know</h3>
+          <p>The one-shot island alert is unchanged &mdash; history only adds a way to look back.</p>
+          <p>Version 1.1.0 is the latest release. Run the install command again to update; your settings stay as you set them.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <section id="download" class="wrap download">
+    <img class="icon" src="images/icon.png" alt="Notchfolk icon">
+    <h2>Get Notchfolk for GNOME</h2>
+    <p>GNOME 46&ndash;51 on Linux, x86_64.</p>
+    <div class="steps">
+      <h3>Install with one command</h3>
+      <p>Paste this in a terminal. It installs the extension and the daemon to your home folder, then log out and back in.</p>
+      <div class="cmd"><code id="cmdText">curl -fsSL https://raw.githubusercontent.com/galyarderlabs/notchfolk/main/get.sh | bash</code><button class="copy" type="button" id="copyCmd">Copy</button></div>
+      <p class="hash">Prefer a package? <b>notchfolk-bin</b> is prepared in <code>packaging/aur</code>, but AUR registration is paused, so it isn&apos;t published yet &mdash; <code>yay</code> won&apos;t find it. The command above is the way to install for now.</p>
+    </div>
+    <div class="why">
+      <h4>Why it&apos;s safe</h4>
+      <ul>
+        <li><b>Installs to your home folder.</b> No admin rights, nothing system-wide.</li>
+        <li><b>Your settings stay as you set them.</b> Run the same command again to update.</li>
+        <li><b>Remove it anytime</b> with <code>notchfolk-uninstall</code>.</li>
+        <li><b>Your data stays on your computer.</b> No accounts, no tracking. Synced lyrics come from LRCLIB.</li>
+        <li><b>Only install Notchfolk from this page</b> or the official GitHub releases.</li>
+      </ul>
+    </div>
+    <div class="cta">
+      <small><a class="js-dl" href="https://github.com/galyarderlabs/notchfolk/releases" target="_blank" rel="noopener">Or download the release package</a></small>
+      <a class="support-nudge" href="#support">&#9749; Enjoying Notchfolk? Support the project</a>
+    </div>
+    <span class="dl-count js-dlcount"></span>
+  </section>
+
+    <section id="support" class="wrap support">
+   <div class="support-card">
+    <img class="mascot-mini" src="images/icon.png" alt="">
+    <h2 class="sec-title">Keep Notchfolk going.</h2>
+    <p class="sec-lede">If Notchfolk makes your day a little better, a star on GitHub helps more people find it &mdash; and tells me it&apos;s worth building.</p>
+    <div class="donate js-donate">
+      <a data-key="star" href="https://github.com/galyarderlabs/notchfolk" target="_blank" rel="noopener"><i>&#9733;</i> Star <span>on GitHub</span></a>
+      <a data-key="issues" href="https://github.com/galyarderlabs/notchfolk/issues" target="_blank" rel="noopener"><i>&#9998;</i> Report an issue <span>on GitHub</span></a>
+      <a data-key="docs" href="https://github.com/galyarderlabs/notchfolk#readme" target="_blank" rel="noopener"><i>&#128214;</i> Read the docs <span>on GitHub</span></a>
+    </div>
+    <p class="support-note">Notchfolk is free and open source (GPL-3.0). Issues and stars are how it grows.</p>
+   </div>
+  </section>
+
+    <section id="feedback" class="wrap">
+    <div class="fb">
+      <h2 class="sec-title">Tell me what you think.</h2>
+      <p class="sec-lede">Found a bug, or have an idea for a feature? I read every message.</p>
+      <div class="row" style="justify-content:center">
+        <a class="btn" href="https://github.com/galyarderlabs/notchfolk/issues/new" target="_blank" rel="noopener">Open an issue on GitHub</a>
+      </div>
+      <p class="msg" style="text-align:center">Issues are the fastest way to reach me &mdash; bug reports and feature ideas welcome.</p>
+    </div>
+  </section>
+
+    <section id="note" class="wrap">
+    <div class="note">
+      <h2>An honest note.</h2>
+      <p class="from">From Galih, the person behind Notchfolk</p>
+      <p>Notchfolk is a personal project, built by one person in their spare time. It started as a fork of Isle, and it is still shaped by what I use every day. <b>Thank you</b> for trying it.</p>
+      <p>This is a living project. You may run into bugs, and some setups may behave a little differently from mine. If something breaks, please tell me through <a href="#feedback">GitHub Issues</a> and I&apos;ll keep improving it.</p>
+      <p><b>Only install Notchfolk from this page</b> or the official GitHub releases. If a file ever comes from anywhere else, don&apos;t run it. That file isn&apos;t from me.</p>
+      <p class="legal">Notchfolk is free software, licensed under the GNU General Public License v3.0, and provided &ldquo;as is&rdquo;, without warranties of any kind. Your data stays on your computer; the only connections are to LRCLIB for synced lyrics and to the AI providers you choose.</p>
+    </div>
+  </section>
+
+    <section id="faq" class="wrap faq">
+    <h2 class="sec-title">Questions</h2>
+    <details><summary>How do I install Notchfolk?</summary><p>Paste the install command above in a terminal. It installs the extension and the daemon to your home folder, then log out and back in (or restart GNOME Shell on X11). Run the same command again to update; your settings stay as you set them.</p></details>
+    <details><summary>Which GNOME versions work?</summary><p>GNOME 46 to 51, on Linux (x86_64), Wayland or X11. It&apos;s a GNOME Shell extension, so it needs GNOME Shell.</p></details>
+    <details><summary>How does voice control work?</summary><p>Press Super+I and speak. Whisper runs on your device &mdash; set it up with notchfolk-setup-voice &mdash; and turns your words into text. If it doesn&apos;t catch you, run notchfolkd --doctor to check the microphone.</p></details>
+    <details><summary>Where is my data stored?</summary><p>On your computer: tasks, reminders, and files in ~/.local/share/notchfolk, settings in ~/.config/notchfolk. There are no accounts and no tracking.</p></details>
+    <details><summary>Is there an AUR package?</summary><p>Not yet. notchfolk-bin is prepared, but AUR registration is paused, so it isn&apos;t published. The install command above is the way to install for now.</p></details>
+  </section>
+
+    <section id="privacy" class="wrap">
+    <h2 class="sec-title">Privacy</h2>
+    <p>Notchfolk doesn&apos;t collect personal data and has no analytics. Your tasks, reminders, files, clipboard history, and settings are saved only on your computer, in ~/.local/share/notchfolk and ~/.config/notchfolk.</p>
+    <p>Prayer times are calculated on your computer from the city you choose. Voice is transcribed on your device with Whisper &mdash; nothing you say leaves your computer.</p>
+    <p>When you use synced lyrics, Notchfolk sends the song title, artist, and length to LRCLIB (lrclib.net) to find matching lyrics.</p>
+    <p>When you use an AI provider, your request goes to that provider, as you chose in Settings. The MCP server runs on your computer (localhost); if you expose it with a tunnel, only the people and tools you give the address to can reach it.</p>
+  </section>
+</main>
+<div class="ty" id="thanks" role="status" aria-live="polite">
+  <img src="images/icon.png" alt="">
+  <div class="ty-t"><b>Thanks for installing Notchfolk!</b><span>If it makes your day better, give it a star on GitHub.</span></div>
+  <a class="ty-go js-ty-go" href="https://github.com/galyarderlabs/notchfolk" target="_blank" rel="noopener">&#9733; Star</a>
+  <button class="ty-x" type="button" aria-label="Close">&times;</button>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; 2026 Notchfolk. Synced lyrics by <a href="https://lrclib.net">LRCLIB</a>. GPL-3.0.</span>
+    <span><a href="#privacy">Privacy</a> &nbsp; <a href="#faq">FAQ</a> &nbsp; <a href="#note">Disclaimer</a> &nbsp; <a href="#feedback">Feedback</a> &nbsp; <a href="#download">Download</a></span>
+  </div>
+</footer>
+
+<script>
+// ---- Download ------------------------------------------------------------------------
+// Setiap rilis baru: ubah VERSION, dan SHA256 sesuai installer yang di-upload ke GitHub.
+const DOWNLOAD_URL = "https://github.com/galyarderlabs/notchfolk/releases";
+const VERSION = "1.1.0";
+document.querySelectorAll(".js-dl").forEach(a => { if (a.closest("#download")) a.href = DOWNLOAD_URL; });
+document.querySelectorAll(".js-ver").forEach(e => e.textContent = VERSION);
+
+// ---- Donasi: isi tautanmu; tombol yang kosong otomatis disembunyikan ------------------------
+const DONATE = {
+  star: "https://github.com/galyarderlabs/notchfolk",
+  issues: "https://github.com/galyarderlabs/notchfolk/issues",
+  docs: "https://github.com/galyarderlabs/notchfolk#readme"
+};
+let firstDonate = true;
+document.querySelectorAll(".js-donate a").forEach(a => {
+  const url = DONATE[a.dataset.key];
+  if (!url) { a.style.display = "none"; return; }
+  a.href = url;
+  if (firstDonate) { a.classList.add("primary"); firstDonate = false; } // tombol pertama disorot
+});
+if (!Object.values(DONATE).some(Boolean)) {
+  document.getElementById("support").style.display = "none";
+  document.querySelectorAll(".nav-support, .support-nudge, .js-support").forEach(e => e.style.display = "none");
+}
+
+// ---- Setelah download: ucapan terima kasih kecil dengan ajakan dukungan (sekali per pengunjung) ----
+(() => {
+  const ty = document.getElementById("thanks"), go = ty.querySelector(".js-ty-go"), url = DONATE.star;
+  if (!url) return;
+  go.href = url;
+  let seen = false;
+  try { seen = localStorage.getItem("notchfolk-thanks") === "1"; } catch (e) {}
+  let timer = 0;
+  const hide = () => { ty.classList.remove("show"); clearTimeout(timer); };
+  const show = () => {
+    ty.classList.add("show");
+    try { localStorage.setItem("notchfolk-thanks", "1"); } catch (e) {}
+    timer = setTimeout(hide, 14000);
+  };
+  const _copyBtn = document.getElementById("copyCmd"); if (_copyBtn) _copyBtn.addEventListener("click", () => { if (!seen) { seen = true; setTimeout(show, 1600); } });
+  ty.querySelector(".ty-x").addEventListener("click", hide);
+  go.addEventListener("click", () => setTimeout(hide, 400));
+})();
+
+// ---- Jumlah unduhan (dari GitHub Releases) -----------------------------------------------------
+fetch("https://api.github.com/repos/galyarderlabs/notchfolk/releases")
+  .then(r => r.json())
+  .then(list => {
+    let n = 0;
+    (Array.isArray(list) ? list : []).forEach(rel => (rel.assets || []).forEach(a => n += Number(a.download_count) || 0));
+    if (n > 0) document.querySelectorAll(".js-dlcount").forEach(e => e.innerHTML = `<b>${n.toLocaleString("en-US")}</b> downloads so far`);
+  })
+  .catch(() => {});
+
+// ---- Copy install command ------------------------------------------------------------------
+const copyBtn = document.getElementById("copyCmd");
+if (copyBtn) copyBtn.addEventListener("click", async () => {
+  const t = document.getElementById("cmdText").textContent;
+  try { await navigator.clipboard.writeText(t); } catch (e) {
+    const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta);
+    ta.select(); try { document.execCommand("copy"); } catch (e2) {} ta.remove();
+  }
+  copyBtn.textContent = "Copied";
+  setTimeout(() => { copyBtn.textContent = "Copy"; }, 2000);
+});
+
+// ---- Mini island demo (Customize): Black / Glass + tint --------------------------------------
+(() => {
+  const isl = document.getElementById("miniIsland");
+  const tint = document.getElementById("tintRange");
+  if (!isl) return;
+  const applyTint = () => {
+    if (!isl.classList.contains("glass")) return;
+    const v = tint ? Number(tint.value) : 55;
+    isl.style.background = "rgba(10,12,20," + (0.15 + v / 100 * 0.75).toFixed(2) + ")";
+  };
+  document.querySelectorAll("[data-island]").forEach(b => b.addEventListener("click", () => {
+    const glass = b.dataset.island === "glass";
+    isl.classList.toggle("glass", glass);
+    document.querySelectorAll("[data-island]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    if (glass) applyTint(); else isl.style.background = "";
+  }));
+  if (tint) tint.addEventListener("input", applyTint);
+})();
+
+// ---- Angka RAM menghitung naik saat bagian "ringan" terlihat --------------------------------
+(() => {
+  const el = document.querySelector(".js-ram");
+  if (!el || !("IntersectionObserver" in window)) return;
+  const to = Number(el.dataset.to);
+  const io = new IntersectionObserver(es => {
+    if (!es[0].isIntersecting) return;
+    io.disconnect();
+    const t0 = performance.now();
+    const step = now => {
+      const k = Math.min(1, (now - t0) / 1100), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = (to * e).toFixed(1) + " MB";
+      if (k < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, { threshold: 0.5 });
+  io.observe(el);
+})();
+
+// ---- Intro pratinjau: maskot melayang di depan, mundur ke dalam layar sambil menjadi notch -------
+// Berjalan sekali (sekitar 3 detik) setelah pengunjung menggulir ke pratinjau; setelah itu tidak ada kerja.
+const lap = document.getElementById("laptop"), pv = document.getElementById("preview"), intro = document.getElementById("intro");
+let introDone = true, introRaf = 0;
+const finishIntro = () => { introDone = true; cancelAnimationFrame(introRaf); pv.classList.remove("pre"); };
+const PAD = 90; // ruang di atas laptop (selebar jarak atas bagian pratinjau) untuk maskot dan cahayanya
+const placeIntro = () => { intro.style.top = (lap.offsetTop - PAD) + "px"; intro.style.height = (lap.offsetHeight + PAD) + "px"; };
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+  introDone = false;
+  pv.classList.add("pre"); placeIntro();
+  window.addEventListener("resize", () => { if (!introDone) placeIntro(); });
+  let inBand = false;
+  const tryStart = () => {
+    if (!inBand || window.scrollY < 24 || introDone || pv.dataset.introRun) return;
+    pv.dataset.introRun = "1";
+    io.disconnect(); window.removeEventListener("scroll", tryStart);
+    runIntro();
+  };
+  const io = new IntersectionObserver(es => { inBand = es[0].isIntersecting; tryStart(); }, { rootMargin: "-30% 0px -30% 0px" });
+  io.observe(lap);
+  window.addEventListener("scroll", tryStart, { passive: true });
+}
+function runIntro() {
+  placeIntro();
+  const svg = intro.querySelector("svg"), body = intro.querySelector(".intro-body"), eyes = intro.querySelectorAll(".intro-eye");
+  const shade = intro.querySelector(".intro-shade").style, glow = intro.querySelector(".intro-glow").style;
+  const u = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--u")) || 1;
+  const O = intro.getBoundingClientRect(), Nr = document.getElementById("mnHolder").getBoundingClientRect();
+  const Wp = O.width, Hp = O.height;
+  svg.setAttribute("width", Wp); svg.setAttribute("height", Hp); svg.setAttribute("viewBox", `0 0 ${Wp} ${Hp}`);
+  // Notch asli (tertutup) dalam koordinat lapisan intro
+  const nx = Nr.left - O.left, ny = Nr.top - O.top, nw = Nr.width, nh = Nr.height;
+  const cx = nx + nw / 2, cy = ny + 120 * u, r = 14 * u, e = 10 * u;
+  const N = 140, sc = 250 * u / 544;
+  const sample = (d, map) => {
+    const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    p.setAttribute("d", d); svg.appendChild(p);
+    const L = p.getTotalLength(), out = [];
+    for (let i = 0; i < N; i++) { const q = p.getPointAtLength(L * i / N); out.push(map(q.x, q.y)); }
+    p.remove(); return out;
+  };
+  const A = sample("M540 708C590 708 618 704 640 690C668 664 690 632 720 632C760 632 778 680 790 730C812 820 820 880 812 930C800 1000 720 1030 540 1030C360 1030 280 1000 268 930C260 880 268 820 290 730C302 680 320 632 360 632C390 632 412 664 440 690C462 704 490 708 540 708Z", (x, y) => [cx + (x - 540) * sc, cy + (y - 870) * sc]);
+  const x0 = nx, x1 = nx + nw, y0 = ny, y1 = ny + nh;
+  const B = sample(`M${cx} ${y0 - 4}L${x1 + e} ${y0 - 4}L${x1 + e} ${y0}Q${x1} ${y0} ${x1} ${y0 + e}L${x1} ${y1 - r}Q${x1} ${y1} ${x1 - r} ${y1}L${x0 + r} ${y1}Q${x0} ${y1} ${x0} ${y1 - r}L${x0} ${y0 + e}Q${x0} ${y0} ${x0 - e} ${y0}L${x0 - e} ${y0 - 4}Z`, (x, y) => [x, y]);
+  const eyeA = [[cx - 70 * sc, cy + 2 * sc], [cx + 70 * sc, cy + 2 * sc]], eyeB = [[cx - 11.7 * u, y0 + 15 * u], [cx + 11.7 * u, y0 + 15 * u]];
+  const c01 = x => x < 0 ? 0 : x > 1 ? 1 : x, seg = (t, a, b) => c01((t - a) / (b - a));
+  const eo = x => 1 - Math.pow(1 - x, 3), ei = x => x * x * x, eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  const eob = x => { const s = 1.6; x -= 1; return 1 + (s + 1) * x * x * x + s * x * x; };
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const G = 520 * u; glow.width = glow.height = G + "px";
+  const t0 = performance.now();
+  const frame = now => {
+    if (introDone) return;
+    const t = (now - t0) / 1000;
+    const app = eo(seg(t, 0, 0.9));                  // muncul dari gelap, melayang di depan laptop
+    const back = eio(seg(t, 0, 3.0));                // terus mundur ke arah layar, tanpa jeda
+    const depth = lerp(1.3, 1, back);
+    const m = eio(seg(t, 1.25, 3.0));                // sambil mengecil, naik, dan membentuk notch
+    let d = "";
+    for (let i = 0; i < N; i++) {
+      const ax = cx + (A[i][0] - cx) * depth, ay = cy + (A[i][1] - cy) * depth;
+      d += (i ? "L" : "M") + lerp(ax, B[i][0], m).toFixed(2) + " " + lerp(ay, B[i][1], m).toFixed(2);
     }
-    function setView(view, open) {
-      if (views.indexOf(view) === -1) return;
-      notch.setAttribute('data-view', view);
-      if (open !== undefined) {
-        notch.setAttribute('data-open', open ? 'true' : 'false');
-        pill.setAttribute('aria-expanded', open ? 'true' : 'false');
-      }
-      tabs.forEach(function (t) {
-        t.setAttribute('aria-pressed', t.getAttribute('data-view') === view ? 'true' : 'false');
-      });
-      if (view === 'tasks') {
-        pillLabel.textContent = 'Tasks • ' + taskCount();
-      } else {
-        pillLabel.textContent = labels[view];
-      }
-      if (pillEq) pillEq.classList.toggle('hidden', view !== 'music');
-    }
-    function stopAuto() {
-      autoStopped = true;
-      if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
-    }
-    function inView() {
-      var r = notch.getBoundingClientRect();
-      return r.bottom > 0 && r.top < window.innerHeight;
-    }
-    tabs.forEach(function (t) {
-      t.addEventListener('click', function () {
-        stopAuto();
-        setView(t.getAttribute('data-view'), true);
-      });
+    body.setAttribute("d", d + "Z");
+    body.style.opacity = app;
+    body.style.strokeOpacity = (1 - seg(t, 1.7, 2.7)) * .9;
+    const on = t < 0.55 ? 0 : eob(seg(t, 0.55, 0.9)), blink = 1 - Math.sin(Math.PI * seg(t, 1.0, 1.18)) * .92;
+    eyes.forEach((el, k) => {
+      el.setAttribute("cx", lerp(cx + (eyeA[k][0] - cx) * depth, eyeB[k][0], m).toFixed(2));
+      el.setAttribute("cy", lerp(cy + (eyeA[k][1] - cy) * depth, eyeB[k][1], m).toFixed(2));
+      el.setAttribute("rx", lerp(27 * sc * depth, 4.2 * u, m).toFixed(2));
+      el.setAttribute("ry", Math.max(.01, lerp(40 * sc * depth, 6.2 * u, m) * on * blink).toFixed(2));
     });
-    pill.addEventListener('click', function () {
-      stopAuto();
-      var open = notch.getAttribute('data-open') !== 'true';
-      setView(notch.getAttribute('data-view'), open);
+    // Pusat maskot saat ini: cahaya mengikuti, dan lingkaran transisi keluar dari baliknya
+    const my = lerp(cy, y0 + nh / 2, m);
+    glow.opacity = app * (1 - seg(t, 1.4, 2.5));
+    glow.transform = `translate(${cx - G / 2}px, ${my - G / 2}px) scale(${(lerp(.85, 1, app) + .04 * Math.sin(t * 2)) * depth})`;
+    const maxR = Math.hypot(Math.max(cx, Wp - cx), Math.max(my, Hp - my)) + 4;
+    const R = maxR * ei(seg(t, 1.45, 2.95));
+    shade.clipPath = R > 0.5 ? `path(evenodd, "M0 0H${Wp}V${Hp}H0Z M${(cx - R).toFixed(1)} ${my.toFixed(1)}a${R.toFixed(1)} ${R.toFixed(1)} 0 1 0 ${(2 * R).toFixed(1)} 0a${R.toFixed(1)} ${R.toFixed(1)} 0 1 0 ${(-2 * R).toFixed(1)} 0Z")` : "";
+    if (t >= 3.05) { finishIntro(); return; }
+    introRaf = requestAnimationFrame(frame);
+  };
+  introRaf = requestAnimationFrame(frame);
+}
+
+// ---- Pratinjau notch ---------------------------------------------------------------------
+const mn = document.getElementById("mn");
+const cap = document.getElementById("cap");
+const btns = document.querySelectorAll(".try button");
+const captions = {
+  pet: "When nothing is happening, the clock rests and the eyes come out.",
+  idle: "Closed: the time and a live sound wave while music plays.",
+  music: "Hover to open. Controls for whatever is playing.",
+  lyrics: "Lyrics mode: the notch widens and lights each line as it's sung.",
+  pomo: "A calm Pomodoro: the whole round at a glance, with a glowing head that moves as you focus.",
+  notif: "A reminder, right in the notch \u2014 no need to open anything.",
+  prayer: "Prayer times on a sun arc, calculated on your PC.",
+  remind: "When it's time to pray, a gentle reminder lights up the notch.",
+  clip: "Copy text and it waits beside your Shelf. Click to copy it again.",
+  water: "Water reminder with today's progress and an hourly chart.",
+  shelf: "Drag files onto the notch to keep them close.",
+  todo: "Today's tasks, with reminders when they're due.",
+  ai: "Ask in plain words \u2014 the AI answers right in the notch.",
+  cal: "Today's events, one glance away."
+};
+function waterGrow() {
+  // Mulai dari nol, lalu tumbuh bergiliran dengan pantulan pegas (seperti di aplikasi)
+  const bars = document.querySelectorAll("#chart .wgrow"), wbar = document.querySelector(".wbar");
+  bars.forEach(b => { b.style.transition = "none"; b.style.height = "0px"; });
+  wbar.style.transition = "none"; wbar.style.width = "0px";
+  void wbar.offsetWidth;
+  bars.forEach(b => { b.style.transition = ""; b.style.height = b.dataset.h; });
+  wbar.style.transition = ""; wbar.style.width = "152px";
+}
+const MN_SIZE = { pet: 150 * 30, idle: 150 * 30, music: 420 * 140, lyrics: 520 * 140, pomo: 420 * 140, prayer: 420 * 140, remind: 310 * 60,
+  water: 420 * 140, shelf: 420 * 140, clip: 420 * 140, todo: 420 * 140, notif: 310 * 60, ai: 420 * 140, cal: 420 * 140 };
+let remindT = 0;
+function show(s, keepBtn) {
+  const prev = mn.dataset.s;
+  mn.classList.toggle("shrink", (MN_SIZE[s] || 0) < (MN_SIZE[prev] || 0)); // menyusut halus tanpa pantulan
+  mn.dataset.s = s;
+  const ly = mn.querySelector(".l-" + s);
+  if (ly && prev !== s) { ly.classList.remove("play"); void ly.offsetWidth; ly.classList.add("play"); } // animasi isi diputar ulang
+  clearTimeout(remindT);
+  if (s === "prayer") remindT = setTimeout(() => { if (mn.dataset.s === "prayer") show("remind", "prayer"); }, 3600); // halaman Prayer menyusut jadi pengingat
+  if (s === "water" && prev !== "water") setTimeout(waterGrow, 220);
+  if (s === "shelf" && prev !== "shelf") shelfDemo();
+  if (s !== "shelf") { shelfRun++; ghost.className = "ghost"; shStop(); }
+  cap.textContent = captions[s];
+  btns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.s === (keepBtn || s))));
+}
+btns.forEach(b => b.addEventListener("click", () => { if (!introDone) finishIntro(); show(b.dataset.s); }));
+
+// ---- Shelf: file diseret masuk ke notch (diulang selama Shelf dipilih) ------------------------
+const shelf = document.getElementById("shelf");
+const cards = shelf.querySelectorAll(".sh-card");
+const ghost = document.getElementById("ghost");
+const holder = document.getElementById("mnHolder");
+const gThumb = ghost.querySelector(".g-thumb");
+const IMG = '<span class="t-img" style="display:block;width:100%;height:100%"></span>';
+const FOLDER = cards[1].querySelector("svg").outerHTML;
+let shelfRun = 0;
+const wait = ms => new Promise(r => setTimeout(r, ms));
+async function shelfDemo() {
+  const run = ++shelfRun;
+  const alive = () => run === shelfRun && mn.dataset.s === "shelf";
+  const scr = document.querySelector(".screen"), u = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--u"));
+  const drag = async (thumb, fromX, card) => {
+    gThumb.innerHTML = thumb;
+    ghost.style.transition = "none"; ghost.className = "ghost";
+    ghost.style.left = fromX + "%"; ghost.style.top = (205 * u) + "px";
+    void ghost.offsetWidth; ghost.style.transition = "";
+    ghost.classList.add("in");
+    await wait(250); if (!alive()) return false;
+    ghost.style.left = "50%"; ghost.style.top = (62 * u) + "px";           // menuju notch
+    await wait(800); if (!alive()) return false;
+    shelf.classList.add("hover"); shSetHot(true);                          // zona & cahaya maskot menyala
+    await wait(900); if (!alive()) return false;
+    ghost.classList.add("drop"); shelf.classList.remove("hover");          // dilepas
+    shDropNow();                                                           // cahaya naik + "tegukan" notch
+    card.classList.add("in"); shelf.classList.add("has");
+    await wait(400);
+    return alive();
+  };
+  shelf.classList.remove("hover", "has"); cards.forEach(c => c.classList.remove("in"));
+  ghost.className = "ghost";
+  await wait(600); if (!alive()) return;
+  if (!(await drag(IMG, 28, cards[0]))) return;
+  await wait(900); if (!alive()) return;
+  if (!(await drag(FOLDER, 70, cards[1]))) return;
+  await wait(3200); if (!alive()) return;
+  shelfDemo(); // ulangi
+}
+
+// ---- Shelf: cahaya maskot "Island gulp" (sama dengan aplikasi) ----------------------------------
+const shCv = document.getElementById("shCv"), sc = shCv.getContext("2d");
+const PAL = [[125, 216, 174], [142, 205, 240], [255, 200, 144]];
+const SH_SPEED = 0.7;
+let shHov = 0, shHv = 0, shDropT = -1, shDx = 210, shCx = 210, shG = 0, shGv = 0, shHot = false, shLast = 0, shRaf = 0;
+const shCl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const shSm = x => { x = shCl(x); return x * x * (3 - 2 * x); };
+function shMix(u) { u = shCl(u); const [a, b, k] = u < .5 ? [PAL[0], PAL[1], u * 2] : [PAL[1], PAL[2], (u - .5) * 2]; return a.map((v, i) => Math.round(v + (b[i] - v) * k)); }
+const shRgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+function shDraw() {
+  const W = 420, H = 140, c = sc;
+  c.setTransform(2, 0, 0, 2, 0, 0); c.clearRect(0, 0, W, H);
+  const d = shDropT, rise = d >= 0 && d < 1.1 ? Math.sin(shSm(d / 1.1) * Math.PI) : 0;
+  const fade = d >= 0 ? (d < .9 ? 1 : 1 - shSm((d - .9) / 1.1)) : 1;
+  const base = (.26 * shHov + .34 * rise) * fade, pool = (.42 * shHov + .28 * rise) * fade;
+  if (base > .004) { const g = c.createLinearGradient(0, 0, W, 0); g.addColorStop(0, shRgba(PAL[0], base)); g.addColorStop(.5, shRgba(PAL[1], base)); g.addColorStop(1, shRgba(PAL[2], base)); c.fillStyle = g; c.fillRect(0, 0, W, H); }
+  const px = d >= 0 ? shDx : shCx;
+  if (pool > .004) { const col = shMix(px / W), R = 170 + 60 * rise, g = c.createRadialGradient(px, H + 18, 0, px, H + 18, R);
+    g.addColorStop(0, shRgba(col.map(v => Math.min(255, v + 51)), pool)); g.addColorStop(.55, shRgba(col, pool * .45)); g.addColorStop(1, shRgba(col, 0)); c.fillStyle = g; c.fillRect(0, 0, W, H); }
+  if (d >= 0 && d < 1.4) { const q = 1 - Math.pow(1 - d / 1.4, 3), r = 24 + 430 * q, w = 30, a = .22 * (1 - q);
+    const g = c.createRadialGradient(px, H - 14, Math.max(0, r - w), px, H - 14, r + w);
+    g.addColorStop(0, "rgba(200,236,255,0)"); g.addColorStop(.5, `rgba(200,236,255,${a})`); g.addColorStop(1, "rgba(200,236,255,0)"); c.fillStyle = g; c.fillRect(0, 0, W, H); }
+  // cahaya memudar ke atas; sepertiga atas tetap gelap supaya teks terbaca
+  c.globalCompositeOperation = "destination-in";
+  const m = c.createLinearGradient(0, H, 0, 0); m.addColorStop(0, "#000"); m.addColorStop(.42, "rgba(0,0,0,.55)"); m.addColorStop(.78, "rgba(0,0,0,.08)"); m.addColorStop(1, "rgba(0,0,0,0)");
+  c.fillStyle = m; c.fillRect(0, 0, W, H); c.globalCompositeOperation = "source-over";
+}
+function shFrame(now) {
+  const dt = Math.min(.05, (now - shLast) / 1000); shLast = now;
+  // posisi kursor (file yang diseret) di dalam notch, dalam dp
+  if (ghost.classList.contains("in") && !ghost.classList.contains("drop")) {
+    const g = ghost.getBoundingClientRect(), n = mn.getBoundingClientRect();
+    shCx = shCl((g.left - n.left) / (n.width / 420), 0, 420);
+  }
+  shHv += (50 * ((shHot ? 1 : 0) - shHov) - 14 * shHv) * dt; shHov = shCl(shHov + shHv * dt, 0, 1.04);
+  shGv += (-60 * shG - 6 * shGv) * dt; shG += shGv * dt;
+  if (shDropT >= 0) { shDropT += dt * SH_SPEED; if (shDropT >= 2) shDropT = -1; }
+  shDraw();
+  mn.style.transform = `scale(${1 + .018 * shHov + .035 * shG}, ${1 + .035 * shHov - .06 * shG})`;
+  const busy = shHot || shHov > .002 || shDropT >= 0 || Math.abs(shG) > .001 || Math.abs(shGv) > .01;
+  if (busy || mn.dataset.s === "shelf") shRaf = requestAnimationFrame(shFrame);
+  else { shRaf = 0; mn.style.transform = ""; }
+}
+function shRun() { if (!shRaf) { shLast = performance.now(); shRaf = requestAnimationFrame(shFrame); } }
+function shSetHot(on) { shHot = on; shRun(); }
+function shDropNow() { shHot = false; shDx = shCx; shDropT = 0; shGv = 7.7; shRun(); }
+function shStop() { shHot = false; shHov = 0; shHv = 0; shDropT = -1; shG = 0; shGv = 0; shDraw(); mn.style.transform = ""; }
+
+show("pet");
+
+// Tanggal & jam mengikuti pengunjung
+const D = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const M = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function clock() {
+  const d = new Date();
+  const t = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+  document.querySelectorAll(".js-time").forEach(e => e.textContent = t);
+  document.querySelectorAll(".js-date").forEach(e => e.textContent = `${D[d.getDay()]} ${d.getDate()} ${M[d.getMonth()]} ${d.getFullYear()}`);
+}
+clock(); setInterval(clock, 20000);
+
+// Grafik Water (nilai ml per jam, 09..16)
+const chart = document.getElementById("chart");
+[300, 200, 200, 150, 150, 200, 200, 200].forEach((v, i) => {
+  const x = (i + 0.5) * 14 - 3.5;
+  const track = document.createElement("span");
+  track.className = "wbar-col"; track.style.left = x + "px"; track.style.height = "48.5px"; track.style.background = "rgba(255,255,255,.07)";
+  const bar = document.createElement("span");
+  bar.className = "wbar-col wgrow"; bar.style.left = x + "px"; bar.style.bottom = "1.5px"; bar.dataset.h = (v / 400 * 48.5) + "px"; bar.style.height = bar.dataset.h;
+  bar.style.transitionDelay = (i * 55) + "ms";
+  bar.style.background = i === 0 ? "linear-gradient(#5cc6ff,#1d63e0)" : "linear-gradient(rgba(92,198,255,.75),rgba(29,99,224,.75))";
+  chart.append(track, bar);
+});
+
+// Lirik bergulir: baris aktif menyala, daftar bergeser ke atas
+const lyr = document.getElementById("lyr"), lines = lyr.querySelectorAll("li");
+let cur = 2;
+function lyric() {
+  lines.forEach((li, i) => li.classList.toggle("on", i === cur));
+  const li = lines[cur];
+  lyr.style.transform = `translateY(${56 - li.offsetTop - li.offsetHeight / 2}px)`;
+  cur = (cur + 1) % lines.length;
+}
+lyric(); setInterval(() => { if (mn.dataset.s === "lyrics") lyric(); }, 2600);
+
+// Skala notch mengikuti lebar layar (notch lirik 520 dp + telinga harus muat)
+function fit() {
+  const w = document.getElementById("laptop").clientWidth;
+  const u = Math.max(0.55, Math.min(1.3, (w - 30) / 570));
+  document.documentElement.style.setProperty("--u", u.toFixed(3));
+}
+fit(); addEventListener("resize", fit);
+
+// ---- Dua bahasa: Inggris (asli di halaman) dan Indonesia -----------------------------------------
+// Teks Inggris tetap di HTML; versi Indonesia diterapkan dari kamus. Teks di dalam pratinjau notch
+// tetap Inggris, sama seperti aplikasinya.
+(() => {
+  const ID = {
+ "Notchfolk: a living notch for GNOME": "Notchfolk: notch yang hidup untuk GNOME",
+ "Preview": "Pratinjau",
+ "Features": "Fitur",
+ "Lightweight": "Ringan",
+ "Customize": "Kustomisasi",
+ "What's new": "Yang baru",
+ "Download": "Download",
+ "☃ Support": "☃ Dukung",
+ "Now available for GNOME 46–51": "Sekarang tersedia untuk GNOME 46–51",
+ "A little world in your notch.": "Dunia kecil di notch-mu.",
+ "Notchfolk turns the top edge of your GNOME desktop into a small notch that shows your music, synced lyrics, tasks, calendar and AI — then quietly gets out of the way.": "Notchfolk mengubah tepi atas desktop GNOME-mu menjadi notch kecil yang menampilkan musik, lirik tersinkron, tugas, kalender, dan AI — lalu diam-diam menyingkir saat tidak dibutuhkan.",
+ "Install Notchfolk": "Pasang Notchfolk",
+ "Star on GitHub": "Beri bintang di GitHub",
+ "Version": "Versi",
+ "Notchfolk notch preview": "Pratinjau notch Notchfolk",
+ "Preview the notch": "Coba notch-nya",
+ "Resting": "Istirahat",
+ "Closed": "Tertutup",
+ "Music": "Musik",
+ "Lyrics": "Lirik",
+ "Focus timer": "Timer fokus",
+ "Reminder": "Pengingat",
+ "Prayer": "Sholat",
+ "Water": "Air",
+ "Shelf": "Shelf",
+ "Clipboard": "Clipboard",
+ "To-do": "To-do",
+ "AI assistant": "Asisten AI",
+ "Calendar": "Kalender",
+ "When nothing is happening, the clock rests and the eyes come out.": "Saat tidak ada aktivitas, jam beristirahat dan mata muncul.",
+ "Closed: the time and a live sound wave while music plays.": "Tertutup: jam dan gelombang suara saat musik diputar.",
+ "Hover to open. Controls for whatever is playing.": "Arahkan kursor untuk membuka. Kontrol untuk apa pun yang sedang diputar.",
+ "Lyrics mode: the notch widens and lights each line as it's sung.": "Mode lirik: notch melebar dan menyalakan setiap baris saat dinyanyikan.",
+ "A calm Pomodoro: the whole round at a glance, with a glowing head that moves as you focus.": "Pomodoro yang tenang: satu putaran terlihat sekilas, dengan titik bercahaya yang bergerak selama kamu fokus.",
+ "A reminder, right in the notch — no need to open anything.": "Pengingat, langsung di notch — tanpa perlu membuka apa pun.",
+ "Prayer times on a sun arc, calculated on your PC.": "Jadwal sholat di busur matahari, dihitung di PC-mu.",
+ "When it's time to pray, a gentle reminder lights up the notch.": "Saat waktunya sholat, pengingat lembut menyala di notch.",
+ "Copy text and it waits beside your Shelf. Click to copy it again.": "Salin teks dan ia menunggu di samping Shelf. Klik untuk menyalin lagi.",
+ "Water reminder with today's progress and an hourly chart.": "Pengingat minum dengan progres hari ini dan grafik per jam.",
+ "Drag files onto the notch to keep them close.": "Seret file ke notch untuk menyimpannya sementara.",
+ "Today's tasks, with reminders when they're due.": "Tugas hari ini, dengan pengingat saat waktunya tiba.",
+ "Ask in plain words — the AI answers right in the notch.": "Tanya dengan kata-kata biasa — AI menjawab langsung di notch.",
+ "Today's events, one glance away.": "Acara hari ini, cukup dilirik.",
+ "Everything you glance at, in one place.": "Semua yang sering kamu lirik, di satu tempat.",
+ "Hover the notch to open it. Move away and it closes. Nothing to arrange, nothing to pin.": "Arahkan kursor ke notch untuk membukanya, dan menjauh untuk menutupnya. Tidak ada yang perlu diatur atau disematkan.",
+ "See what's playing, skip, pause and seek — from Spotify, your browser, or any MPRIS player — without switching windows.": "Lihat lagu yang diputar, ganti lagu, jeda, dan geser posisi — dari Spotify, browser, atau pemutar MPRIS apa pun — tanpa pindah jendela.",
+ "Synced lyrics": "Lirik tersinkron",
+ "The island widens and takes the cover's colour, each line lighting up as it's sung. Click a line to jump there. Lyrics from LRCLIB.": "Island melebar dan mengikuti warna sampul, setiap baris menyala saat dinyanyikan. Klik satu baris untuk melompat ke bagian itu. Lirik dari LRCLIB.",
+ "Tasks & reminders": "Tugas & pengingat",
+ "Jot a task, give it a time, and the notch taps you when it's due. Missed ones stay in the last 7 days, so nothing is lost.": "Catat tugas, beri waktu, dan notch akan mengingatkanmu saat waktunya tiba. Yang terlewat tetap tersimpan 7 hari terakhir, jadi tidak ada yang hilang.",
+ "Today's events at a glance, with a gentle nudge before each one starts.": "Acara hari ini sekilas, dengan pengingat lembut sebelum setiap acara dimulai.",
+ "Ask in plain words and get an answer in the island. Claude, Codex, Hermes, OpenAI, and more — the provider you chose in Settings.": "Tanya dengan kata-kata biasa dan dapatkan jawaban di island. Claude, Codex, Hermes, OpenAI, dan lainnya — penyedia yang kamu pilih di Settings.",
+ "Voice control": "Kontrol suara",
+ "Press Super+I and talk. On-device Whisper turns your words into text — nothing you say leaves your computer.": "Tekan Super+I lalu bicara. Whisper di perangkat mengubah ucapanmu menjadi teks — tidak ada yang kamu katakan keluar dari komputermu.",
+ "MCP server": "Server MCP",
+ "56 tools your AI can use — tasks, calendar, reminders, files, and more — over a local server on your computer.": "56 tool yang bisa dipakai AI-mu — tugas, kalender, pengingat, file, dan lainnya — lewat server lokal di komputermu.",
+ "A calm Pomodoro with the whole round at a glance, a breathing Live Activity in the notch and gentle reminders.": "Pomodoro yang tenang: satu putaran terlihat sekilas, Live Activity yang bernapas di notch, dan pengingat yang lembut.",
+ "Water & calories": "Air & kalori",
+ "Set your bottle size and daily goal, log meals, and see today's progress in the notch.": "Atur ukuran botol dan target harianmu, catat makanan, dan lihat progres hari ini di notch.",
+ "File shelf": "Rak file (Shelf)",
+ "Drag files onto the notch to keep them close, then drag them out into a chat, an email or another folder.": "Seret file ke notch untuk menyimpannya sementara, lalu seret keluar ke chat, email, atau folder lain.",
+ "Prayer times": "Jadwal sholat",
+ "An optional page with today's prayers on a sun arc, gentle reminders, and music that can pause by itself. Calculated on your PC.": "Halaman opsional berisi jadwal sholat hari ini di busur matahari, pengingat yang lembut, dan musik yang bisa berhenti sendiri. Dihitung di PC-mu.",
+ "Clipboard history": "Riwayat Clipboard",
+ "What you copy waits beside your Shelf. Click to copy it again, or drag it straight into a chat.": "Yang kamu salin menunggu di samping Shelf. Klik untuk menyalin lagi, atau seret langsung ke chat.",
+ "A small companion that knows when to rest.": "Teman kecil yang tahu kapan harus istirahat.",
+ "When nothing is happening, the clock fades and a pair of eyes appears. They doze off after a while, and wave hello when you come back.": "Saat tidak ada aktivitas, jam memudar dan sepasang mata muncul. Lama-lama matanya mengantuk, lalu melambai menyapa saat kamu kembali.",
+ "Light on your PC": "Ringan di PC-mu",
+ "Notchfolk draws only while something moves. When it's idle it uses no CPU at all, even with music in the background.": "Notchfolk hanya menggambar saat ada yang bergerak. Saat diam, Notchfolk tidak memakai CPU sama sekali, bahkan saat musik diputar di latar belakang.",
+ "Your data stays here": "Datamu tetap di sini",
+ "Tasks, water logs and shelf items are stored on your computer. There are no accounts and no tracking.": "Tugas, catatan minum, dan isi Shelf tersimpan di komputermu. Tanpa akun dan tanpa pelacakan.",
+ "Made for GNOME": "Dibuat untuk GNOME",
+ "Built natively for GNOME 46–51, sharp on every display scale, and it steps aside for full-screen apps.": "Dibuat langsung untuk GNOME 46–51, tajam di setiap skala layar, dan menyingkir untuk aplikasi layar penuh.",
+ "So light, you'll forget it's there.": "Saking ringannya, kamu bakal lupa Notchfolk ada.",
+ "Notchfolk is built natively for GNOME, not on a hidden web browser. It sits quietly until something happens, then gets out of the way again.": "Notchfolk dibuat langsung untuk GNOME, bukan dengan browser tersembunyi. Notchfolk diam sampai ada sesuatu yang terjadi, lalu menyingkir lagi.",
+ "System Monitor": "System Monitor",
+ "GNOME System Monitor during everyday use. 4–9 MB at rest, no leak after 100 opens and closes.": "System Monitor GNOME saat pemakaian sehari-hari. 4–9 MB saat diam, tanpa kebocoran setelah 100 kali buka-tutup.",
+ "typical memory use": "pemakaian memori biasa",
+ "wake-ups a minute at rest": "wake-up per menit saat diam",
+ "frames a minute, closed island": "frame per menit, island tertutup",
+ "Native code.": "Kode asli.",
+ "Written in Rust and drawn by your graphics card, with no web engine running in the background.": "Ditulis dengan Rust dan digambar oleh kartu grafis, tanpa mesin web yang berjalan di latar belakang.",
+ "Draws only when something moves.": "Hanya menggambar saat ada yang bergerak.",
+ "When the notch is still, Notchfolk stops drawing completely.": "Saat notch diam, Notchfolk berhenti menggambar sepenuhnya.",
+ "Waits instead of checking.": "Menunggu, bukan terus mengecek.",
+ "The system tells Notchfolk when a song changes, so it never polls.": "Sistem memberi tahu Notchfolk saat lagu berganti, jadi tidak perlu terus mengecek.",
+ "Files stay where they are.": "File tetap di tempatnya.",
+ "The shelf remembers where your files live instead of copying them into memory.": "Shelf hanya mengingat lokasi file, tanpa menyalinnya ke memori.",
+ "Make it yours.": "Atur sesukamu.",
+ "Open Settings → Appearance. A few switches decide how Notchfolk behaves on your screen.": "Buka Settings → Appearance. Beberapa pilihan di sana menentukan bagaimana Notchfolk tampil di layarmu.",
+ "Black or Glass island": "Island hitam atau kaca",
+ "Notchfolk's own black island, or clear dark glass over what is behind it, blurred, with a lit rim. The slider sets how dark the glass is.": "Island hitam khas Notchfolk, atau kaca gelap bening di atas yang ada di belakangnya, buram, dengan tepi bercahaya. Slider mengatur seberapa gelap kacanya.",
+ "Your clock, your format": "Jam kamu, format kamu",
+ "24-hour or 12-hour, following your GNOME clock. The island's clock always matches.": "24 jam atau 12 jam, mengikuti jam GNOME-mu. Jam di island selalu sama.",
+ "Notch size": "Ukuran notch",
+ "Adjust it yourself. It's automatically larger on wide monitors.": "Atur sendiri. Otomatis lebih besar di monitor lebar.",
+ "Follows GNOME": "Mengikuti GNOME",
+ "Accent colour and text size come from your GNOME settings — change them there and the island restyles itself.": "Warna aksen dan ukuran teks berasal dari pengaturan GNOME-mu — ubah di sana dan island akan menyesuaikan sendiri.",
+ "Glass tint": "Kegelapan kaca",
+ "Black": "Hitam",
+ "Glass": "Kaca",
+ "Settings → Appearance → Island": "Settings → Appearance → Island",
+ "New in Notchfolk 1.1.0.": "Yang baru di Notchfolk 1.1.0.",
+ "Reminder history, opencode 2 fixed, and everything a little smoother.": "Riwayat pengingat, opencode 2 sudah diperbaiki, dan semuanya terasa lebih halus.",
+ "Reminder history": "Riwayat pengingat",
+ "A reminder that fired while you were away, or that you simply missed, can still be looked up: the Reminders page has a “Last 7 days” section, and agents can read it with the new list_reminder_history tool (56 tools now).": "Pengingat yang berbunyi saat kamu pergi, atau yang terlewat begitu saja, tetap bisa dicari: halaman Reminders punya bagian “Last 7 days”, dan agen bisa membacanya lewat tool baru list_reminder_history (sekarang 56 tool).",
+ "Fixes": "Perbaikan",
+ "opencode 2 works again": "opencode 2 berfungsi lagi",
+ "From upstream Isle's PR #45, by AlphaBeast97: the model list fills and requests answer, with --standalone and the plain opencode models output 2.x uses, while opencode 1.x keeps its own flags.": "Dari PR #45 upstream Isle, oleh AlphaBeast97: daftar model terisi dan permintaan dijawab, dengan --standalone dan output polos opencode models yang dipakai 2.x, sementara opencode 1.x tetap memakai flag-nya sendiri.",
+ "Good to know": "Perlu diketahui",
+ "The one-shot island alert is unchanged — history only adds a way to look back.": "Peringatan island sekali jalan tidak berubah — riwayat hanya menambah cara untuk melihat ke belakang.",
+ "Version 1.1.0 is the latest release. Run the install command again to update; your settings stay as you set them.": "Versi 1.1.0 adalah rilis terbaru. Jalankan perintah instalasi lagi untuk memperbarui; pengaturanmu tetap seperti yang kamu atur.",
+ "Get Notchfolk for GNOME": "Dapatkan Notchfolk untuk GNOME",
+ "GNOME 46–51 on Linux, x86_64.": "GNOME 46–51 di Linux, x86_64.",
+ "Install with one command": "Pasang dengan satu perintah",
+ "Paste this in a terminal. It installs the extension and the daemon to your home folder, then log out and back in.": "Tempel ini di terminal. Perintah ini memasang ekstensi dan daemon ke folder home-mu, lalu log out dan masuk lagi.",
+ "Copy": "Salin",
+ "Copied": "Disalin",
+ "Prefer a package? notchfolk-bin is prepared in packaging/aur, but AUR registration is paused, so it isn't published yet — yay won't find it. The command above is the way to install for now.": "Lebih suka paket? notchfolk-bin sudah disiapkan di packaging/aur, tapi pendaftaran AUR sedang dijeda, jadi belum diterbitkan — yay tidak akan menemukannya. Perintah di atas adalah cara memasang untuk saat ini.",
+ "Why it's safe": "Kenapa aman",
+ "Installs to your home folder.": "Terpasang di folder home-mu.",
+ "No admin rights, nothing system-wide.": "Tanpa hak admin, tidak ada yang sistem-wide.",
+ "Your settings stay as you set them.": "Pengaturanmu tetap seperti yang kamu atur.",
+ "Run the same command again to update.": "Jalankan perintah yang sama lagi untuk memperbarui.",
+ "Remove it anytime": "Hapus kapan saja",
+ "with notchfolk-uninstall.": "dengan notchfolk-uninstall.",
+ "Your data stays on your computer.": "Datamu tetap di komputermu.",
+ "No accounts, no tracking. Synced lyrics come from LRCLIB.": "Tanpa akun, tanpa pelacakan. Lirik tersinkron berasal dari LRCLIB.",
+ "Only install Notchfolk from this page": "Pasang Notchfolk hanya dari halaman ini",
+ "or the official GitHub releases.": "atau dari rilis resmi di GitHub.",
+ "Or download the release package": "Atau unduh paket rilisnya",
+ "☃ Enjoying Notchfolk? Support the project": "☃ Suka Notchfolk? Dukung proyek ini",
+ "Keep Notchfolk going.": "Bantu Notchfolk terus berkembang.",
+ "If Notchfolk makes your day a little better, a star on GitHub helps more people find it — and tells me it's worth building.": "Kalau Notchfolk bikin harimu sedikit lebih enak, bintang di GitHub membantu lebih banyak orang menemukannya — dan memberi tahu aku bahwa proyek ini layak dibangun.",
+ "Star": "Beri bintang",
+ "Report an issue": "Laporkan masalah",
+ "Read the docs": "Baca dokumentasi",
+ "on GitHub": "di GitHub",
+ "Notchfolk is free and open source (GPL-3.0). Issues and stars are how it grows.": "Notchfolk gratis dan open source (GPL-3.0). Issue dan bintang adalah cara proyek ini berkembang.",
+ "Tell me what you think.": "Ceritakan pendapatmu.",
+ "Found a bug, or have an idea for a feature? I read every message.": "Menemukan bug atau punya ide fitur? Aku baca semua pesan.",
+ "Open an issue on GitHub": "Buka issue di GitHub",
+ "Issues are the fastest way to reach me — bug reports and feature ideas welcome.": "Issue adalah cara tercepat menghubungiku — laporan bug dan ide fitur selalu diterima.",
+ "An honest note.": "Catatan jujur.",
+ "From Galih, the person behind Notchfolk": "Dari Galih, orang di balik Notchfolk",
+ "Notchfolk is a personal project, built by one person in their spare time. It started as a fork of Isle, and it is still shaped by what I use every day. Thank you for trying it.": "Notchfolk adalah proyek pribadi yang dibuat oleh satu orang di waktu luangnya. Proyek ini berawal dari fork Isle, dan masih dibentuk oleh apa yang kupakai setiap hari. Terima kasih sudah mencobanya.",
+ "This is a living project. You may run into bugs, and some setups may behave a little differently from mine. If something breaks, please tell me through GitHub Issues and I'll keep improving it.": "Ini proyek yang terus berkembang. Kamu mungkin menemukan bug, dan beberapa pengaturan bisa berperilaku sedikit berbeda dari punyaku. Kalau ada yang bermasalah, kabari aku lewat GitHub Issues dan aku akan terus memperbaikinya.",
+ "Only install Notchfolk from this page or the official GitHub releases. If a file ever comes from anywhere else, don't run it. That file isn't from me.": "Pasang Notchfolk hanya dari halaman ini atau dari rilis resmi di GitHub. Kalau ada file yang berasal dari tempat lain, jangan dijalankan. File itu bukan dariku.",
+ "Notchfolk is free software, licensed under the GNU General Public License v3.0, and provided “as is”, without warranties of any kind. Your data stays on your computer; the only connections are to LRCLIB for synced lyrics and to the AI providers you choose.": "Notchfolk adalah perangkat lunak bebas, berlisensi GNU General Public License v3.0, dan disediakan “apa adanya”, tanpa jaminan apa pun. Datamu tetap di komputermu; satu-satunya koneksi adalah ke LRCLIB untuk lirik tersinkron dan ke penyedia AI yang kamu pilih.",
+ "Questions": "Pertanyaan",
+ "How do I install Notchfolk?": "Bagaimana cara memasang Notchfolk?",
+ "Paste the install command above in a terminal. It installs the extension and the daemon to your home folder, then log out and back in (or restart GNOME Shell on X11). Run the same command again to update; your settings stay as you set them.": "Tempel perintah instalasi di atas di terminal. Perintah ini memasang ekstensi dan daemon ke folder home-mu, lalu log out dan masuk lagi (atau restart GNOME Shell di X11). Jalankan perintah yang sama lagi untuk memperbarui; pengaturanmu tetap seperti yang kamu atur.",
+ "Which GNOME versions work?": "Versi GNOME apa saja yang didukung?",
+ "GNOME 46 to 51, on Linux (x86_64), Wayland or X11. It's a GNOME Shell extension, so it needs GNOME Shell.": "GNOME 46 sampai 51, di Linux (x86_64), Wayland atau X11. Ini ekstensi GNOME Shell, jadi butuh GNOME Shell.",
+ "How does voice control work?": "Bagaimana cara kerja kontrol suara?",
+ "Press Super+I and speak. Whisper runs on your device — set it up with notchfolk-setup-voice — and turns your words into text. If it doesn't catch you, run notchfolkd --doctor to check the microphone.": "Tekan Super+I lalu bicara. Whisper berjalan di perangkatmu — siapkan dengan notchfolk-setup-voice — dan mengubah ucapanmu menjadi teks. Kalau tidak menangkap suaramu, jalankan notchfolkd --doctor untuk memeriksa mikrofon.",
+ "Where is my data stored?": "Di mana dataku disimpan?",
+ "On your computer: tasks, reminders, and files in ~/.local/share/notchfolk, settings in ~/.config/notchfolk. There are no accounts and no tracking.": "Di komputermu: tugas, pengingat, dan file di ~/.local/share/notchfolk, pengaturan di ~/.config/notchfolk. Tanpa akun dan tanpa pelacakan.",
+ "Is there an AUR package?": "Apakah ada paket AUR?",
+ "Not yet. notchfolk-bin is prepared, but AUR registration is paused, so it isn't published. The install command above is the way to install for now.": "Belum. notchfolk-bin sudah disiapkan, tapi pendaftaran AUR sedang dijeda, jadi belum diterbitkan. Perintah instalasi di atas adalah cara memasang untuk saat ini.",
+ "Privacy": "Privasi",
+ "Notchfolk doesn't collect personal data and has no analytics. Your tasks, reminders, files, clipboard history, and settings are saved only on your computer, in ~/.local/share/notchfolk and ~/.config/notchfolk.": "Notchfolk tidak mengumpulkan data pribadi dan tidak memakai analitik. Tugas, pengingat, file, riwayat Clipboard, dan pengaturanmu hanya tersimpan di komputermu, di ~/.local/share/notchfolk dan ~/.config/notchfolk.",
+ "Prayer times are calculated on your computer from the city you choose. Voice is transcribed on your device with Whisper — nothing you say leaves your computer.": "Jadwal sholat dihitung di komputermu berdasarkan kota yang kamu pilih. Suara ditranskripsi di perangkatmu dengan Whisper — tidak ada yang kamu katakan keluar dari komputermu.",
+ "When you use synced lyrics, Notchfolk sends the song title, artist, and length to LRCLIB (lrclib.net) to find matching lyrics.": "Saat kamu memakai lirik tersinkron, Notchfolk mengirim judul lagu, nama artis, dan durasinya ke LRCLIB (lrclib.net) untuk mencari lirik yang cocok.",
+ "When you use an AI provider, your request goes to that provider, as you chose in Settings. The MCP server runs on your computer (localhost); if you expose it with a tunnel, only the people and tools you give the address to can reach it.": "Saat kamu memakai penyedia AI, permintaanmu diteruskan ke penyedia itu, sesuai yang kamu pilih di Settings. Server MCP berjalan di komputermu (localhost); kalau kamu membukanya lewat tunnel, hanya orang dan tool yang kamu beri alamatnya yang bisa mengaksesnya.",
+ "© 2026 Notchfolk. Synced lyrics by LRCLIB. GPL-3.0.": "© 2026 Notchfolk. Lirik disediakan oleh LRCLIB. GPL-3.0.",
+ "FAQ": "FAQ",
+ "Disclaimer": "Disclaimer",
+ "Feedback": "Masukan",
+ "Thanks for installing Notchfolk!": "Makasih udah pasang Notchfolk!",
+ "If it makes your day better, give it a star on GitHub.": "Kalau Notchfolk bikin harimu lebih enak, beri bintang di GitHub.",
+ "★ Star": "★ Bintang",
+ "Close": "Tutup",
+ "downloads so far": "unduhan sejauh ini"
+};
+  const SKIP = "script,style,svg,code,textarea,#laptop,.sw-art";
+  const ATTRS = ["placeholder", "aria-label", "alt", "title"];
+  const enTitle = document.title;
+  let LANG = "en", busy = false;
+  const key = s => s.replace(/\s+/g, " ").trim();
+  function text(n) {
+    const p = n.parentElement;
+    if (!p || p.closest(SKIP) || !n.nodeValue.trim()) return;
+    if (n.__last !== n.nodeValue) n.__en = n.nodeValue; // teks baru dari halaman: simpan versi Inggrisnya
+    const raw = n.__en, tr = LANG === "id" ? ID[key(raw)] : null;
+    const out = tr ? raw.match(/^\s*/)[0] + tr + raw.match(/\s*$/)[0] : raw;
+    if (n.nodeValue !== out) n.nodeValue = out;
+    n.__last = out;
+  }
+  function attrs(el) {
+    if (el.closest(SKIP)) return;
+    el.__enA = el.__enA || {};
+    ATTRS.forEach(a => {
+      if (!el.hasAttribute(a)) return;
+      if (!(a in el.__enA) || el.getAttribute(a) !== el.__enA["_" + a]) el.__enA[a] = el.getAttribute(a);
+      const v = LANG === "id" && ID[key(el.__enA[a])] || el.__enA[a];
+      el.setAttribute(a, v); el.__enA["_" + a] = v;
     });
-    // Tick tasks off; keep the pill count in step while on the tasks view.
-    var taskList = document.getElementById('taskList');
-    if (taskList) {
-      taskList.addEventListener('click', function (e) {
-        var task = e.target.closest('.pv-task');
-        if (!task) return;
-        stopAuto();
-        task.classList.toggle('done');
-        if (notch.getAttribute('data-view') === 'tasks') {
-          pillLabel.textContent = 'Tasks • ' + taskCount();
-        }
-      });
-    }
-    // Play/pause: pause the equaliser bars and swap the glyph.
-    var playBtn = document.getElementById('playBtn');
-    if (playBtn) {
-      playBtn.addEventListener('click', function () {
-        stopAuto();
-        var paused = pill.classList.toggle('paused');
-        playBtn.textContent = paused ? '▶' : '❚❚';
-        playBtn.setAttribute('aria-label', paused ? 'Play' : 'Pause');
-      });
-    }
-    // Gentle auto-advance through the views until the visitor takes over.
-    // Skipped for reduced motion; only advances while the preview is on screen.
-    if (!reduceMotion) {
-      var idx = 0;
-      autoTimer = setInterval(function () {
-        if (autoStopped || !inView()) return;
-        idx = (idx + 1) % views.length;
-        setView(views[idx], true);
-      }, 5000);
-    }
-  })();
-  // Customize demo: Black / Glass toggle for the little island.
-  (function () {
-    var demo = document.getElementById('demoIsland');
-    var black = document.getElementById('lookBlack');
-    var glass = document.getElementById('lookGlass');
-    if (!demo || !black || !glass) return;
-    function pick(which) {
-      demo.classList.toggle('glass', which === 'glass');
-      black.setAttribute('aria-pressed', which === 'black' ? 'true' : 'false');
-      glass.setAttribute('aria-pressed', which === 'glass' ? 'true' : 'false');
-    }
-    black.addEventListener('click', function () { pick('black'); });
-    glass.addEventListener('click', function () { pick('glass'); });
-  })();
+  }
+  function apply(root) {
+    if (root.nodeType === 3) return text(root);
+    if (root.nodeType !== 1) return;
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let n; while ((n = w.nextNode())) text(n);
+    if (root.matches && ATTRS.some(a => root.hasAttribute(a))) attrs(root);
+    root.querySelectorAll && root.querySelectorAll(ATTRS.map(a => "[" + a + "]").join(",")).forEach(attrs);
+  }
+  // Teks yang diubah skrip lain (jumlah unduhan, pesan formulir) ikut diterjemahkan
+  new MutationObserver(ms => {
+    if (busy) return;
+    busy = true;
+    ms.forEach(m => { if (m.type === "characterData") text(m.target); else m.addedNodes.forEach(apply); });
+    busy = false;
+  }).observe(document.body, { childList: true, subtree: true, characterData: true });
+  const sw = document.querySelector(".lang");
+  function set(l) {
+    LANG = l;
+    busy = true; apply(document.body); busy = false;
+    document.documentElement.lang = l;
+    document.title = l === "id" && ID[enTitle] || enTitle;
+    sw.dataset.l = l;
+    sw.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.l === l)));
+    try { localStorage.setItem("notchfolk-lang", l); } catch (e) {}
+  }
+  sw.querySelectorAll("button").forEach(b => b.addEventListener("click", () => set(b.dataset.l)));
+  let start = (navigator.language || "").toLowerCase().startsWith("id") ? "id" : "en";
+  try { start = localStorage.getItem("notchfolk-lang") || start; } catch (e) {}
+  set(start);
+})();
 </script>
 </body>
 </html>
