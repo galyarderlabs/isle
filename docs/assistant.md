@@ -85,7 +85,14 @@ after 10 minutes, and a command is stopped after 30.
    custom providers in your own `opencode.json` (a local Ollama, say) and API keys kept only in
    environment variables are not used.
 
-2. Set up speech recognition, once: press **Set up** when the assistant asks
+2. Speech recognition needs no setup when the cloud engine is on (the default):
+   **Settings → Assistant → Speech recognition → Cloud (OpenAI-compatible router)** sends each
+   recording to the router's `/v1/audio/transcriptions` (`dg/nova-3` by default), with its base URL,
+   model and API key set in Settings; the key is kept in the desktop's secret store, never in a
+   plain file. **Speak the replies** does the same through `/v1/audio/speech`, so answers are spoken
+   as well as shown. Local Whisper takes over by itself when the router cannot be reached (or is
+   not configured), and **Local Whisper (offline)** in Settings makes it the only engine.
+3. Set up local speech recognition, once: press **Set up** when the assistant asks
    for it, or run `~/.local/bin/notchfolk-setup-voice` in a terminal (`notchfolk-setup-voice` with a .deb,
    .rpm or AUR package; from the source folder: `scripts/setup-voice.sh`). It downloads the speech
    model chosen in Settings, `small` by default (265 MB; `tiny` 44 MB, `base`
@@ -98,11 +105,11 @@ after 10 minutes, and a command is stopped after 30.
    2015). An older Notchfolk's Python environment (up to 3 GB) is no longer
    needed: updating Notchfolk moves you over and deletes it by itself, or run
    `notchfolk-setup-voice --remove-old`.
-3. Pick the AI in **Settings → Assistant**, or leave it on Automatic, which
+4. Pick the AI in **Settings → Assistant**, or leave it on Automatic, which
    uses the first one signed in: Claude Code, Codex, Grok, Hermes, OpenAI-compatible
    API, Oh My Pi, opencode, then Antigravity. Select Oh My Pi explicitly when you
    want the Notchfolk assistant to use OMP. An AI installed later is found by itself.
-4. Check with `~/.local/bin/notchfolkd --doctor` (`notchfolkd --doctor` with a
+5. Check with `~/.local/bin/notchfolkd --doctor` (`notchfolkd --doctor` with a
    package): it lists speech recognition (the models downloaded, and the GPU
    or processor it runs on) and each AI's installation and setup status as
    Notchfolk can determine it. OMP's provider authentication is managed by OMP.

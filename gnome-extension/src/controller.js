@@ -2474,6 +2474,12 @@ export class Controller {
                 ...aiSettings(this._settings),
                 actions: actionTypes(this._settings),
                 whisper_model: this._settings.get_string('voice-speech-model'),
+                speech_engine: this._settings.get_string('voice-speech-engine'),
+                router_url: this._settings.get_string('voice-router-url'),
+                speech_model: this._settings.get_string('voice-speech-cloud-model'),
+                speak_replies: this._settings.get_boolean('voice-speak-replies'),
+                tts_model: this._settings.get_string('voice-tts-model'),
+                tts_voice: this._settings.get_string('voice-tts-voice'),
                 language: this._settings.get_string('voice-language'),
             });
         }

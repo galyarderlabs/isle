@@ -626,9 +626,10 @@ export default class NotchfolkPreferences extends ExtensionPreferences {
         const installed = AI_PROVIDERS.filter(provider => provider.available?.() ?? Boolean(findProgram(provider.command)));
         const group = new Adw.PreferencesGroup({
             title: 'Voice Assistant',
-            description: 'Press the shortcut (or the ✦ in the open island) and speak. Speech is recognised on this ' +
-                'computer (set up once with notchfolk-setup-voice in a terminal); the request goes to the AI you pick, with your ' +
-                'own sign-in and plan, Hermes local API, OMP’s configured provider, or a compatible endpoint.',
+            description: 'Press the shortcut (or the ✦ in the open island) and speak. Speech is recognised by an ' +
+                'OpenAI-compatible router over the network, or on this computer with local Whisper (set up once with ' +
+                'notchfolk-setup-voice in a terminal); the request goes to the AI you pick, with your own sign-in and plan, ' +
+                'Hermes local API, OMP’s configured provider, or a compatible endpoint.',
         });
         group.add(switchRow(settings, 'voice-assistant', 'AI Assistant',
             'The shortcut and the ✦ in the open island. Off: Notchfolk never asks an AI'));
@@ -814,12 +815,108 @@ export default class NotchfolkPreferences extends ExtensionPreferences {
         syncHermes();
 
         const options = [provider, model, modelId, hermesUrl, hermesKey, customInstructions];
-        options.push(choiceRow(settings, 'voice-speech-model', 'Speech recognition', 'Bigger is more accurate, and slower; downloaded once', [
+        options.push(choiceRow(settings, 'voice-speech-engine', 'Speech recognition',
+            'The router over the network; local Whisper works offline and takes over when the router cannot be reached', [
+            ['cloud', 'Cloud (OpenAI-compatible router)'],
+            ['local', 'Local Whisper (offline)'],
+        ]));
+        // The router: where speech goes and the model that hears it. The API key never enters GSettings —
+        // it lives in the desktop's secret store, kept there by notchfolkd.
+        const routerUrl = new Adw.EntryRow({title: 'Router base URL', text: settings.get_string('voice-router-url')});
+        routerUrl.connect('changed', () => {
+            if (routerUrl.text.trim() !== settings.get_string('voice-router-url'))
+                settings.set_string('voice-router-url', routerUrl.text.trim());
+        });
+        const urlChanged = settings.connect('changed::voice-router-url', () => {
+            if (routerUrl.text.trim() !== settings.get_string('voice-router-url'))
+                routerUrl.text = settings.get_string('voice-router-url');
+        });
+        routerUrl.connect('destroy', () => settings.disconnect(urlChanged));
+        const cloudModel = new Adw.EntryRow({title: 'Speech-to-text model', text: settings.get_string('voice-speech-cloud-model')});
+        cloudModel.connect('changed', () => {
+            if (cloudModel.text.trim() !== settings.get_string('voice-speech-cloud-model'))
+                settings.set_string('voice-speech-cloud-model', cloudModel.text.trim());
+        });
+        const modelChanged = settings.connect('changed::voice-speech-cloud-model', () => {
+            if (cloudModel.text.trim() !== settings.get_string('voice-speech-cloud-model'))
+                cloudModel.text = settings.get_string('voice-speech-cloud-model');
+        });
+        cloudModel.connect('destroy', () => settings.disconnect(modelChanged));
+        const apiKey = new Adw.PasswordEntryRow({title: 'Router API key'});
+        if (typeof apiKey.show_peek_icon === 'boolean')
+            apiKey.show_peek_icon = true;
+        const keyStatus = new Gtk.Label({label: 'Not set', valign: Gtk.Align.CENTER});
+        apiKey.add_suffix(keyStatus);
+        const readKey = () => {
+            try {
+                const saved = Gio.DBus.session.call_sync(DAEMON, DAEMON_PATH, ASSISTANT_INTERFACE,
+                    'SpeechKeySet', null, new GLib.VariantType('(b)'), Gio.DBusCallFlags.NONE, -1, null).deepUnpack()[0];
+                keyStatus.label = saved ? 'Saved' : 'Not set';
+            } catch {
+                keyStatus.label = 'Unknown';
+            }
+        };
+        readKey();
+        let saveKey = 0;
+        apiKey.connect('changed', () => {
+            if (saveKey)
+                GLib.source_remove(saveKey);
+            saveKey = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 600, () => {
+                saveKey = 0;
+                const key = apiKey.text.trim();
+                Gio.DBus.session.call(DAEMON, DAEMON_PATH, ASSISTANT_INTERFACE, 'SetSpeechKey',
+                    new GLib.Variant('(s)', [key]), null, Gio.DBusCallFlags.NONE, -1, null,
+                    () => readKey());
+                return GLib.SOURCE_REMOVE;
+            });
+        });
+        apiKey.connect('destroy', () => {
+            if (saveKey)
+                GLib.source_remove(saveKey);
+        });
+        // The reply spoken as well as shown, through the same router.
+        const speak = switchRow(settings, 'voice-speak-replies', 'Speak the replies',
+            'The reply is spoken through the router’s /v1/audio/speech as well as shown');
+        const ttsModel = new Adw.EntryRow({title: 'Text-to-speech model', text: settings.get_string('voice-tts-model')});
+        ttsModel.connect('changed', () => {
+            if (ttsModel.text.trim() !== settings.get_string('voice-tts-model'))
+                settings.set_string('voice-tts-model', ttsModel.text.trim());
+        });
+        const ttsModelChanged = settings.connect('changed::voice-tts-model', () => {
+            if (ttsModel.text.trim() !== settings.get_string('voice-tts-model'))
+                ttsModel.text = settings.get_string('voice-tts-model');
+        });
+        ttsModel.connect('destroy', () => settings.disconnect(ttsModelChanged));
+        const ttsVoice = new Adw.EntryRow({title: 'Voice', text: settings.get_string('voice-tts-voice')});
+        ttsVoice.connect('changed', () => {
+            if (ttsVoice.text.trim() !== settings.get_string('voice-tts-voice'))
+                settings.set_string('voice-tts-voice', ttsVoice.text.trim());
+        });
+        const ttsVoiceChanged = settings.connect('changed::voice-tts-voice', () => {
+            if (ttsVoice.text.trim() !== settings.get_string('voice-tts-voice'))
+                ttsVoice.text = settings.get_string('voice-tts-voice');
+        });
+        ttsVoice.connect('destroy', () => settings.disconnect(ttsVoiceChanged));
+        const whisperModel = choiceRow(settings, 'voice-speech-model', 'Local speech model', 'Bigger is more accurate, and slower; downloaded once', [
             ['tiny', 'Tiny (44 MB)'],
             ['base', 'Base (82 MB)'],
             ['small', 'Small (265 MB)'],
             ['medium', 'Medium (823 MB)'],
-        ]));
+        ]);
+        // Only the picked engine's settings show, as Hermes' endpoint rows do.
+        const syncEngine = () => {
+            const cloud = settings.get_string('voice-speech-engine') === 'cloud';
+            routerUrl.visible = cloud;
+            cloudModel.visible = cloud;
+            apiKey.visible = cloud;
+            speak.visible = cloud;
+            ttsModel.visible = cloud;
+            ttsVoice.visible = cloud;
+            whisperModel.visible = !cloud;
+        };
+        settings.connect('changed::voice-speech-engine', syncEngine);
+        syncEngine();
+        options.push(routerUrl, cloudModel, apiKey, speak, ttsModel, ttsVoice, whisperModel);
         options.push(choiceRow(settings, 'voice-language', 'Language', 'The language you speak', [
             ['', 'Any (detected)'],
             ['id,en', 'Indonesian or English'],

@@ -14,6 +14,7 @@ mod brain;
 mod chat;
 mod check;
 mod child;
+mod cloud;
 mod claude;
 mod codex;
 #[cfg(test)]
@@ -178,6 +179,17 @@ pub struct Context {
     opencode_model: String,
     custom_instructions: String,
     whisper_model: String,
+    /// Which speech recognition answers: "cloud" (an OpenAI-compatible router) or "local" (whisper.cpp).
+    speech_engine: String,
+    /// The router's base URL, as Settings holds it ("https://router.example/v1").
+    router_url: String,
+    /// The router's speech-to-text model ("dg/nova-3").
+    speech_model: String,
+    /// Whether the reply is spoken as well as shown.
+    speak_replies: bool,
+    /// The router's text-to-speech model, and the voice it speaks with.
+    tts_model: String,
+    tts_voice: String,
     language: String,
     /// How long a quiet conversation is kept ("day", "idle-30m", "idle-2h"; see chat.rs).
     keep_chat: String,
@@ -395,6 +407,23 @@ impl AssistantService {
             .map_err(|err| fdo::Error::Failed(err.to_string()))?
             .map_err(|_| fdo::Error::Failed("could not reach the models endpoint".into()))?;
         serde_json::to_string(&models).map_err(|err| fdo::Error::Failed(err.to_string()))
+    }
+
+    /// Saves the voice router's API key in the desktop's secret store; an empty one removes it.
+    async fn set_speech_key(&self, key: &str) -> fdo::Result<()> {
+        let key = key.to_owned();
+        tokio::task::spawn_blocking(move || cloud::save_key(&key))
+            .await
+            .map_err(|err| fdo::Error::Failed(err.to_string()))?
+            .map_err(|err| fdo::Error::Failed(format!("GNOME Keyring: {err}")))
+    }
+
+    /// Whether the voice router's API key is saved, without returning it to Settings.
+    async fn speech_key_set(&self) -> fdo::Result<bool> {
+        tokio::task::spawn_blocking(cloud::key)
+            .await
+            .map_err(|err| fdo::Error::Failed(err.to_string()))
+            .map(|key| key.is_some())
     }
 
     /// Records a request and answers it; `context` is JSON
@@ -1520,6 +1549,7 @@ pub async fn run(iface: InterfaceRef<AssistantService>, data: Sources, mut comma
                 None
             }
             Command::End => {
+                stop_speaking().await;
                 session.end();
                 // A day that ended while it was open.
                 new_day(&mut session, &mut pruned);
@@ -1558,19 +1588,30 @@ async fn turn(
     later: &mut VecDeque<Command>,
 ) -> Option<Command> {
     let spoken = typed.is_none();
+    stop_speaking().await;
     let text = match typed {
         Some(text) => text,
         None => {
             let model = or(&session.context.whisper_model, "small").to_owned();
-            if !whisper::installed() {
-                return fail(iface, set_up(NOT_SET_UP, &model)).await;
-            }
-            if session.whisper.is_none() {
-                match Whisper::start(&model, &session.context.language) {
-                    Ok(whisper) => session.whisper = Some(whisper),
-                    Err(err) => {
-                        warn!("{err:#}");
-                        return fail(iface, set_up(NOT_SET_UP, &model)).await;
+            // The cloud router's key, when its engine is picked and the key is saved; without it,
+            // local whisper alone.
+            let key = if session.context.speech_engine == "local" {
+                None
+            } else {
+                tokio::task::spawn_blocking(cloud::key).await.ok().flatten()
+            };
+            let key = key.filter(|_| !session.context.router_url.trim().is_empty());
+            if key.is_none() {
+                if !whisper::installed() {
+                    return fail(iface, set_up(NOT_SET_UP, &model)).await;
+                }
+                if session.whisper.is_none() {
+                    match Whisper::start(&model, &session.context.language) {
+                        Ok(whisper) => session.whisper = Some(whisper),
+                        Err(err) => {
+                            warn!("{err:#}");
+                            return fail(iface, set_up(NOT_SET_UP, &model)).await;
+                        }
                     }
                 }
             }
@@ -1617,12 +1658,7 @@ async fn turn(
                 }
             };
             publish(iface, |state| state.phase = Phase::Transcribing).await;
-            let whisper = session.whisper.as_mut().expect("started above");
-            let transcribed = tokio::time::timeout(TRANSCRIBE_TIMEOUT, whisper.transcribe(&audio));
-            let transcribed =
-                until_cancelled(transcribed, commands, later, &mut session.open).await;
-            // Done with it: the speech model quits, its memory freed while the AI works.
-            session.whisper = None;
+            let transcribed = transcribed(session, audio, commands, later, key).await;
             match transcribed {
                 Ok(Ok(Ok(text))) => text,
                 Ok(Ok(Err(err))) => {
@@ -1767,6 +1803,7 @@ async fn turn(
             if session.drop_unrunnable(&mut answer.actions) {
                 answer.say = NEEDS_RELOGIN.into();
             }
+            let said = answer.say.clone();
             publish(iface, |state| {
                 state.phase = Phase::Reply;
                 state.activity.clear();
@@ -1777,6 +1814,7 @@ async fn turn(
                 state.turn += 1;
             })
             .await;
+            speak(session, &said).await;
             None
         }
         Ok(Ok(Err(err))) if err.is::<agent::TooLong>() => {
@@ -2100,6 +2138,96 @@ async fn until_cancelled<T>(
             },
         }
     }
+}
+
+/// What was said in `audio`: the cloud router when its `key` is saved, local whisper otherwise — which
+/// also takes over when the router cannot (offline, out of quota). The outer `Err` is a command that
+/// cut it short, the middle one a stuck transcription, the inner one a failure either engine reports.
+async fn transcribed(
+    session: &mut Session,
+    audio: Vec<i16>,
+    commands: &mut Commands,
+    later: &mut VecDeque<Command>,
+    key: Option<String>,
+) -> Result<Result<Result<String, anyhow::Error>, tokio::time::error::Elapsed>, Command> {
+    if let Some(key) = key {
+        let url = session.context.router_url.clone();
+        let model = or(&session.context.speech_model, "dg/nova-3").to_owned();
+        let language = session.context.language.clone();
+        let asked = tokio::time::timeout(
+            TRANSCRIBE_TIMEOUT,
+            cloud::transcribe(&url, &model, &key, &audio, &language),
+        );
+        let answered = until_cancelled(asked, commands, later, &mut session.open).await?;
+        let said = matches!(answered, Ok(Ok(_)));
+        if !said {
+            warn!("the speech router could not hear it; local whisper takes over");
+        }
+        if said || !whisper::installed() {
+            return Ok(answered);
+        }
+        local(session, audio, commands, later).await
+    } else {
+        local(session, audio, commands, later).await
+    }
+}
+
+/// What local whisper makes of `audio`, started already while the user spoke, else started now.
+async fn local(
+    session: &mut Session,
+    audio: Vec<i16>,
+    commands: &mut Commands,
+    later: &mut VecDeque<Command>,
+) -> Result<Result<Result<String, anyhow::Error>, tokio::time::error::Elapsed>, Command> {
+    let model = or(&session.context.whisper_model, "small").to_owned();
+    let started = match session.whisper.take() {
+        Some(whisper) => Ok(whisper),
+        None => Whisper::start(&model, &session.context.language),
+    };
+    let mut whisper = match started {
+        Ok(whisper) => whisper,
+        Err(err) => return Ok(Ok(Err(err))),
+    };
+    let asked = tokio::time::timeout(TRANSCRIBE_TIMEOUT, whisper.transcribe(&audio));
+    let answer = until_cancelled(asked, commands, later, &mut session.open).await;
+    drop(whisper);
+    answer
+}
+
+/// The spoken reply being played, and the lock that keeps it: killed when a new request starts or the
+/// conversation ends, never left talking over the next one.
+static SPEAKING: std::sync::LazyLock<tokio::sync::Mutex<Option<tokio::process::Child>>> =
+    std::sync::LazyLock::new(|| tokio::sync::Mutex::new(None));
+
+/// Stops the spoken reply being played, if there is one.
+async fn stop_speaking() {
+    if let Some(mut child) = SPEAKING.lock().await.take() {
+        child.kill().await.ok();
+    }
+}
+
+/// Speaks the reply through the router, when asked for and its key is saved; the island shows it as
+/// text all the same, so a failure to speak never fails the answer.
+async fn speak(session: &Session, said: &str) {
+    if !session.context.speak_replies || said.trim().is_empty() {
+        return;
+    }
+    let url = session.context.router_url.trim().to_owned();
+    if url.is_empty() {
+        return;
+    }
+    let model = or(&session.context.tts_model, "tts-1").to_owned();
+    let voice = or(&session.context.tts_voice, "alloy").to_owned();
+    let said = said.to_owned();
+    tokio::spawn(async move {
+        let Some(key) = tokio::task::spawn_blocking(cloud::key).await.ok().flatten() else {
+            return;
+        };
+        match cloud::speak(&url, &model, &voice, &key, &said).await {
+            Ok(child) => *SPEAKING.lock().await = Some(child),
+            Err(err) => warn!("could not speak the reply: {err:#}"),
+        }
+    });
 }
 
 /// A command that came mid-request: New chat, Undo, Clear and a command's end wait for the request to

@@ -6,6 +6,17 @@ All notable changes to Notchfolk are listed here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **Speech recognition can run on an OpenAI-compatible router**, the default engine: recordings go
+  to its `/v1/audio/transcriptions` (`dg/nova-3` by default) instead of local whisper.cpp, with the
+  base URL, model and API key set in Settings — the key kept in the desktop's secret store. Local
+  Whisper stays as the offline choice in Settings and takes over by itself when the router cannot
+  be reached.
+- **The replies can be spoken**, through the same router's `/v1/audio/speech` (model and voice set
+  in Settings): the answer is shown in the island all the same, and a request that arrives cuts
+  the spoken one short.
+
 ## [1.1.0] - 2026-11-07
 
 ### Added
