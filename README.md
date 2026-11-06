@@ -23,10 +23,10 @@ tabs for each page.
 <table>
 <tr>
 <td width="50%" valign="top">
-<img src="docs/images/music.png" alt="Music page: Little Dark Age by MGMT at 1:03, with synced lyrics" width="100%"><br>
 <b>Music.</b> Spotify, YouTube in your browser, or any MPRIS player: cover, scrubber and controls, with the playing app's icon on the cover. Volume and output switching one click away.
 </td>
 <td width="50%" valign="top">
+<img src="docs/images/lyrics.png" alt="Synced lyrics: the line being sung large and bright, Little Dark Age by MGMT" width="100%"><br>
 <b>Synced lyrics</b> from <a href="https://lrclib.net">LRCLIB</a>: the line being sung large and bright, pauses as breathing dots; click a line to jump. The island widens and takes the cover's colour.
 </td>
 </tr>
