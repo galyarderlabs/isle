@@ -12,7 +12,7 @@ All notable changes to Notchfolk are listed here. The format follows
 
 - **The last week of shown reminders stays as a history.** A reminder that fired during login,
   or that was simply missed, can still be looked up: the Reminders page has a "Last 7 days"
-  section, and agents can read it with the new `list_reminder_history` tool (55 tools now).
+  section, and agents can read it with the new `list_reminder_history` tool (56 tools now).
   The one-shot island alert is unchanged.
 
 ### Fixed
