@@ -94,7 +94,7 @@ pub async fn transcribe(
             .build()
             .header("Authorization", &format!("Bearer {key}"))
             .send(form)
-            .context("could not reach the speech router")?;
+            .with_context(|| format!("could not reach the speech router at {url}"))?;
         let text = response
             .into_body()
             .read_to_string()
@@ -133,7 +133,7 @@ pub async fn speak(
             .build()
             .header("Authorization", &format!("Bearer {key}"))
             .send_json(&request)
-            .context("could not reach the speech router")?;
+            .with_context(|| format!("could not reach the speech router at {url}"))?;
         let mut bytes = Vec::new();
         response
             .into_body()

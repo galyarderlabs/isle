@@ -2159,7 +2159,7 @@ async fn transcribed(
     key: Option<String>,
 ) -> Result<Result<Result<String, anyhow::Error>, tokio::time::error::Elapsed>, Command> {
     if let Some(key) = key {
-        let url = session.context.router_url.clone();
+        let url = session.context.router_url.trim().to_owned();
         let path = or(&session.context.stt_path, "audio/transcriptions").to_owned();
         let model = session.context.speech_model.trim().to_owned();
         let language = session.context.language.clone();
