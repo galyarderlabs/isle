@@ -14,8 +14,8 @@ mod brain;
 mod chat;
 mod check;
 mod child;
-mod cloud;
 mod claude;
+mod cloud;
 mod codex;
 #[cfg(test)]
 mod eval;

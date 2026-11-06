@@ -51,7 +51,9 @@ pub fn save_key(key: &str) -> anyhow::Result<()> {
             Err(err) => return Err(err).context("could not remove the API key"),
         }
     } else {
-        entry.set_password(key).context("could not save the API key")?;
+        entry
+            .set_password(key)
+            .context("could not save the API key")?;
     }
     Ok(())
 }
@@ -160,7 +162,11 @@ pub async fn speak(
 /// `path` under the router's base URL, without a doubled slash — a leading slash in `path` is trimmed
 /// all the same, so a router's own path fits as it is written.
 fn url(base: &str, path: &str) -> String {
-    format!("{}/{}", base.trim_end_matches('/'), path.trim_start_matches('/'))
+    format!(
+        "{}/{}",
+        base.trim_end_matches('/'),
+        path.trim_start_matches('/')
+    )
 }
 
 /// `audio` as a WAV file: 16 kHz mono 16-bit, as the transcription endpoint takes it.
@@ -193,10 +199,19 @@ mod tests {
 
     #[test]
     fn joins_the_url_without_a_doubled_slash() {
-        assert_eq!(url("https://router.example/v1", "audio/speech"), "https://router.example/v1/audio/speech");
-        assert_eq!(url("https://router.example/v1/", "audio/speech"), "https://router.example/v1/audio/speech");
+        assert_eq!(
+            url("https://router.example/v1", "audio/speech"),
+            "https://router.example/v1/audio/speech"
+        );
+        assert_eq!(
+            url("https://router.example/v1/", "audio/speech"),
+            "https://router.example/v1/audio/speech"
+        );
         // A path written with its own leading slash fits all the same.
-        assert_eq!(url("https://router.example/v1", "/voice/words"), "https://router.example/v1/voice/words");
+        assert_eq!(
+            url("https://router.example/v1", "/voice/words"),
+            "https://router.example/v1/voice/words"
+        );
     }
 
     #[test]
@@ -208,5 +223,4 @@ mod tests {
         assert_eq!(u32::from_le_bytes(wav[40..44].try_into().unwrap()), 6);
         assert_eq!(wav.len(), 50);
     }
-
 }
