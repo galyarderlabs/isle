@@ -6,11 +6,23 @@ All notable changes to Notchfolk are listed here. The format follows
 
 ## [Unreleased]
 
+## [1.2.2] - 2026-11-06
+
 ### Changed
 
 - **No speech router is assumed either.** The base URL starts empty in Settings too, so a fresh
   install has nothing pointing anywhere until the user fills it in; an empty one leaves the cloud
   engine unconfigured (local whisper answers).
+
+### Fixed
+
+- **The speech router gets one language code, not local Whisper's list.** Settings' language is a
+  list local Whisper uses to tell languages apart ("id,en"); sent as-is to the router it was a
+  code the router refuses, so a healthy router still failed every request and local Whisper took
+  over. Only a list of one is sent now; a longer one is left out, and the router detects the
+  language itself.
+- The log says why the speech router could not hear it (the error itself, or that it took too
+  long), instead of naming neither.
 
 ## [1.2.1] - 2026-11-06
 
