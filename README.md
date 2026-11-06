@@ -47,6 +47,7 @@ tabs for each page.
 <b>Reminders</b>, with the number still open beside the list: add tasks, rename in place, tick to finish — done ones clear at midnight. A long title wraps as far as it needs.
 </td>
 <td width="50%" valign="top">
+<img src="docs/images/clipboard.png" alt="Shelf: clipboard history of images, with their sizes" width="100%"><br>
 <b>Shelf.</b> Clipboard history of text, links, images and files — search, filter, pin; Super+V to paste. Files tray: drop up to 6 files on the island, drag them into any app or click to copy. Phone: scan the QR to save shelf files on your phone or send files back, in the browser, same Wi-Fi, nothing through the internet.
 </td>
 </tr>
