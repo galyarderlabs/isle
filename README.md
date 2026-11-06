@@ -109,6 +109,7 @@ tabs for each page.
 </tr>
 <tr>
 <td width="50%" valign="top">
+<img src="docs/images/router.png" alt="Router: 3,786 requests, 68M / 2.7M tokens, $37.11 estimated cost, connected" width="100%"><br>
 <b>Router.</b> What your AI gateway reports: requests, tokens in and out, its cost estimate, the top models as bars, and the last ten requests. A health dot once connected; off by default.
 </td>
 <td width="50%" valign="top">
