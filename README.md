@@ -75,6 +75,8 @@ tabs for each page.
 </tr>
 <tr>
 <td width="50%" valign="top">
+<img src="docs/images/command.png" alt="The install command running: sudo pacman -S --needed vlc, asking to proceed" width="100%"><br>
+<img src="docs/images/install.png" alt="Install vlc running in the closed island" width="100%"><br>
 <b>Installs and fixes things.</b> "Install LibreOffice", "pasang codex": it checks what your Linux has, searches the web when unsure, and shows the one command it wants to run, with what to know first. Press <b>Run</b> or <b>Deny</b>. It runs in the background while you carry on, and the assistant checks it worked before saying so.
 </td>
 <td width="50%" valign="top">
@@ -98,6 +100,7 @@ tabs for each page.
 <b>Alerts</b> for volume, brightness, Caps Lock, charging, low battery, Bluetooth battery, going offline, reminders, meetings about to start, AI plan limits and GNOME notifications with their buttons — in the same place instead of the middle of the screen. Hold the pointer on one to keep it; × or swipe up to put it away.
 </td>
 <td width="50%" valign="top">
+<img src="docs/images/approvals.png" alt="Notchfolk wants to run sudo pacman -S --needed vlc, with Deny and Run" width="100%"><br>
 <b>AI agents.</b> When Claude Code or Codex asks permission to run something, answer from the island: <b>Deny</b>, <b>Allow</b> or, for Claude Code, <b>Always</b>. When one is done, the island says what it did. Nothing shows while you are in its window.
 </td>
 </tr>
