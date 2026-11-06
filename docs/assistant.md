@@ -87,9 +87,9 @@ after 10 minutes, and a command is stopped after 30.
 
 2. Speech recognition needs no setup when the cloud engine is on (the default):
    **Settings → Assistant → Speech recognition → Cloud (OpenAI-compatible router)** sends each
-   recording to the router's `/v1/audio/transcriptions` (`dg/nova-3` by default), with its base URL,
-   model and API key set in Settings; the key is kept in the desktop's secret store, never in a
-   plain file. The endpoint paths (`audio/transcriptions`, `audio/speech`) are editable too, for a
+   recording to the router's `/v1/audio/transcriptions`, with its base URL, model and API key set in
+   Settings — no model is assumed; the key is kept in the desktop's secret store, never in a plain
+   file. The endpoint paths (`audio/transcriptions`, `audio/speech`) are editable too, for a
    router that names its own. **Speak the replies** does the same through `/v1/audio/speech`, so answers are spoken
    as well as shown. Local Whisper takes over by itself when the router cannot be reached (or is
    not configured), and **Local Whisper (offline)** in Settings makes it the only engine.

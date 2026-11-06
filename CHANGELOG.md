@@ -6,12 +6,19 @@ All notable changes to Notchfolk are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- **No speech model is assumed any more.** The speech router's models and voice start empty in
+  Settings and nothing fills them in behind the user's back: an unset speech-to-text model means
+  the cloud engine is not configured (local whisper answers), and an unset text-to-speech model
+  or voice means the reply is not spoken.
+
 ## [1.2.0] - 2026-11-06
 
 ### Added
 
 - **Speech recognition can run on an OpenAI-compatible router**, the default engine: recordings go
-  to its `/v1/audio/transcriptions` (`dg/nova-3` by default) instead of local whisper.cpp, with the
+  to its `/v1/audio/transcriptions` (the model named in Settings) instead of local whisper.cpp, with the
   base URL, model and API key set in Settings — the key kept in the desktop's secret store, and the
   endpoint paths editable for a router that does not use the OpenAI-compatible ones. Local
   Whisper stays as the offline choice in Settings and takes over by itself when the router cannot
