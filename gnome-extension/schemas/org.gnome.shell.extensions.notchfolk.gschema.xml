@@ -350,6 +350,16 @@
       <summary>The speech router's speech-to-text model</summary>
       <description>As the router names it, sent with each recording ("dg/nova-3").</description>
     </key>
+    <key name="voice-stt-path" type="s">
+      <default>'audio/transcriptions'</default>
+      <summary>The speech router's speech-to-text path</summary>
+      <description>Added to the base URL, without a leading slash. The OpenAI-compatible path is audio/transcriptions; another router names its own.</description>
+    </key>
+    <key name="voice-tts-path" type="s">
+      <default>'audio/speech'</default>
+      <summary>The speech router's text-to-speech path</summary>
+      <description>Added to the base URL, without a leading slash. The OpenAI-compatible path is audio/speech; another router names its own.</description>
+    </key>
     <key name="voice-speak-replies" type="b">
       <default>false</default>
       <summary>Speak the replies</summary>

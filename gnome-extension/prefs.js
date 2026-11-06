@@ -842,6 +842,17 @@ export default class NotchfolkPreferences extends ExtensionPreferences {
                 cloudModel.text = settings.get_string('voice-speech-cloud-model');
         });
         cloudModel.connect('destroy', () => settings.disconnect(modelChanged));
+        // Where speech endpoints live: the OpenAI-compatible paths by default, another router's own.
+        const sttPath = new Adw.EntryRow({title: 'Speech-to-text path', text: settings.get_string('voice-stt-path')});
+        sttPath.connect('changed', () => {
+            if (sttPath.text.trim() !== settings.get_string('voice-stt-path'))
+                settings.set_string('voice-stt-path', sttPath.text.trim().replace(/^\/+/, ''));
+        });
+        const sttChanged = settings.connect('changed::voice-stt-path', () => {
+            if (sttPath.text.trim() !== settings.get_string('voice-stt-path'))
+                sttPath.text = settings.get_string('voice-stt-path');
+        });
+        sttPath.connect('destroy', () => settings.disconnect(sttChanged));
         const apiKey = new Adw.PasswordEntryRow({title: 'Router API key'});
         if (typeof apiKey.show_peek_icon === 'boolean')
             apiKey.show_peek_icon = true;
@@ -887,6 +898,16 @@ export default class NotchfolkPreferences extends ExtensionPreferences {
                 ttsModel.text = settings.get_string('voice-tts-model');
         });
         ttsModel.connect('destroy', () => settings.disconnect(ttsModelChanged));
+        const ttsPath = new Adw.EntryRow({title: 'Text-to-speech path', text: settings.get_string('voice-tts-path')});
+        ttsPath.connect('changed', () => {
+            if (ttsPath.text.trim() !== settings.get_string('voice-tts-path'))
+                settings.set_string('voice-tts-path', ttsPath.text.trim().replace(/^\/+/, ''));
+        });
+        const ttsPathChanged = settings.connect('changed::voice-tts-path', () => {
+            if (ttsPath.text.trim() !== settings.get_string('voice-tts-path'))
+                ttsPath.text = settings.get_string('voice-tts-path');
+        });
+        ttsPath.connect('destroy', () => settings.disconnect(ttsPathChanged));
         const ttsVoice = new Adw.EntryRow({title: 'Voice', text: settings.get_string('voice-tts-voice')});
         ttsVoice.connect('changed', () => {
             if (ttsVoice.text.trim() !== settings.get_string('voice-tts-voice'))
@@ -908,15 +929,17 @@ export default class NotchfolkPreferences extends ExtensionPreferences {
             const cloud = settings.get_string('voice-speech-engine') === 'cloud';
             routerUrl.visible = cloud;
             cloudModel.visible = cloud;
+            sttPath.visible = cloud;
             apiKey.visible = cloud;
             speak.visible = cloud;
             ttsModel.visible = cloud;
+            ttsPath.visible = cloud;
             ttsVoice.visible = cloud;
             whisperModel.visible = !cloud;
         };
         settings.connect('changed::voice-speech-engine', syncEngine);
         syncEngine();
-        options.push(routerUrl, cloudModel, apiKey, speak, ttsModel, ttsVoice, whisperModel);
+        options.push(routerUrl, cloudModel, sttPath, apiKey, speak, ttsModel, ttsPath, ttsVoice, whisperModel);
         options.push(choiceRow(settings, 'voice-language', 'Language', 'The language you speak', [
             ['', 'Any (detected)'],
             ['id,en', 'Indonesian or English'],

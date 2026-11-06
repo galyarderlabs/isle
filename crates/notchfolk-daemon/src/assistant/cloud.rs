@@ -59,12 +59,13 @@ pub fn save_key(key: &str) -> anyhow::Result<()> {
 /// The words in `audio` (16 kHz mono), as the router's speech-to-text model heard them.
 pub async fn transcribe(
     base: &str,
+    path: &str,
     model: &str,
     key: &str,
     audio: &[i16],
     language: &str,
 ) -> anyhow::Result<String> {
-    let url = url(base, "audio/transcriptions");
+    let url = url(base, path);
     let wav = wav(audio);
     let key = key.to_owned();
     let model = model.to_owned();
@@ -105,12 +106,13 @@ pub async fn transcribe(
 /// the playing, killed when dropped.
 pub async fn speak(
     base: &str,
+    path: &str,
     model: &str,
     voice: &str,
     key: &str,
     text: &str,
 ) -> anyhow::Result<tokio::process::Child> {
-    let url = url(base, "audio/speech");
+    let url = url(base, path);
     let request = serde_json::json!({
         "model": model,
         "voice": voice,
@@ -155,9 +157,10 @@ pub async fn speak(
     Ok(child)
 }
 
-/// `path` under the router's base URL, without a doubled slash.
+/// `path` under the router's base URL, without a doubled slash — a leading slash in `path` is trimmed
+/// all the same, so a router's own path fits as it is written.
 fn url(base: &str, path: &str) -> String {
-    format!("{}/{}", base.trim_end_matches('/'), path)
+    format!("{}/{}", base.trim_end_matches('/'), path.trim_start_matches('/'))
 }
 
 /// `audio` as a WAV file: 16 kHz mono 16-bit, as the transcription endpoint takes it.
@@ -192,6 +195,8 @@ mod tests {
     fn joins_the_url_without_a_doubled_slash() {
         assert_eq!(url("https://router.example/v1", "audio/speech"), "https://router.example/v1/audio/speech");
         assert_eq!(url("https://router.example/v1/", "audio/speech"), "https://router.example/v1/audio/speech");
+        // A path written with its own leading slash fits all the same.
+        assert_eq!(url("https://router.example/v1", "/voice/words"), "https://router.example/v1/voice/words");
     }
 
     #[test]

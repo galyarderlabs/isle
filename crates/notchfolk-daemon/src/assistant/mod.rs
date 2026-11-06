@@ -183,8 +183,11 @@ pub struct Context {
     speech_engine: String,
     /// The router's base URL, as Settings holds it ("https://router.example/v1").
     router_url: String,
-    /// The router's speech-to-text model ("dg/nova-3").
+    /// The router's speech-to-text model ("dg/nova-3"), and the paths its speech endpoints live at
+    /// ("audio/transcriptions", "audio/speech") — another router names its own.
     speech_model: String,
+    stt_path: String,
+    tts_path: String,
     /// Whether the reply is spoken as well as shown.
     speak_replies: bool,
     /// The router's text-to-speech model, and the voice it speaks with.
@@ -2152,11 +2155,12 @@ async fn transcribed(
 ) -> Result<Result<Result<String, anyhow::Error>, tokio::time::error::Elapsed>, Command> {
     if let Some(key) = key {
         let url = session.context.router_url.clone();
+        let path = or(&session.context.stt_path, "audio/transcriptions").to_owned();
         let model = or(&session.context.speech_model, "dg/nova-3").to_owned();
         let language = session.context.language.clone();
         let asked = tokio::time::timeout(
             TRANSCRIBE_TIMEOUT,
-            cloud::transcribe(&url, &model, &key, &audio, &language),
+            cloud::transcribe(&url, &path, &model, &key, &audio, &language),
         );
         let answered = until_cancelled(asked, commands, later, &mut session.open).await?;
         let said = matches!(answered, Ok(Ok(_)));
@@ -2216,6 +2220,7 @@ async fn speak(session: &Session, said: &str) {
     if url.is_empty() {
         return;
     }
+    let path = or(&session.context.tts_path, "audio/speech").to_owned();
     let model = or(&session.context.tts_model, "tts-1").to_owned();
     let voice = or(&session.context.tts_voice, "alloy").to_owned();
     let said = said.to_owned();
@@ -2223,7 +2228,7 @@ async fn speak(session: &Session, said: &str) {
         let Some(key) = tokio::task::spawn_blocking(cloud::key).await.ok().flatten() else {
             return;
         };
-        match cloud::speak(&url, &model, &voice, &key, &said).await {
+        match cloud::speak(&url, &path, &model, &voice, &key, &said).await {
             Ok(child) => *SPEAKING.lock().await = Some(child),
             Err(err) => warn!("could not speak the reply: {err:#}"),
         }
