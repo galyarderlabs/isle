@@ -58,6 +58,7 @@ tabs for each page.
 <b>Weather.</b> Current conditions on the closed island — temperature and summary for your place, from your world clocks, refreshed every half hour.
 </td>
 <td width="50%" valign="top">
+<img src="docs/images/calendar.png" alt="Calendar: November 2026 beside today's events, R&D OAA and Design GBots" width="100%"><br>
 <b>Calendar.</b> The month beside the chosen day's events, from your desktop calendars (Google and others through Online Accounts). Add an event in one line: "Dinner 8:00 pm". A reminder 5 minutes before, with <b>Join</b> for Meet, Zoom, Teams or Webex. World clocks underneath.
 </td>
 </tr>
