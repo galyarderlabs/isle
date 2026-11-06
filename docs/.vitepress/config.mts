@@ -5,7 +5,7 @@ import { defineConfig } from 'vitepress'
 // (assistant-platform-*, gsconnect-*, rebrand-*, router-*) are excluded
 // from the site and from the sidebar.
 export default defineConfig({
-  base: '/notchfork/',
+  base: '/notchfolk/',
   title: 'Notchfolk',
   description: 'A little world in your notch.',
   lang: 'en-US',
