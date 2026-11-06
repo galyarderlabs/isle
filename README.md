@@ -69,19 +69,17 @@ tabs for each page.
 <b>Notifications.</b> GNOME's notifications as a plain list, newest first, with their buttons under the pointer, Clear, and Do Not Disturb a click away.
 </td>
 <td width="50%" valign="top">
-<img src="docs/images/voice.png" alt="The voice assistant at work: what it heard, and the step it is on, finding jazz on Spotify" width="100%"><br>
+<img src="docs/images/voice.png" alt="Install vlc running in the closed island" width="100%"><br>
 <b>Voice assistant.</b> Press Super+I and ask, in English or Indonesian: play a song, find a file, add a reminder. It works as an agent: a request with several steps is done one after another, each step checked, with the AI you already use (Claude Code, Codex, Grok, Hermes, Oh My Pi, opencode or Antigravity).
 </td>
 </tr>
 <tr>
 <td width="50%" valign="top">
 <img src="docs/images/command.png" alt="The install command running: sudo pacman -S --needed vlc, asking to proceed" width="100%"><br>
-<img src="docs/images/install.png" alt="Install vlc running in the closed island" width="100%"><br>
 <b>Installs and fixes things.</b> "Install LibreOffice", "pasang codex": it checks what your Linux has, searches the web when unsure, and shows the one command it wants to run, with what to know first. Press <b>Run</b> or <b>Deny</b>. It runs in the background while you carry on, and the assistant checks it worked before saying so.
 </td>
 <td width="50%" valign="top">
-<img src="docs/images/conversation.png" alt="The conversation: install vlc, the command that ran with its time, and the answer" width="100%"><br>
-<img src="docs/images/ai-chat.png" alt="Chatting with the AI: asking where Notchfolk runs" width="100%"><br>
+<img src="docs/images/conversation.png" alt="Chatting with the AI: asking where Notchfolk runs" width="100%"><br>
 <b>Speak or type, and talk it through.</b> It listens as soon as it opens; start typing to type instead. Scroll up for the conversation so far; select text to copy it, + for a new one. The bot turns to the pointer, blinks, and bounces as you speak; close the island and it carries on in the background.
 </td>
 </tr>
