@@ -55,6 +55,7 @@ tabs for each page.
 </tr>
 <tr>
 <td width="50%" valign="top">
+<img src="docs/images/alerts.png" alt="The closed island showing 33,0 °C" width="100%"><br>
 <b>Weather.</b> Current conditions on the closed island — temperature and summary for your place, from your world clocks, refreshed every half hour.
 </td>
 <td width="50%" valign="top">
