@@ -4,10 +4,13 @@
   "description": "Lint tools for Notchfolk's GNOME Shell extension; nothing here is shipped.",
   "license": "GPL-3.0-or-later",
   "scripts": {
-    "lint": "eslint"
+    "lint": "eslint",
+    "docs:build": "vitepress build docs",
+    "docs:dev": "vitepress dev docs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
-    "eslint": "^9.39.5"
+    "eslint": "^9.39.5",
+    "vitepress": "^1.6.4"
   }
 }

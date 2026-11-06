@@ -2,4 +2,5 @@
 gnome-extension/schemas/gschemas.compiled
 /dist
 /node_modules
+docs/.vitepress/dist
 *.pkg.tar*
