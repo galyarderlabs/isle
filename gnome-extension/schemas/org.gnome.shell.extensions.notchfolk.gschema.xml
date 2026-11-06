@@ -341,7 +341,7 @@
       <description>An OpenAI-compatible speech router over the network, or local whisper.cpp offline. Local also takes over when the router cannot be reached.</description>
     </key>
     <key name="voice-router-url" type="s">
-      <default>'https://router.niyatna.com/v1'</default>
+      <default>''</default>
       <summary>The speech router's base URL</summary>
       <description>Speech recognition and spoken replies go to its /v1/audio/transcriptions and /v1/audio/speech.</description>
     </key>
