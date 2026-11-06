@@ -60,25 +60,70 @@
   .hero__actions { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; max-width:560px; margin:34px auto 0; }
   .hero__actions .button { flex:1 1 0; }
   .hero__status { margin-top:18px; font-size:14px; color:var(--muted); }
-  /* desktop mockup: the little world inside the notch */
+  /* desktop mockup: the little world inside the notch (interactive preview) */
   .desk-wrap { margin-top:52px; }
   .desk { position:relative; width:100%; aspect-ratio:16/9.5; overflow:hidden; border:1px solid var(--line-2); border-radius:var(--radius-frame); background:linear-gradient(135deg,#d8f3e3 0%,#d5ecfa 48%,#ffe9cf 100%); box-shadow:var(--shadow-demo); }
   .desk__bar { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; color:#3c465a; font-size:13px; font-weight:500; }
   .desk__bar span { display:flex; align-items:center; gap:8px; }
   .desk__bar .dot { width:8px; height:8px; border-radius:999px; background:#3c465a; opacity:.35; }
   .notch { position:absolute; top:44px; left:50%; transform:translateX(-50%); width:min(560px,86%); display:flex; flex-direction:column; align-items:center; }
-  .notch__pill { display:flex; align-items:center; gap:10px; border-radius:999px; background:#0b0b0c; color:#f1f1f2; padding:9px 18px; font-size:13.5px; font-weight:500; box-shadow:0 10px 30px rgba(0,0,0,.35); white-space:nowrap; }
+  .notch__pill { display:flex; align-items:center; gap:10px; border:0; border-radius:999px; background:#0b0b0c; color:#f1f1f2; padding:9px 18px; font-size:13.5px; font-weight:500; box-shadow:0 10px 30px rgba(0,0,0,.35); white-space:nowrap; font-family:inherit; }
+  .notch__pill:hover { background:#1a1a1d; }
   .notch__pill .eq { display:inline-flex; align-items:flex-end; gap:2px; height:14px; }
   .notch__pill .eq i { display:block; width:3px; border-radius:2px; background:#7dd8ae; animation:eq 1s ease-in-out infinite; }
   .notch__pill .eq i:nth-child(1) { height:6px; }
   .notch__pill .eq i:nth-child(2) { height:12px; animation-delay:.2s; }
   .notch__pill .eq i:nth-child(3) { height:8px; animation-delay:.4s; }
+  .notch__pill.paused .eq i { animation-play-state:paused; transform:scaleY(.5); }
+  .notch__pill .eq.hidden { display:none; }
   @keyframes eq { 0%,100% { transform:scaleY(.5); } 50% { transform:scaleY(1); } }
   .notch__pill .time { color:#9a9aa0; font-weight:400; }
-  .notch__world { width:100%; margin-top:10px; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; border-radius:18px; background:rgba(255,255,255,.82); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,.9); box-shadow:0 18px 44px rgba(26,34,51,.18); padding:14px; text-align:left; }
-  .mini b { display:block; color:var(--ink); font-size:13px; font-weight:600; }
-  .mini span { display:block; margin-top:3px; color:var(--muted); font-size:12px; line-height:1.45; }
-  .mini .ok { color:var(--mint-deep); }
+  .notch__pill .hint { color:#6d6d72; font-weight:400; font-size:12px; }
+  .notch__world { width:100%; min-height:168px; margin-top:10px; border-radius:18px; background:rgba(255,255,255,.82); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,.9); box-shadow:0 18px 44px rgba(26,34,51,.18); padding:16px 18px; text-align:left; }
+  .notch[data-open="false"] .notch__world { display:none; }
+  .pv-view { display:none; }
+  .notch[data-view="music"] .pv-view--music { display:block; }
+  .notch[data-view="tasks"] .pv-view--tasks { display:block; }
+  .notch[data-view="calendar"] .pv-view--calendar { display:block; }
+  .notch[data-view="ai"] .pv-view--ai { display:block; }
+  .pv-view h3 { margin:0 0 4px; color:var(--ink); font-size:15px; font-weight:600; }
+  .pv-view p { margin:0; color:var(--muted); font-size:13px; line-height:1.5; }
+  .pv-music__top { display:flex; align-items:center; gap:12px; }
+  .pv-music__art { flex:none; width:52px; height:52px; border-radius:12px; background:linear-gradient(135deg,var(--mint),var(--sky)); display:grid; place-items:center; color:#fff; font-size:22px; }
+  .pv-music__meta { min-width:0; }
+  .pv-music__meta b { display:block; color:var(--ink); font-size:15px; }
+  .pv-music__meta span { display:block; color:var(--muted); font-size:12.5px; }
+  .pv-music__controls { margin-left:auto; display:flex; align-items:center; gap:6px; }
+  .pv-ctl { width:34px; height:34px; border-radius:999px; border:1px solid var(--line); background:#fff; color:var(--ink); font-size:13px; display:grid; place-items:center; }
+  .pv-ctl:hover { background:var(--surface-soft); }
+  .pv-progress { display:flex; align-items:center; gap:10px; margin-top:12px; color:var(--muted); font-size:12px; }
+  .pv-progress .bar { flex:1; height:5px; border-radius:3px; background:var(--line-2); overflow:hidden; }
+  .pv-progress .bar i { display:block; width:47%; height:100%; border-radius:3px; background:linear-gradient(90deg,var(--mint-deep),var(--sky-deep)); }
+  .pv-lyric { margin-top:12px; color:var(--ink); font-size:14px; }
+  .pv-lyric span { color:var(--muted); }
+  .pv-tasks { display:grid; gap:8px; margin-top:10px; }
+  .pv-task { display:flex; align-items:center; gap:10px; width:100%; border:1px solid var(--line); border-radius:12px; background:#fff; padding:9px 12px; color:var(--ink); font-size:14px; text-align:left; }
+  .pv-task:hover { background:var(--surface-soft); }
+  .pv-task .tick { flex:none; width:20px; height:20px; border-radius:999px; border:2px solid var(--line-2); display:grid; place-items:center; color:#fff; font-size:12px; }
+  .pv-task.done { color:var(--muted); }
+  .pv-task.done .tick { border-color:var(--mint-deep); background:var(--mint-deep); }
+  .pv-task.done .label { text-decoration:line-through; }
+  .pv-task .when { margin-left:auto; color:var(--muted); font-size:12px; white-space:nowrap; }
+  .pv-events { display:grid; gap:8px; margin-top:10px; }
+  .pv-event { display:flex; align-items:center; gap:12px; border:1px solid var(--line); border-radius:12px; background:#fff; padding:9px 12px; }
+  .pv-event .t { flex:none; color:var(--ink); font-size:13.5px; font-weight:600; }
+  .pv-event .what { color:var(--ink); font-size:14px; }
+  .pv-event .where { color:var(--muted); font-size:12px; }
+  .pv-chat { display:grid; gap:10px; margin-top:10px; }
+  .pv-msg { max-width:92%; border-radius:14px; padding:10px 13px; font-size:13.5px; line-height:1.5; }
+  .pv-msg--user { justify-self:end; background:var(--sky-soft); color:var(--ink); }
+  .pv-msg--ai { justify-self:start; background:#fff; border:1px solid var(--line); color:var(--body); }
+  .pv-msg b { color:var(--ink); }
+  .pv-tabs { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:18px; }
+  .pv-tab { border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--body); padding:8px 16px; font-size:14px; font-weight:500; box-shadow:var(--shadow-soft); transition:background 150ms ease, color 150ms ease; }
+  .pv-tab:hover { color:var(--ink); }
+  .pv-tab[aria-pressed="true"] { background:var(--navy); border-color:var(--navy); color:#fff; }
+  .pv-hint { margin-top:12px; color:var(--muted); font-size:13px; }
   .desk__dock { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); display:flex; gap:8px; border:1px solid rgba(255,255,255,.7); border-radius:999px; background:rgba(255,255,255,.55); backdrop-filter:blur(8px); padding:7px 10px; }
   .desk__dock i { display:block; width:26px; height:26px; border-radius:8px; }
   .desk__dock i:nth-child(1) { background:var(--mint); }
@@ -94,16 +139,39 @@
   .section-heading { margin:0; color:var(--ink); font-size:clamp(2.25rem,5vw,42px); line-height:1.1; font-weight:600; letter-spacing:-.02em; }
   .section-copy { margin-top:16px; color:var(--muted); font-size:18px; line-height:1.55; overflow-wrap:anywhere; }
   .card-grid-3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; margin-top:44px; }
+  .card-grid-2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; margin-top:44px; }
   .feature-card { overflow:hidden; border:1px solid var(--line); border-radius:var(--radius-card); background:var(--surface); padding:26px; box-shadow:var(--shadow-soft); transition:transform 180ms ease, box-shadow 180ms ease; }
   .feature-card:hover { transform:translateY(-2px); box-shadow:0 12px 28px rgba(26,34,51,.08); }
   .feature-card h3 { margin:0; color:var(--ink); font-size:20px; font-weight:600; letter-spacing:-.02em; }
   .feature-card p { margin:10px 0 0; font-size:15px; line-height:1.6; }
+  .feature-card .tag { display:inline-block; margin-bottom:12px; border-radius:999px; background:var(--mint-soft); color:var(--mint-deep); padding:4px 12px; font-size:12.5px; font-weight:600; }
   .feature-icon { display:grid; place-items:center; width:46px; height:46px; margin-bottom:18px; border-radius:13px; }
   .feature-icon svg { width:24px; height:24px; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
   .feature-icon--mint { background:var(--mint-soft); color:var(--mint-deep); }
   .feature-icon--sky { background:var(--sky-soft); color:var(--sky-deep); }
   .feature-icon--peach { background:var(--peach-soft); color:var(--peach-deep); }
   .feature-icon--lilac { background:var(--lilac-soft); color:var(--lilac-deep); }
+  /* stats */
+  .stat-row { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; margin-top:44px; }
+  .stat { border:1px solid var(--line); border-radius:var(--radius-card); background:var(--surface); padding:26px; box-shadow:var(--shadow-soft); text-align:center; }
+  .stat b { display:block; color:var(--ink); font-size:30px; font-weight:600; letter-spacing:-.02em; }
+  .stat span { display:block; margin-top:6px; color:var(--muted); font-size:14px; line-height:1.5; }
+  /* customize demo */
+  .custom-wrap { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; align-items:center; margin-top:44px; }
+  .custom-copy p { margin:0 0 14px; color:var(--muted); font-size:17px; line-height:1.6; }
+  .custom-copy p b { color:var(--ink); }
+  .custom-toggle { display:inline-flex; gap:6px; border:1px solid var(--line); border-radius:999px; background:#fff; padding:5px; box-shadow:var(--shadow-soft); }
+  .custom-toggle button { border:0; border-radius:999px; background:transparent; color:var(--body); padding:8px 18px; font-size:14px; font-weight:500; }
+  .custom-toggle button[aria-pressed="true"] { background:var(--navy); color:#fff; }
+  .custom-demo { border:1px solid var(--line-2); border-radius:var(--radius-frame); background:linear-gradient(135deg,#d8f3e3 0%,#d5ecfa 48%,#ffe9cf 100%); padding:28px 22px; box-shadow:var(--shadow-demo); }
+  .demo-island { max-width:340px; margin:0 auto; display:flex; flex-direction:column; align-items:center; }
+  .demo-pill { border-radius:999px; background:#0b0b0c; color:#f1f1f2; padding:10px 20px; font-size:13.5px; font-weight:500; box-shadow:0 10px 30px rgba(0,0,0,.35); }
+  .demo-panel { width:100%; margin-top:10px; border-radius:18px; background:rgba(255,255,255,.9); border:1px solid rgba(255,255,255,.95); box-shadow:0 18px 44px rgba(26,34,51,.18); padding:16px 18px; }
+  .demo-panel b { display:block; color:var(--ink); font-size:14px; }
+  .demo-panel span { display:block; margin-top:3px; color:var(--muted); font-size:12.5px; line-height:1.5; }
+  .demo-island.glass .demo-pill { background:rgba(20,20,24,.72); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.22); }
+  .demo-island.glass .demo-panel { background:rgba(255,255,255,.45); backdrop-filter:blur(14px); }
+  .custom-caption { margin-top:14px; text-align:center; color:var(--muted); font-size:13px; }
   /* install */
   .install-panel { margin-top:44px; overflow:hidden; border-radius:var(--radius-frame); background:var(--navy); color:#e6e8ec; box-shadow:var(--shadow-demo); }
   .install-panel__head { display:flex; align-items:center; gap:8px; padding:16px 22px 0; }
@@ -116,6 +184,18 @@
   .copy-btn { flex:none; border:1px solid #2b3346; border-radius:10px; background:#1a2233; color:#e6e8ec; padding:9px 16px; font-size:14px; font-weight:500; transition:background 150ms ease; }
   .copy-btn:hover { background:#232c42; }
   .install-note { margin-top:18px; color:var(--muted); font-size:15px; }
+  /* faq */
+  .faq-list { margin-top:36px; display:grid; gap:14px; }
+  .faq-item { border:1px solid var(--line); border-radius:16px; background:var(--surface); box-shadow:var(--shadow-soft); overflow:hidden; }
+  .faq-item summary { cursor:pointer; padding:18px 22px; color:var(--ink); font-size:17px; font-weight:600; list-style:none; }
+  .faq-item summary::-webkit-details-marker { display:none; }
+  .faq-item summary:hover { color:#000; }
+  .faq-item p { margin:0; padding:0 22px 20px; color:var(--body); font-size:15.5px; line-height:1.65; }
+  .faq-item p code { font-size:14px; background:var(--surface-soft); border-radius:6px; padding:1px 6px; }
+  /* honest note */
+  .note-box { margin-top:36px; border:1px solid var(--line); border-left:4px solid var(--peach); border-radius:16px; background:var(--surface); padding:26px 28px; box-shadow:var(--shadow-soft); }
+  .note-box p { margin:0; color:var(--body); font-size:17px; line-height:1.65; }
+  .note-box p b { color:var(--ink); }
   /* footer */
   .site-footer { margin-top:110px; border-radius:26px; background:var(--navy); color:rgba(255,255,255,.72); padding:64px 54px 48px; }
   .site-footer__top { display:flex; justify-content:space-between; gap:48px; }
@@ -135,15 +215,15 @@
   .site-menu-panel .button { margin-top:8px; }
   @media (max-width: 960px) {
     .site-footer__top { flex-direction:column; }
+    .custom-wrap { grid-template-columns:1fr; gap:28px; }
   }
   @media (max-width: 900px) {
     .site-header__right { gap:10px; }
     .hero h1 { font-size:40px; }
-    .card-grid-3 { grid-template-columns:1fr; }
+    .card-grid-3, .card-grid-2, .stat-row { grid-template-columns:1fr; }
     .site-nav, .site-header__right > .star-pill { display:none; }
     .nav-toggle { display:grid; }
     .site-header__bar { flex-wrap:wrap; }
-    .notch__world { grid-template-columns:repeat(2,minmax(0,1fr)); }
   }
   @media (max-width: 720px) {
     .section { padding-top:72px; }
@@ -151,8 +231,12 @@
     .site-footer__columns { grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
     .install-panel__body { flex-direction:column; align-items:stretch; }
     .install-panel__body code { white-space:normal; overflow-wrap:anywhere; }
-    .desk { aspect-ratio:16/12; }
-    .notch { width:min(520px,92%); }
+    .desk { aspect-ratio:16/13; }
+    .notch { width:min(520px,94%); top:36px; }
+    .notch__world { min-height:190px; padding:14px; }
+    .notch__pill .hint { display:none; }
+    .pv-tabs { gap:6px; }
+    .pv-tab { padding:7px 12px; font-size:13px; }
   }
 </style>
 </head>
@@ -162,8 +246,11 @@
     <div class="site-header__left">
       <a class="brand" href="#"><img src="images/icon.png" alt="Notchfolk icon"> Notchfolk</a>
       <nav class="site-nav" aria-label="Primary">
+        <a href="#preview">Preview</a>
         <a href="#features">Features</a>
+        <a href="#new">What&rsquo;s new</a>
         <a href="#install">Install</a>
+        <a href="#faq">FAQ</a>
         <a href="https://github.com/galyarderlabs/notchfolk">GitHub</a>
       </nav>
     </div>
@@ -174,8 +261,11 @@
     </div>
   </div>
   <div class="site-menu-panel" id="siteMenuPanel">
+    <a href="#preview">Preview</a>
     <a href="#features">Features</a>
+    <a href="#new">What&rsquo;s new</a>
     <a href="#install">Install</a>
+    <a href="#faq">FAQ</a>
     <a href="https://github.com/galyarderlabs/notchfolk">GitHub</a>
     <a class="button button--primary" href="#install">Install</a>
   </div>
@@ -192,20 +282,62 @@
         <a class="button button--secondary" href="https://github.com/galyarderlabs/notchfolk">View on GitHub</a>
       </div>
       <p class="hero__status">GPL-3.0 &nbsp;•&nbsp; No account &nbsp;•&nbsp; Your data stays on your machine</p>
-      <div class="desk-wrap">
+      <div class="desk-wrap" id="preview">
         <div class="desk" role="img" aria-label="A GNOME desktop with the Notchfolk notch open, showing music, tasks, calendar and AI">
           <div class="desk__bar"><span><span class="dot"></span> Activities</span><span>09:41</span><span>GNOME</span></div>
-          <div class="notch">
-            <div class="notch__pill"><span class="eq"><i></i><i></i><i></i></span> Now playing • Lo-Fi Focus <span class="time">02:14 / 04:30</span></div>
-            <div class="notch__world">
-              <div class="mini"><b>♪ Now playing</b><span>Lo-Fi Focus — breathe in, focus in, tasks aligned</span></div>
-              <div class="mini"><b><span class="ok">✓</span> Tasks</b><span>Finish report • Review PR • Walk 20min</span></div>
-              <div class="mini"><b>▦ Calendar</b><span>Today • 3 events, next at 14:00</span></div>
-              <div class="mini"><b>✦ AI assistant</b><span>Draft your email? Just ask.</span></div>
+          <div class="notch" id="notch" data-view="music" data-open="true">
+            <button class="notch__pill" id="notchPill" type="button" aria-expanded="true" aria-controls="notchWorld" title="Click to close or open the notch"><span class="eq" id="pillEq"><i></i><i></i><i></i></span><span id="pillLabel">Now playing • Lo-Fi Focus</span> <span class="time">02:14 / 04:30</span> <span class="hint">click to close</span></button>
+            <div class="notch__world" id="notchWorld">
+              <div class="pv-view pv-view--music" data-view="music">
+                <div class="pv-music__top">
+                  <span class="pv-music__art" aria-hidden="true">♪</span>
+                  <div class="pv-music__meta"><b>Lo-Fi Focus</b><span>breathe in, focus in — Lumen Coast</span></div>
+                  <div class="pv-music__controls">
+                    <button class="pv-ctl" type="button" aria-label="Previous track">⏮</button>
+                    <button class="pv-ctl" id="playBtn" type="button" aria-label="Pause">❚❚</button>
+                    <button class="pv-ctl" type="button" aria-label="Next track">⏭</button>
+                  </div>
+                </div>
+                <div class="pv-progress"><span>02:14</span><span class="bar"><i></i></span><span>04:30</span></div>
+                <p class="pv-lyric">♪ “breathe in, focus in, tasks aligned” <span>— synced with the song</span></p>
+              </div>
+              <div class="pv-view pv-view--tasks" data-view="tasks">
+                <h3>Today&rsquo;s tasks</h3>
+                <p>Tap a task to tick it off — the notch keeps the count.</p>
+                <div class="pv-tasks" id="taskList">
+                  <button class="pv-task" type="button"><span class="tick">✓</span><span class="label">Finish report</span><span class="when">Today</span></button>
+                  <button class="pv-task" type="button"><span class="tick">✓</span><span class="label">Review PR</span><span class="when">14:00</span></button>
+                  <button class="pv-task done" type="button"><span class="tick">✓</span><span class="label">Walk 20min</span><span class="when">Done</span></button>
+                </div>
+              </div>
+              <div class="pv-view pv-view--calendar" data-view="calendar">
+                <h3>Today — 3 events</h3>
+                <p>Your day at a glance, from your real calendar.</p>
+                <div class="pv-events">
+                  <div class="pv-event"><span class="t">14:00</span><span><span class="what">Team standup</span><br><span class="where">Work calendar</span></span></div>
+                  <div class="pv-event"><span class="t">16:00</span><span><span class="what">Focus block</span><br><span class="where">Notchfolk</span></span></div>
+                  <div class="pv-event"><span class="t">18:30</span><span><span class="what">Dinner with family</span><br><span class="where">Personal calendar</span></span></div>
+                </div>
+              </div>
+              <div class="pv-view pv-view--ai" data-view="ai">
+                <h3>AI assistant</h3>
+                <p>Ask, and it works through the steps — then shows what it did.</p>
+                <div class="pv-chat">
+                  <div class="pv-msg pv-msg--user">Draft an email to the team about Friday&rsquo;s release</div>
+                  <div class="pv-msg pv-msg--ai"><b>Draft ready.</b> “Friday&rsquo;s release is on track — here&rsquo;s what&rsquo;s in it…” Want me to send it?</div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="desk__dock" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
         </div>
+        <div class="pv-tabs" role="group" aria-label="Notch preview views">
+          <button class="pv-tab" type="button" data-view="music" aria-pressed="true">♪ Music</button>
+          <button class="pv-tab" type="button" data-view="tasks" aria-pressed="false">✓ Tasks</button>
+          <button class="pv-tab" type="button" data-view="calendar" aria-pressed="false">▦ Calendar</button>
+          <button class="pv-tab" type="button" data-view="ai" aria-pressed="false">✦ AI assistant</button>
+        </div>
+        <p class="pv-hint">A live sketch of the notch — click the black pill to close or open it, or switch views above. The real island does all of this, on your desktop.</p>
         <img class="hero__trio" src="images/logo.png" alt="Notchfolk — three clay blob mascots: mint with a leaf sprout, blue with headphones, peach holding a glowing star" loading="lazy" decoding="async">
       </div>
     </section>
@@ -250,6 +382,68 @@
       </div>
     </section>
 
+    <section id="light" class="section">
+      <div class="section-intro">
+        <p class="eyebrow">Lightweight</p>
+        <h2 class="section-heading">Light enough to forget</h2>
+        <p class="section-copy">The island sits in your top bar all day, so it has to cost almost nothing. The daemon sleeps while nothing needs it, the closed island barely redraws, and nothing leaks over time.</p>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><b>0 wake-ups / min</b><span>The daemon (isled) at rest, doing nothing until something needs it.</span></div>
+        <div class="stat"><b>4–9 MB</b><span>Memory the daemon holds at rest.</span></div>
+        <div class="stat"><b>4–6 frames / min</b><span>How often the closed island redraws while it shows the clock.</span></div>
+      </div>
+      <p class="section-copy" style="margin-top:22px; font-size:15px;">Measured on GNOME 51 with an Intel GPU, same 22 actions — opening and closing the island, tabs, lyrics, the assistant, alerts and the Shelf. Memory after 100 opens and closes: no leak.</p>
+    </section>
+
+    <section id="customize" class="section">
+      <div class="section-intro">
+        <p class="eyebrow">Customize</p>
+        <h2 class="section-heading">Yours, down to the glass</h2>
+        <p class="section-copy">The island follows your system — and you can shape it further in Settings → Appearance.</p>
+      </div>
+      <div class="custom-wrap">
+        <div class="custom-copy">
+          <p><b>Black or Glass.</b> The closed island is a solid black notch. The Glass look turns the island into clear dark glass instead, showing what is behind it, blurred, as you work — with a slider from clear glass to dark smoked glass.</p>
+          <p><b>Your colours, your size.</b> Toggles that are on take your accent colour, and the text size is yours to pick — the island, its pages and its alerts follow both.</p>
+          <p><b>Your clock, your mascots.</b> A 24-hour or 12-hour clock, and the island&rsquo;s own trio of clay mascots keeping you company.</p>
+          <div class="custom-toggle" role="group" aria-label="Island look">
+            <button type="button" id="lookBlack" aria-pressed="true">Black</button>
+            <button type="button" id="lookGlass" aria-pressed="false">Glass</button>
+          </div>
+        </div>
+        <div>
+          <div class="custom-demo">
+            <div class="demo-island" id="demoIsland">
+              <div class="demo-pill">♪ Now playing • Lo-Fi Focus</div>
+              <div class="demo-panel"><b>Lo-Fi Focus</b><span>breathe in, focus in — lyrics in time with the song, the desktop showing through behind the glass.</span></div>
+            </div>
+          </div>
+          <p class="custom-caption">Try it — Black is the default, Glass is the see-through look.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="new" class="section">
+      <div class="section-intro">
+        <p class="eyebrow">What&rsquo;s new</p>
+        <h2 class="section-heading">New in Notchfolk 1.1.0</h2>
+        <p class="section-copy">The latest release, from the <a href="https://github.com/galyarderlabs/notchfolk/blob/main/CHANGELOG.md" style="text-decoration:underline;">changelog</a>.</p>
+      </div>
+      <div class="card-grid-2">
+        <article class="feature-card">
+          <span class="tag">Added</span>
+          <h3>Reminder history — the last 7 days</h3>
+          <p>A reminder that fired while you were away, or that you simply missed, no longer vanishes: the Reminders page has a “Last 7 days” section, and agents can read it with the new <code>list_reminder_history</code> tool (56 tools now). The one-shot island alert is unchanged.</p>
+        </article>
+        <article class="feature-card">
+          <span class="tag">Fixed</span>
+          <h3>opencode 2 works again</h3>
+          <p>The model list fills and requests answer, with the <code>--standalone</code> and plain <code>opencode models</code> output that 2.x uses — while opencode 1.x keeps its own flags. From upstream Isle&rsquo;s PR #45, by AlphaBeast97.</p>
+        </article>
+      </div>
+    </section>
+
     <section id="install" class="section">
       <div class="section-intro">
         <p class="eyebrow">Install</p>
@@ -264,6 +458,47 @@
         </div>
       </div>
       <p class="install-note">Then log out and back in so GNOME Shell loads the new extension. Requires GNOME 46–51 on Linux.</p>
+      <p class="install-note">Arch Linux: the AUR package (<code>notchfolk-bin</code>) is prepared in <code>packaging/aur</code> but not published yet, so <code>yay</code> won&rsquo;t find it — use the command above for now.</p>
+    </section>
+
+    <section id="faq" class="section">
+      <div class="section-intro">
+        <p class="eyebrow">FAQ</p>
+        <h2 class="section-heading">Questions</h2>
+        <p class="section-copy">The things people ask first, answered plainly.</p>
+      </div>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>Which desktops does it run on?</summary>
+          <p>GNOME Shell 46 to 51, on a 64-bit Intel or AMD PC. Other desktops (KDE Plasma, Cinnamon, XFCE, COSMIC) can&rsquo;t load GNOME Shell extensions, so Notchfolk doesn&rsquo;t run there — and it doesn&rsquo;t run on ARM computers like the Raspberry Pi, for which there are no ready-built programs.</p>
+        </details>
+        <details class="faq-item">
+          <summary>How do I install it?</summary>
+          <p>Paste <code>curl -fsSL https://raw.githubusercontent.com/galyarderlabs/notchfolk/main/get.sh | bash</code> into a terminal and press Enter — no root, nothing to compile. Then log out and back in once, so GNOME Shell loads the new extension.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Where does my data live?</summary>
+          <p>On your own computer: data in <code>~/.local/share/notchfolk</code>, settings in <code>~/.config/notchfolk</code>. Your tasks, calendar, chats and files stay there unless you connect an AI or the MCP server yourself — nothing is sent anywhere on its own.</p>
+        </details>
+        <details class="faq-item">
+          <summary>How does voice work?</summary>
+          <p>Press Super+I (or the mic in the open island) and speak. Your words are turned into text on this computer with Whisper, then the AI you picked answers — and it works as an agent, doing multi-step requests one step at a time. Set it up with <code>notchfolk-setup-voice</code> and check it with <code>notchfolkd --doctor</code>.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Is there an AUR package?</summary>
+          <p>Not yet. The package (<code>notchfolk-bin</code>) is prepared in <code>packaging/aur</code> but not published — AUR registration is paused — so <code>yay -S notchfolk-bin</code> finds nothing for now. Use the install command above, or build the package from <code>packaging/aur</code>.</p>
+        </details>
+      </div>
+    </section>
+
+    <section id="note" class="section">
+      <div class="section-intro">
+        <p class="eyebrow">An honest note</p>
+        <h2 class="section-heading">What it is, and what it isn&rsquo;t</h2>
+      </div>
+      <div class="note-box">
+        <p><b>Notchfolk is a GNOME extension and a small Rust daemon that lives on your computer.</b> It is not a cloud service, it does not replace your desktop, and it does not think for you. It just puts the things you glance at — music, tasks, calendar, a chat with an AI — into the notch at the top of your screen, so they are one hover away instead of a window away. Your data stays on your machine, the AIs you pick run where you signed in to them, and nothing leaves unless you ask it to. If you want a new desktop, this is not it. If you want the top of your screen to be useful, it is.</p>
+      </div>
     </section>
   </main>
 
@@ -275,9 +510,9 @@
         <span class="site-footer__legal"><span>© 2026 Galyarder Labs</span><span>GPL-3.0</span><span>GNOME 46–51</span></span>
       </div>
       <nav class="site-footer__columns" aria-label="Footer">
-        <div class="site-footer__column"><h2>Product</h2><ul><li><a href="#install">Install</a></li><li><a href="#features">Features</a></li><li><a href="https://github.com/galyarderlabs/notchfolk">GitHub</a></li><li><a href="https://github.com/galyarderlabs/notchfolk/releases">Releases</a></li></ul></div>
+        <div class="site-footer__column"><h2>Product</h2><ul><li><a href="#install">Install</a></li><li><a href="#features">Features</a></li><li><a href="#new">What&rsquo;s new</a></li><li><a href="https://github.com/galyarderlabs/notchfolk">GitHub</a></li><li><a href="https://github.com/galyarderlabs/notchfolk/releases">Releases</a></li></ul></div>
         <div class="site-footer__column"><h2>Docs</h2><ul><li><a href="https://github.com/galyarderlabs/notchfolk/blob/main/docs/install.md">Install guide</a></li><li><a href="https://github.com/galyarderlabs/notchfolk/blob/main/docs/usage.md">Usage</a></li><li><a href="https://github.com/galyarderlabs/notchfolk/blob/main/docs/mcp.md">MCP server</a></li><li><a href="https://github.com/galyarderlabs/notchfolk/blob/main/README.md">README</a></li></ul></div>
-        <div class="site-footer__column"><h2>Project</h2><ul><li><a href="https://github.com/galyarderlabs/notchfolk/blob/main/LICENSE">License</a></li><li><a href="https://github.com/galyarderlabs/notchfolk/blob/main/CHANGELOG.md">Changelog</a></li><li><a href="https://github.com/galyarderlabs/notchfolk/tree/main/docs">Landing source</a></li></ul></div>
+        <div class="site-footer__column"><h2>Project</h2><ul><li><a href="https://github.com/galyarderlabs/notchfolk/blob/main/LICENSE">License</a></li><li><a href="https://github.com/galyarderlabs/notchfolk/blob/main/CHANGELOG.md">Changelog</a></li><li><a href="#faq">FAQ</a></li><li><a href="https://github.com/galyarderlabs/notchfolk/issues">Issues</a></li></ul></div>
       </nav>
     </div>
   </footer>
@@ -314,6 +549,115 @@
         document.body.removeChild(ta); done(ok);
       }
     });
+  })();
+  // Interactive notch preview: tabs switch the view, the pill opens/closes
+  // the panel, tasks tick off, play/pause stops the equaliser.
+  (function () {
+    var notch = document.getElementById('notch');
+    var pill = document.getElementById('notchPill');
+    var pillLabel = document.getElementById('pillLabel');
+    var pillEq = document.getElementById('pillEq');
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('.pv-tab'));
+    if (!notch || !pill || !tabs.length) return;
+    var views = ['music', 'tasks', 'calendar', 'ai'];
+    var labels = {
+      music: 'Now playing • Lo-Fi Focus',
+      tasks: 'Tasks • 1 of 3 done',
+      calendar: 'Next: Team standup 14:00',
+      ai: '✦ Assistant is ready'
+    };
+    var autoTimer = null;
+    var autoStopped = false;
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function taskCount() {
+      var tasks = document.querySelectorAll('#taskList .pv-task');
+      var done = document.querySelectorAll('#taskList .pv-task.done').length;
+      return done + ' of ' + tasks.length + ' done';
+    }
+    function setView(view, open) {
+      if (views.indexOf(view) === -1) return;
+      notch.setAttribute('data-view', view);
+      if (open !== undefined) {
+        notch.setAttribute('data-open', open ? 'true' : 'false');
+        pill.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+      tabs.forEach(function (t) {
+        t.setAttribute('aria-pressed', t.getAttribute('data-view') === view ? 'true' : 'false');
+      });
+      if (view === 'tasks') {
+        pillLabel.textContent = 'Tasks • ' + taskCount();
+      } else {
+        pillLabel.textContent = labels[view];
+      }
+      if (pillEq) pillEq.classList.toggle('hidden', view !== 'music');
+    }
+    function stopAuto() {
+      autoStopped = true;
+      if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+    }
+    function inView() {
+      var r = notch.getBoundingClientRect();
+      return r.bottom > 0 && r.top < window.innerHeight;
+    }
+    tabs.forEach(function (t) {
+      t.addEventListener('click', function () {
+        stopAuto();
+        setView(t.getAttribute('data-view'), true);
+      });
+    });
+    pill.addEventListener('click', function () {
+      stopAuto();
+      var open = notch.getAttribute('data-open') !== 'true';
+      setView(notch.getAttribute('data-view'), open);
+    });
+    // Tick tasks off; keep the pill count in step while on the tasks view.
+    var taskList = document.getElementById('taskList');
+    if (taskList) {
+      taskList.addEventListener('click', function (e) {
+        var task = e.target.closest('.pv-task');
+        if (!task) return;
+        stopAuto();
+        task.classList.toggle('done');
+        if (notch.getAttribute('data-view') === 'tasks') {
+          pillLabel.textContent = 'Tasks • ' + taskCount();
+        }
+      });
+    }
+    // Play/pause: pause the equaliser bars and swap the glyph.
+    var playBtn = document.getElementById('playBtn');
+    if (playBtn) {
+      playBtn.addEventListener('click', function () {
+        stopAuto();
+        var paused = pill.classList.toggle('paused');
+        playBtn.textContent = paused ? '▶' : '❚❚';
+        playBtn.setAttribute('aria-label', paused ? 'Play' : 'Pause');
+      });
+    }
+    // Gentle auto-advance through the views until the visitor takes over.
+    // Skipped for reduced motion; only advances while the preview is on screen.
+    if (!reduceMotion) {
+      var idx = 0;
+      autoTimer = setInterval(function () {
+        if (autoStopped || !inView()) return;
+        idx = (idx + 1) % views.length;
+        setView(views[idx], true);
+      }, 5000);
+    }
+  })();
+  // Customize demo: Black / Glass toggle for the little island.
+  (function () {
+    var demo = document.getElementById('demoIsland');
+    var black = document.getElementById('lookBlack');
+    var glass = document.getElementById('lookGlass');
+    if (!demo || !black || !glass) return;
+    function pick(which) {
+      demo.classList.toggle('glass', which === 'glass');
+      black.setAttribute('aria-pressed', which === 'black' ? 'true' : 'false');
+      glass.setAttribute('aria-pressed', which === 'glass' ? 'true' : 'false');
+    }
+    black.addEventListener('click', function () { pick('black'); });
+    glass.addEventListener('click', function () { pick('glass'); });
   })();
 </script>
 </body>
