@@ -2168,11 +2168,14 @@ async fn transcribed(
             cloud::transcribe(&url, &path, &model, &key, &audio, &language),
         );
         let answered = until_cancelled(asked, commands, later, &mut session.open).await?;
-        let said = matches!(answered, Ok(Ok(_)));
-        if !said {
-            warn!("the speech router could not hear it; local whisper takes over");
+        match &answered {
+            Ok(Ok(_)) => return Ok(answered),
+            Ok(Err(err)) => {
+                warn!("the speech router could not hear it ({err:#}); local whisper takes over")
+            }
+            Err(_) => warn!("the speech router took too long; local whisper takes over"),
         }
-        if said || !whisper::installed() {
+        if !whisper::installed() {
             return Ok(answered);
         }
         local(session, audio, commands, later).await
