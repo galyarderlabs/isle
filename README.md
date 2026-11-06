@@ -118,6 +118,7 @@ tabs for each page.
 </tr>
 <tr>
 <td width="50%" valign="top">
+<img src="docs/images/mcp-conversation.png" alt="ChatGPT using the Notchfolk MCP tools to update a calorie entry" width="100%"><br>
 <b>MCP server.</b> An optional MCP server for agents outside Notchfolk: read tools for your data and actions, writes only what you list in <code>~/.config/notchfolk/mcp.env</code>, on loopback by default and remote access through an authenticated tunnel.
 </td>
 <td width="50%" valign="top">
