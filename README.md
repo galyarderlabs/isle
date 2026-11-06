@@ -50,6 +50,7 @@ tabs for each page.
 <img src="docs/images/clipboard.png" alt="Shelf: clipboard history of images, with their sizes" width="100%"><br>
 <img src="docs/images/files.png" alt="The files tray with six files, full" width="100%"><br>
 <img src="docs/images/phone.png" alt="Shelf on your phone: scan the QR code to access the shelf files" width="100%"><br>
+<img src="docs/images/devices.png" alt="Devices: galyarder connected via GSConnect, battery 50%, not charging, with Ring phone and Send clipboard" width="100%"><br>
 <b>Shelf.</b> Clipboard history of text, links, images and files — search, filter, pin; Super+V to paste. Files tray: drop up to 6 files on the island, drag them into any app or click to copy. Phone: scan the QR to save shelf files on your phone or send files back, in the browser, same Wi-Fi, nothing through the internet.
 </td>
 </tr>
