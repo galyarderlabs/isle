@@ -64,6 +64,7 @@ tabs for each page.
 </tr>
 <tr>
 <td width="50%" valign="top">
+<img src="docs/images/notifications.png" alt="Notifications: a Telegram notification, with Clear" width="100%"><br>
 <b>Notifications.</b> GNOME's notifications as a plain list, newest first, with their buttons under the pointer, Clear, and Do Not Disturb a click away.
 </td>
 <td width="50%" valign="top">
