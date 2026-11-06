@@ -18,11 +18,6 @@ clock sits in the middle with what's running beside it — a song, a call, a
 timer. Rest the pointer on it and it springs open into a small panel with
 tabs for each page.
 
-> [!NOTE]
-> Notchfolk was formerly Isle. If you are upgrading from an Isle installation, run
-> [the one-time migration script](docs/migrate-from-isle.md) once after installing,
-> to carry your settings, data, credentials and services to the new names.
-
 ## Features
 
 <table>
@@ -63,6 +58,7 @@ tabs for each page.
 <b>Notifications.</b> GNOME's notifications as a plain list, newest first, with their buttons under the pointer, Clear, and Do Not Disturb a click away.
 </td>
 <td width="50%" valign="top">
+<img src="docs/images/voice.png" alt="The voice assistant at work: what it heard, and the step it is on, finding jazz on Spotify" width="100%"><br>
 <b>Voice assistant.</b> Press Super+I and ask, in English or Indonesian: play a song, find a file, add a reminder. It works as an agent: a request with several steps is done one after another, each step checked, with the AI you already use (Claude Code, Codex, Grok, Hermes, Oh My Pi, opencode or Antigravity).
 </td>
 </tr>
@@ -71,11 +67,13 @@ tabs for each page.
 <b>Installs and fixes things.</b> "Install LibreOffice", "pasang codex": it checks what your Linux has, searches the web when unsure, and shows the one command it wants to run, with what to know first. Press <b>Run</b> or <b>Deny</b>. It runs in the background while you carry on, and the assistant checks it worked before saying so.
 </td>
 <td width="50%" valign="top">
+<img src="docs/images/conversation.png" alt="The conversation: install vlc, the command that ran with its time, and the answer" width="100%"><br>
 <b>Speak or type, and talk it through.</b> It listens as soon as it opens; start typing to type instead. Scroll up for the conversation so far; select text to copy it, + for a new one. The bot turns to the pointer, blinks, and bounces as you speak; close the island and it carries on in the background.
 </td>
 </tr>
 <tr>
 <td width="50%" valign="top">
+<img src="docs/images/bot-looks.png" alt="The bot in eight shapes and several colours, with matching glows" width="100%"><br>
 <b>A bot of your own.</b> Eight shapes, from a circle to a cloud or a ghost, eleven colours or your own, softly shaded, and a glow round the island that matches it.
 </td>
 <td width="50%" valign="top">
