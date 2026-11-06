@@ -6,6 +6,8 @@ All notable changes to Notchfolk are listed here. The format follows
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-06
+
 ### Added
 
 - **Speech recognition can run on an OpenAI-compatible router**, the default engine: recordings go
