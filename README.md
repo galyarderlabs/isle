@@ -33,6 +33,7 @@ tabs for each page.
 </tr>
 <tr>
 <td width="50%" valign="top">
+<img src="docs/images/call.png" alt="A Telegram voice call in the island: 0:08, with Mute and Open" width="100%"><br>
 <b>Calls</b> in WhatsApp, Telegram, Zoom, Meet and other call apps, or call pages in a browser: a green phone in the closed island, the call's length on the Call page. Open it to watch live while you work elsewhere, mute, or jump back to the call.
 </td>
 <td width="50%" valign="top">
