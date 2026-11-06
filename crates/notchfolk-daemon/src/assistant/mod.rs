@@ -183,8 +183,8 @@ pub struct Context {
     speech_engine: String,
     /// The router's base URL, as Settings holds it ("https://router.example/v1").
     router_url: String,
-    /// The router's speech-to-text model ("dg/nova-3"), and the paths its speech endpoints live at
-    /// ("audio/transcriptions", "audio/speech") — another router names its own.
+    /// The router's speech-to-text model, and the paths its speech endpoints live at
+    /// ("audio/transcriptions", "audio/speech") — Settings is the only source of them.
     speech_model: String,
     stt_path: String,
     tts_path: String,

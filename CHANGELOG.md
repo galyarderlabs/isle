@@ -6,6 +6,12 @@ All notable changes to Notchfolk are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- **No speech router is assumed either.** The base URL starts empty in Settings too, so a fresh
+  install has nothing pointing anywhere until the user fills it in; an empty one leaves the cloud
+  engine unconfigured (local whisper answers).
+
 ## [1.2.1] - 2026-11-06
 
 ### Changed
