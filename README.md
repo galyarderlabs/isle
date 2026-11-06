@@ -79,7 +79,7 @@ tabs for each page.
 <b>Installs and fixes things.</b> "Install LibreOffice", "pasang codex": it checks what your Linux has, searches the web when unsure, and shows the one command it wants to run, with what to know first. Press <b>Run</b> or <b>Deny</b>. It runs in the background while you carry on, and the assistant checks it worked before saying so.
 </td>
 <td width="50%" valign="top">
-<img src="docs/images/conversation.png" alt="Chatting with the AI: asking where Notchfolk runs" width="60%"><br>
+<img src="docs/images/conversation.png" alt="Chatting with the AI: asking where Notchfolk runs" width="100%"><br>
 <b>Speak or type, and talk it through.</b> It listens as soon as it opens; start typing to type instead. Scroll up for the conversation so far; select text to copy it, + for a new one. The bot turns to the pointer, blinks, and bounces as you speak; close the island and it carries on in the background.
 </td>
 </tr>
@@ -116,7 +116,7 @@ tabs for each page.
 <tr>
 <td width="50%" valign="top">
 <img src="docs/images/router.png" alt="Router: 3,786 requests, 68M / 2.7M tokens, $37.11 estimated cost, connected" width="100%"><br>
-<img src="docs/images/router-settings.png" alt="Router settings: Local or Remote connection, Base URL, proxy API key, period" width="60%"><br>
+<img src="docs/images/router-settings.png" alt="Router settings: Local or Remote connection, Base URL, proxy API key, period" width="100%"><br>
 <b>Router.</b> What your AI gateway reports: requests, tokens in and out, its cost estimate, the top models as bars, and the last ten requests. A health dot once connected; off by default.
 </td>
 <td width="50%" valign="top">
@@ -128,13 +128,13 @@ tabs for each page.
 </tr>
 <tr>
 <td width="50%" valign="top">
-<img src="docs/images/mcp-settings.png" alt="MCP settings: access scopes, remote access with a public hostname, and the tunnel setup" width="60%"><br>
+<img src="docs/images/mcp-settings.png" alt="MCP settings: access scopes, remote access with a public hostname, and the tunnel setup" width="100%"><br>
 <img src="docs/images/mcp-app.png" alt="NotchFolks in the ChatGPT Apps directory" width="100%"><br>
 <b>MCP server.</b> An optional MCP server for agents outside Notchfolk: read tools for your data and actions, writes only what you list in <code>~/.config/notchfolk/mcp.env</code>, on loopback by default and remote access through an authenticated tunnel.
 </td>
 <td width="50%" valign="top">
-<img src="docs/images/more-ais.png" alt="The AI picker: Claude Code, Codex, Hermes Agent, OpenAI-compatible API, Oh My Pi, opencode, Antigravity" width="60%"><br>
-<img src="docs/images/more-ais-omp.png" alt="Oh My Pi selected, with Custom instructions for its identity" width="60%"><br>
+<img src="docs/images/more-ais.png" alt="The AI picker: Claude Code, Codex, Hermes Agent, OpenAI-compatible API, Oh My Pi, opencode, Antigravity" width="100%"><br>
+<img src="docs/images/more-ais-omp.png" alt="Oh My Pi selected, with Custom instructions for its identity" width="100%"><br>
 <b>More AIs.</b> The assistant also runs Hermes and Oh My Pi with the providers they are configured for, plus any OpenAI-compatible API.
 </td>
 </tr>
