@@ -76,6 +76,8 @@ tabs for each page.
 
 **A bot of your own.** Eight shapes, from a circle to a cloud or a ghost, eleven colours or your own, softly shaded, and a glow round the island that matches it.
 
+<img src="docs/images/usage.png" alt="AI usage: Claude Max, 5 hours 42% (resets in 2h 18m), Week 18% (resets in 4d)" width="640">
+
 **AI usage.** How much of your Claude and ChatGPT plan limits is used: one plan at a time with its logo, a bar per limit and when each resets; scroll or click the dots to switch. A warning comes as one nears its end; only plans you're signed in to show.
 
 <img src="docs/images/alerts.png" alt="The closed island at rest: a song playing, the focus timer at 47:51, battery at 1%, and 33,0 °C" width="640">
