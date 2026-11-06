@@ -315,9 +315,13 @@ mod tests {
                       -----BEGIN OPENSSH PRIVATE KEY-----\nAAAA\n-----END OPENSSH PRIVATE KEY-----\nkey sk-ant-api03-abcdefghijklmnop done\npassword: hunter2";
         let masked = mask_secrets(output);
         for secret in ["ghp_abc", "abc.def", "AAAA", "sk-ant", "hunter2"] {
-            // The secret itself stays out of the failure message: only the
-            // masked output is shown, so a leak is visible without printing it.
-            assert!(!masked.contains(secret), "secret left in:\n{masked}");
+            // Neither the secret nor the masked output is printed on failure:
+            // the masked text is still derived from secret-bearing input, so
+            // it counts as sensitive. The failure itself proves a leak.
+            assert!(
+                !masked.contains(secret),
+                "a secret was left in the masked output"
+            );
         }
         assert!(masked.starts_with("ok\n") && masked.contains("[private key hidden]"));
         assert!(masked.contains("key [hidden] done"));

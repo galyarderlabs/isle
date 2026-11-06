@@ -194,21 +194,28 @@ fn interfaces() -> Vec<Lan> {
     while let Some(ifa) = unsafe { entry.as_ref() } {
         entry = ifa.ifa_next;
         let up = ifa.ifa_flags & (libc::IFF_UP as u32) != 0;
-        if !up || ifa.ifa_addr.is_null() || ifa.ifa_netmask.is_null() || ifa.ifa_name.is_null() {
+        if !up {
             continue;
         }
-        // SAFETY: checked non-null; the family says which sockaddr it is.
-        if i32::from(unsafe { (*ifa.ifa_addr).sa_family }) != libc::AF_INET {
+        // SAFETY: `as_ref` turns a null pointer into `None` instead of
+        // dereferencing it; the family field is first in every sockaddr.
+        let family = unsafe { ifa.ifa_addr.as_ref() }.map(|addr| i32::from(addr.sa_family));
+        if family != Some(libc::AF_INET) {
             continue;
         }
-        // SAFETY: AF_INET addresses and masks are sockaddr_in; the name is a C string.
-        let (addr, mask, name) = unsafe {
-            (
-                &*(ifa.ifa_addr as *const libc::sockaddr_in),
-                &*(ifa.ifa_netmask as *const libc::sockaddr_in),
-                CStr::from_ptr(ifa.ifa_name),
-            )
+        // SAFETY: the family is AF_INET, so the address and mask are
+        // sockaddr_in; `as_ref` still guards against a null pointer.
+        let Some(addr) = (unsafe { (ifa.ifa_addr as *const libc::sockaddr_in).as_ref() }) else {
+            continue;
         };
+        let Some(mask) = (unsafe { (ifa.ifa_netmask as *const libc::sockaddr_in).as_ref() }) else {
+            continue;
+        };
+        if ifa.ifa_name.is_null() {
+            continue;
+        }
+        // SAFETY: the name is a NUL-terminated C string from getifaddrs.
+        let name = unsafe { CStr::from_ptr(ifa.ifa_name) };
         found.push(Lan {
             ip: Ipv4Addr::from(u32::from_be(addr.sin_addr.s_addr)),
             prefix: u32::from_be(mask.sin_addr.s_addr).count_ones() as u8,
