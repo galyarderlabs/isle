@@ -43,6 +43,7 @@ tabs for each page.
 </tr>
 <tr>
 <td width="50%" valign="top">
+<img src="docs/images/reminders.png" alt="Reminders page: 1/1 tasks completed, with a checked task" width="100%"><br>
 <b>Reminders</b>, with the number still open beside the list: add tasks, rename in place, tick to finish — done ones clear at midnight. A long title wraps as far as it needs.
 </td>
 <td width="50%" valign="top">
