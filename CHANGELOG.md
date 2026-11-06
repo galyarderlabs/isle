@@ -6,6 +6,8 @@ All notable changes to Notchfolk are listed here. The format follows
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-11-06
+
 ### Changed
 
 - **No speech model is assumed any more.** The speech router's models and voice start empty in
