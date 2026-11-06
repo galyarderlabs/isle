@@ -6,6 +6,21 @@ All notable changes to Notchfolk are listed here. The format follows
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-07
+
+### Added
+
+- **The last week of shown reminders stays as a history.** A reminder that fired during login,
+  or that was simply missed, can still be looked up: the Reminders page has a "Last 7 days"
+  section, and agents can read it with the new `list_reminder_history` tool (56 tools now).
+  The one-shot island alert is unchanged.
+
+### Fixed
+
+- **opencode 2 works again** (from upstream Isle's PR #45, by AlphaBeast97): the model list
+  fills and requests answer, with `--standalone` and the plain `opencode models` output 2.x
+  uses, while opencode 1.x keeps its own flags.
+
 ## [1.0.2] - 2026-11-05
 
 ### Fixed
