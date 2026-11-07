@@ -6,6 +6,15 @@ All notable changes to Notchfolk are listed here. The format follows
 
 ## [Unreleased]
 
+## [1.2.4] - 2026-11-07
+
+### Fixed
+
+- **The microphone is heard again.** `pw-record` writes a WAV container to stdout unless told
+  otherwise, and the recorder read every byte as a sample: the container and the float samples
+  came through as saturated PCM, so every recording looked like noise at full scale and the
+  endpointer answered "heard no speech" however loudly one spoke, and however the gain was set.
+
 ## [1.2.3] - 2026-11-06
 
 ### Changed
