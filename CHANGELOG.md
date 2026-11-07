@@ -6,6 +6,14 @@ All notable changes to Notchfolk are listed here. The format follows
 
 ## [Unreleased]
 
+## [1.2.3] - 2026-11-06
+
+### Changed
+
+- **The log says which speech router it tried, and for how long.** A request that could not reach
+  the router now names the URL as the daemon built it and how long it tried, instead of a bare
+  error — a refused request, a wrong URL and a network that stalls no longer look the same.
+
 ## [1.2.2] - 2026-11-06
 
 ### Changed
