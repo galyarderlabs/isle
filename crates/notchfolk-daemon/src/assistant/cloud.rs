@@ -88,13 +88,19 @@ pub async fn transcribe(
                 .mime_str("audio/wav")
                 .context("could not name the recording")?,
         );
+        let started = std::time::Instant::now();
         let response = ureq::post(&url)
             .config()
             .timeout_global(Some(TIMEOUT))
             .build()
             .header("Authorization", &format!("Bearer {key}"))
             .send(form)
-            .with_context(|| format!("could not reach the speech router at {url}"))?;
+            .with_context(|| {
+                format!(
+                    "could not reach the speech router at {url} in {:.1} s",
+                    started.elapsed().as_secs_f32()
+                )
+            })?;
         let text = response
             .into_body()
             .read_to_string()
@@ -127,13 +133,19 @@ pub async fn speak(
     });
     let key = key.to_owned();
     let spoken = tokio::task::spawn_blocking(move || {
+        let started = std::time::Instant::now();
         let response = ureq::post(&url)
             .config()
             .timeout_global(Some(TIMEOUT))
             .build()
             .header("Authorization", &format!("Bearer {key}"))
             .send_json(&request)
-            .with_context(|| format!("could not reach the speech router at {url}"))?;
+            .with_context(|| {
+                format!(
+                    "could not reach the speech router at {url} in {:.1} s",
+                    started.elapsed().as_secs_f32()
+                )
+            })?;
         let mut bytes = Vec::new();
         response
             .into_body()
