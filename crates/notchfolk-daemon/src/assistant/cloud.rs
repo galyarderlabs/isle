@@ -69,6 +69,14 @@ pub async fn transcribe(
 ) -> anyhow::Result<String> {
     let url = url(base, path);
     let wav = wav(audio);
+    // NOTCHFOLK_SPEECH_DUMP names a folder to also write each recording to, as the WAV sent to the
+    // router, kept until the next one: for listening to what the assistant actually heard.
+    if let Some(dump) = std::env::var_os("NOTCHFOLK_SPEECH_DUMP") {
+        let dump = std::path::Path::new(&dump).join("notchfolk-heard.wav");
+        if let Err(err) = std::fs::write(&dump, &wav) {
+            warn!("could not write the recording to {}: {err}", dump.display());
+        }
+    }
     let key = key.to_owned();
     let model = model.to_owned();
     let language = language.to_owned();
